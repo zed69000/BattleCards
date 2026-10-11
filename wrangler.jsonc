@@ -1,0 +1,6 @@
+{
+  // Site statique : Cloudflare publie le contenu de public/ tel quel, sans build.
+  "name": "battlecards",
+  "compatibility_date": "2025-01-01",
+  "assets": { "directory": "./public" }
+}

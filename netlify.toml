@@ -1,0 +1,3 @@
+# Site statique : Netlify publie le contenu de public/ tel quel, sans build.
+[build]
+  publish = "public"
