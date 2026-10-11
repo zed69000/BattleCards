@@ -49,16 +49,64 @@
     .btn.big { padding: 0.8rem 2rem; font-size: 1.25rem; }
 
     /* ───── Menu ───── */
-    #menu .col { align-items: center; justify-content: safe center; gap: 12px; text-align: center; overflow-y: auto; }
+    #menu .col { gap: 8px; text-align: center; overflow: hidden; padding-bottom: 0; }
+    .mtop { display: flex; align-items: center; gap: 8px; text-align: left; }
+    .mtop .ava { width: 38px; height: 38px; }
+    .who { flex: 1; min-width: 0; line-height: 1.1; }
+    .who small { color: var(--yellow); }
+    .xp { height: 6px; margin-top: 4px; border-radius: 99px; background: rgba(245, 233, 207, 0.2); overflow: hidden; }
+    .xp i { display: block; height: 100%; background: var(--yellow); transition: width 600ms ease; }
+    .pill { padding: 3px 10px; border-radius: 99px; border: 2px solid var(--yellow); color: var(--yellow); background: rgba(16, 22, 43, 0.86); white-space: nowrap; }
+    .pill.tr { border-color: var(--cream); color: var(--cream); }
+    .panes { flex: 1; min-height: 0; }
+    .pane { display: none; height: 100%; overflow-y: auto; flex-direction: column; align-items: center; gap: 10px; padding: 6px 2px 14px; }
+    .pane.on { display: flex; }
+    .pane > * { flex: none; }
+    #menu .logo h1 { font-size: clamp(1.5rem, 7.6vw, 2.2rem); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e; }
+    #menu .logo small { font-size: 0.6rem; }
+    /* Le duel : ta carte face à une carte inconnue */
+    .versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; justify-items: center; width: 100%; max-width: 340px; padding: 4px 0 8px; }
+    .versus .card { --cw: clamp(84px, 26vw, 112px); }
+    .versus .card:first-child { transform: rotate(-5deg); animation: hover 3.4s ease-in-out infinite; }
+    .versus .card:last-child { transform: rotate(5deg); }
+    .vsBurst { z-index: 2; margin: 0 -16px; padding: 12px 11px; font-size: 1.5rem; color: var(--orange); background: var(--cream); clip-path: polygon(0 20%, 14% 0, 32% 14%, 50% 0, 68% 16%, 86% 0, 100% 26%, 92% 52%, 100% 80%, 84% 100%, 62% 84%, 46% 100%, 28% 82%, 10% 100%, 0 70%, 8% 46%); animation: beat 1.8s ease-in-out infinite; }
+    .stake { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.78rem; color: rgba(245, 233, 207, 0.85); }
+    .stake b { font-family: "Righteous", sans-serif; font-weight: 400; color: var(--yellow); }
+    .league { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 380px; padding: 7px 10px; border-radius: 14px; background: rgba(16, 22, 43, 0.88); border: 2px solid rgba(245, 233, 207, 0.4); text-align: left; }
+    .league .bar { flex: 1; min-width: 0; }
+    .league small { display: block; font-size: 0.62rem; color: rgba(245, 233, 207, 0.7); }
+    .medal { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: var(--navy); border: 2px solid var(--navy); background: radial-gradient(circle at 35% 30%, #fff, #c9d2dc 55%, #8d98a8); box-shadow: 0 0 0 2px #c9d2dc; }
+    .medal.bronze { background: radial-gradient(circle at 35% 30%, #ffd9b0, #d08a4e 55%, #8a5326); box-shadow: 0 0 0 2px #d08a4e; }
+    .medal.gold { background: radial-gradient(circle at 35% 30%, #fff6c9, var(--yellow) 55%, #c98d12); box-shadow: 0 0 0 2px var(--yellow); }
+    .medal.plat { background: radial-gradient(circle at 35% 30%, #fff, #9fe6da 55%, #2fa394); box-shadow: 0 0 0 2px #9fe6da; }
+    .medal.legend { background: radial-gradient(circle at 35% 30%, #fff, #f39ac4 45%, var(--violet)); box-shadow: 0 0 0 2px var(--pink), 0 0 12px var(--pink); }
+    .board { display: grid; gap: 3px; width: 100%; max-width: 380px; padding: 7px 10px; border-radius: 14px; background: rgba(16, 22, 43, 0.88); border: 2px solid rgba(245, 233, 207, 0.4); }
+    .board .ln { display: grid; grid-template-columns: 26px 1fr auto; gap: 6px; align-items: center; font-size: 0.8rem; text-align: left; }
+    .board .ln b { font-weight: 400; color: var(--yellow); }
+    .board .ln.me { margin: 2px -5px 0; padding: 3px 5px; border-radius: 8px; background: var(--yellow); color: var(--navy); }
+    .board .ln.me b { color: var(--navy); }
+    .board .dots { text-align: center; opacity: 0.5; line-height: 0.6; }
+    .rank { display: grid; gap: 5px; width: 100%; max-width: 380px; }
+    .rank .ln { display: grid; grid-template-columns: 26px 32px 1fr auto; gap: 8px; align-items: center; padding: 4px 9px; border-radius: 12px; background: rgba(31, 42, 68, 0.88); font-size: 0.82rem; text-align: left; }
+    .rank .ln .ava { width: 32px; height: 32px; }
+    .rank .ln small { display: block; font-size: 0.62rem; color: rgba(245, 233, 207, 0.65); }
+    .rank .ln b { font-weight: 400; color: var(--yellow); }
+    .rank .ln.me { background: var(--yellow); color: var(--navy); }
+    .rank .ln.me b, .rank .ln.me small { color: var(--navy); }
+    .tabs { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0 -10px; padding-bottom: env(safe-area-inset-bottom, 0px); background: #0a0f1e; border-top: 2px solid rgba(245, 233, 207, 0.25); }
+    .tabs button { display: grid; justify-items: center; gap: 1px; padding: 8px 0 9px; border: 0; background: none; font-size: 0.62rem; color: rgba(245, 233, 207, 0.6); }
+    .tabs button b { font-weight: 400; font-size: 1.2rem; line-height: 1; }
+    .tabs button.on { color: var(--yellow); }
+    .pane .stack { display: grid; gap: 10px; width: 100%; max-width: 300px; }
     .wallet { padding: 4px 14px; border-radius: 99px; background: rgba(16, 22, 43, 0.86); border: 2px solid var(--yellow); color: var(--yellow); }
     .logo small { display: block; letter-spacing: 0.34em; color: var(--yellow); font-size: 0.72rem; }
     .logo h1 { margin: 4px 0 0; font-weight: 400; font-size: clamp(2rem, 10.5vw, 3.1rem); line-height: 0.95; text-shadow: 0 4px 0 var(--orange), 0 8px 0 #0a0f1e; animation: hover 3.2s ease-in-out infinite; }
     .logo h1 span { color: var(--yellow); }
     .section-title { margin: 4px 0 -6px; font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(245, 233, 207, 0.75); }
     .levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 380px; }
-    .lvl { display: grid; justify-items: center; gap: 3px; padding: 8px 4px; border-radius: 14px; background: rgba(16, 22, 43, 0.86); border: 2px solid rgba(245, 233, 207, 0.5); font-size: 0.82rem; }
+    .lvl { display: grid; justify-items: center; gap: 2px; padding: 6px 4px; border-radius: 14px; background: rgba(16, 22, 43, 0.86); border: 2px solid rgba(245, 233, 207, 0.5); font-size: 0.82rem; }
     .lvl small { font-size: 0.62rem; color: rgba(245, 233, 207, 0.7); }
-    .lvl .planet { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--navy); box-shadow: inset -6px -4px 0 rgba(0, 0, 0, 0.22); }
+    .lvl .planet { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--navy); box-shadow: inset -6px -4px 0 rgba(0, 0, 0, 0.22); }
     .lvl.on { border-color: var(--yellow); box-shadow: 0 0 14px rgba(245, 196, 69, 0.55); transform: translateY(-4px); }
     .lvl:disabled { opacity: 0.4; cursor: not-allowed; }
     .crews { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; max-width: 380px; }
@@ -223,8 +271,8 @@
     @keyframes spOut{to{opacity:0;visibility:hidden}}
 
     /* ───── Invitation à installer le jeu ───── */
-    .a2hs { position: fixed; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 49; transform: translateX(-50%); width: min(370px, calc(100% - 20px)); display: none; grid-template-columns: 54px 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 18px; background: var(--cream); color: var(--navy); border: 3px solid var(--navy); box-shadow: 0 6px 0 #0a0f1e; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.86rem; line-height: 1.3; }
-    body.has-a2hs #menu .col { padding-bottom: 120px; }
+    .a2hs { position: fixed; left: 50%; bottom: calc(74px + env(safe-area-inset-bottom, 0px)); z-index: 49; transform: translateX(-50%); width: min(370px, calc(100% - 20px)); display: none; grid-template-columns: 54px 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 18px; background: var(--cream); color: var(--navy); border: 3px solid var(--navy); box-shadow: 0 6px 0 #0a0f1e; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.86rem; line-height: 1.3; }
+    body.has-a2hs #menu .pane { padding-bottom: 120px; }
     .a2hs.on { display: grid; animation: coachIn 320ms cubic-bezier(.2, 1.4, .4, 1); }
     .a2hs img { width: 54px; height: 54px; border-radius: 13px; border: 2px solid var(--navy); }
     .a2hs b { font-family: "Righteous", sans-serif; font-weight: 400; font-size: 0.98rem; }
@@ -326,27 +374,56 @@
 
   <main class="view on" id="menu">
     <div class="col">
-      <div class="wallet">◆ <span id="crystals">0</span> cristaux</div>
-      <div class="logo">
-        <small>CONQUÊTE DE L'ESPACE</small>
-        <h1>Bataille<br>des <span>Alliés</span></h1>
+      <div class="mtop">
+        <div class="ava" id="menuAva"></div>
+        <div class="who">Toi <small id="menuLvl">· Niv. 1</small><div class="xp"><i id="menuXp"></i></div></div>
+        <div class="pill tr"><span id="trophies">0</span> ♛</div>
+        <div class="pill">◆ <span id="crystals">0</span></div>
       </div>
-      <div class="section-title">Ton adversaire</div>
-      <div class="levels" id="levels"></div>
-      <div class="section-title">Ta tribu</div>
-      <div class="crews" id="crews"></div>
-      <p class="perk" id="perk"></p>
-      <button class="btn big hot" id="playBtn">Décollage</button>
-      <div class="menu-row">
-        <button class="btn" id="atoutsBtn">Atouts 0/3</button>
-        <button class="btn teal" id="capsuleBtn">Booster · 60 ◆</button>
+      <div class="panes">
+        <section class="pane on" data-pane="play">
+          <div class="logo">
+            <small>CONQUÊTE DE L'ESPACE</small>
+            <h1>Bataille des <span>Alliés</span></h1>
+          </div>
+          <div class="versus" id="versus"></div>
+          <button class="btn big hot" id="playBtn">Combattre</button>
+          <div class="stake" id="stake"></div>
+          <div class="levels" id="levels"></div>
+          <div class="league" id="leagueBox"></div>
+          <div class="board" id="boardMini"></div>
+        </section>
+        <section class="pane" data-pane="cards">
+          <div class="section-title">Ta tribu</div>
+          <div class="crews" id="crews"></div>
+          <p class="perk" id="perk"></p>
+          <div class="stack">
+            <button class="btn" id="atoutsBtn">Atouts 0/3</button>
+            <button class="btn teal" id="capsuleBtn">Booster · 60 ◆</button>
+          </div>
+        </section>
+        <section class="pane" data-pane="rank">
+          <div class="league" id="leagueBig"></div>
+          <div class="section-title">Rivaux d'entraînement</div>
+          <div class="rank" id="rankList"></div>
+          <p class="perk">Ces rivaux sont des robots à score fixe. Le classement entre vrais joueurs arrivera avec le jeu en ligne.</p>
+        </section>
+        <section class="pane" data-pane="more">
+          <div class="section-title">Options</div>
+          <div class="stack">
+            <button class="btn ghost" id="tutoBtn">Apprendre à jouer</button>
+            <button class="btn ghost" id="menuHelp">Règles</button>
+            <button class="btn ghost" id="menuSound">Son : oui</button>
+            <button class="btn ghost" id="fsBtn">Plein écran</button>
+          </div>
+        </section>
       </div>
-      <div class="menu-row">
-        <button class="btn ghost" id="tutoBtn">Apprendre à jouer</button>
-        <button class="btn ghost" id="menuHelp">Règles</button>
-        <button class="btn ghost" id="menuSound">Son : oui</button>
-        <button class="btn ghost" id="fsBtn">Plein écran</button>
-      </div>
+      <nav class="tabs" id="tabs">
+        <button class="on" data-tab="play"><b>♠</b>Jouer</button>
+        <button data-tab="cards"><b>▣</b>Cartes</button>
+        <button data-tab="rank"><b>♛</b>Classement</button>
+        <button data-tab="more"><b>⚙</b>Options</button>
+      </nav>
     </div>
   </main>
 
@@ -359,7 +436,7 @@
         <div class="stat loot" id="lootBox1">Butin<b id="loot1">0</b></div>
         <button class="icon" id="pauseBtn" aria-label="Pause">II</button>
       </div>
-      <div class="opp-hand" id="oppHand" aria-label="Main de Gaspard"></div>
+      <div class="opp-hand" id="oppHand" aria-label="Main de l'adversaire"></div>
 
       <div class="field" id="field">
         <div class="banner" id="banner" aria-hidden="true"></div>
@@ -413,7 +490,7 @@
   <div class="overlay" id="atouts">
     <div class="sheet">
       <h2>Tes atouts</h2>
-      <p>Choisis-en jusqu'à <b>3</b>. Ils remplacent des petites cartes de ta pioche, mélangés au hasard : rien ne garantit que tu les tireras. Gaspard en reçoit autant que toi.</p>
+      <p>Choisis-en jusqu'à <b>3</b>. Ils remplacent des petites cartes de ta pioche, mélangés au hasard : rien ne garantit que tu les tireras. Ton adversaire en reçoit autant que toi.</p>
       <div class="at-grid" id="atGrid"></div>
       <div class="at-info" id="atInfo"></div>
       <button class="btn" id="atClose">Valider</button>
@@ -638,9 +715,9 @@
 
     /* Adversaires : même nombre d'atouts que le joueur, seule la qualité de jeu change. */
     const LEVELS = [
-      { name: "Novice", planet: "Lune", color: "#d9d2c0", noise: 6, cost: 0.05, slope: 4, count: false, fuel: false, reward: 20 },
-      { name: "Soldat", planet: "Mars", color: "#f26a3d", noise: 0.45, cost: 0.11, slope: 2.5, count: false, fuel: true, reward: 35 },
-      { name: "Stratège", planet: "Saturne", color: "#f5c445", noise: 0.15, cost: 0.14, slope: 2, count: true, fuel: true, reward: 50 }
+      { name: "Novice", who: "Blobzor", planet: "Lune", color: "#d9d2c0", noise: 6, cost: 0.05, slope: 4, count: false, fuel: false, reward: 20, win: 18, lose: 6 },
+      { name: "Soldat", who: "Krakmol", planet: "Mars", color: "#f26a3d", noise: 0.45, cost: 0.11, slope: 2.5, count: false, fuel: true, reward: 35, win: 26, lose: 10 },
+      { name: "Stratège", who: "Zygomax", planet: "Saturne", color: "#f5c445", noise: 0.15, cost: 0.14, slope: 2, count: true, fuel: true, reward: 50, win: 34, lose: 14 }
     ];
     const RARITY = [{ name: "Commune", weight: 70, dup: 10 }, { name: "Rare", weight: 25, dup: 25 }, { name: "Légendaire", weight: 5, dup: 60 }];
     const ATOUTS = {
@@ -662,6 +739,32 @@
       incognito: { name: "Déguisement", desc: "quand elle pose en premier, son avant-garde reste cachée jusqu'à la réponse adverse." }
     };
     const TRIBES = Object.keys(CASTS);
+    /* Progression : les trophées montent et descendent (ligues, classement), l'expérience ne fait que monter (niveau). */
+    const LEAGUES = [
+      { name: "Bronze", min: 0, cls: "bronze" }, { name: "Argent", min: 150, cls: "" }, { name: "Or", min: 400, cls: "gold" },
+      { name: "Platine", min: 800, cls: "plat" }, { name: "Légende", min: 1400, cls: "legend" }
+    ];
+    /* Rivaux d'entraînement : des robots à score fixe, en attendant le classement en ligne. */
+    const RIVALS = [
+      ["Empereur Zorglax", "cranes", 1650], ["Mimi Laser", "cranes", 1320], ["Capitaine Flan", "poulpes", 1010], ["M. Dupont", "incognito", 820],
+      ["Tonton Zap", "mars", 640], ["La Baronne Gloups", "poulpes", 480], ["Kiki 92", "mars", 360], ["Zorglub du 13", "cranes", 250],
+      ["Pieuvre Qui Rit", "poulpes", 170], ["Gérard Mars", "mars", 110], ["Agent Trèfle", "incognito", 60], ["Bébé Soucoupe", "mars", 25]
+    ];
+    function leagueOf(trophies) { let i = 0; LEAGUES.forEach((L, k) => { if (trophies >= L.min) i = k; }); return i; }
+    function levelInfo(xp) {
+      let lvl = 1, need = 80;
+      while (xp >= need) { xp -= need; lvl += 1; need = 80 + 40 * (lvl - 1); }
+      return { lvl, into: xp, need };
+    }
+    function ranking() {
+      const list = RIVALS.map(([name, cast, t]) => ({ name, cast, t }));
+      list.push({ name: "Toi", cast: save.tribe, t: save.trophies, me: true });
+      return list.sort((a, b) => b.t - a.t || (a.me ? -1 : 1));
+    }
+    const myRank = () => ranking().findIndex(r => r.me) + 1;
+    const foe = () => LEVELS[S.level].who;
+    /* Les textes du jeu disent « Gaspard » : on y met le nom de l'adversaire du moment. */
+    const named = text => String(text).replace(/Gaspard/g, foe());
 
     function starPath(cx, cy, r1, r2, n) {
       let d = "";
@@ -687,7 +790,7 @@
 
     /* ═════ Sauvegarde ═════ */
     const SAVE_KEY = "bda_save_v1";
-    const save = Object.assign({ crystals: CAPSULE_COST, owned: {}, loadout: [], unlocked: 0, level: 0, tribe: "mars", tuto: false, wins: [0, 0, 0] }, (() => {
+    const save = Object.assign({ crystals: CAPSULE_COST, owned: {}, loadout: [], unlocked: 0, level: 0, tribe: "mars", tuto: false, wins: [0, 0, 0], xp: 0, trophies: 0 }, (() => {
       try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch (e) { return {}; }
     })());
     save.loadout = save.loadout.filter(id => ATOUTS[id] && save.owned[id]);
@@ -698,7 +801,7 @@
     save.level = Math.min(save.level, save.unlocked, LEVELS.length - 1);
     function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* stockage indisponible */ } }
 
-    const who = (p, tu, il) => (p === 0 ? `Tu ${tu}` : `Gaspard ${il}`);
+    const who = (p, tu, il) => (p === 0 ? `Tu ${tu}` : `${foe()} ${il}`);
     const S = { cast: [save.tribe, "cranes"], level: save.level };
     let gameId = 0;
 
@@ -906,7 +1009,7 @@
       }
     }
     function setPrompt(html, buttons = []) {
-      $("#promptText").innerHTML = html;
+      $("#promptText").innerHTML = named(html);
       fillButtons($("#actions"), buttons);
     }
     function ask(html, options) {
@@ -916,7 +1019,7 @@
     /* ═════ Effets ═════ */
     function banner(text, cls = "") {
       const el = $("#banner");
-      el.textContent = text;
+      el.textContent = named(text);
       el.className = `banner ${cls}`;
       void el.offsetWidth;
       el.classList.add("show");
@@ -1079,7 +1182,7 @@
       S.tuto.seen[id] = true;
       return new Promise(resolve => {
         const spot = $("#coachSpot"), bubble = $("#coachBubble");
-        bubble.innerHTML = `<div class="guide">${art(S.cast[0], "H", "R", 5)}</div><div>${html}</div><div class="row"><button class="skip">Passer le tutoriel</button><button class="btn">Compris</button></div>`;
+        bubble.innerHTML = `<div class="guide">${art(S.cast[0], "H", "R", 5)}</div><div>${named(html)}</div><div class="row"><button class="skip">Passer le tutoriel</button><button class="btn">Compris</button></div>`;
         bubble.style.top = bubble.style.bottom = "";
         if (target) {
           const r = target.getBoundingClientRect(), pad = 6;
@@ -1167,7 +1270,7 @@
       $("#ava0").innerHTML = art(S.cast[0], "H", "R", 5);
       $("#ava1").innerHTML = art(S.cast[1], "S", "R", 9);
       $("#ava1").style.background = "var(--violet)";
-      $("#name1").textContent = `Gaspard · ${LEVELS[S.level].name}`;
+      $("#name1").textContent = `${foe()} · ${LEVELS[S.level].name}`;
       for (const q of [0, 1]) { $(`#perk${q}`).textContent = PERKS[S.cast[q]].name; $(`#perk${q}`).title = `${CASTS[S.cast[q]].label} : ${PERKS[S.cast[q]].desc}`; }
       labelSlots();
       $("#tray").classList.remove("on");
@@ -1176,7 +1279,7 @@
       warp(1100);
       startRound();
     }
-    function goMenu() { gameId += 1; closeCoach(); holdWarp(0); renderMenu(); show("menu"); offerInstall(); }
+    function goMenu() { gameId += 1; closeCoach(); holdWarp(0); renderMenu(); showTab("play"); show("menu"); offerInstall(); }
 
     async function startRound() {
       const game = gameId;
@@ -1675,42 +1778,89 @@
     function endGame() {
       S.phase = "over";
       const [a, b] = S.loot;
-      const L = LEVELS[S.level];
-      $("#endTitle").textContent = a > b ? "Victoire" : a < b ? "Défaite" : "Match nul";
+      const L = LEVELS[S.level], won = a > b, lost = a < b;
+      $("#endTitle").textContent = won ? "Victoire" : lost ? "Défaite" : "Match nul";
       $("#endScore").textContent = `${a} — ${b}`;
-      $("#endText").textContent = a > b ? `${L.planet} est à toi. Ta tribu rentre en héros.` : a < b ? "Gaspard a mieux mené ses alliés cette fois." : "Aucun camp ne l'emporte.";
-      let gain = a > b ? L.reward + Math.min(20, a - b) : a < b ? 8 : 15;
-      let note = "";
-      if (a > b) {
-        if (!save.wins[S.level] && TRIBES[S.level + 1]) note += `<br>Nouvelle tribu : ${CASTS[TRIBES[S.level + 1]].label}`;
+      $("#endText").textContent = won ? `${L.planet} est à toi. Ta tribu rentre en héros.` : lost ? `${foe()} a mieux mené ses alliés cette fois.` : "Aucun camp ne l'emporte.";
+      let gain = won ? L.reward + Math.min(20, a - b) : lost ? 8 : 15;
+      const notes = [];
+      if (won) {
+        if (!save.wins[S.level] && TRIBES[S.level + 1]) notes.push(`Nouvelle tribu : ${CASTS[TRIBES[S.level + 1]].label}`);
         save.wins[S.level] += 1;
       }
-      if (a > b && S.level === save.unlocked && S.level < LEVELS.length - 1) {
+      if (won && S.level === save.unlocked && S.level < LEVELS.length - 1) {
         save.unlocked += 1;
         gain += 40;
-        note += `<br>Nouvel adversaire débloqué : ${LEVELS[save.unlocked].name} (+40 ◆)`;
+        notes.push(`Nouvel adversaire : ${LEVELS[save.unlocked].who} (+40 ◆)`);
       }
+      const before = { league: leagueOf(save.trophies), lvl: levelInfo(save.xp).lvl, rank: myRank() };
+      const dT = won ? L.win : lost ? -Math.min(L.lose, save.trophies) : 0;
+      const dXp = won ? 50 : lost ? 20 : 30;
+      save.trophies += dT;
+      save.xp += dXp;
+      const after = { league: leagueOf(save.trophies), lvl: levelInfo(save.xp).lvl, rank: myRank() };
+      if (after.lvl > before.lvl) { gain += 30 * (after.lvl - before.lvl); notes.push(`Niveau ${after.lvl} ! (+30 ◆)`); }
+      if (after.league > before.league) notes.push(`Promotion en ligue ${LEAGUES[after.league].name} !`);
+      if (after.league < before.league) notes.push(`Relégation en ligue ${LEAGUES[after.league].name}`);
+      if (after.rank < before.rank) notes.push(`Tu passes ${after.rank}ᵉ au classement`);
       save.crystals += gain;
       persist();
-      $("#endReward").innerHTML = `+${gain} ◆ cristaux${note}<br><small>Total : ${save.crystals} ◆</small>`;
-      if (a > b) { warp(2200); sfx.win(); } else sfx.lose();
+      $("#endReward").innerHTML = `${dT < 0 ? "−" : "+"}${Math.abs(dT)} ♛ · +${dXp} XP · +${gain} ◆${notes.map(n => `<br>${n}`).join("")}`;
+      if (won) { warp(2200); sfx.win(); } else sfx.lose();
       $("#endScreen").classList.add("on");
     }
 
     /* ═════ Menu, atouts, capsules ═════ */
+    function leagueHTML(withRank) {
+      const t = save.trophies, i = leagueOf(t), L = LEAGUES[i], next = LEAGUES[i + 1];
+      const pct = next ? Math.round(((t - L.min) / (next.min - L.min)) * 100) : 100;
+      return `<div class="medal ${L.cls}">♛</div><div class="bar">Ligue ${L.name}<small>${next ? `Encore ${next.min - t} ♛ pour la ligue ${next.name}` : "Le sommet de la galaxie"}</small><div class="xp"><i style="width:${pct}%"></i></div></div>${withRank ? `<div class="pill tr">${myRank()}ᵉ</div>` : ""}`;
+    }
+    function showTab(name) {
+      for (const pane of document.querySelectorAll(".pane")) pane.classList.toggle("on", pane.dataset.pane === name);
+      for (const btn of document.querySelectorAll("#tabs button")) btn.classList.toggle("on", btn.dataset.tab === name);
+    }
     function renderMenu() {
+      const lv = levelInfo(save.xp), L = LEVELS[S.level];
+      $("#menuAva").innerHTML = art(S.cast[0], "H", "R", 5);
+      $("#menuLvl").textContent = `· Niv. ${lv.lvl}`;
+      $("#menuXp").style.width = `${Math.round((lv.into / lv.need) * 100)}%`;
+      $("#trophies").textContent = save.trophies;
       $("#crystals").textContent = save.crystals;
       $("#atoutsBtn").textContent = `Atouts ${save.loadout.length}/${MAX_ATOUTS}`;
       $("#capsuleBtn").textContent = `Booster · ${CAPSULE_COST} ◆`;
-      $("#levels").innerHTML = LEVELS.map((L, i) => `<button class="lvl${S.level === i ? " on" : ""}" data-level="${i}" ${i > save.unlocked ? "disabled" : ""}>
-        <span class="planet" style="background:${L.color}"></span>${L.name}<small>${i > save.unlocked ? "Verrouillé" : `${L.planet} · ${L.reward} ◆`}</small></button>`).join("");
+
+      // Le duel : ton roi face à une carte inconnue
+      const vs = $("#versus");
+      vs.innerHTML = "";
+      const burstEl = document.createElement("div");
+      burstEl.className = "vsBurst";
+      burstEl.textContent = "VS";
+      vs.append(cardEl({ id: "menu-me", label: "R", value: 13, title: "Roi", house: "H", seed: 5 }, 0), burstEl,
+        cardEl({ id: "menu-foe", label: "R", value: 13, title: "Roi", house: "S", seed: 9 }, 0, true));
+      $("#stake").innerHTML = `Contre <b>${L.who}</b> : victoire <b>+${L.win} ♛</b>, défaite <b>−${L.lose} ♛</b>`;
+      $("#levels").innerHTML = LEVELS.map((lvl, i) => `<button class="lvl${S.level === i ? " on" : ""}" data-level="${i}" ${i > save.unlocked ? "disabled" : ""}>
+        <span class="planet" style="background:${lvl.color}"></span>${lvl.who}<small>${i > save.unlocked ? "Verrouillé" : `${lvl.name} · ${lvl.planet}`}</small></button>`).join("");
       for (const btn of document.querySelectorAll(".lvl")) btn.addEventListener("click", () => { S.level = save.level = Number(btn.dataset.level); persist(); sfx.tap(); renderMenu(); });
+
+      // Ligue et classement
+      $("#leagueBox").innerHTML = leagueHTML(false);
+      $("#leagueBig").innerHTML = leagueHTML(true);
+      const list = ranking(), me = list.findIndex(r => r.me);
+      const line = (r, i) => `<div class="ln${r.me ? " me" : ""}"><b>${i + 1}</b><span>${r.name}</span><span>${r.t} ♛</span></div>`;
+      $("#boardMini").innerHTML = list.slice(0, 3).map(line).join("") + (me > 2 ? `${me > 3 ? '<div class="dots">⋮</div>' : ""}${line(list[me], me)}` : "");
+      const colors = { mars: "var(--orange)", cranes: "var(--violet)", poulpes: "#e0a91f", incognito: "var(--teal)" };
+      $("#rankList").innerHTML = list.map((r, i) => `<div class="ln${r.me ? " me" : ""}"><b>${i + 1}</b>
+        <div class="ava" style="background:${colors[r.cast]};color:${colors[r.cast]}">${art(r.cast, "H", "R", 5)}</div>
+        <div>${r.name}<small>${CASTS[r.cast].label} · ligue ${LEAGUES[leagueOf(r.t)].name}</small></div><span>${r.t} ♛</span></div>`).join("");
+
+      // Tribus
       const houses = { mars: "H", cranes: "S", poulpes: "D", incognito: "C" };
       $("#crews").innerHTML = Object.entries(CASTS).map(([key, cast]) =>
         `<button class="crew h-${houses[key]}${S.cast[0] === key ? " on" : ""}${tribeOpen(key) ? "" : " locked"}" data-cast="${key}" aria-pressed="${S.cast[0] === key}">
           <div class="pic" style="background:var(--hc);color:var(--hc)">${art(key, houses[key], "R", 11)}</div>${cast.label}</button>`).join("");
       const perkLine = key => {
-        const lock = tribeOpen(key) ? "" : ` <b>À gagner en battant le ${LEVELS[TRIBES.indexOf(key) - 1].name}.</b>`;
+        const lock = tribeOpen(key) ? "" : ` <b>À gagner en battant ${LEVELS[TRIBES.indexOf(key) - 1].who}.</b>`;
         $("#perk").innerHTML = `<b>${CASTS[key].label} — ${PERKS[key].name}</b> : ${PERKS[key].desc}${lock}`;
       };
       perkLine(S.cast[0]);
@@ -1853,6 +2003,7 @@
     function openHelp(from) { helpFrom = from; if (from) $(`#${from}`).classList.remove("on"); $("#help").classList.add("on"); }
 
     $("#playBtn").addEventListener("click", () => newGame(!save.tuto));
+    for (const btn of document.querySelectorAll("#tabs button")) btn.addEventListener("click", () => { sfx.tap(); showTab(btn.dataset.tab); });
     $("#tutoBtn").addEventListener("click", () => newGame(true));
     $("#atoutsBtn").addEventListener("click", openAtouts);
     $("#atClose").addEventListener("click", () => { $("#atouts").classList.remove("on"); renderMenu(); });
