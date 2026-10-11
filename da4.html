@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bataille des Alliés — 4 tribus de martiens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+  <style>
+    :root { --navy: #1f2a44; --deep: #10162b; --cream: #f5e9cf; --orange: #f26a3d; --yellow: #f5c445; --teal: #2fa394; --violet: #5b5fc7; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--deep); color: var(--cream); font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.45; }
+    #sky { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; }
+    .wrap { width: min(1320px, 100% - 32px); margin: 0 auto; padding: 28px 0 48px; }
+    h1, h2 { font-family: "Righteous", sans-serif; font-weight: 400; }
+    header h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 5vw, 2.6rem); color: var(--yellow); text-shadow: 0 3px 0 var(--orange); }
+    header p { margin: 0 0 6px; max-width: 74ch; color: rgba(245, 233, 207, 0.8); }
+    header a { color: var(--yellow); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 36px 22px; margin-top: 28px; }
+    .tribe { display: grid; gap: 12px; justify-items: center; align-content: start; }
+    .tribe h2 { margin: 0; font-size: 1.3rem; }
+    .tribe h2 span { display: inline-grid; place-items: center; width: 30px; height: 30px; margin-right: 8px; border-radius: 50%; background: var(--yellow); color: var(--navy); font-size: 0.95rem; }
+    .tribe p { margin: 0; max-width: 330px; font-size: 0.9rem; color: rgba(245, 233, 207, 0.85); }
+    .tribe dl { margin: 0; max-width: 330px; display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 0.86rem; }
+    .tribe dt { font-family: "Righteous", sans-serif; color: var(--yellow); }
+    .tribe dd { margin: 0; color: rgba(245, 233, 207, 0.85); }
+    .deck { display: grid; grid-template-columns: repeat(2, 150px); gap: 16px; }
+    .c { width: 150px; height: 214px; display: grid; grid-template-rows: auto 1fr auto; gap: 3px; padding: 5px 7px 6px; border-radius: 14px; background: var(--cream); color: var(--navy); border: 3px solid var(--navy); box-shadow: 0 6px 0 #070a15; font-family: "Righteous", sans-serif; transition: transform 160ms; }
+    .c:hover { transform: translateY(-6px) rotate(-1.5deg); }
+    .c.h-S { --hc: var(--violet); } .c.h-H { --hc: var(--orange); } .c.h-D { --hc: #e0a91f; } .c.h-C { --hc: var(--teal); }
+    .c .top { display: flex; justify-content: space-between; padding: 0 2px; font-size: 25px; line-height: 1.05; }
+    .c .top span:last-child { color: var(--hc); }
+    .c .art { min-height: 0; border-radius: 9px; border: 3px solid var(--navy); background: var(--hc); color: var(--hc); overflow: hidden; }
+    .c .art svg { display: block; width: 100%; height: 100%; }
+    .c .n { font-size: 15px; text-align: center; line-height: 1.1; }
+    .reco { margin-top: 40px; padding: 18px 20px; border: 2px solid rgba(245, 233, 207, 0.4); border-radius: 14px; background: rgba(16, 22, 43, 0.85); }
+    .reco h2 { margin: 0 0 8px; font-size: 1.15rem; color: var(--yellow); }
+    .reco p, .reco ul { margin: 0 0 8px; }
+    .reco ul { padding-left: 1.2rem; }
+  </style>
+</head>
+<body>
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <header>
+      <h1>4 tribus de martiens</h1>
+      <p>Côté loufoque assumé, dans l'esprit des films de soucoupes volantes des années 50 et de leurs parodies. Pour chaque tribu : Roi, Dame, Valet et As.</p>
+      <p>Les quatre sont jouables dans le proto : <a href="cosmos.html">cosmos.html</a>. Tu choisis ta tribu au menu, Gaspard en reçoit une autre.</p>
+    </header>
+    <div class="grid" id="grid"></div>
+    <section class="reco">
+      <h2>Mon avis</h2>
+      <p><b>Les Grosses têtes et les Incognito sont les deux plus drôles, et elles se complètent bien.</b></p>
+      <ul>
+        <li><b>Grosses têtes</b> : c'est la référence que tu cites, avec le cerveau à l'air, les yeux ronds et le « ACK ! ». Très reconnaissable, même en tout petit.</li>
+        <li><b>Incognito</b> : chaque carte est un gag (la fausse barbe, la perruque de travers, la vache enlevée). C'est la tribu qui se décline le mieux sur les 13 rangs.</li>
+        <li><b>Tentacules</b> apporte la couleur rose qui manque à la palette, utile si chaque joueur doit se distinguer d'un coup d'œil.</li>
+        <li><b>Petits verts</b> reste la plus sage : bonne tribu de départ pour un tutoriel.</li>
+      </ul>
+      <p>Les Grosses têtes sont un clin d'œil, pas une copie : pour une sortie commerciale, il faudra garder cette distance avec le film.</p>
+    </section>
+  </div>
+
+  <script src="casts.js"></script>
+  <script>
+    const NOTES = {
+      mars: { R: "Cerveau géant, trois yeux, barbe de tentacules", D: "Cyclope à long cou et grands cils", V: "Yeux sur tiges, une seule dent, calot à hélice", A: "La soucoupe et son rayon" },
+      cranes: { R: "Cape à grand col, couronne posée sur la cloche", D: "Choucroute blonde, rouge à lèvres et collier de perles", V: "Soldat qui louche, pistolet au poing, « ACK ! »", A: "Le pistolet désintégrateur" },
+      poulpes: { R: "Œil unique à monocle et moustaches en croc", D: "Trois yeux maquillés, nœud et rang de perles", V: "Tire la langue et agite le fanion", A: "Une planète déjà annexée" },
+      incognito: { R: "Fausse barbe à élastique, couronne de travers, sceptre-ventouse", D: "Perruque qui glisse, rouge à lèvres raté, grain de beauté", V: "Lunettes à faux nez et moustache, chapeau mou", A: "L'enlèvement de la vache" }
+    };
+    const HOUSE = { R: "H", D: "S", V: "D", A: "C" };
+    const NAME = { R: "Roi", D: "Dame", V: "Valet", A: "As" };
+    document.querySelector("#grid").innerHTML = Object.entries(CASTS).map(([key, cast], i) => `
+      <article class="tribe">
+        <h2><span>${i + 1}</span>${cast.label}</h2>
+        <div class="deck">${["R", "D", "V", "A"].map((r, j) => `<div class="c h-${HOUSE[r]}"><div class="top"><span>${r}</span><span>${SYM[HOUSE[r]]}</span></div><div class="art">${art(key, HOUSE[r], r, 5 + j * 7)}</div><div class="n">${NAME[r]}</div></div>`).join("")}</div>
+        <p>${cast.pitch}</p>
+        <dl>${["R", "D", "V", "A"].map(r => `<dt>${NAME[r]}</dt><dd>${NOTES[key][r]}</dd>`).join("")}</dl>
+      </article>`).join("");
+
+    // Fond étoilé fixe
+    const cv = document.querySelector("#sky");
+    function sky() {
+      cv.width = innerWidth; cv.height = innerHeight;
+      const ctx = cv.getContext("2d");
+      ctx.fillStyle = "#10162b"; ctx.fillRect(0, 0, cv.width, cv.height);
+      const r = rng(42);
+      for (let i = 0; i < 260; i += 1) {
+        ctx.globalAlpha = 0.3 + r() * 0.7;
+        ctx.fillStyle = [K, K, "#fff", YE, "#8fd8cc"][Math.floor(r() * 5)];
+        ctx.beginPath(); ctx.arc(r() * cv.width, r() * cv.height, r() > 0.9 ? 1.8 : 0.9, 0, 6.283); ctx.fill();
+      }
+    }
+    sky(); addEventListener("resize", sky);
+  </script>
+</body>
+</html>

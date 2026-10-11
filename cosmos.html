@@ -1,0 +1,1816 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10162b">
+  <title>Bataille des Alliés — Conquête de l'espace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --navy: #1f2a44; --deep: #10162b; --cream: #f5e9cf; --orange: #f26a3d; --yellow: #f5c445; --teal: #2fa394; --violet: #5b5fc7; --pink: #d0508f;
+      --ok: #7be0a4; --bad: #ff7a6b;
+      --cwb: clamp(50px, min(17.5vw, 9.4vh), 78px);
+      --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body { margin: 0; overflow: hidden; background: var(--deep); color: var(--cream); font-family: "Righteous", ui-rounded, system-ui, sans-serif; font-size: 14px; user-select: none; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+
+    #space { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
+    #flash { position: fixed; inset: 0; z-index: 40; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 45%, #fff 0, var(--yellow) 30%, transparent 70%); }
+    #flash.go { animation: flash 700ms ease-out; }
+    #flash.alert { background: radial-gradient(circle at 50% 45%, transparent 30%, var(--orange) 110%); }
+    body::after { content: ""; position: fixed; inset: 0; z-index: 45; pointer-events: none; background: var(--grain); opacity: 0.32; mix-blend-mode: multiply; }
+
+    .view { position: fixed; inset: 0; z-index: 2; display: none; justify-content: center; transition: transform 320ms cubic-bezier(.2, .8, .2, 1), filter 320ms; }
+    .view.on { display: flex; }
+    body.warp .view.on { transform: scale(1.045); filter: saturate(1.25) brightness(1.08); }
+    .col { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom)); }
+
+    .btn { border: 2px solid var(--navy); border-radius: 999px; padding: 0.62rem 1.15rem; background: var(--yellow); color: var(--navy); box-shadow: 0 4px 0 #0a0f1e; letter-spacing: 0.04em; transition: transform 100ms; }
+    .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #0a0f1e; }
+    .btn.ghost { background: rgba(16, 22, 43, 0.86); color: var(--cream); border-color: var(--cream); }
+    .btn.hot { background: var(--orange); color: var(--cream); }
+    .btn.teal { background: var(--teal); color: var(--cream); }
+    .btn.big { padding: 0.8rem 2rem; font-size: 1.25rem; }
+
+    /* ───── Menu ───── */
+    #menu .col { align-items: center; justify-content: safe center; gap: 12px; text-align: center; overflow-y: auto; }
+    .wallet { padding: 4px 14px; border-radius: 99px; background: rgba(16, 22, 43, 0.86); border: 2px solid var(--yellow); color: var(--yellow); }
+    .logo small { display: block; letter-spacing: 0.34em; color: var(--yellow); font-size: 0.72rem; }
+    .logo h1 { margin: 4px 0 0; font-weight: 400; font-size: clamp(2rem, 10.5vw, 3.1rem); line-height: 0.95; text-shadow: 0 4px 0 var(--orange), 0 8px 0 #0a0f1e; animation: hover 3.2s ease-in-out infinite; }
+    .logo h1 span { color: var(--yellow); }
+    .section-title { margin: 4px 0 -6px; font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(245, 233, 207, 0.75); }
+    .levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 380px; }
+    .lvl { display: grid; justify-items: center; gap: 3px; padding: 8px 4px; border-radius: 14px; background: rgba(16, 22, 43, 0.86); border: 2px solid rgba(245, 233, 207, 0.5); font-size: 0.82rem; }
+    .lvl small { font-size: 0.62rem; color: rgba(245, 233, 207, 0.7); }
+    .lvl .planet { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--navy); box-shadow: inset -6px -4px 0 rgba(0, 0, 0, 0.22); }
+    .lvl.on { border-color: var(--yellow); box-shadow: 0 0 14px rgba(245, 196, 69, 0.55); transform: translateY(-4px); }
+    .lvl:disabled { opacity: 0.4; cursor: not-allowed; }
+    .crews { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; max-width: 380px; }
+    .crew { padding: 4px 4px 5px; border-radius: 12px; background: var(--cream); color: var(--navy); border: 2px solid var(--navy); box-shadow: 0 4px 0 #0a0f1e; font-size: 0.62rem; transition: transform 140ms; }
+    .crew .pic { aspect-ratio: 1 / 0.92; border-radius: 7px; border: 2px solid var(--navy); overflow: hidden; margin-bottom: 3px; }
+    .crew .pic { position: relative; }
+    .crew .pic::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0 1.1px, transparent 1.6px) 0 0 / 22px 22px, radial-gradient(circle, rgba(255, 255, 255, 0.5) 0 0.9px, transparent 1.4px) 11px 9px / 35px 37px; animation: drift 4s linear infinite; }
+    .crew .pic::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(115deg, transparent 36%, rgba(255, 255, 255, 0.6) 50%, transparent 64%) no-repeat; background-size: 260% 100%; mix-blend-mode: screen; animation: sheen 3.6s ease-in-out infinite; }
+    .crew .pic svg { position: relative; z-index: 1; display: block; width: 100%; height: 100%; transform-origin: 50% 90%; animation: bob 2.6s ease-in-out infinite; }
+    .crew:nth-child(2) .pic svg { animation-delay: -0.7s; animation-duration: 2.2s; }
+    .crew:nth-child(3) .pic svg { animation-delay: -1.3s; animation-duration: 3s; }
+    .crew:nth-child(4) .pic svg { animation-delay: -1.9s; animation-duration: 2.4s; }
+    .crew.on .pic svg { animation-duration: 1.2s; }
+    .crew.locked { filter: grayscale(1) brightness(0.5); }
+    .crew.locked .pic svg, .crew.locked .pic::before, .crew.locked .pic::after { animation: none; }
+    .perk { margin: -2px 0 0; max-width: 380px; min-height: 2.6em; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.8rem; line-height: 1.3; color: rgba(245, 233, 207, 0.85); }
+    .perk b { font-family: "Righteous", sans-serif; font-weight: 400; color: var(--yellow); }
+    .crew.on { transform: translateY(-6px) scale(1.04); box-shadow: 0 0 0 3px var(--yellow), 0 8px 0 #0a0f1e; }
+    .menu-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .menu-row .btn { padding: 0.5rem 0.9rem; font-size: 0.86rem; }
+
+    /* ───── Jeu ───── */
+    #game .col { gap: 6px; }
+    .hud { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 14px; background: rgba(16, 22, 43, 0.88); border: 2px solid var(--cream); }
+    .hud.active { border-color: var(--yellow); box-shadow: 0 0 16px rgba(245, 196, 69, 0.45); }
+    .ava { flex: none; width: 36px; height: 36px; border-radius: 50%; overflow: hidden; border: 2px solid var(--cream); background: var(--orange); color: var(--orange); }
+    .ava svg { display: block; width: 100%; height: 100%; }
+    .nm { flex: 1; min-width: 0; line-height: 1.05; }
+    .nm small { display: block; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245, 233, 207, 0.65); }
+    .pips { display: flex; gap: 3px; margin-top: 3px; }
+    .pips i { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--cream); }
+    .pips i.on { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+    .pips i.pop { animation: pop 500ms ease; }
+    .stat { text-align: center; font-size: 0.6rem; line-height: 1.1; text-transform: uppercase; letter-spacing: 0.05em; min-width: 38px; }
+    .stat b { display: block; font-weight: 400; font-size: 1.2rem; letter-spacing: 0; }
+    .stat.loot b { color: var(--yellow); }
+    .stat.bump { animation: bump 450ms ease; }
+    .icon { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--cream); background: transparent; font-size: 0.8rem; }
+
+    .opp-hand { display: flex; justify-content: center; align-items: flex-start; min-height: calc(var(--cwb) * 1.6 + 16px); padding: 4px 0 12px; }
+    .opp-hand i { position: relative; overflow: hidden; flex: none; width: calc(var(--cwb) * 1.12); height: calc(var(--cwb) * 1.12 * 1.42); margin: 0 -8px; border-radius: calc(var(--cwb) * 0.168); border: 2px solid var(--navy); box-shadow: 0 4px 0 #0a0f1e; background: repeating-radial-gradient(circle at 50% 50%, var(--orange) 0 5px, var(--navy) 5px 10px); transform: rotate(calc(var(--k) * -4deg)) translateY(calc(var(--k) * var(--k) * -3px)); transition: transform 200ms; }
+    .opp-hand.tight i, .hand.tight .card { margin: 0 -14px; }
+    /* Dos de carte vivant : rayons qui tournent et voyant qui bat. */
+    .back::before, .opp-hand i::before { content: ""; position: absolute; inset: -50%; background: repeating-conic-gradient(from 0deg, rgba(245, 233, 207, 0.26) 0 8deg, transparent 8deg 24deg); animation: spin 7s linear infinite; }
+    .back::after, .opp-hand i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 32%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(circle at 38% 34%, #fff6c9, var(--yellow) 55%, #c98d12); border: 2px solid var(--navy); animation: beat 1.6s ease-in-out infinite; }
+    .opp-hand i:nth-child(2n)::after { animation-delay: -0.5s; }
+    .opp-hand i:nth-child(3n)::after { animation-delay: -1s; }
+
+    .field { position: relative; display: grid; gap: 6px; margin: auto 0; }
+    .lane { display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .slot { position: relative; flex: none; width: calc(var(--cwb) + 8px); height: calc(var(--cwb) * 1.42 + 8px); display: grid; place-items: center; border-radius: 12px; border: 2px dashed rgba(245, 233, 207, 0.5); background: rgba(16, 22, 43, 0.5); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(245, 233, 207, 0.6); text-align: center; transition: transform 120ms, background 120ms; }
+    .slot .card { text-transform: none; letter-spacing: 0; }
+    .slot.want { border-color: var(--yellow); color: var(--yellow); background: rgba(245, 196, 69, 0.16); animation: pulse 1.3s ease-in-out infinite; }
+    .slot.hot { border-style: solid; border-color: #fff; background: rgba(245, 196, 69, 0.4); transform: scale(1.08); animation: none; }
+    .slot.thud::after { content: ""; position: absolute; inset: -4px; border-radius: 14px; border: 2px solid #fff; animation: ring 480ms ease-out forwards; pointer-events: none; }
+    .slot.heavy::before { content: ""; position: absolute; inset: -6px; border-radius: 16px; border: 4px solid var(--yellow); animation: ring 700ms ease-out 60ms forwards; opacity: 0; pointer-events: none; }
+    .tally { width: 56px; text-align: center; }
+    .tally .num { font-size: 1.9rem; line-height: 1; text-shadow: 0 3px 0 #0a0f1e; }
+    .tally .num.bump { animation: bump 380ms ease; }
+    .tally.lead .num { color: var(--ok); }
+    .tally.behind .num { color: var(--bad); }
+    .chips { display: grid; gap: 2px; margin-top: 3px; justify-items: center; }
+    .chip { font-size: 0.55rem; padding: 1px 5px; border-radius: 99px; background: var(--ok); color: var(--navy); white-space: nowrap; }
+    .chip.neg { background: var(--bad); }
+
+    .mid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; min-height: 52px; padding: 0 6px; }
+    .pot { font-size: 0.72rem; line-height: 1.1; text-shadow: 0 2px 0 #0a0f1e; }
+    .pot b { font-weight: 400; font-size: 1.15rem; color: var(--yellow); }
+    .pot.hot b { color: var(--orange); }
+    .pot.bump { animation: bump 450ms ease; }
+    .vs { font-size: 0.78rem; white-space: nowrap; padding: 4px 11px; border-radius: 99px; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); letter-spacing: 0.1em; box-shadow: 0 4px 0 #0a0f1e; }
+    .tray { display: flex; align-items: center; justify-content: flex-end; gap: 8px; visibility: hidden; opacity: 0; transition: opacity 200ms; }
+    .tray.on { visibility: visible; opacity: 1; }
+    .tray-info { text-align: right; font-size: 0.62rem; line-height: 1.2; color: rgba(245, 233, 207, 0.8); }
+    .tray-info b { display: block; font-weight: 400; font-size: 0.78rem; color: var(--cream); }
+    .tray-info b.ok { color: var(--ok); } .tray-info b.ko { color: var(--bad); }
+    .die-stage { flex: none; width: 44px; height: 44px; perspective: 360px; }
+    .tray.rolling .die-stage { animation: dieHop 1100ms cubic-bezier(.3, .6, .4, 1); }
+    .cube { --h: 22px; position: relative; width: 44px; height: 44px; transform-style: preserve-3d; transition: transform 1100ms cubic-bezier(.16, .8, .28, 1); }
+    .cube .f { position: absolute; inset: 0; border-radius: 9px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 6px; gap: 1px; background: var(--cream); border: 2px solid var(--navy); }
+    .cube .f i { border-radius: 50%; margin: 1px; }
+    .cube .f i.p { background: var(--navy); }
+    .f1 { transform: translateZ(var(--h)); } .f6 { transform: rotateY(180deg) translateZ(var(--h)); }
+    .f2 { transform: rotateY(90deg) translateZ(var(--h)); } .f5 { transform: rotateY(-90deg) translateZ(var(--h)); }
+    .f3 { transform: rotateX(90deg) translateZ(var(--h)); } .f4 { transform: rotateX(-90deg) translateZ(var(--h)); }
+
+    .banner { position: absolute; left: 50%; top: 50%; z-index: 20; pointer-events: none; opacity: 0; white-space: nowrap; transform: translate(-50%, -50%); font-size: clamp(1.5rem, 8.5vw, 2.6rem); letter-spacing: 0.06em; text-transform: uppercase; color: var(--yellow); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e, 0 0 28px rgba(245, 196, 69, 0.8); }
+    .banner.show { animation: banner 1200ms ease both; }
+    .banner.bad { color: var(--cream); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e; }
+    .banner.light { font-style: italic; transform: translate(-50%, -50%) skewX(-10deg); }
+
+    .fx { position: fixed; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; }
+    .spark { position: absolute; width: 5px; height: 18px; border-radius: 99px; animation: spark 700ms ease-out forwards; }
+    .float { position: absolute; padding: 2px 9px; border-radius: 99px; white-space: nowrap; font-size: 0.85rem; background: var(--ok); color: var(--navy); border: 2px solid var(--navy); animation: floatUp 1400ms ease-out forwards; }
+    .float.neg { background: var(--bad); }
+
+    .hand { min-height: calc(var(--cwb) * 1.6 + 34px); display: flex; justify-content: center; align-items: flex-end; padding: 26px 0 12px; }
+    .hand .card { --cw: calc(var(--cwb) * 1.12); margin: 0 -8px; transform: rotate(calc(var(--k) * 4deg)) translateY(calc(var(--k) * var(--k) * 3px)); transition: transform 170ms ease, filter 170ms; }
+    .hand .card.dim { filter: brightness(0.45) saturate(0.6); }
+    .hand .card[role="button"] { touch-action: none; cursor: grab; }
+    .hand .card.dragging { transition: none; z-index: 60; cursor: grabbing; }
+    .hand .card.dragging .front { box-shadow: 0 0 0 3px var(--yellow), 0 18px 26px rgba(0, 0, 0, 0.55); }
+    .hand .card.sel { z-index: 5; transform: translateY(-22px) scale(1.1); }
+    .hand .card.sel .front { box-shadow: 0 0 0 3px var(--yellow), 0 8px 0 #0a0f1e; }
+    .hand .card.drawn { animation: draw 460ms cubic-bezier(.2, .8, .2, 1) backwards; }
+    .hint { position: absolute; left: 50%; top: -19px; transform: translateX(-50%); z-index: 6; padding: 1px 7px; border-radius: 99px; white-space: nowrap; font-size: 0.6rem; background: var(--ok); color: var(--navy); border: 2px solid var(--navy); }
+    .hint.warn { background: var(--yellow); }
+
+    .prompt { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; min-height: 58px; padding: 7px 10px; border-radius: 14px; background: rgba(16, 22, 43, 0.88); border: 2px solid rgba(245, 233, 207, 0.4); text-align: center; }
+    .prompt p { margin: 0; flex: 1 1 200px; line-height: 1.25; font-size: 0.86rem; }
+    .prompt p b { font-weight: 400; color: var(--yellow); }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .actions .btn { padding: 0.45rem 0.9rem; font-size: 0.86rem; }
+
+    /* ───── Cartes ───── */
+    .card { --cw: var(--cwb); position: relative; flex: none; width: var(--cw); height: calc(var(--cw) * 1.42); perspective: 600px; }
+    .card-inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 600ms cubic-bezier(.3, 1.3, .5, 1); }
+    .card.facedown .card-inner { transform: rotateY(180deg); }
+    .face { position: absolute; inset: 0; border-radius: calc(var(--cw) * 0.15); border: 2px solid var(--navy); backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden; box-shadow: 0 4px 0 #0a0f1e; }
+    .front { display: grid; grid-template-rows: auto 1fr auto; gap: 1px; padding: 2px 3px; background: var(--cream); color: var(--navy); }
+    .back { transform: rotateY(180deg); background: repeating-radial-gradient(circle at 50% 50%, var(--orange) 0 5px, var(--navy) 5px 10px); }
+    .h-S { --hc: var(--violet); } .h-H { --hc: var(--orange); } .h-D { --hc: #e0a91f; } .h-C { --hc: var(--teal); } .h-X { --hc: var(--pink); }
+    .card .top { display: flex; justify-content: space-between; align-items: center; padding: 0 2px; font-size: calc(var(--cw) * 0.24); line-height: 1.05; }
+    .card .top span:last-child { color: var(--hc); }
+    .card .art { min-height: 0; border-radius: calc(var(--cw) * 0.09); border: 2px solid var(--navy); background: var(--hc); overflow: hidden; color: var(--hc); }
+    .card .art { position: relative; }
+    .card .art svg { position: relative; z-index: 1; display: block; width: 100%; height: 100%; }
+    /* Fonds animés : étoiles qui défilent pour les figures, rayons qui tournent pour les atouts. */
+    .card.fig .art::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 1.1px, transparent 1.6px) 0 0 / 22px 22px, radial-gradient(circle, rgba(255, 255, 255, 0.45) 0 0.9px, transparent 1.4px) 11px 9px / 35px 37px; animation: drift 5s linear infinite; }
+    .card.atout .art::before { content: ""; position: absolute; inset: -60%; background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.3) 0 9deg, transparent 9deg 18deg); animation: spin 9s linear infinite; }
+    .card.rar-2 .art::before { animation-duration: 4s; background: repeating-conic-gradient(from 0deg, rgba(255, 240, 150, 0.6) 0 9deg, transparent 9deg 18deg); }
+    /* Reflet holographique des cartes rares et légendaires. */
+    .card.fig .front::after, .card.rar-1 .front::after, .card.rar-2 .front::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background-size: 260% 100%; background-repeat: no-repeat; mix-blend-mode: screen; animation: sheen 4.5s ease-in-out infinite; }
+    .card.fig .front::after { background-image: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.45) 50%, transparent 62%); animation-duration: 6s; }
+    .card.rar-1 .front::after { background-image: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.8) 45%, rgba(120, 255, 225, 0.7) 53%, transparent 68%); animation-duration: 2.8s; }
+    .card.rar-2 .front::after { background-image: linear-gradient(115deg, transparent 18%, rgba(255, 90, 160, 0.7) 34%, rgba(255, 235, 110, 0.8) 44%, rgba(90, 255, 200, 0.7) 54%, rgba(120, 160, 255, 0.7) 64%, transparent 80%); animation-duration: 2s; }
+    .card.struck { animation: hit 420ms ease; }
+    .card .n { font-size: calc(var(--cw) * 0.135); text-align: center; line-height: 1.1; white-space: nowrap; overflow: hidden; }
+    .card.atout .n { font-size: calc(var(--cw) * 0.118); }
+    .card.atout .front { background: linear-gradient(160deg, #fff6df, #f7d9e6); }
+    .card.rar-1 .front { box-shadow: 0 0 0 2px var(--teal), 0 4px 0 #0a0f1e; }
+    .card.rar-2 .front { box-shadow: 0 0 0 2px var(--yellow), 0 0 14px var(--yellow), 0 4px 0 #0a0f1e; }
+    .card.pending .front { box-shadow: 0 0 0 3px var(--yellow), 0 4px 0 #0a0f1e; animation: pulse 800ms ease-in-out infinite; }
+    .card.joined .front { box-shadow: 0 0 0 3px var(--ok), 0 0 22px var(--ok); }
+    .card.broken { filter: grayscale(1) brightness(0.5); transform: rotate(10deg) translateY(6px); transition: all 400ms; }
+
+    /* ───── Tutoriel ───── */
+    .coach { position: fixed; inset: 0; z-index: 48; display: none; }
+    .coach.on { display: block; }
+    .coach .spot { position: absolute; border-radius: 16px; pointer-events: none; box-shadow: 0 0 0 9999px rgba(8, 11, 22, 0.76), 0 0 0 3px var(--yellow), 0 0 26px var(--yellow); transition: all 260ms ease; }
+    .coach .bubble { position: absolute; left: 50%; transform: translateX(-50%); width: min(380px, calc(100% - 24px)); display: grid; grid-template-columns: 56px 1fr; gap: 10px 12px; align-items: center; padding: 12px 14px; border-radius: 18px; background: var(--cream); color: var(--navy); border: 3px solid var(--navy); box-shadow: 0 6px 0 #0a0f1e; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.94rem; line-height: 1.38; animation: coachIn 260ms cubic-bezier(.2, 1.4, .4, 1); }
+    .coach .guide { width: 56px; height: 56px; border-radius: 50%; overflow: hidden; border: 3px solid var(--navy); background: var(--orange); color: var(--orange); }
+    .coach .guide svg { display: block; width: 100%; height: 100%; }
+    .coach .row { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; font-family: "Righteous", sans-serif; }
+    .coach .skip { border: 0; background: none; color: var(--navy); opacity: 0.6; text-decoration: underline; font-size: 0.8rem; }
+    .coach .btn { padding: 0.45rem 1.1rem; }
+
+    /* ───── Feuilles ───── */
+    .overlay { position: fixed; inset: 0; z-index: 50; display: none; place-items: center; padding: 16px; background: rgba(8, 11, 22, 0.82); }
+    .overlay.on { display: grid; }
+    .sheet { width: min(440px, 100%); max-height: 92vh; overflow: auto; padding: 18px; border-radius: 18px; background: var(--navy); border: 2px solid var(--cream); box-shadow: 0 8px 0 #0a0f1e; text-align: center; }
+    .sheet h2 { margin: 0 0 10px; font-weight: 400; font-size: 1.5rem; color: var(--yellow); }
+    .sheet .stack { display: grid; gap: 10px; }
+    .sheet .score { font-size: 3rem; margin: 4px 0 6px; }
+    .sheet p { margin: 0 0 12px; color: rgba(245, 233, 207, 0.85); font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.9rem; line-height: 1.4; }
+    .sheet p b { color: var(--yellow); }
+    .reward { margin: 0 0 12px; padding: 8px; border-radius: 12px; background: rgba(245, 196, 69, 0.14); border: 2px dashed var(--yellow); color: var(--yellow); }
+    .help { text-align: left; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.9rem; line-height: 1.45; user-select: text; }
+    .help ol, .help ul { margin: 0 0 12px; padding-left: 1.2rem; }
+    .help li + li { margin-top: 5px; }
+    .help h3 { margin: 14px 0 6px; font-family: "Righteous", sans-serif; font-weight: 400; color: var(--yellow); font-size: 0.95rem; letter-spacing: 0.06em; }
+    .help b { color: var(--yellow); font-weight: 600; }
+
+    .at-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 8px; justify-items: center; margin: 6px 0 12px; }
+    .at { position: relative; padding: 0; border: 0; background: none; }
+    .at .card { --cw: clamp(58px, 19vw, 84px); }
+    .at.locked .card { filter: grayscale(1) brightness(0.42); }
+    .at.locked::after { content: "?"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 2rem; color: var(--cream); }
+    .at.on .front { box-shadow: 0 0 0 3px var(--yellow), 0 0 16px var(--yellow); }
+    .at.on::before { content: "✓"; position: absolute; right: -6px; top: -8px; z-index: 3; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); font-size: 0.8rem; }
+    .at-info { min-height: 62px; padding: 8px 10px; margin-bottom: 12px; border-radius: 12px; background: rgba(16, 22, 43, 0.7); font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.88rem; line-height: 1.35; }
+    .at-info b { font-family: "Righteous", sans-serif; font-weight: 400; color: var(--yellow); }
+    .at-info i { font-style: normal; opacity: 0.7; }
+
+    .cap-stage { min-height: 190px; display: flex; justify-content: center; align-items: center; gap: 10px; margin: 8px 0; }
+    /* Booster à l'ancienne : sachet métallisé à bords crantés, qu'on déchire par le haut. */
+    .pack { position: relative; width: 150px; height: 218px; padding: 0; border: 0; background: none; touch-action: none; animation: wobble 1.7s ease-in-out infinite; filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.55)); }
+    .pack.dull { animation: none; filter: grayscale(1) brightness(0.55); }
+    .pack-top, .pack-body { position: absolute; left: 0; right: 0; background: linear-gradient(115deg, #aeb8c8 0%, #f6f9fd 16%, #8f9db3 32%, #e8eef6 48%, #8794ab 64%, #f6f9fd 82%, #aeb8c8 100%); background-size: 220% 100%; animation: foil 3.2s linear infinite; }
+    .pack-top { top: 0; height: 34px; transform-origin: 100% 100%; transition: transform 120ms; display: grid; place-items: end center; }
+    .pack-top::before, .pack-body::after { content: ""; position: absolute; left: 0; right: 0; height: 16px; background: repeating-linear-gradient(90deg, rgba(20, 30, 50, 0.22) 0 2px, transparent 2px 6px); }
+    .pack-top::before { top: 6px; }
+    .pack-body::after { bottom: 6px; }
+    .pack-top i { position: relative; font-style: normal; font-size: 0.56rem; letter-spacing: 0.08em; color: var(--navy); border-bottom: 2px dashed var(--navy); width: 100%; text-align: center; padding-bottom: 1px; }
+    .pack-body { top: 34px; bottom: 0; display: grid; place-items: center; }
+    .pack-label { display: grid; justify-items: center; gap: 5px; width: 78%; padding: 8px 6px; margin-bottom: 14px; border-radius: 10px; background: var(--navy); border: 2px solid var(--yellow); color: var(--cream); }
+    .pack-label small { font-size: 0.5rem; letter-spacing: 0.1em; color: var(--yellow); }
+    .pack-label b { font-weight: 400; font-size: 0.86rem; letter-spacing: 0.08em; }
+    .pack-art { width: 74px; height: 74px; border-radius: 50%; overflow: hidden; border: 2px solid var(--cream); background: var(--violet); color: var(--violet); }
+    .pack-art svg { display: block; width: 100%; height: 100%; }
+    .cap-slot { display: grid; justify-items: center; gap: 6px; }
+    .cap-slot .card { --cw: clamp(70px, 23vw, 98px); }
+    .cap-slot small { min-height: 1.2em; font-size: 0.68rem; color: var(--yellow); }
+    .cap-slot.dealt { animation: rise 520ms cubic-bezier(.2, 1.3, .4, 1) backwards; }
+
+    @keyframes flash { 0% { opacity: 0.85; } 100% { opacity: 0; } }
+    @keyframes hover { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-6px) rotate(1deg); } }
+    @keyframes wobble { 0%, 100% { transform: rotate(-5deg) translateY(0); } 50% { transform: rotate(5deg) translateY(-8px); } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    @keyframes pop { 0% { transform: scale(0.2); } 60% { transform: scale(1.7); } 100% { transform: scale(1); } }
+    @keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.3); } 100% { transform: scale(1); } }
+    @keyframes ring { from { opacity: 1; transform: scale(0.9); } to { opacity: 0; transform: scale(var(--pow, 1.4)); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes beat { 0%, 100% { scale: 0.82; box-shadow: 0 0 0 rgba(245, 196, 69, 0); } 50% { scale: 1.12; box-shadow: 0 0 14px rgba(245, 196, 69, 0.9); } }
+    @keyframes bob { 0%, 100% { transform: translateY(3%) rotate(-3deg); } 50% { transform: translateY(-4%) rotate(3deg) scale(1.05); } }
+    @keyframes drift { to { background-position: 44px 66px, 79px 111px; } }
+    @keyframes sheen { 0%, 35% { background-position: 130% 0; } 75%, 100% { background-position: -130% 0; } }
+    @keyframes foil { to { background-position: 220% 0; } }
+    @keyframes rise { from { opacity: 0; transform: translateY(110px) scale(0.5) rotate(-8deg); } }
+    @keyframes hit { 0%, 100% { transform: none; } 25% { transform: translateX(-6px) rotate(-5deg); } 60% { transform: translateX(5px) rotate(4deg); } }
+    @keyframes banner { 0% { opacity: 0; scale: 0.5; } 18% { opacity: 1; scale: 1.12; } 75% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1.25; } }
+    @keyframes spark { from { opacity: 1; transform: rotate(var(--a)) translateY(0) scaleY(0.6); } to { opacity: 0; transform: rotate(var(--a)) translateY(calc(var(--d) * -1)) scaleY(1.3); } }
+    @keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, 6px) scale(0.7); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1.1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -36px); } }
+    @keyframes draw { from { opacity: 0; transform: translate(160px, 30px) rotate(25deg) scale(0.6); } }
+    @keyframes dieHop { 0% { transform: translateY(0); } 25% { transform: translateY(-30px); } 50% { transform: translateY(0); } 68% { transform: translateY(-11px); } 84% { transform: translateY(0); } 92% { transform: translateY(-3px); } 100% { transform: translateY(0); } }
+    @keyframes coachIn { from { opacity: 0; scale: 0.85; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } }
+    @media (max-height: 640px) { :root { --cwb: clamp(44px, 13vw, 56px); } .prompt { min-height: 48px; } }
+  </style>
+</head>
+<body>
+  <canvas id="space" aria-hidden="true"></canvas>
+  <div id="flash" aria-hidden="true"></div>
+  <div class="fx" id="fx" aria-hidden="true"></div>
+
+  <main class="view on" id="menu">
+    <div class="col">
+      <div class="wallet">◆ <span id="crystals">0</span> cristaux</div>
+      <div class="logo">
+        <small>CONQUÊTE DE L'ESPACE</small>
+        <h1>Bataille<br>des <span>Alliés</span></h1>
+      </div>
+      <div class="section-title">Ton adversaire</div>
+      <div class="levels" id="levels"></div>
+      <div class="section-title">Ta tribu</div>
+      <div class="crews" id="crews"></div>
+      <p class="perk" id="perk"></p>
+      <button class="btn big hot" id="playBtn">Décollage</button>
+      <div class="menu-row">
+        <button class="btn" id="atoutsBtn">Atouts 0/3</button>
+        <button class="btn teal" id="capsuleBtn">Booster · 60 ◆</button>
+      </div>
+      <div class="menu-row">
+        <button class="btn ghost" id="tutoBtn">Apprendre à jouer</button>
+        <button class="btn ghost" id="menuHelp">Règles</button>
+        <button class="btn ghost" id="menuSound">Son : oui</button>
+      </div>
+    </div>
+  </main>
+
+  <main class="view" id="game">
+    <div class="col">
+      <div class="hud" id="hud1">
+        <div class="ava" id="ava1"></div>
+        <div class="nm"><span id="name1">Gaspard</span><small id="perk1">Carburant</small><div class="pips" id="valor1"></div></div>
+        <div class="stat">Pioche<b id="deck1">0</b></div>
+        <div class="stat loot" id="lootBox1">Butin<b id="loot1">0</b></div>
+        <button class="icon" id="pauseBtn" aria-label="Pause">II</button>
+      </div>
+      <div class="opp-hand" id="oppHand" aria-label="Main de Gaspard"></div>
+
+      <div class="field" id="field">
+        <div class="banner" id="banner" aria-hidden="true"></div>
+        <div class="lane">
+          <div class="slot" id="slot-1-van"></div><div class="slot" id="slot-1-amb"></div><div class="slot" id="slot-1-ally"></div>
+          <div class="tally" id="tally1"><div class="num" id="total1">0</div><div class="chips" id="chips1"></div></div>
+        </div>
+        <div class="mid">
+          <div class="pot" id="pot">Pot<br><b id="potNo">0</b> cartes</div>
+          <div class="vs" id="roundChip">Manche 1</div>
+          <div class="tray" id="tray">
+            <div class="tray-info"><span id="trayNeed"></span><b id="trayRes"></b></div>
+            <div class="die-stage"><div class="cube" id="cube"></div></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="slot" id="slot-0-van"></div><div class="slot" id="slot-0-amb"></div><div class="slot" id="slot-0-ally"></div>
+          <div class="tally" id="tally0"><div class="num" id="total0">0</div><div class="chips" id="chips0"></div></div>
+        </div>
+      </div>
+
+      <div class="hand" id="hand" aria-label="Ta main"></div>
+      <div class="prompt" aria-live="polite"><p id="promptText"></p><div class="actions" id="actions"></div></div>
+
+      <div class="hud" id="hud0">
+        <div class="ava" id="ava0"></div>
+        <div class="nm"><span>Toi</span><small id="perk0">Carburant</small><div class="pips" id="valor0"></div></div>
+        <div class="stat">Pioche<b id="deck0">0</b></div>
+        <div class="stat loot" id="lootBox0">Butin<b id="loot0">0</b></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="coach" id="coach"><div class="spot" id="coachSpot"></div><div class="bubble" id="coachBubble"></div></div>
+
+  <div class="overlay" id="pause">
+    <div class="sheet"><h2>Pause</h2><div class="stack">
+      <button class="btn" id="resumeBtn">Reprendre</button>
+      <button class="btn ghost" id="pauseHelp">Règles</button>
+      <button class="btn ghost" id="pauseSound">Son : oui</button>
+      <button class="btn hot" id="quitBtn">Retour au menu</button>
+    </div></div>
+  </div>
+
+  <div class="overlay" id="atouts">
+    <div class="sheet">
+      <h2>Tes atouts</h2>
+      <p>Choisis-en jusqu'à <b>3</b>. Ils remplacent des petites cartes de ta pioche, mélangés au hasard : rien ne garantit que tu les tireras. Gaspard en reçoit autant que toi.</p>
+      <div class="at-grid" id="atGrid"></div>
+      <div class="at-info" id="atInfo"></div>
+      <button class="btn" id="atClose">Valider</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="capsule">
+    <div class="sheet">
+      <h2 id="capTitle">Booster</h2>
+      <div class="cap-stage" id="capStage"></div>
+      <p id="capText"></p>
+      <div class="stack" id="capActions"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="help">
+    <div class="sheet"><h2>Règles</h2>
+      <div class="help">
+        <ol>
+          <li><b>Main de 5 cartes.</b> Glisse une carte vers sa case, ou touche-la puis confirme. Tu repioches à 5 après chaque manche.</li>
+          <li><b>Avant-garde :</b> une carte visible chacun. Le vainqueur de la manche précédente pose en premier.</li>
+          <li><b>Embuscade :</b> une carte cachée chacun, en même temps. Sa famille déclenche un pouvoir à la révélation.</li>
+          <li><b>Allié :</b> le camp en retard peut engager une 3<sup>e</sup> carte. Plus elle est forte, plus le dé est exigeant. Raté : la carte est perdue.</li>
+          <li><b>Carburant :</b> un jeton = +1 au dé, après le lancer. On en gagne un en perdant une manche.</li>
+          <li><b>Contre-attaque :</b> quand un allié adverse réussit, tu peux brûler 1 carburant pour lancer le dé. L'allié perd autant de points que le dé.</li>
+          <li><b>Égalité : bataille galactique.</b> Tout reste en jeu. Chacun met une carte en otage puis retourne la carte du dessus de sa pioche, à l'aveugle : la plus forte rafle tout. Nouvelle égalité, on recommence. 1 carburant permet d'en piocher deux et de garder la meilleure.</li>
+          <li><b>Fin :</b> quand un camp ne peut plus aligner deux cartes, le plus gros butin gagne.</li>
+        </ol>
+        <h3>Pouvoirs d'embuscade</h3>
+        <ul>
+          <li><b>♠ Comètes — Impact :</b> −2 au total adverse</li>
+          <li><b>♥ Soleils — Propulsion :</b> +1 à ton dé d'allié</li>
+          <li><b>♦ Étoiles — Ravitaillement :</b> +1 carburant si tu gagnes la manche</li>
+          <li><b>♣ Lunes — Radar :</b> 1 relance du dé d'allié</li>
+        </ul>
+        <h3>Formations (tes deux cartes)</h3>
+        <ul>
+          <li><b>Jumeaux</b> (même rang) : +5 · <b>Escadron</b> (même famille) : +3 · <b>Sillage</b> (rangs voisins) : +2</li>
+        </ul>
+        <h3>Seuil du dé d'allié</h3>
+        <ul>
+          <li>2 à 5 : dé 2+ · 6 à 9 : dé 3+ · 10 et Valet : dé 4+ · Dame et Roi : dé 5+ · As : dé 6</li>
+        </ul>
+        <h3>Atouts ★ et cristaux</h3>
+        <ul>
+          <li>Chaque partie rapporte des cristaux ◆, davantage en cas de victoire. Un booster en coûte 60 et contient 3 atouts.</li>
+          <li>Tu emportes jusqu'à 3 atouts par partie. Ils sont mélangés dans ta pioche, et l'adversaire en reçoit le même nombre.</li>
+        </ul>
+      </div>
+      <button class="btn" id="helpClose" style="margin-top:12px">Compris</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="endScreen">
+    <div class="sheet"><h2 id="endTitle"></h2><div class="score" id="endScore"></div><p id="endText"></p>
+      <div class="reward" id="endReward"></div>
+      <div class="stack"><button class="btn" id="endAgain">Rejouer</button><button class="btn ghost" id="endMenu">Menu</button></div>
+    </div>
+  </div>
+
+  <script src="casts.js"></script>
+  <script>
+    const $ = sel => document.querySelector(sel);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, reduced ? Math.min(ms, 80) : ms));
+    const rand = n => Math.floor(Math.random() * n);
+    SYM.X = "★";
+
+    /* ═════ Champ d'étoiles + vitesse lumière ═════ */
+    const IDLE = 0.035;
+    const space = { canvas: $("#space"), stars: [], speed: IDLE, target: IDLE, w: 0, h: 0, last: 0 };
+    const STAR_COLORS = [K, K, K, "#fff", YE, "#8fd8cc", OR];
+    function resetStar(s, far) {
+      s.x = Math.random() * 2 - 1;
+      s.y = Math.random() * 2 - 1;
+      s.z = far ? 1 : 0.08 + Math.random() * 0.92;
+      s.c = STAR_COLORS[rand(STAR_COLORS.length)];
+      s.big = Math.random() > 0.93;
+      s.tw = Math.random() * 6.28;
+    }
+    function sizeSpace() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      space.w = window.innerWidth; space.h = window.innerHeight;
+      space.canvas.width = space.w * dpr; space.canvas.height = space.h * dpr;
+      space.ctx = space.canvas.getContext("2d");
+      space.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      space.ctx.fillStyle = "#10162b";
+      space.ctx.fillRect(0, 0, space.w, space.h);
+    }
+    function drawSpace(now) {
+      const dt = Math.min(0.05, (now - space.last) / 1000 || 0.016);
+      space.last = now;
+      space.speed += (space.target - space.speed) * Math.min(1, dt * 4.5);
+      const { ctx, w, h } = space;
+      const fast = space.speed > 0.25;
+      const cx = w / 2, cy = h * 0.45, scale = Math.max(w, h) * 0.62;
+      ctx.fillStyle = fast ? "rgba(16,22,43,0.3)" : "#10162b";
+      ctx.fillRect(0, 0, w, h);
+      for (const s of space.stars) {
+        const pz = s.z;
+        s.z -= space.speed * dt;
+        if (s.z <= 0.03) { resetStar(s, true); continue; }
+        const x = cx + (s.x / s.z) * scale, y = cy + (s.y / s.z) * scale;
+        if (x < -40 || x > w + 40 || y < -40 || y > h + 40) { resetStar(s, true); continue; }
+        const depth = 1 - s.z;
+        if (fast) {
+          const px = cx + (s.x / pz) * scale, py = cy + (s.y / pz) * scale;
+          const stretch = Math.min(9, space.speed * 3.2);
+          ctx.strokeStyle = s.c;
+          ctx.globalAlpha = Math.min(1, 0.35 + depth);
+          ctx.lineWidth = 0.8 + depth * 2.6;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(x + (px - x) * stretch, y + (py - y) * stretch);
+          ctx.lineTo(x, y);
+          ctx.stroke();
+        } else {
+          const r = 0.5 + depth * 1.7;
+          ctx.globalAlpha = 0.45 + 0.55 * Math.abs(Math.sin(now / 900 + s.tw)) * (0.4 + depth);
+          ctx.fillStyle = s.c;
+          if (s.big) {
+            const k = r * 3.2;
+            ctx.beginPath();
+            ctx.moveTo(x, y - k); ctx.quadraticCurveTo(x, y, x + k, y); ctx.quadraticCurveTo(x, y, x, y + k);
+            ctx.quadraticCurveTo(x, y, x - k, y); ctx.quadraticCurveTo(x, y, x, y - k);
+            ctx.fill();
+          } else {
+            ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();
+          }
+        }
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(drawSpace);
+    }
+    function initSpace() {
+      sizeSpace();
+      const count = Math.round(Math.min(340, (space.w * space.h) / 2600));
+      space.stars = Array.from({ length: count }, () => { const s = {}; resetStar(s, false); return s; });
+      window.addEventListener("resize", sizeSpace);
+      requestAnimationFrame(drawSpace);
+    }
+    let warpTimer = 0;
+    function flash(alert = false) {
+      const el = $("#flash");
+      el.className = alert ? "alert" : "";
+      void el.offsetWidth;
+      el.classList.add("go");
+    }
+    function warp(ms = 1500) {
+      flash();
+      sfx.warp(ms);
+      if (reduced) return;
+      space.target = 2.6;
+      document.body.classList.add("warp");
+      clearTimeout(warpTimer);
+      warpTimer = setTimeout(() => { space.target = IDLE; document.body.classList.remove("warp"); }, ms);
+    }
+    /* Vitesse lumière maintenue tant que dure une bataille galactique : un cran de plus à chaque égalité. */
+    function holdWarp(level) {
+      clearTimeout(warpTimer);
+      if (level > 0 && !reduced) { space.target = 1 + level * 0.7; document.body.classList.add("warp"); }
+      else { space.target = IDLE; document.body.classList.remove("warp"); }
+    }
+
+    /* ═════ Son ═════ */
+    let actx = null, soundOn = true;
+    function tone(freq, dur, type = "sine", vol = 0.08, delay = 0, endFreq = null) {
+      if (!soundOn) return;
+      try {
+        actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+        const t = actx.currentTime + delay;
+        const osc = actx.createOscillator(), gain = actx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t);
+        if (endFreq) osc.frequency.exponentialRampToValueAtTime(endFreq, t + dur);
+        gain.gain.setValueAtTime(vol, t);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        osc.connect(gain).connect(actx.destination);
+        osc.start(t); osc.stop(t + dur);
+      } catch (e) { /* audio indisponible */ }
+    }
+    const sfx = {
+      tap: () => tone(700, 0.05, "triangle", 0.05),
+      place: (w = 0.4) => { tone(210 - w * 120, 0.09 + w * 0.12, "triangle", 0.07 + w * 0.11); tone(95 - w * 45, 0.14 + w * 0.26, "sine", 0.07 + w * 0.15, 0.02); },
+      rip: () => { for (let i = 0; i < 12; i += 1) tone(950 - i * 55 + rand(90), 0.035, "sawtooth", 0.04, i * 0.028); },
+      flip: () => { tone(620, 0.05, "triangle", 0.06); tone(880, 0.07, "triangle", 0.05, 0.05); },
+      dice: () => { for (let i = 0; i < 9; i += 1) tone(260 + rand(520), 0.04, "square", 0.03, i * 0.11); },
+      win: () => [523, 659, 784, 1046].forEach((f, i) => tone(f, 0.28, "triangle", 0.08, i * 0.09)),
+      lose: () => { tone(196, 0.3, "sawtooth", 0.05); tone(139, 0.45, "sawtooth", 0.05, 0.14); },
+      coin: () => { tone(1320, 0.08, "square", 0.04); tone(1760, 0.16, "square", 0.04, 0.07); },
+      bonus: () => tone(990, 0.12, "sine", 0.07),
+      whoosh: () => tone(260, 0.2, "sine", 0.07, 0, 950),
+      rare: () => [659, 880, 1175, 1568].forEach((f, i) => tone(f, 0.3, "sine", 0.07, i * 0.07)),
+      warp: ms => { tone(70, ms / 1000, "sawtooth", 0.07, 0, 1400); tone(140, ms / 1000, "sine", 0.08, 0, 2200); }
+    };
+
+    /* ═════ Données de jeu ═════ */
+    const HOUSES = {
+      S: { name: "des Comètes", power: "Impact", desc: "−2 au total adverse" },
+      H: { name: "des Soleils", power: "Propulsion", desc: "+1 à ton dé d'allié" },
+      D: { name: "des Étoiles", power: "Ravitaillement", desc: "+1 carburant si tu gagnes" },
+      C: { name: "des Lunes", power: "Radar", desc: "1 relance du dé d'allié" },
+      X: { name: "", power: "Atout", desc: "" }
+    };
+    const RANKS = [
+      ["2", 2, "Sonde"], ["3", 3, "Balise"], ["4", 4, "Drone"], ["5", 5, "Navette"], ["6", 6, "Relais"], ["7", 7, "Patrouille"],
+      ["8", 8, "Chasseur"], ["9", 9, "Croiseur"], ["10", 10, "Amiral"], ["V", 11, "Valet"], ["D", 12, "Dame"], ["R", 13, "Roi"], ["A", 14, "As"]
+    ];
+    const HAND_SIZE = 5, MAX_FUEL = 3, MAX_ATOUTS = 3, CAPSULE_COST = 60;
+
+    /* Adversaires : même nombre d'atouts que le joueur, seule la qualité de jeu change. */
+    const LEVELS = [
+      { name: "Novice", planet: "Lune", color: "#d9d2c0", noise: 6, cost: 0.05, slope: 4, count: false, fuel: false, reward: 20 },
+      { name: "Soldat", planet: "Mars", color: "#f26a3d", noise: 0.45, cost: 0.11, slope: 2.5, count: false, fuel: true, reward: 35 },
+      { name: "Stratège", planet: "Saturne", color: "#f5c445", noise: 0.15, cost: 0.14, slope: 2, count: true, fuel: true, reward: 50 }
+    ];
+    const RARITY = [{ name: "Commune", weight: 70, dup: 10 }, { name: "Rare", weight: 25, dup: 25 }, { name: "Légendaire", weight: 5, dup: 60 }];
+    const ATOUTS = {
+      spy: { name: "Vache espionne", value: 6, rarity: 0, desc: "En avant-garde : l'adversaire doit poser son embuscade face visible, avant toi." },
+      dice: { name: "Dé pipé", value: 7, thr: 1, rarity: 0, desc: "Jouée en allié, elle réussit à coup sûr." },
+      tank: { name: "Citerne", value: 5, rarity: 0, desc: "Quand elle est révélée : +2 carburant." },
+      shield: { name: "Bouclier", value: 8, rarity: 0, desc: "Tu ignores l'Impact et le Trou noir adverses." },
+      clone: { name: "Clone", value: 0, label: "?", thr: 3, rarity: 1, desc: "Copie la valeur de ton autre carte : Jumeaux garantis." },
+      hole: { name: "Trou noir", value: 0, thr: 5, rarity: 1, desc: "Vaut 0, mais la meilleure carte adverse vaut 0 aussi." },
+      tractor: { name: "Rayon tracteur", value: 4, rarity: 1, desc: "Si tu gagnes la manche, tu voles 2 cartes au butin adverse." },
+      nova: { name: "Supernova", value: 15, thr: 6, rarity: 2, desc: "Vaut 15, mais disparaît après la manche au lieu d'aller au butin." }
+    };
+    const ATOUT_IDS = Object.keys(ATOUTS);
+    /* Chaque tribu a un talent, valable pour le joueur comme pour Gaspard. */
+    const PERKS = {
+      mars: { name: "Ravitaillés", desc: "démarre avec 2 carburants au lieu de 1." },
+      cranes: { name: "Désintégrateur", desc: "ses contre-attaques retirent 1 point de plus." },
+      poulpes: { name: "Huit bras", desc: "main de 6 cartes au lieu de 5." },
+      incognito: { name: "Déguisement", desc: "quand elle pose en premier, son avant-garde reste cachée jusqu'à la réponse adverse." }
+    };
+    const TRIBES = Object.keys(CASTS);
+
+    function starPath(cx, cy, r1, r2, n) {
+      let d = "";
+      for (let i = 0; i < n * 2; i += 1) { const a = (Math.PI * i) / n - Math.PI / 2, r = i % 2 ? r2 : r1; d += `${i ? "L" : "M"}${(cx + Math.cos(a) * r).toFixed(1)} ${(cy + Math.sin(a) * r).toFixed(1)}`; }
+      return `${d}z`;
+    }
+    const SPECIAL_ART = {
+      spy: () => `<ellipse cx="50" cy="84" rx="28" ry="17" fill="#fff" ${ST}/><path d="M34 76 q8 4 4 12 q-10 2 -10 -6z M60 82 q10 -2 10 8 q-8 4 -12 0z" fill="${N}"/>
+        <path d="M30 34 L22 24 M70 34 L78 24" ${LN} stroke-width="4"/><circle cx="50" cy="48" r="21" fill="#fff" ${ST}/><ellipse cx="50" cy="59" rx="12" ry="7.5" fill="#f39a84" ${ST}/><circle cx="46" cy="59" r="1.6" fill="${N}"/><circle cx="54" cy="59" r="1.6" fill="${N}"/>
+        <rect x="31" y="40" width="16" height="10" rx="4" fill="${N}"/><rect x="53" y="40" width="16" height="10" rx="4" fill="${N}"/><path d="M47 44 H53" ${LN} stroke-width="3"/>
+        <path d="M24 34 Q50 24 76 34 L70 27 Q68 10 50 10 Q32 10 30 27z" fill="${N}" ${ST}/><path d="M31 27 Q50 21 69 27" fill="none" stroke="${YE}" stroke-width="3"/>`,
+      dice: () => `<g transform="rotate(-12 50 58)"><rect x="20" y="28" width="60" height="60" rx="12" fill="${K}" ${ST}/>${[[36, 44], [64, 44], [36, 58], [64, 58], [36, 72], [64, 72]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="5" fill="${N}"/>`).join("")}</g>
+        <path d="${starPath(80, 22, 13, 5, 4)}" fill="${YE}" ${ST} stroke-width="2"/><path d="${starPath(18, 92, 8, 3, 4)}" fill="${YE}" ${ST} stroke-width="1.8"/>`,
+      tank: () => `<rect x="40" y="16" width="14" height="10" rx="2" fill="${D2}" ${ST}/><path d="M56 22 H70 V34" ${LN} stroke-width="4"/><rect x="26" y="26" width="48" height="66" rx="8" fill="${OR}" ${ST}/><path d="M34 34 L66 84 M66 34 L34 84" fill="none" stroke="${N}" stroke-width="2" opacity=".35"/>
+        <path d="M50 44 Q64 62 50 74 Q36 62 50 44z" fill="${YE}" ${ST}/><text x="80" y="104" text-anchor="middle" font-size="17" font-family="Righteous, sans-serif" fill="${K}" stroke="${N}" stroke-width="1">+2</text>`,
+      shield: () => `<path d="M50 12 L84 24 V54 Q84 86 50 100 Q16 86 16 54 V24z" fill="#8fd8cc" ${ST}/><path d="M50 22 L74 31 V54 Q74 78 50 89 Q26 78 26 54 V31z" fill="${K}" ${ST} stroke-width="2"/><path d="${starPath(50, 56, 17, 7, 5)}" fill="${YE}" ${ST} stroke-width="2"/>`,
+      clone: () => [32, 68].map(x => `${tentacle(`M${x} 38 Q${x} 26 ${x < 50 ? x - 6 : x + 6} 18`, G1, 4.2)}<circle cx="${x < 50 ? x - 7 : x + 7}" cy="15" r="4" fill="${YE}" ${ST} stroke-width="2"/><path d="M${x - 16} 110 Q${x - 14} 88 ${x} 88 Q${x + 14} 88 ${x + 16} 110z" fill="${YE}" ${ST}/><ellipse cx="${x}" cy="62" rx="19" ry="23" fill="${G1}" ${ST}/><circle cx="${x}" cy="58" r="9" fill="#fff" ${ST} stroke-width="2"/><circle cx="${x}" cy="59" r="3.5" fill="${N}"/><path d="M${x - 5} 74 q5 4 10 0" ${LN} stroke-width="2"/>`).join(""),
+      hole: () => `<ellipse cx="50" cy="56" rx="47" ry="16" transform="rotate(-18 50 56)" fill="none" stroke="${YE}" stroke-width="5"/><ellipse cx="50" cy="56" rx="38" ry="11" transform="rotate(-18 50 56)" fill="none" stroke="${OR}" stroke-width="4"/>
+        <circle cx="50" cy="56" r="25" fill="#0a0d18" ${ST}/><path d="M50 40 a16 16 0 0 1 16 16 a11 11 0 0 1 -11 11 a7 7 0 0 1 -7 -7" fill="none" stroke="${K}" stroke-width="2.4" stroke-linecap="round" opacity=".8"/>`,
+      tractor: () => `<path d="M36 46 L22 112 H78 L64 46z" fill="${K}" opacity=".55"/>${saucer(YE, -10)}<g transform="rotate(-14 40 84)"><rect x="30" y="70" width="20" height="28" rx="3" fill="${K}" ${ST} stroke-width="2"/><rect x="34" y="76" width="12" height="12" rx="2" fill="${OR}"/></g><g transform="rotate(12 62 80)"><rect x="52" y="64" width="20" height="28" rx="3" fill="${K}" ${ST} stroke-width="2"/><rect x="56" y="70" width="12" height="12" rx="2" fill="#5b5fc7"/></g>`,
+      nova: () => `<path d="${starPath(50, 56, 50, 26, 12)}" fill="${OR}" ${ST}/><path d="${starPath(50, 56, 38, 18, 12)}" fill="${YE}" ${ST} stroke-width="2"/><circle cx="50" cy="56" r="14" fill="#fff" ${ST} stroke-width="2"/>`
+    };
+
+    /* ═════ Sauvegarde ═════ */
+    const SAVE_KEY = "bda_save_v1";
+    const save = Object.assign({ crystals: CAPSULE_COST, owned: {}, loadout: [], unlocked: 0, level: 0, tribe: "mars", tuto: false, wins: [0, 0, 0] }, (() => {
+      try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch (e) { return {}; }
+    })());
+    save.loadout = save.loadout.filter(id => ATOUTS[id] && save.owned[id]);
+    for (let i = 0; i < LEVELS.length; i += 1) save.wins[i] = Math.max(save.wins[i] || 0, i < save.unlocked ? 1 : 0);
+    // La première tribu est offerte ; chaque adversaire battu en libère une autre.
+    const tribeOpen = key => TRIBES.indexOf(key) === 0 || save.wins[TRIBES.indexOf(key) - 1] > 0;
+    if (!CASTS[save.tribe] || !tribeOpen(save.tribe)) save.tribe = "mars";
+    save.level = Math.min(save.level, save.unlocked, LEVELS.length - 1);
+    function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* stockage indisponible */ } }
+
+    const who = (p, tu, il) => (p === 0 ? `Tu ${tu}` : `Gaspard ${il}`);
+    const S = { cast: [save.tribe, "cranes"], level: save.level };
+    let gameId = 0;
+
+    /* ═════ Règles ═════ */
+    function threshold(v) { return v <= 5 ? 2 : v <= 9 ? 3 : v <= 11 ? 4 : v <= 13 ? 5 : 6; }
+    const thrOf = card => card.thr || threshold(card.value);
+    const handSize = q => (S.cast[q] === "poulpes" ? 6 : HAND_SIZE);
+    function chance(thr, bonus, reroll) {
+      const p = Math.max(0, Math.min(1, (7 - (thr - bonus)) / 6));
+      return reroll ? 1 - (1 - p) * (1 - p) : p;
+    }
+    /* Valeur réelle d'une carte : le Clone prend celle de sa voisine. */
+    function ev(card, other) {
+      if (card.special === "clone") return other && other.special !== "clone" ? other.value : 0;
+      return card.value;
+    }
+    function formation(a, b) {
+      const parts = [];
+      const va = ev(a, b), vb = ev(b, a);
+      if (va === vb) parts.push(["Jumeaux", 5]);
+      else if (Math.abs(va - vb) === 1) parts.push(["Sillage", 2]);
+      if (a.house === b.house && a.house !== "X") parts.push(["Escadron", 3]);
+      return parts;
+    }
+    function onBoard(p, special) {
+      const b = S.board;
+      return [b.van[p], S.revealed ? b.amb[p] : null, b.allyOk[p] ? b.ally[p] : null].some(c => c && c.special === special);
+    }
+    function breakdown(p) {
+      const b = S.board, o = 1 - p, parts = [];
+      const van = b.van[p], amb = b.amb[p];
+      if (!S.revealed) return { total: van ? ev(van, null) : 0, parts };
+      const vv = van ? ev(van, amb) : 0, va = amb ? ev(amb, van) : 0;
+      let total = vv + va;
+      if (van && amb) parts.push(...formation(van, amb));
+      const shield = onBoard(p, "shield");
+      const impact = b.amb[o] && b.amb[o].house === "S", hole = onBoard(o, "hole");
+      if (shield && (impact || hole)) parts.push(["Bouclier", 0]);
+      else {
+        if (impact) parts.push(["Impact", -2]);
+        if (hole && Math.max(vv, va) > 0) parts.push(["Trou noir", -Math.max(vv, va)]);
+      }
+      if (b.allyOk[p]) {
+        const gain = Math.max(0, (b.ally[p].special === "clone" ? Math.max(vv, va) : b.ally[p].value) - b.allyCut[p]);
+        if (gain) parts.push(["Allié", gain]);
+      }
+      for (const [, v] of parts) total += v;
+      return { total, parts };
+    }
+    /* Totaux si cette carte réussissait comme alliée. */
+    function afterAlly(p, card) {
+      const b = S.board, keep = [b.ally[p], b.allyOk[p]];
+      b.ally[p] = card; b.allyOk[p] = true;
+      const totals = [breakdown(0).total, breakdown(1).total];
+      [b.ally[p], b.allyOk[p]] = keep;
+      return totals;
+    }
+    function boardCards() { const b = S.board; return [...b.van, ...b.amb, ...b.ally].filter(Boolean); }
+    const cardName = c => `${c.title} ${HOUSES[c.house].name}`.trim();
+    const partText = ([name, v]) => `${name}${v ? ` ${v > 0 ? "+" : ""}${v}` : ""}`;
+    function shuffle(list) {
+      const copy = [...list];
+      for (let i = copy.length - 1; i > 0; i -= 1) { const j = rand(i + 1); [copy[i], copy[j]] = [copy[j], copy[i]]; }
+      return copy;
+    }
+    function makeDeck() {
+      const deck = [];
+      let seed = 3;
+      for (const house of ["S", "H", "D", "C"]) for (const [label, value, title] of RANKS) deck.push({ id: label + house, label, value, title, house, seed: (seed += 7) });
+      return shuffle(deck);
+    }
+    function makeAtout(id, tag) {
+      const a = ATOUTS[id];
+      return { id: `X-${id}-${tag}`, special: id, label: a.label || String(a.value), value: a.value, thr: a.thr, title: a.name, house: "X", seed: 11 };
+    }
+    /* Les atouts prennent la place de petites cartes, puis la pioche est rebattue. */
+    function inject(deck, ids, tag) {
+      ids.forEach((id, i) => {
+        const lows = deck.map((c, idx) => [c, idx]).filter(([c]) => !c.special).sort((a, b) => a[0].value - b[0].value);
+        deck[lows[rand(Math.min(6, lows.length))][1]] = makeAtout(id, `${tag}${i}`);
+      });
+      return shuffle(deck);
+    }
+    const emptyBoard = () => ({ van: [null, null], amb: [null, null], ally: [null, null], allyOk: [false, false], allyCut: [0, 0] });
+
+    /* ═════ Rendu ═════ */
+    function cardEl(card, owner, faceDown = false) {
+      const el = document.createElement("div");
+      const sp = card.special;
+      el.className = `card h-${card.house}${sp ? ` atout rar-${ATOUTS[sp].rarity}` : ""}${faceDown ? " facedown" : ""}`;
+      el.dataset.id = card.id;
+      el.setAttribute("aria-label", sp ? `Atout ${card.title} : ${ATOUTS[sp].desc}` : `${cardName(card)}, ${card.value}`);
+      const figure = ["V", "D", "R", "A"].includes(card.label);
+      if (figure) el.classList.add("fig");
+      el.innerHTML = `<div class="card-inner"><div class="face front">
+        <div class="top"><span>${card.label}</span><span>${SYM[card.house]}</span></div>
+        <div class="art">${sp ? frame(SPECIAL_ART[sp](), card.seed) : art(S.cast[owner], card.house, card.label, card.seed)}</div>
+        <div class="n">${card.title}${figure ? ` · ${card.value}` : ""}</div>
+      </div><div class="face back"></div></div>`;
+      return el;
+    }
+    function renderFuel(p, popIndex = -1) {
+      const box = $(`#valor${p}`);
+      box.innerHTML = "";
+      for (let i = 0; i < MAX_FUEL; i += 1) {
+        const tok = document.createElement("i");
+        tok.className = `${i < S.fuel[p] ? "on" : ""}${i === popIndex ? " pop" : ""}`;
+        box.appendChild(tok);
+      }
+    }
+    function renderHud() {
+      $("#roundChip").textContent = `Manche ${S.round}`;
+      for (const p of [0, 1]) {
+        $(`#deck${p}`).textContent = S.decks[p].length;
+        $(`#loot${p}`).textContent = S.loot[p];
+        renderFuel(p);
+      }
+      $("#potNo").textContent = S.pot.length;
+      $("#pot").classList.toggle("hot", S.pot.length >= 4);
+      const opp = $("#oppHand");
+      opp.innerHTML = "";
+      const n = S.hands[1].length;
+      opp.classList.toggle("tight", n > 5);
+      for (let i = 0; i < n; i += 1) { const back = document.createElement("i"); back.style.setProperty("--k", i - (n - 1) / 2); opp.appendChild(back); }
+    }
+    function renderTotals() {
+      const res = [breakdown(0), breakdown(1)];
+      const shown = S.war ? S.war.val : S.revealed ? res.map(r => r.total) : [null, null];
+      const known = shown[0] != null && shown[1] != null;
+      for (const p of [0, 1]) {
+        const num = $(`#total${p}`);
+        const text = S.war ? (S.war.val[p] == null ? "?" : String(S.war.val[p]))
+          : S.board.van[p] && !S.revealed ? `${S.vanHidden[p] || S.board.van[p].special === "clone" ? "" : res[p].total}+?` : String(res[p].total);
+        if (num.textContent !== text) { num.textContent = text; bump(num); }
+        $(`#chips${p}`).innerHTML = res[p].parts.map(part => `<span class="chip${part[1] < 0 ? " neg" : ""}">${partText(part)}</span>`).join("");
+        const tally = $(`#tally${p}`);
+        tally.classList.toggle("lead", known && shown[p] > shown[1 - p]);
+        tally.classList.toggle("behind", known && shown[p] < shown[1 - p]);
+      }
+      return res.map(r => r.total);
+    }
+    function allyInfo(card) {
+      const amb = S.board.amb[0];
+      const thr = thrOf(card), bonus = amb.house === "H" ? 1 : 0, reroll = amb.house === "C";
+      return { thr, pct: Math.round(chance(thr, bonus, reroll) * 100) };
+    }
+    function selectable(card) {
+      if (S.busy) return false;
+      if (S.phase === "van" || S.phase === "amb") return true;
+      if (S.phase === "ally") { const t = afterAlly(0, card); return t[0] >= t[1]; }
+      return false;
+    }
+    function renderHand(drawnIds = []) {
+      const box = $("#hand");
+      const hand = S.hands[0];
+      hand.sort((a, b) => (a.special ? 99 : a.value) - (b.special ? 99 : b.value));
+      box.innerHTML = "";
+      box.classList.toggle("tight", hand.length > 5);
+      hand.forEach((card, i) => {
+        const el = cardEl(card, 0);
+        el.style.setProperty("--k", i - (hand.length - 1) / 2);
+        if (drawnIds.includes(card.id)) { el.classList.add("drawn"); el.style.animationDelay = `${drawnIds.indexOf(card.id) * 110}ms`; }
+        const can = selectable(card);
+        let hint = null;
+        if (S.phase === "amb" && S.board.van[0]) {
+          const combo = formation(S.board.van[0], card);
+          if (combo.length) hint = { text: combo.map(partText).join(" · ") };
+        }
+        if (S.phase === "ally") {
+          if (can) { const { pct } = allyInfo(card); hint = { text: `${pct} %`, warn: pct < 50 }; }
+          else el.classList.add("dim");
+        }
+        if (hint) { const tag = document.createElement("span"); tag.className = `hint${hint.warn ? " warn" : ""}`; tag.textContent = hint.text; el.appendChild(tag); }
+        if (S.sel === card.id) el.classList.add("sel");
+        if (can) {
+          el.tabIndex = 0;
+          el.setAttribute("role", "button");
+          bindDrag(el, card);
+          el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onHandCard(card); } });
+        }
+        box.appendChild(el);
+      });
+    }
+    function renderAll(drawnIds) {
+      renderHud();
+      renderTotals();
+      renderHand(drawnIds);
+      const mine = !S.busy && ["van", "amb", "ally"].includes(S.phase);
+      $("#hud0").classList.toggle("active", mine);
+      $("#hud1").classList.toggle("active", S.busy && !["next", "over", "resolve"].includes(S.phase));
+      for (const slot of ["van", "amb", "ally"]) $(`#slot-0-${slot}`).classList.toggle("want", !S.busy && S.phase === slot);
+    }
+    function labelSlots() {
+      const names = S.war ? { van: "Duel", amb: "Otage", ally: "" } : { van: "Avant-<br>garde", amb: "Embus-<br>cade", ally: "Allié" };
+      for (const p of [0, 1]) for (const k of Object.keys(names)) $(`#slot-${p}-${k}`).innerHTML = names[k];
+    }
+    function fillButtons(box, buttons) {
+      box.innerHTML = "";
+      for (const b of buttons) {
+        const btn = document.createElement("button");
+        btn.className = `btn ${b.cls || ""}`;
+        btn.textContent = b.label;
+        btn.addEventListener("click", b.fn);
+        box.appendChild(btn);
+      }
+    }
+    function setPrompt(html, buttons = []) {
+      $("#promptText").innerHTML = html;
+      fillButtons($("#actions"), buttons);
+    }
+    function ask(html, options) {
+      return new Promise(resolve => setPrompt(html, options.map(o => ({ label: o.label, cls: o.cls, fn: () => { setPrompt(html); resolve(o.k); } }))));
+    }
+
+    /* ═════ Effets ═════ */
+    function banner(text, cls = "") {
+      const el = $("#banner");
+      el.textContent = text;
+      el.className = `banner ${cls}`;
+      void el.offsetWidth;
+      el.classList.add("show");
+    }
+    function center(el) { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
+    function burst(target, colors = [YE, "#fff", OR], count = 14) {
+      const { x, y } = center(target);
+      for (let i = 0; i < count; i += 1) {
+        const s = document.createElement("span");
+        s.className = "spark";
+        s.style.left = `${x}px`; s.style.top = `${y}px`;
+        s.style.background = colors[i % colors.length];
+        s.style.setProperty("--a", `${(360 / count) * i + rand(14)}deg`);
+        s.style.setProperty("--d", `${50 + rand(60)}px`);
+        $("#fx").appendChild(s);
+        setTimeout(() => s.remove(), 720);
+      }
+    }
+    function floatText(target, text, neg = false) {
+      const { x, y } = center(target);
+      const el = document.createElement("span");
+      el.className = `float${neg ? " neg" : ""}`;
+      el.textContent = text;
+      el.style.left = `${x}px`; el.style.top = `${y - 26}px`;
+      $("#fx").appendChild(el);
+      setTimeout(() => el.remove(), 1420);
+    }
+    function bump(el) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+    function shake(amp = 5) {
+      const a = Math.round(amp);
+      $("#game .col").animate([{ transform: "none" }, { transform: `translate(${-a}px,${a * 0.5}px)` }, { transform: `translate(${a}px,${-a * 0.4}px)` }, { transform: `translate(${-a * 0.6}px,${a * 0.3}px)` }, { transform: "none" }], { duration: reduced ? 1 : 300 + a * 16 });
+    }
+    function weight(card, hidden) {
+      return hidden ? 0.35 : Math.min(1, (card.special ? Math.max(card.value, 10) : card.value) / 14);
+    }
+    /* L'impact grandit avec la valeur de la carte : onde, étincelles, secousse, son plus grave. Une carte cachée ne trahit rien. */
+    function impact(slot, card, hidden, force = 0) {
+      const w = Math.min(1, weight(card, hidden) + force * 0.15);
+      slot.style.setProperty("--pow", (1.25 + w * 0.95).toFixed(2));
+      slot.classList.remove("thud", "heavy");
+      void slot.offsetWidth;
+      slot.classList.add("thud");
+      if (w >= 0.8) slot.classList.add("heavy");
+      sfx.place(w);
+      burst(slot, w >= 0.8 ? [YE, "#fff", OR] : [K, "#fff", YE], Math.round(4 + w * 20));
+      if (w > 0.4) shake(2 + w * 10);
+      if (!reduced) space.speed = Math.max(space.speed, 0.25 + w * 1.2);
+    }
+    /* Effets d'atout déclenchés quand la carte devient visible (une fois par manche). */
+    function trigger(p, card, el) {
+      if (!card.special || S.war || S.fx.has(card.id)) return;
+      S.fx.add(card.id);
+      if (card.special === "tank") {
+        S.fuel[p] = Math.min(MAX_FUEL, S.fuel[p] + 2);
+        renderFuel(p, S.fuel[p] - 1);
+        floatText(el, "+2 carburant");
+        sfx.coin();
+      }
+    }
+
+    async function playCard(p, slotName, card, faceDown, opts = {}) {
+      const handEl = p === 0 ? $(`#hand .card[data-id="${card.id}"]`) : $("#oppHand i:last-child") || $("#oppHand");
+      const thrown = Boolean(opts.from);
+      const from = opts.from || (handEl || $("#hand")).getBoundingClientRect();
+      if (thrown) sfx.whoosh();
+      S.hands[p] = S.hands[p].filter(c => c.id !== card.id);
+      S.board[slotName][p] = card;
+      S.sel = null;
+      renderAll();
+      // Les cartes visibles de Gaspard arrivent face cachée, puis se retournent sous tes yeux.
+      const flipAfter = p === 1 && !faceDown;
+      const hidden = faceDown || flipAfter;
+      const w = weight(card, hidden);
+      const slot = $(`#slot-${p}-${slotName}`);
+      const el = cardEl(card, p, hidden);
+      slot.innerHTML = "";
+      slot.appendChild(el);
+      const to = el.getBoundingClientRect();
+      const dx = from.left + from.width / 2 - (to.left + to.width / 2);
+      const dy = from.top + from.height / 2 - (to.top + to.height / 2);
+      el.style.zIndex = 30;
+      await el.animate([
+        { transform: `translate(${dx}px, ${dy}px) rotate(${thrown ? opts.spin || 0 : p === 0 ? -14 : 14}deg) scale(1.12)` },
+        { transform: `translate(0, ${-10 - w * 18}px) rotate(3deg) scale(${1.12 + w * 0.24})`, offset: 0.7 },
+        { transform: "none" }
+      ], { duration: reduced ? 1 : thrown ? 300 : 440, easing: "cubic-bezier(.2,.75,.25,1)" }).finished.catch(() => {});
+      el.style.zIndex = "";
+      impact(slot, card, hidden, opts.force || 0);
+      if (flipAfter) {
+        await sleep(280);
+        el.classList.remove("facedown");
+        sfx.flip();
+        await sleep(430);
+        impact(slot, card, false);
+      }
+      if (!faceDown) trigger(p, card, el);
+      await sleep(150);
+      return el;
+    }
+    async function flipUp(p) {
+      const slot = $(`#slot-${p}-amb`), el = slot.querySelector(".card");
+      const card = S.board.amb[p];
+      if (el.classList.contains("facedown")) {
+        el.classList.remove("facedown");
+        sfx.flip();
+        await sleep(480);
+      }
+      impact(slot, card, false);
+      floatText(el, card.special ? card.title : HOUSES[card.house].power);
+      trigger(p, card, el);
+      await sleep(430);
+    }
+    async function sweepBoard(target) {
+      const dest = center(target);
+      const cards = [...document.querySelectorAll(".slot .card")];
+      await Promise.all(cards.map((el, i) => {
+        const c = center(el);
+        el.style.zIndex = 30;
+        return el.animate([{ transform: "none", opacity: 1 }, { transform: `translate(${dest.x - c.x}px, ${dest.y - c.y}px) rotate(${rand(60) - 30}deg) scale(0.3)`, opacity: 0.2 }],
+          { duration: reduced ? 1 : 500, delay: reduced ? 0 : i * 70, easing: "cubic-bezier(.5,0,.6,1)", fill: "forwards" }).finished.catch(() => {});
+      }));
+      labelSlots();
+      bump(target);
+    }
+
+    const DIE_ROT = { 1: [0, 0], 2: [0, -90], 3: [-90, 0], 4: [90, 0], 5: [0, 90], 6: [0, 180] };
+    const PIPS = { 1: [5], 2: [1, 9], 3: [1, 5, 9], 4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9], 6: [1, 3, 4, 6, 7, 9] };
+    let spins = 0;
+    function buildDie() {
+      $("#cube").innerHTML = [1, 2, 3, 4, 5, 6].map(n => {
+        let cells = "";
+        for (let i = 1; i <= 9; i += 1) cells += `<i${PIPS[n].includes(i) ? ' class="p"' : ""}></i>`;
+        return `<div class="f f${n}">${cells}</div>`;
+      }).join("");
+    }
+    async function rollDie() {
+      const n = 1 + rand(6);
+      spins += 2;
+      const [x, y] = DIE_ROT[n];
+      const tray = $("#tray");
+      $("#trayRes").textContent = "…"; $("#trayRes").className = "";
+      tray.classList.remove("rolling"); void tray.offsetWidth; tray.classList.add("rolling");
+      $("#cube").style.transform = `rotateX(${x + spins * 360}deg) rotateY(${y + spins * 360}deg)`;
+      sfx.dice();
+      await sleep(1180);
+      tray.classList.remove("rolling");
+      return n;
+    }
+    function showRoll(roll, bonus, spent, thr) {
+      const total = roll + bonus + spent;
+      const el = $("#trayRes");
+      el.textContent = `${roll}${bonus ? " +1" : ""}${spent ? ` +${spent}` : ""}${bonus || spent ? ` = ${total}` : ""} ${total >= thr ? "réussi" : "raté"}`;
+      el.className = total >= thr ? "ok" : "ko";
+    }
+
+    /* ═════ Tutoriel ═════ */
+    function closeCoach() { $("#coach").classList.remove("on"); }
+    function tip(id, html, target) {
+      if (!S.tuto || S.tuto.seen[id]) return Promise.resolve();
+      S.tuto.seen[id] = true;
+      return new Promise(resolve => {
+        const spot = $("#coachSpot"), bubble = $("#coachBubble");
+        bubble.innerHTML = `<div class="guide">${art(S.cast[0], "H", "R", 5)}</div><div>${html}</div><div class="row"><button class="skip">Passer le tutoriel</button><button class="btn">Compris</button></div>`;
+        bubble.style.top = bubble.style.bottom = "";
+        if (target) {
+          const r = target.getBoundingClientRect(), pad = 6;
+          Object.assign(spot.style, { left: `${r.left - pad}px`, top: `${r.top - pad}px`, width: `${r.width + pad * 2}px`, height: `${r.height + pad * 2}px` });
+          if (r.top + r.height / 2 < window.innerHeight / 2) bubble.style.top = `${r.bottom + 18}px`;
+          else bubble.style.bottom = `${window.innerHeight - r.top + 18}px`;
+        } else {
+          Object.assign(spot.style, { left: "50%", top: "40%", width: "0px", height: "0px" });
+          bubble.style.top = "34%";
+        }
+        $("#coach").classList.add("on");
+        bubble.querySelector(".btn").addEventListener("click", () => { sfx.tap(); closeCoach(); resolve(); });
+        bubble.querySelector(".skip").addEventListener("click", () => { S.tuto = null; closeCoach(); resolve(); });
+      });
+    }
+
+    /* ═════ IA ═════ */
+    function aiPlan(fixedVan, knownAmb = null) {
+      const L = LEVELS[S.level];
+      const hand = S.hands[1];
+      const seen = S.vanHidden[0] ? null : S.board.van[0];
+      let expected, slope = L.slope;
+      if (seen && knownAmb) {
+        // Embuscade adverse connue (Vache espionne) : le total à battre est exact.
+        expected = ev(seen, knownAmb) + ev(knownAmb, seen) + formation(seen, knownAmb).reduce((t, [, v]) => t + v, 0) + 0.5;
+        slope = 0.4;
+      } else {
+        const rest = [...S.decks[0], ...S.hands[0]];
+        const mean = L.count && rest.length ? rest.reduce((t, c) => t + c.value, 0) / rest.length : 8;
+        expected = (seen ? ev(seen, null) : mean) + mean + 1;
+      }
+      const oppBest = seen ? Math.max(seen.value, 8) : 9;
+      const worth = 4 + S.pot.length;
+      let best = null;
+      for (const van of fixedVan ? [fixedVan] : hand) {
+        for (const amb of hand) {
+          if (amb.id === van.id) continue;
+          let power = ev(van, amb) + ev(amb, van);
+          for (const [, v] of formation(van, amb)) power += v;
+          if (amb.house === "S") power += 2;
+          if (van.special === "hole" || amb.special === "hole") power += oppBest;
+          const pWin = 1 / (1 + Math.exp(-(power - expected) / slope));
+          let u = pWin * worth - (van.value + amb.value) * L.cost + Math.random() * L.noise;
+          if (amb.house === "D") u += 0.3 * pWin;
+          if (amb.house === "H" || amb.house === "C") u += 0.3 * (1 - pWin);
+          if (!fixedVan && van.value < amb.value) u += 0.2;
+          if (!fixedVan && van.special === "spy") u += 0.7;
+          if (amb.special === "spy") u -= 0.4;
+          if (!best || u > best.u) best = { u, van, amb };
+        }
+      }
+      return best;
+    }
+    function aiAllyPick() {
+      const L = LEVELS[S.level];
+      if (!L.fuel && Math.random() < 0.4) return null;
+      const amb = S.board.amb[1];
+      const bonus = amb.house === "H" ? 1 : 0;
+      const options = S.hands[1].map(c => ({ c, t: afterAlly(1, c) })).filter(o => o.t[1] >= o.t[0]).map(({ c, t }) => ({
+        c, score: chance(thrOf(c) - (L.fuel ? Math.min(S.fuel[1], 1) : 0), bonus, amb.house === "C") * (t[1] > t[0] ? 1 : 0.45) - c.value * 0.004
+      })).sort((a, b) => b.score - a.score);
+      if (!options.length) return null;
+      return options[0].score >= 0.2 || S.pot.length >= 4 ? options[0].c : null;
+    }
+
+    /* ═════ Déroulé ═════ */
+    function show(view) {
+      for (const id of ["menu", "game"]) $(`#${id}`).classList.toggle("on", id === view);
+      for (const id of ["pause", "help", "endScreen", "atouts", "capsule"]) $(`#${id}`).classList.remove("on");
+    }
+    function newGame(tuto = false) {
+      gameId += 1;
+      closeCoach();
+      if (tuto) { save.tuto = true; persist(); }
+      const others = Object.keys(CASTS).filter(k => k !== S.cast[0]);
+      S.cast[1] = others[rand(others.length)];
+      const deck = makeDeck();
+      const mine = save.loadout.slice(0, MAX_ATOUTS);
+      const theirs = shuffle(ATOUT_IDS).slice(0, mine.length);
+      Object.assign(S, {
+        decks: [inject(deck.slice(0, 26), mine, "a"), inject(deck.slice(26), theirs, "b")],
+        hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 2 : 1)), vanHidden: [false, false], pot: [], round: 0, first: rand(2), phase: "idle", busy: true,
+        revealed: false, sel: null, board: emptyBoard(), war: null, spy: null, fx: new Set(), tuto: tuto ? { seen: {} } : null
+      });
+      $("#ava0").innerHTML = art(S.cast[0], "H", "R", 5);
+      $("#ava1").innerHTML = art(S.cast[1], "S", "R", 9);
+      $("#ava1").style.background = "var(--violet)";
+      $("#name1").textContent = `Gaspard · ${LEVELS[S.level].name}`;
+      for (const q of [0, 1]) { $(`#perk${q}`).textContent = PERKS[S.cast[q]].name; $(`#perk${q}`).title = `${CASTS[S.cast[q]].label} : ${PERKS[S.cast[q]].desc}`; }
+      labelSlots();
+      $("#tray").classList.remove("on");
+      show("game");
+      warp(1100);
+      startRound();
+    }
+    function goMenu() { gameId += 1; closeCoach(); holdWarp(0); renderMenu(); show("menu"); }
+
+    async function startRound() {
+      const game = gameId;
+      S.round += 1;
+      S.revealed = false;
+      S.board = emptyBoard();
+      S.phase = "van";
+      S.busy = true;
+      S.sel = null;
+      S.spy = null;
+      S.vanHidden = [false, false];
+      S.fx = new Set();
+      $("#tray").classList.remove("on");
+      const drawn = [];
+      for (const p of [0, 1]) {
+        while (S.hands[p].length < handSize(p) && S.decks[p].length) {
+          const card = S.decks[p].shift();
+          S.hands[p].push(card);
+          if (p === 0) drawn.push(card.id);
+        }
+      }
+      setPrompt("");
+      renderAll(drawn);
+      banner(`Manche ${S.round}`);
+      await sleep(900);
+      if (game !== gameId) return;
+      if (S.round === 1) await tip("intro", "<b>C'est une bataille.</b> À chaque manche, chacun pose des cartes et le plus gros total remporte tout. La différence : ici tu <b>choisis</b> tes cartes dans ta main de 5.", null);
+      if (S.round === 2) await tip("free", "Tu connais l'essentiel. Le vainqueur d'une manche pose en premier à la suivante. Les règles complètes sont dans le menu pause.", $("#pauseBtn"));
+      if (game !== gameId) return;
+      if (S.first === 1) {
+        setPrompt("<b>Gaspard</b> a l'initiative et avance son avant-garde…");
+        await sleep(500);
+        if (game !== gameId) return;
+        S.vanHidden[1] = S.cast[1] === "incognito";
+        await playCard(1, "van", aiPlan(null).van, S.vanHidden[1]);
+      }
+      await tip("van", S.board.van[1]
+        ? "Gaspard a posé sa première carte, visible. <b>Glisse une carte</b> de ta main jusqu'à cette case pour lui répondre. Tu peux aussi la lancer d'un coup sec vers le haut."
+        : "<b>Glisse une carte</b> de ta main jusqu'à cette case, ou lance-la d'un coup sec vers le haut. C'est ton avant-garde : elle est visible, Gaspard la verra avant de jouer.", $("#slot-0-van"));
+      if (game !== gameId) return;
+      S.busy = false;
+      basePrompt();
+      renderAll();
+    }
+
+    function basePrompt() {
+      if (S.phase === "van") {
+        setPrompt(S.vanHidden[1] ? "Gaspard avance <b>déguisé</b> : sa carte reste cachée. <b>Glisse la tienne</b> vers la case jaune."
+          : S.board.van[1] ? `Gaspard montre <b>${S.board.van[1].title}</b> (${S.board.van[1].label}). <b>Glisse une carte</b> vers la case jaune pour répondre.` : "À toi de commencer : <b>glisse une carte</b> vers la case jaune. Gaspard la verra.");
+      } else if (S.phase === "amb") {
+        setPrompt(S.spy === 0 ? "Ta vache a tout vu : l'embuscade de Gaspard est visible. <b>Glisse ta 2ᵉ carte</b>." : "<b>Glisse ta 2ᵉ carte</b>, face cachée. Les deux s'additionnent, le plus gros total gagne.");
+      } else if (S.phase === "ally") {
+        const t = [breakdown(0).total, breakdown(1).total];
+        setPrompt(`Tu es mené de <b>${t[1] - t[0]}</b>. <b>Glisse un allié</b> pour tenter le dé, ou replie-toi.`, [{ label: "Se replier", cls: "ghost", fn: fold }]);
+      }
+    }
+    function fold() { if (S.busy || S.phase !== "ally") return; S.busy = true; S.sel = null; finishRound(1); }
+
+    /* Glisser une carte vers le haut la joue. Il suffit de la monter d'un tiers de carte, ou de lui donner
+       une impulsion vers le haut à n'importe quel moment du geste : la vitesse au moment du lâcher ne compte pas. */
+    function bindDrag(el, card) {
+      let start = null, dragging = false, last = null, vel = { x: 0, y: 0 }, peak = 0, dy = 0;
+      const target = () => $(`#slot-0-${S.phase}`);
+      const need = () => Math.max(30, el.offsetHeight * 0.3);
+      const willPlay = () => dy < -need() || (peak < -0.4 && dy < -10);
+      const release = () => { start = null; dragging = false; const t = target(); if (t) t.classList.remove("hot"); };
+      el.addEventListener("pointerdown", e => {
+        if (S.busy) return;
+        start = { x: e.clientX, y: e.clientY };
+        last = { x: e.clientX, y: e.clientY, t: performance.now() };
+        vel = { x: 0, y: 0 }; peak = 0; dy = 0;
+        try { el.setPointerCapture(e.pointerId); } catch (err) { /* pointeur synthétique */ }
+      });
+      el.addEventListener("pointermove", e => {
+        if (!start) return;
+        const dx = e.clientX - start.x;
+        dy = e.clientY - start.y;
+        if (!dragging && Math.hypot(dx, dy) > 6) { dragging = true; el.classList.add("dragging"); describe(card); }
+        if (!dragging) return;
+        const now = performance.now(), dt = Math.max(1, now - last.t);
+        vel = { x: vel.x * 0.5 + ((e.clientX - last.x) / dt) * 0.5, y: vel.y * 0.5 + ((e.clientY - last.y) / dt) * 0.5 };
+        peak = Math.min(peak, vel.y);
+        last = { x: e.clientX, y: e.clientY, t: now };
+        el.style.transform = `translate(${dx}px, ${dy}px) rotate(${Math.max(-18, Math.min(18, vel.x * 14))}deg) scale(1.12)`;
+        const t = target();
+        if (t) t.classList.toggle("hot", willPlay());
+      });
+      el.addEventListener("pointerup", () => {
+        if (!start) return;
+        const wasDrag = dragging, play = wasDrag && willPlay();
+        const opts = { from: el.getBoundingClientRect(), spin: Math.max(-40, Math.min(40, vel.x * 30)), force: Math.min(1, -peak / 2) };
+        release();
+        if (!wasDrag) return onHandCard(card);
+        if (play) return confirmCard(card, opts);
+        S.sel = null;
+        renderHand();
+        basePrompt();
+      });
+      el.addEventListener("pointercancel", () => { if (!start) return; release(); renderHand(); });
+    }
+
+    function onHandCard(card) {
+      if (S.busy) return;
+      if (S.sel === card.id) return confirmCard(card);
+      S.sel = card.id;
+      sfx.tap();
+      renderHand();
+      describe(card);
+    }
+    function describe(card) {
+      const go = { fn: () => confirmCard(card) };
+      const atout = card.special ? ` <b>Atout</b> : ${ATOUTS[card.special].desc}` : "";
+      if (S.phase === "van") {
+        setPrompt(`<b>${cardName(card)}</b> (${card.label}) en avant-garde ?${atout}`, [{ label: "Poser", ...go }]);
+      } else if (S.phase === "amb") {
+        const h = HOUSES[card.house];
+        const combo = formation(S.board.van[0], card).map(partText).join(", ");
+        setPrompt(`<b>${cardName(card)}</b> (${card.label})${card.special ? `.${atout}` : ` — ${h.power} : ${h.desc}.`}${combo ? ` <b>${combo}</b>.` : ""}`, [{ label: "Poser cachée", ...go }]);
+      } else if (S.phase === "ally") {
+        const { thr, pct } = allyInfo(card);
+        const t = afterAlly(0, card);
+        setPrompt(`<b>${card.title}</b> : dé <b>${thr}+</b> (${pct} %). Total ${t[0]} contre ${t[1]}${t[0] === t[1] ? " — égalité" : ""}.${atout}`,
+          [{ label: "Lancer le dé", cls: "hot", ...go }, { label: "Se replier", cls: "ghost", fn: fold }]);
+      }
+    }
+
+    async function confirmCard(card, opts = {}) {
+      if (S.busy) return;
+      const game = gameId;
+      if (S.phase === "van") {
+        S.busy = true;
+        setPrompt("");
+        S.vanHidden[0] = S.first === 0 && S.cast[0] === "incognito";
+        await playCard(0, "van", card, S.vanHidden[0], opts);
+        if (S.first === 0) {
+          setPrompt(S.vanHidden[0] ? "<b>Gaspard</b> doit répondre sans voir ta carte…" : "<b>Gaspard</b> jauge ta carte…");
+          await sleep(750);
+          if (game !== gameId) return;
+          await playCard(1, "van", aiPlan(null).van, false);
+        }
+        // Déguisement : la carte posée en premier ne se dévoile qu'une fois la réponse sur la table.
+        for (const q of [0, 1]) {
+          if (!S.vanHidden[q]) continue;
+          S.vanHidden[q] = false;
+          const slot = $(`#slot-${q}-van`), shown = slot.querySelector(".card");
+          await sleep(300);
+          shown.classList.remove("facedown");
+          sfx.flip();
+          await sleep(430);
+          impact(slot, S.board.van[q], false);
+          floatText(shown, "Démasqué");
+          trigger(q, S.board.van[q], shown);
+          renderTotals();
+          await sleep(500);
+          if (game !== gameId) return;
+        }
+        // Vache espionne : une seule des deux fait effet, deux s'annulent.
+        const spies = [0, 1].map(p => S.board.van[p].special === "spy");
+        S.spy = spies[0] !== spies[1] ? (spies[0] ? 0 : 1) : null;
+        if (S.spy !== null) { banner(S.spy === 0 ? "Espionné !" : "Tu es espionné", S.spy === 0 ? "light" : "bad"); await sleep(900); }
+        if (game !== gameId) return;
+        if (S.spy === 0) await playCard(1, "amb", aiPlan(S.board.van[1]).amb, false);
+        S.phase = "amb";
+        await tip("amb", "Deuxième carte, <b>face cachée</b> cette fois. Ton total = avant-garde + embuscade. Une étiquette verte au-dessus d'une carte signale un bonus si tu l'associes à la première.", $("#slot-0-amb"));
+        if (game !== gameId) return;
+        S.busy = false;
+        basePrompt();
+        renderAll();
+      } else if (S.phase === "amb") {
+        S.busy = true;
+        setPrompt("Les embuscades sont posées…");
+        if (S.spy === 0) {
+          await playCard(0, "amb", card, true, opts);
+        } else {
+          // Gaspard s'engage sans connaître ta carte cachée, sauf si sa vache t'espionne.
+          const plan = aiPlan(S.board.van[1], S.spy === 1 ? card : null);
+          await Promise.all([playCard(0, "amb", card, S.spy !== 1, opts), sleep(S.spy === 1 ? 700 : 180).then(() => playCard(1, "amb", plan.amb, true))]);
+        }
+        if (game !== gameId) return;
+        await reveal();
+      } else if (S.phase === "ally") {
+        await attemptAlly(0, card, opts);
+      }
+    }
+
+    async function reveal() {
+      const game = gameId;
+      S.phase = "reveal";
+      await sleep(400);
+      banner("Révélation");
+      await sleep(550);
+      await flipUp(1);
+      await flipUp(0);
+      if (game !== gameId) return;
+      S.revealed = true;
+      const totals = renderTotals();
+      for (const p of [0, 1]) for (const part of breakdown(p).parts) floatText($(`#tally${p}`), partText(part), part[1] < 0);
+      shake();
+      if (breakdown(0).parts.some(([n]) => n === "Jumeaux")) { banner("Jumeaux !", "light"); warp(1200); }
+      await sleep(950);
+      if (game !== gameId) return;
+      await tip("reveal", totals[0] > totals[1]
+        ? "Révélation ! Ton total est le plus gros : tu es en tête. Gaspard, en retard, a droit à une dernière chance avec un allié."
+        : totals[0] < totals[1] ? "Révélation ! Gaspard a le plus gros total. Tu es en retard, mais tout n'est pas perdu." : "Révélation ! Égalité parfaite…", $("#field"));
+      if (game !== gameId) return;
+
+      if (totals[0] === totals[1]) return galacticBattle();
+      const loser = totals[0] < totals[1] ? 0 : 1;
+      const canAlly = S.hands[loser].some(c => { const t = afterAlly(loser, c); return t[loser] >= t[1 - loser]; });
+      if (!canAlly) return finishRound(1 - loser);
+      if (loser === 1) {
+        setPrompt("<b>Gaspard</b> est en retard et cherche un allié…");
+        await sleep(900);
+        if (game !== gameId) return;
+        const pick = aiAllyPick();
+        return pick ? attemptAlly(1, pick) : finishRound(0);
+      }
+      S.phase = "ally";
+      await tip("ally", "<b>Dernière chance.</b> Glisse une 3ᵉ carte ici, puis le dé décide. Plus la carte est forte, plus le dé est difficile : le pourcentage au-dessus de chaque carte donne tes chances. Raté, la carte est perdue. Tu peux aussi te replier.", $("#slot-0-ally"));
+      if (game !== gameId) return;
+      S.busy = false;
+      basePrompt();
+      renderAll();
+    }
+
+    async function attemptAlly(p, card, opts = {}) {
+      const game = gameId;
+      S.busy = true;
+      S.phase = "roll";
+      const amb = S.board.amb[p];
+      const thr = thrOf(card);
+      const bonus = amb.house === "H" ? 1 : 0;
+      let reroll = amb.house === "C" ? 1 : 0;
+      let spent = 0;
+      setPrompt(`<b>${who(p, "engages", "engage")}</b> ${cardName(card)} — il faut <b>${thr}+</b> au dé.`);
+      const el = await playCard(p, "ally", card, false, opts);
+      el.classList.add("pending");
+      $("#trayNeed").textContent = `Seuil ${thr}+${bonus ? " · +1" : ""}${reroll ? " · relance" : ""}`;
+      $("#trayRes").textContent = "";
+      $("#tray").classList.add("on");
+      await sleep(350);
+
+      let roll = await rollDie();
+      if (game !== gameId) return;
+      showRoll(roll, bonus, spent, thr);
+      while (roll + bonus + spent < thr) {
+        const need = thr - (roll + bonus);
+        const options = [];
+        if (reroll > 0) options.push({ k: "reroll", label: "Relance radar ♣", cls: "teal" });
+        if (S.fuel[p] >= need) options.push({ k: "fuel", label: `Brûler ${need} carburant` });
+        if (!options.length) break;
+        options.push({ k: "stop", label: "Accepter", cls: "ghost" });
+        let choice;
+        if (p === 0 && S.fuel[0] >= need) await tip("fuel", "Raté de peu ? Chaque jeton de <b>carburant</b> ajoute +1 au dé. Tu en regagnes un à chaque manche perdue.", $("#hud0"));
+        if (p === 0) choice = await ask(`Le dé donne <b>${roll + bonus}</b>, il manque <b>${need}</b>.`, options);
+        else { await sleep(800); choice = reroll > 0 ? "reroll" : S.fuel[p] >= need && LEVELS[S.level].fuel ? "fuel" : "stop"; }
+        if (game !== gameId) return;
+        if (choice === "reroll") {
+          reroll -= 1;
+          roll = await rollDie();
+          if (game !== gameId) return;
+          showRoll(roll, bonus, spent, thr);
+        } else if (choice === "fuel") {
+          spent = need;
+          S.fuel[p] -= need;
+          renderFuel(p);
+          sfx.coin();
+          showRoll(roll, bonus, spent, thr);
+        } else break;
+      }
+
+      const ok = roll + bonus + spent >= thr;
+      el.classList.remove("pending");
+      await sleep(350);
+      if (ok) {
+        const before = breakdown(p).total;
+        S.board.allyOk[p] = true;
+        el.classList.add("joined");
+        burst(el, ["#7be0a4", "#fff", YE], 18);
+        const gain = breakdown(p).total - before;
+        floatText(el, gain ? `+${gain}` : card.title);
+        sfx.win();
+      } else {
+        el.classList.add("broken");
+        sfx.lose();
+      }
+      let totals = renderTotals();
+      await sleep(850);
+      if (game !== gameId) return;
+      if (!ok) return finishRound(1 - p, p === 0 ? "Allié perdu" : "Allié adverse perdu");
+      const countered = await counterAttack(1 - p, totals);
+      if (game !== gameId) return;
+      totals = [breakdown(0).total, breakdown(1).total];
+      if (totals[p] > totals[1 - p]) return finishRound(p, "Renversement", true);
+      if (totals[p] === totals[1 - p]) return galacticBattle();
+      return finishRound(1 - p, countered ? (p === 0 ? "Contré !" : "Bien paré !") : null);
+    }
+
+    /* Le camp visé par un allié peut riposter : 1 carburant, un dé, et l'allié perd autant de points. */
+    async function counterAttack(d, totals) {
+      const game = gameId, a = 1 - d;
+      const gain = (breakdown(a).parts.find(([name]) => name === "Allié") || [0, 0])[1];
+      if (!gain || totals[a] < totals[d] || S.fuel[d] < 1) return false;
+      const margin = totals[a] - totals[d];
+      let go;
+      if (d === 0) {
+        await tip("counter", "L'allié de Gaspard a réussi et te passe devant. Tu peux <b>contre-attaquer</b> : pour 1 carburant, tu lances le dé et son allié perd autant de points.", $("#slot-1-ally"));
+        if (game !== gameId) return false;
+        go = (await ask(`L'allié de Gaspard vaut <b>+${gain}</b>, il te devance de <b>${margin}</b>. Riposter ? Ton dé lui retire ${S.cast[0] === "cranes" ? "2 à 7" : "1 à 6"} points.`,
+          [{ k: "yes", label: "Contre-attaque · 1 carburant", cls: "hot" }, { k: "no", label: "Laisser passer", cls: "ghost" }])) === "yes";
+      } else {
+        setPrompt("<b>Gaspard</b> hésite à contre-attaquer…");
+        await sleep(900);
+        go = margin <= 5 && (LEVELS[S.level].fuel ? (6 - margin) / 6 >= 0.33 : Math.random() < 0.4);
+      }
+      if (game !== gameId || !go) return false;
+      S.fuel[d] -= 1;
+      renderFuel(d);
+      sfx.coin();
+      banner("Contre-attaque !", d === 0 ? "light" : "bad");
+      setPrompt(`<b>${who(d, "ripostes", "riposte")}</b> : le dé retire ses points à l'allié.`);
+      $("#trayNeed").textContent = "Défense";
+      $("#tray").classList.add("on");
+      const roll = await rollDie();
+      if (game !== gameId) return false;
+      const cut = Math.min(roll + (S.cast[d] === "cranes" ? 1 : 0), gain);
+      S.board.allyCut[a] = cut;
+      $("#trayRes").textContent = `−${cut} à l'allié`;
+      $("#trayRes").className = d === 0 ? "ok" : "ko";
+      const el = $(`#slot-${a}-ally .card`);
+      el.classList.remove("joined");
+      el.classList.add("struck");
+      floatText(el, `−${cut}`, true);
+      burst(el, [OR, "#fff", YE], 8 + roll * 3);
+      shake(3 + roll * 1.5);
+      sfx.lose();
+      renderTotals();
+      await sleep(1000);
+      return true;
+    }
+
+    /* Égalité : tout reste en jeu, chacun met une carte en otage puis retourne une carte à l'aveugle. */
+    const stock = p => S.decks[p].length + S.hands[p].length;
+    const deckRect = p => $(`#deck${p}`).getBoundingClientRect();
+    function drawBlind(p) {
+      if (S.decks[p].length) return S.decks[p].shift();
+      if (S.hands[p].length) return S.hands[p].splice(rand(S.hands[p].length), 1)[0];
+      return null;
+    }
+    async function galacticBattle() {
+      const game = gameId;
+      S.busy = true;
+      S.phase = "war";
+      S.sel = null;
+      $("#tray").classList.remove("on");
+      for (let level = 1; ; level += 1) {
+        S.war = { val: [null, null], level };
+        holdWarp(level);
+        flash();
+        sfx.warp(1300);
+        banner(level === 1 ? "Bataille galactique !" : `Encore ! ×${level}`, "light");
+        setPrompt(level === 1 ? "<b>Égalité !</b> Tout reste en jeu." : "<b>Encore égalité !</b> La mise grimpe.");
+        shake();
+        await sleep(1200);
+        const staked = boardCards();
+        await sweepBoard($("#pot"));
+        S.pot.push(...staked);
+        S.board = emptyBoard();
+        S.revealed = false;
+        renderAll();
+        if (game !== gameId) return;
+        if (level === 1) {
+          await tip("war", "<b>Bataille galactique !</b> Chacun met une carte en otage, puis retourne la carte du dessus de sa pioche, à l'aveugle. La plus forte rafle toute la mise. Avec 1 carburant, tu en pioches deux et tu gardes la meilleure.", $("#field"));
+          if (game !== gameId) return;
+        }
+        if (!stock(0) || !stock(1)) {
+          if (!stock(0) && !stock(1)) return finishRound(null, "Égalité");
+          return finishRound(stock(0) ? 0 : 1);
+        }
+        for (const p of [1, 0]) {
+          if (stock(p) < 2) continue;
+          await playCard(p, "amb", drawBlind(p), true, { from: deckRect(p) });
+          if (game !== gameId) return;
+        }
+        const boost = [false, LEVELS[S.level].fuel && S.fuel[1] > 0 && stock(1) >= 2 && (level >= 2 || S.pot.length >= 7 || Math.random() < 0.4)];
+        const mise = `Mise : <b>${S.pot.length + boardCards().length} cartes</b>.`;
+        const options = [{ k: "flip", label: "Retourner ma carte", cls: "hot" }];
+        if (S.fuel[0] > 0 && stock(0) >= 2) options.push({ k: "boost", label: "1 carburant : j'en pioche 2" });
+        boost[0] = (await ask(`${mise} Retourne ta carte à l'aveugle.`, options)) === "boost";
+        if (game !== gameId) return;
+        setPrompt(`${mise} Les cartes se retournent…`);
+        for (const p of [1, 0]) {
+          let card = drawBlind(p);
+          if (boost[p]) {
+            S.fuel[p] -= 1;
+            renderFuel(p);
+            sfx.coin();
+            const other = drawBlind(p);
+            if (other) {
+              const keep = other.value > card.value ? other : card;
+              S.pot.push(keep === card ? other : card);
+              card = keep;
+            }
+          }
+          const el = await playCard(p, "van", card, true, { from: deckRect(p) });
+          await sleep(350);
+          el.classList.remove("facedown");
+          sfx.flip();
+          await sleep(520);
+          S.war.val[p] = card.value;
+          renderTotals();
+          impact($(`#slot-${p}-van`), card, false);
+          if (boost[p]) floatText(el, "La meilleure des 2");
+          await sleep(450);
+          if (game !== gameId) return;
+        }
+        const [mine, theirs] = S.war.val;
+        if (mine !== theirs) return finishRound(mine > theirs ? 0 : 1);
+        await sleep(300);
+      }
+    }
+
+    async function finishRound(winner, cry = null, comeback = false) {
+      const game = gameId;
+      S.busy = true;
+      S.phase = "resolve";
+      S.sel = null;
+      const cards = [...boardCards(), ...S.pot];
+      const war = Boolean(S.war);
+      renderAll();
+
+      if (winner === null) {
+        holdWarp(0);
+        banner(cry || "Égalité", "bad");
+        setPrompt(`Égalité : <b>${cards.length} cartes</b> au pot. Le prochain vainqueur rafle tout.`);
+        await sleep(900);
+        await sweepBoard($("#pot"));
+        S.pot = cards;
+        S.first = 1 - S.first;
+      } else {
+        const loser = 1 - winner;
+        const kept = cards.filter(c => c.special !== "nova").length;
+        const steal = !war && onBoard(winner, "tractor") ? Math.min(2, S.loot[loser]) : 0;
+        const refuel = !war && S.board.amb[winner] && S.board.amb[winner].house === "D";
+        const bigHaul = kept >= 8;
+        if (winner === 0) {
+          if (war) { banner("Bataille gagnée !", "light"); warp(2000); }
+          else if (comeback || bigHaul) { banner(comeback ? "Renversement !" : "Vitesse lumière !", "light"); warp(1700); }
+          else banner(cry || "Manche gagnée");
+          sfx.win();
+        } else {
+          if (war) holdWarp(0);
+          banner(war ? "Bataille perdue" : cry && !comeback ? cry : comeback ? "Gaspard renverse" : "Manche perdue", "bad");
+          if (war || comeback || bigHaul) flash(true);
+          sfx.lose();
+        }
+        shake();
+        await sleep(war || comeback || bigHaul ? 1500 : 950);
+        await sweepBoard($(`#lootBox${winner}`));
+        S.loot[winner] += kept + steal;
+        S.loot[loser] -= steal;
+        S.pot = [];
+        if (steal) { floatText($(`#lootBox${loser}`), `−${steal}`, true); bump($(`#lootBox${loser}`)); }
+        if (S.fuel[loser] < MAX_FUEL) { S.fuel[loser] += 1; renderFuel(loser, S.fuel[loser] - 1); }
+        if (refuel && S.fuel[winner] < MAX_FUEL) { S.fuel[winner] += 1; renderFuel(winner, S.fuel[winner] - 1); }
+        sfx.coin();
+        const extra = `${steal ? ` Rayon tracteur : ${steal} cartes volées.` : ""}${kept < cards.length ? " La Supernova s'est consumée." : ""}`;
+        setPrompt(winner === 0
+          ? `Tu ramasses <b>${kept} cartes</b>.${refuel ? " Ravitaillement : +1 carburant." : ""}${extra} Tu poseras en premier.`
+          : `« Ack ! Ack ! » Gaspard ramasse <b>${kept} cartes</b>.${extra} Tu gagnes <b>1 carburant</b>.`);
+        S.first = winner;
+      }
+      if (game !== gameId) return;
+      if (winner === null) await tip("pot", "Égalité : personne ne prend les cartes. Elles attendent au <b>pot</b>, et le vainqueur de la prochaine manche rafle tout.", $("#pot"));
+      else await tip("loot", winner === 0
+        ? "Les cartes gagnées rejoignent ton <b>butin</b>. À la fin de la partie, le plus gros butin l'emporte."
+        : "Gaspard empoche les cartes dans son <b>butin</b>. À la fin, le plus gros butin l'emporte. En consolation, tu reçois 1 carburant.", $(`#lootBox${winner}`));
+      if (game !== gameId) return;
+
+      S.board = emptyBoard();
+      S.revealed = false;
+      S.war = null;
+      labelSlots();
+      S.phase = "next";
+      $("#tray").classList.remove("on");
+      renderHud(); renderTotals(); renderHand();
+      $("#hud0").classList.remove("active"); $("#hud1").classList.remove("active");
+
+      if (![0, 1].every(p => S.hands[p].length + S.decks[p].length >= 2)) { await sleep(700); if (game === gameId) endGame(); return; }
+      // La manche suivante part toute seule, sauf si le joueur a ouvert la pause ou les règles.
+      await sleep(1700);
+      while (game === gameId && ["pause", "help"].some(id => $(`#${id}`).classList.contains("on"))) await sleep(300);
+      if (game === gameId && S.phase === "next") startRound();
+    }
+
+    function endGame() {
+      S.phase = "over";
+      const [a, b] = S.loot;
+      const L = LEVELS[S.level];
+      $("#endTitle").textContent = a > b ? "Victoire" : a < b ? "Défaite" : "Match nul";
+      $("#endScore").textContent = `${a} — ${b}`;
+      $("#endText").textContent = a > b ? `${L.planet} est à toi. Ta tribu rentre en héros.` : a < b ? "Gaspard a mieux mené ses alliés cette fois." : "Aucun camp ne l'emporte.";
+      let gain = a > b ? L.reward + Math.min(20, a - b) : a < b ? 8 : 15;
+      let note = "";
+      if (a > b) {
+        if (!save.wins[S.level] && TRIBES[S.level + 1]) note += `<br>Nouvelle tribu : ${CASTS[TRIBES[S.level + 1]].label}`;
+        save.wins[S.level] += 1;
+      }
+      if (a > b && S.level === save.unlocked && S.level < LEVELS.length - 1) {
+        save.unlocked += 1;
+        gain += 40;
+        note += `<br>Nouvel adversaire débloqué : ${LEVELS[save.unlocked].name} (+40 ◆)`;
+      }
+      save.crystals += gain;
+      persist();
+      $("#endReward").innerHTML = `+${gain} ◆ cristaux${note}<br><small>Total : ${save.crystals} ◆</small>`;
+      if (a > b) { warp(2200); sfx.win(); } else sfx.lose();
+      $("#endScreen").classList.add("on");
+    }
+
+    /* ═════ Menu, atouts, capsules ═════ */
+    function renderMenu() {
+      $("#crystals").textContent = save.crystals;
+      $("#atoutsBtn").textContent = `Atouts ${save.loadout.length}/${MAX_ATOUTS}`;
+      $("#capsuleBtn").textContent = `Booster · ${CAPSULE_COST} ◆`;
+      $("#levels").innerHTML = LEVELS.map((L, i) => `<button class="lvl${S.level === i ? " on" : ""}" data-level="${i}" ${i > save.unlocked ? "disabled" : ""}>
+        <span class="planet" style="background:${L.color}"></span>${L.name}<small>${i > save.unlocked ? "Verrouillé" : `${L.planet} · ${L.reward} ◆`}</small></button>`).join("");
+      for (const btn of document.querySelectorAll(".lvl")) btn.addEventListener("click", () => { S.level = save.level = Number(btn.dataset.level); persist(); sfx.tap(); renderMenu(); });
+      const houses = { mars: "H", cranes: "S", poulpes: "D", incognito: "C" };
+      $("#crews").innerHTML = Object.entries(CASTS).map(([key, cast]) =>
+        `<button class="crew h-${houses[key]}${S.cast[0] === key ? " on" : ""}${tribeOpen(key) ? "" : " locked"}" data-cast="${key}" aria-pressed="${S.cast[0] === key}">
+          <div class="pic" style="background:var(--hc);color:var(--hc)">${art(key, houses[key], "R", 11)}</div>${cast.label}</button>`).join("");
+      const perkLine = key => {
+        const lock = tribeOpen(key) ? "" : ` <b>À gagner en battant le ${LEVELS[TRIBES.indexOf(key) - 1].name}.</b>`;
+        $("#perk").innerHTML = `<b>${CASTS[key].label} — ${PERKS[key].name}</b> : ${PERKS[key].desc}${lock}`;
+      };
+      perkLine(S.cast[0]);
+      for (const btn of document.querySelectorAll(".crew")) btn.addEventListener("click", () => {
+        const key = btn.dataset.cast;
+        sfx.tap();
+        if (!tribeOpen(key)) return perkLine(key);
+        S.cast[0] = save.tribe = key;
+        persist();
+        renderMenu();
+      });
+    }
+
+    function renderAtouts() {
+      const grid = $("#atGrid");
+      grid.innerHTML = "";
+      for (const id of ATOUT_IDS) {
+        const owned = Boolean(save.owned[id]);
+        const a = ATOUTS[id];
+        const btn = document.createElement("button");
+        btn.className = `at${owned ? "" : " locked"}${save.loadout.includes(id) ? " on" : ""}`;
+        btn.setAttribute("aria-label", owned ? a.name : "Atout inconnu");
+        btn.appendChild(cardEl(makeAtout(id, "show"), 0));
+        btn.addEventListener("click", () => {
+          let msg = "";
+          if (owned) {
+            if (save.loadout.includes(id)) save.loadout = save.loadout.filter(x => x !== id);
+            else if (save.loadout.length < MAX_ATOUTS) save.loadout.push(id);
+            else msg = " Tu en as déjà 3 : retires-en un d'abord.";
+            persist();
+          }
+          sfx.tap();
+          renderAtouts();
+          $("#atInfo").innerHTML = owned
+            ? `<b>${a.name}</b> <i>· ${RARITY[a.rarity].name}</i><br>${a.desc}${msg}`
+            : `<b>Atout inconnu</b> <i>· ${RARITY[a.rarity].name}</i><br>À trouver dans un booster.`;
+        });
+        grid.appendChild(btn);
+      }
+    }
+    function openAtouts() {
+      $("#atInfo").textContent = Object.keys(save.owned).length ? "Touche un atout pour l'équiper ou le retirer." : "Tu n'as encore aucun atout : ouvre un booster.";
+      renderAtouts();
+      $("#atouts").classList.add("on");
+    }
+
+    function rollAtout() {
+      let r = Math.random() * 100, rarity = 0;
+      for (let i = 0; i < RARITY.length; i += 1) { if (r < RARITY[i].weight) { rarity = i; break; } r -= RARITY[i].weight; }
+      const pool = ATOUT_IDS.filter(id => ATOUTS[id].rarity === rarity);
+      return pool[rand(pool.length)];
+    }
+    function crimp(top) {
+      const pts = [];
+      for (let i = 0; i <= 18; i += 1) pts.push(`${(i / 18 * 100).toFixed(2)}% ${top ? (i % 2 ? "0px" : "6px") : `calc(100% - ${i % 2 ? "0px" : "6px"})`}`);
+      return top ? `polygon(${pts.join(",")},100% 100%,0 100%)` : `polygon(0 0,100% 0,${pts.reverse().join(",")})`;
+    }
+    function packHTML(dull = false) {
+      return `<${dull ? "div" : "button"} class="pack${dull ? " dull" : ""}" id="pack" ${dull ? "" : 'aria-label="Déchirer le booster"'}>
+        <span class="pack-top" style="clip-path:${crimp(true)}"><i>✂ déchire ici</i></span>
+        <span class="pack-body" style="clip-path:${crimp(false)}"><span class="pack-label"><small>BATAILLE DES ALLIÉS</small><span class="pack-art">${art("cranes", "S", "R", 7)}</span><b>3 ATOUTS</b></span></span>
+      </${dull ? "div" : "button"}>`;
+    }
+    function closeCapsule() { $("#capsule").classList.remove("on"); renderMenu(); }
+    function openCapsuleShop() {
+      $("#capsule").classList.add("on");
+      $("#capTitle").textContent = "Booster";
+      const stage = $("#capStage");
+      const closeBtn = { label: "Fermer", cls: "ghost", fn: closeCapsule };
+      if (save.crystals < CAPSULE_COST) {
+        stage.innerHTML = packHTML(true);
+        $("#capText").innerHTML = `Il te manque <b>${CAPSULE_COST - save.crystals} ◆</b>. Chaque partie rapporte des cristaux, même perdue.`;
+        return fillButtons($("#capActions"), [closeBtn]);
+      }
+      stage.innerHTML = packHTML();
+      $("#capText").innerHTML = `3 atouts au hasard pour <b>${CAPSULE_COST} ◆</b>. Tu as ${save.crystals} ◆. Déchire le haut du sachet : glisse le doigt dessus, ou touche-le.`;
+      fillButtons($("#capActions"), [closeBtn]);
+      // Le haut se décolle sous le doigt ; un simple appui suffit aussi.
+      const pack = $("#pack"), top = pack.querySelector(".pack-top");
+      let sx = null;
+      pack.addEventListener("pointerdown", e => { sx = e.clientX; });
+      pack.addEventListener("pointermove", e => {
+        if (sx === null) return;
+        const prog = Math.min(1, Math.abs(e.clientX - sx) / 90);
+        top.style.transform = `rotate(${prog * 16}deg) translateY(${-prog * 8}px)`;
+      });
+      pack.addEventListener("click", breakCapsule, { once: true });
+    }
+    async function breakCapsule() {
+      const stage = $("#capStage"), pack = $("#pack"), top = pack.querySelector(".pack-top");
+      save.crystals -= CAPSULE_COST;
+      const results = [rollAtout(), rollAtout(), rollAtout()].map(id => {
+        const dup = Boolean(save.owned[id]);
+        if (dup) save.crystals += RARITY[ATOUTS[id].rarity].dup; else save.owned[id] = 1;
+        return { id, dup };
+      });
+      persist();
+      fillButtons($("#capActions"), []);
+      $("#capText").textContent = "";
+      pack.style.animation = "none";
+      sfx.rip();
+      burst(top, ["#fff", "#cfd6e2", YE], 16);
+      top.animate([{ transform: top.style.transform || "none", opacity: 1 }, { transform: "translate(80px, -90px) rotate(75deg)", opacity: 0 }], { duration: reduced ? 1 : 460, easing: "ease-in", fill: "forwards" });
+      await sleep(430);
+      pack.animate([{ transform: "none", opacity: 1 }, { transform: "translateY(70px) scale(0.85)", opacity: 0 }], { duration: reduced ? 1 : 300, fill: "forwards" });
+      await sleep(280);
+      stage.innerHTML = "";
+      const slots = results.map((res, i) => {
+        const slot = document.createElement("div");
+        slot.className = "cap-slot dealt";
+        slot.style.animationDelay = `${i * 140}ms`;
+        slot.appendChild(cardEl(makeAtout(res.id, `cap${i}`), 0, true));
+        slot.appendChild(document.createElement("small"));
+        stage.appendChild(slot);
+        return slot;
+      });
+      await sleep(950);
+      for (let i = 0; i < slots.length; i += 1) {
+        const { id, dup } = results[i], a = ATOUTS[id];
+        if (a.rarity === 2) { slots[i].querySelector(".card").animate([{ transform: "none" }, { transform: "scale(1.12) rotate(-3deg)" }, { transform: "scale(1.12) rotate(3deg)" }, { transform: "none" }], { duration: reduced ? 1 : 700 }); await sleep(650); }
+        slots[i].querySelector(".card").classList.remove("facedown");
+        if (a.rarity > 0) { sfx.rare(); burst(slots[i], a.rarity === 2 ? [YE, "#fff", OR] : ["#2fa394", "#fff", K], a.rarity === 2 ? 28 : 16); if (a.rarity === 2) warp(900); }
+        else sfx.flip();
+        await sleep(450);
+        slots[i].querySelector("small").textContent = dup ? `Doublon +${RARITY[a.rarity].dup} ◆` : `Nouveau · ${RARITY[a.rarity].name}`;
+        await sleep(350);
+      }
+      $("#capTitle").textContent = results.some(r => !r.dup) ? "Nouveaux atouts !" : "Que des doublons…";
+      $("#capText").innerHTML = `Il te reste <b>${save.crystals} ◆</b>.`;
+      const buttons = [{ label: "Équiper mes atouts", fn: () => { closeCapsule(); openAtouts(); } }];
+      if (save.crystals >= CAPSULE_COST) buttons.push({ label: `Encore un · ${CAPSULE_COST} ◆`, cls: "teal", fn: openCapsuleShop });
+      buttons.push({ label: "Fermer", cls: "ghost", fn: closeCapsule });
+      fillButtons($("#capActions"), buttons);
+    }
+    function toggleSound() {
+      soundOn = !soundOn;
+      for (const id of ["menuSound", "pauseSound"]) $(`#${id}`).textContent = `Son : ${soundOn ? "oui" : "non"}`;
+    }
+    let helpFrom = null;
+    function openHelp(from) { helpFrom = from; if (from) $(`#${from}`).classList.remove("on"); $("#help").classList.add("on"); }
+
+    $("#playBtn").addEventListener("click", () => newGame(!save.tuto));
+    $("#tutoBtn").addEventListener("click", () => newGame(true));
+    $("#atoutsBtn").addEventListener("click", openAtouts);
+    $("#atClose").addEventListener("click", () => { $("#atouts").classList.remove("on"); renderMenu(); });
+    $("#capsuleBtn").addEventListener("click", openCapsuleShop);
+    $("#menuHelp").addEventListener("click", () => openHelp(null));
+    $("#pauseHelp").addEventListener("click", () => openHelp("pause"));
+    $("#helpClose").addEventListener("click", () => { $("#help").classList.remove("on"); if (helpFrom) $(`#${helpFrom}`).classList.add("on"); });
+    $("#menuSound").addEventListener("click", toggleSound);
+    $("#pauseSound").addEventListener("click", toggleSound);
+    $("#pauseBtn").addEventListener("click", () => $("#pause").classList.add("on"));
+    $("#resumeBtn").addEventListener("click", () => $("#pause").classList.remove("on"));
+    $("#quitBtn").addEventListener("click", goMenu);
+    $("#endAgain").addEventListener("click", () => newGame(false));
+    $("#endMenu").addEventListener("click", goMenu);
+
+    buildDie();
+    renderMenu();
+    initSpace();
+  </script>
+</body>
+</html>

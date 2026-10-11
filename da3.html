@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bataille des Alliés — Cosmos Rétro, 4 variations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --page: #f3f0e9; --text: #1d1b22; --soft: #6a6572; --rule: #d9d3c6;
+      --navy: #1f2a44; --deep: #131a30; --cream: #f5e9cf; --orange: #f26a3d; --yellow: #f5c445; --teal: #2fa394; --violet: #5b5fc7;
+      --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page); color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.45; }
+    .wrap { width: min(1400px, 100% - 32px); margin: 0 auto; padding: 28px 0 48px; }
+    header h1 { margin: 0 0 6px; font-size: clamp(1.5rem, 4vw, 2.2rem); letter-spacing: -0.01em; }
+    header p { margin: 0 0 6px; max-width: 74ch; color: var(--soft); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 670px), 1fr)); gap: 48px 20px; margin-top: 28px; }
+    .prop h2 { margin: 0 0 14px; font-size: 1.15rem; text-align: center; }
+    .prop h2 span { display: inline-grid; place-items: center; width: 28px; height: 28px; margin-right: 8px; border-radius: 50%; background: var(--text); color: var(--page); font-size: 0.85rem; }
+    .body { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; }
+    .col { width: 344px; max-width: 100%; display: grid; gap: 14px; align-content: start; }
+    .notes { font-size: 0.88rem; }
+    .notes dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 5px 10px; }
+    .notes dt { font-weight: 700; color: var(--soft); }
+    .notes dd { margin: 0; }
+    .reco { margin-top: 40px; padding: 18px 20px; border: 1px solid var(--rule); border-radius: 12px; background: #fffdf8; }
+    .reco h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .reco p, .reco ul { margin: 0 0 8px; }
+    .reco ul { padding-left: 1.2rem; }
+
+    /* ───── Téléphone ───── */
+    .phone { width: 300px; height: max-content; padding: 9px; border-radius: 38px; background: #17161b; box-shadow: 0 22px 44px rgba(30, 20, 10, 0.28); }
+    .screen { position: relative; height: 612px; border-radius: 30px; overflow: hidden; isolation: isolate; display: flex; flex-direction: column; gap: 7px; padding: 12px 10px 10px; background: var(--deep); color: var(--cream); font-family: "Righteous", sans-serif; font-size: 13px; }
+    .scene { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
+    .screen::after, .deck::after { content: ""; position: absolute; inset: 0; z-index: 9; pointer-events: none; background: var(--grain); opacity: 0.4; mix-blend-mode: multiply; }
+    .bar { display: flex; align-items: center; gap: 8px; padding: 5px 9px; border-radius: 12px; background: rgba(19, 26, 48, 0.86); border: 2px solid var(--cream); }
+    .ava { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); }
+    .nm { flex: 1; line-height: 1.05; }
+    .pips { display: flex; gap: 3px; margin-top: 3px; }
+    .pips i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--cream); }
+    .pips i.on { background: var(--yellow); }
+    .stat { text-align: center; font-size: 9px; line-height: 1.1; text-transform: uppercase; letter-spacing: 0.04em; }
+    .stat b { display: block; font-size: 17px; font-weight: 400; letter-spacing: 0; }
+    .backs { display: flex; justify-content: center; height: 22px; }
+    .backs i { width: 22px; height: 30px; margin: 0 -3px; border-radius: 4px; border: 2px solid var(--navy); background: repeating-radial-gradient(circle at 50% 50%, var(--orange) 0 3px, var(--navy) 3px 6px); transform: rotate(calc(var(--k) * 6deg)); }
+    .lane { display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .slot { position: relative; flex: none; width: 60px; height: 84px; display: grid; place-items: center; border-radius: 11px; border: 2px dashed rgba(245, 233, 207, 0.6); background: rgba(19, 26, 48, 0.28); font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(245, 233, 207, 0.75); }
+    .slot.want { border-color: var(--yellow); color: var(--yellow); background: rgba(245, 196, 69, 0.2); animation: pulse 1.4s ease-in-out infinite; }
+    .slot .c { text-transform: none; letter-spacing: 0; }
+    .tot { width: 50px; text-align: center; font-size: 28px; line-height: 1; text-shadow: 0 3px 0 var(--deep); }
+    .tot small { display: block; margin-top: 2px; font-size: 10px; opacity: 0.85; }
+    .mid { display: flex; align-items: center; justify-content: space-between; padding: 0 8px; min-height: 46px; }
+    .pot { font-size: 11px; line-height: 1.1; text-shadow: 0 2px 0 var(--deep); }
+    .pot b { font-size: 17px; font-weight: 400; }
+    .vs { padding: 4px 13px; border-radius: 99px; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); letter-spacing: 0.1em; box-shadow: 0 4px 0 var(--deep); }
+    .die { width: 38px; height: 38px; padding: 6px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; border-radius: 8px; background: var(--cream); border: 2px solid var(--navy); box-shadow: 0 4px 0 var(--deep); transform: rotate(-8deg); }
+    .die i { border-radius: 50%; }
+    .die i.p { background: var(--navy); }
+    .say { align-self: center; padding: 5px 13px; border-radius: 99px; background: rgba(19, 26, 48, 0.86); border: 2px solid var(--cream); }
+    .hand { flex: 1; display: flex; justify-content: center; align-items: flex-end; padding-top: 24px; }
+
+    /* ───── Cartes ───── */
+    .c { position: relative; flex: none; width: 56px; height: 80px; display: grid; grid-template-rows: auto 1fr auto; gap: 1px; padding: 2px 3px 2px; border-radius: 9px; background: var(--cream); color: var(--navy); border: 2px solid var(--navy); box-shadow: 0 4px 0 var(--deep); font-family: "Righteous", sans-serif; }
+    .c.h-S { --hc: var(--violet); } .c.h-H { --hc: var(--orange); } .c.h-D { --hc: #e0a91f; } .c.h-C { --hc: var(--teal); }
+    .c .top { display: flex; justify-content: space-between; align-items: center; padding: 0 2px; font-size: 13px; line-height: 1.05; }
+    .c .top span:last-child { color: var(--hc); }
+    .c .art { min-height: 0; border-radius: 5px; border: 2px solid var(--navy); background: var(--hc); overflow: hidden; }
+    .c .art svg { display: block; width: 100%; height: 100%; }
+    .c .n { font-size: 8px; text-align: center; line-height: 1.05; white-space: nowrap; }
+    .c.back { background: repeating-radial-gradient(circle at 50% 50%, var(--orange) 0 5px, var(--navy) 5px 10px); }
+    .c.back > * { display: none; }
+    .hand .c { width: 68px; height: 97px; margin: 0 -5px; transform: rotate(calc(var(--k) * 5deg)) translateY(calc(var(--k) * var(--k) * 3px)); }
+    .hand .c .top { font-size: 15px; }
+    .hand .c .n { font-size: 9px; }
+    .hand .c.sel { z-index: 3; animation: bob 1.8s ease-in-out infinite; }
+    .hint { position: absolute; left: 50%; top: -21px; transform: translateX(-50%); padding: 1px 8px; border-radius: 99px; white-space: nowrap; font-size: 10px; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); }
+    .deck { position: relative; overflow: hidden; isolation: isolate; display: grid; grid-template-columns: repeat(2, 150px); gap: 14px; padding: 15px; border-radius: 18px; background: radial-gradient(circle 1.5px at 12% 20%, var(--cream) 99%, transparent), radial-gradient(circle 1px at 88% 12%, var(--cream) 99%, transparent), radial-gradient(circle 1.5px at 50% 50%, var(--cream) 99%, transparent), radial-gradient(circle 1px at 8% 86%, var(--cream) 99%, transparent), radial-gradient(circle 1px at 92% 78%, var(--cream) 99%, transparent), var(--deep); }
+    .c.big { width: 150px; height: 214px; padding: 5px 7px 6px; gap: 3px; border-radius: 14px; border-width: 3px; box-shadow: 0 6px 0 #0a0f1e; }
+    .c.big .top { font-size: 25px; }
+    .c.big .art { border-width: 3px; border-radius: 9px; }
+    .c.big .n { font-size: 15px; }
+
+    @keyframes bob { 0%, 100% { transform: translateY(-16px) rotate(-1deg) scale(1.07); } 50% { transform: translateY(-22px) rotate(1deg) scale(1.07); } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    @keyframes twinkle { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+    .scene .tw { animation: twinkle 2.6s ease-in-out infinite; }
+    .scene .tw:nth-child(3n) { animation-delay: 0.9s; }
+    .scene .tw:nth-child(3n + 1) { animation-delay: 1.7s; }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .hand .c.sel { transform: translateY(-18px) scale(1.07); } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Cosmos Rétro — 4 variations</h1>
+      <p>Même palette et même typo que la piste 8. Ce qui change : le fond devient un vrai lieu où l'on joue, et chaque variation a son propre casting, dessiné figure par figure avec un contour épais.</p>
+      <p>Décor et casting sont indépendants : tu peux prendre le lieu de l'une et les personnages de l'autre.</p>
+    </header>
+
+    <div class="grid" id="grid"></div>
+
+    <section class="reco">
+      <h2>Mon avis</h2>
+      <p><b>Je prendrais le décor de la C (Saturne) avec le casting de la D (les bêtes de l'espace).</b></p>
+      <ul>
+        <li><b>Saturne</b> est le seul décor qui explique le jeu : la planète est le pot au centre, chaque camp pose ses cartes sur son arc d'anneau. Il laisse aussi le plus de calme derrière les cartes.</li>
+        <li><b>Les bêtes</b> sont les plus attachantes et les plus faciles à reconnaître en tout petit, grâce aux silhouettes d'oreilles. Félicette, la chatte que la France a envoyée dans l'espace en 1963, fait une Dame toute trouvée.</li>
+        <li><b>Les robots (A)</b> sont le choix le plus sûr si tu veux rester proche de la piste 8.</li>
+        <li><b>Le cockpit (B)</b> est le plus immersif mais aussi le plus chargé : à réserver si l'interface reste très sobre.</li>
+      </ul>
+      <p>Dis-moi le couple décor + casting retenu et je l'applique au proto jouable.</p>
+    </section>
+  </div>
+
+  <script>
+    const N = "#1f2a44", K = "#f5e9cf", M = "#dfe5e2", D2 = "#9fb0b3", GL = "#cdeef0", OR = "#f26a3d", YE = "#f5c445", W = "#fbf5e6", SK = "#f3c9a0";
+    const S = `stroke="${N}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+    const L = `fill="none" ${S}`;
+    const SYM = { S: "♠", H: "♥", D: "♦", C: "♣" };
+    const accent = house => (house === "D" ? OR : YE);
+
+    function rng(seed) {
+      let s = seed;
+      return () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
+    }
+    function crown(cx, base, w, h, fill) {
+      const x0 = cx - w / 2, x1 = cx + w / 2;
+      return `<path d="M${x0} ${base} L${x0 - 1.5} ${base - h * 0.8} L${cx - w / 4} ${base - h * 0.42} L${cx} ${base - h} L${cx + w / 4} ${base - h * 0.42} L${x1 + 1.5} ${base - h * 0.8} L${x1} ${base}z" fill="${fill}" ${S}/>
+        <circle cx="${x0 - 1.5}" cy="${base - h * 0.8}" r="2.6" fill="${K}" ${S}/><circle cx="${cx}" cy="${base - h}" r="2.6" fill="${K}" ${S}/><circle cx="${x1 + 1.5}" cy="${base - h * 0.8}" r="2.6" fill="${K}" ${S}/>`;
+    }
+    function helmet(cx, cy, r) {
+      return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${GL}" fill-opacity=".34" ${S}/>
+        <path d="M${cx - r * 0.72} ${cy - r * 0.3} Q${cx - r * 0.6} ${cy - r * 0.78} ${cx - r * 0.12} ${cy - r * 0.86}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"/>`;
+    }
+    function suit(w, extra = "") {
+      return `<path d="M${50 - w} 112 V98 Q${50 - w} 84 ${64 - w} 84 H${36 + w} Q${50 + w} 84 ${50 + w} 98 V112z" fill="${W}" ${S}/>${extra}<ellipse cx="50" cy="84" rx="${w * 0.62}" ry="5.5" fill="${D2}" ${S}/>`;
+    }
+    function frame(inner, seed) {
+      const r = rng(seed);
+      let stars = "";
+      for (let i = 0; i < 7; i += 1) stars += `<circle cx="${(r() * 100).toFixed(0)}" cy="${(r() * 110).toFixed(0)}" r="${r() > 0.6 ? 1.6 : 1}" fill="${K}"/>`;
+      return `<svg viewBox="0 0 100 110" preserveAspectRatio="xMidYMid slice"><circle cx="50" cy="50" r="43" fill="${K}" opacity=".17"/>${stars}${inner}</svg>`;
+    }
+    function tentacle(d, fill) {
+      return `<path d="${d}" fill="none" stroke="${N}" stroke-width="10.500" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${fill}" stroke-width="5.800" stroke-linecap="round"/>`;
+    }
+
+    /* ───── Casting A : robots de fer-blanc ───── */
+    const ROBOTS = {
+      R: a => `
+        <path d="M6 112 V94 Q6 80 22 80 H78 Q94 80 94 94 V112z" fill="${M}" ${S}/>
+        <circle cx="13" cy="83" r="7.500" fill="${a}" ${S}/><circle cx="87" cy="83" r="7.500" fill="${a}" ${S}/>
+        <circle cx="50" cy="99" r="8" fill="${K}" ${S}/><path d="M50 99 L55 94" ${L}/>
+        <rect x="40" y="68" width="20" height="14" fill="${D2}" ${S}/>
+        <rect x="11" y="40" width="10" height="18" rx="3" fill="${D2}" ${S}/><rect x="79" y="40" width="10" height="18" rx="3" fill="${D2}" ${S}/>
+        <rect x="19" y="25" width="62" height="47" rx="9" fill="${M}" ${S}/>
+        <rect x="24" y="33" width="52" height="7" rx="2" fill="${N}"/>
+        <circle cx="36" cy="46" r="7.500" fill="${a}" ${S}/><circle cx="64" cy="46" r="7.500" fill="${a}" ${S}/>
+        <circle cx="36" cy="47" r="2.800" fill="${N}"/><circle cx="64" cy="47" r="2.800" fill="${N}"/>
+        <path d="M24 60 Q37 51 50 59 Q63 51 76 60 Q63 71 50 64 Q37 71 24 60z" fill="${K}" ${S}/>
+        <path d="M34 58 V65 M42 58 V65 M58 58 V65 M66 58 V65" ${L} stroke-width="1.600"/>
+        ${crown(50, 25, 50, 22, a)}`,
+      D: a => `
+        <path d="M18 112 L33 80 H67 L82 112z" fill="${M}" ${S}/>
+        <path d="M30 96 H70 M26 104 H74" ${L} stroke-width="1.800"/>
+        <ellipse cx="50" cy="80" rx="34" ry="7.500" fill="${a}" ${S}/>
+        <rect x="44" y="66" width="12" height="12" fill="${D2}" ${S}/>
+        <circle cx="19" cy="50" r="5.500" fill="${a}" ${S}/><circle cx="81" cy="50" r="5.500" fill="${a}" ${S}/>
+        <path d="M24 64 V44 Q24 17 50 17 Q76 17 76 44 V64 Q50 74 24 64z" fill="${M}" ${S}/>
+        <ellipse cx="38" cy="45" rx="7.500" ry="8.500" fill="${K}" ${S}/><ellipse cx="62" cy="45" rx="7.500" ry="8.500" fill="${K}" ${S}/>
+        <circle cx="39" cy="46" r="3.200" fill="${N}"/><circle cx="61" cy="46" r="3.200" fill="${N}"/>
+        <path d="M30 37 L26 32 M35 35 L33 29 M41 35 L42 29 M70 37 L74 32 M65 35 L67 29 M59 35 L58 29" ${L} stroke-width="2"/>
+        <ellipse cx="50" cy="60" rx="5.500" ry="3.200" fill="${OR}" ${S}/>
+        <circle cx="30" cy="57" r="1.500" fill="${N}"/><circle cx="70" cy="57" r="1.500" fill="${N}"/>
+        ${crown(50, 20, 34, 18, a)}`,
+      V: a => `
+        <path d="M70 92 L86 80" ${L} stroke-width="5"/>
+        <path d="M78 78 V65 H93 L98 61 V71 H86 V78z" fill="${a}" ${S}/>
+        <path d="M100 58 L96 52 M96 62 L104 62" ${L} stroke-width="1.800"/>
+        <rect x="30" y="80" width="40" height="32" rx="7" fill="${M}" ${S}/>
+        <circle cx="50" cy="96" r="5.500" fill="${a}" ${S}/>
+        <path d="M50 80 L45 77 L55 74 L45 71 L55 68" ${L}/>
+        <rect x="27" y="28" width="46" height="40" rx="15" fill="${M}" ${S}/>
+        <circle cx="50" cy="46" r="12.500" fill="${K}" ${S}/><circle cx="52" cy="47" r="6.500" fill="${a}" ${S}/><circle cx="53" cy="47" r="2.600" fill="${N}"/>
+        <rect x="42" y="61" width="16" height="3.500" rx="1" fill="${N}"/>
+        <path d="M24 34 Q28 14 54 16 Q73 18 76 32 Q50 24 24 34z" fill="${a}" ${S}/>
+        <path d="M62 17 L60 12 L66 11 L63 6" ${L}/><circle cx="64" cy="3" r="3.500" fill="${K}" ${S}/>`,
+      A: (a, h) => {
+        let rays = "";
+        for (let i = 0; i < 14; i += 1) { const t = (Math.PI * 2 * i) / 14; rays += `<path d="M${(50 + Math.cos(t) * 34).toFixed(1)} ${(52 + Math.sin(t) * 34).toFixed(1)} L${(50 + Math.cos(t) * 48).toFixed(1)} ${(52 + Math.sin(t) * 48).toFixed(1)}" stroke="${K}" stroke-width="2.600" stroke-linecap="round" opacity=".8"/>`; }
+        return `${rays}
+          <path d="M40 80 Q50 112 60 80z" fill="${a}" ${S}/>
+          <path d="M34 60 L16 90 L35 80z" fill="${a}" ${S}/><path d="M66 60 L84 90 L65 80z" fill="${a}" ${S}/>
+          <path d="M50 6 Q72 30 66 80 H34 Q28 30 50 6z" fill="${K}" ${S}/>
+          <path d="M50 6 Q60 16 63.500 28 H36.500 Q40 16 50 6z" fill="${a}" ${S}/>
+          <circle cx="50" cy="48" r="12" fill="currentColor" ${S}/>
+          <text x="50" y="54" text-anchor="middle" font-size="17" font-family="serif" fill="${K}">${SYM[h]}</text>
+          <path d="M38 70 H62" ${L}/>`;
+      }
+    };
+
+    /* ───── Casting B : cosmonautes ───── */
+    const COSMO = {
+      R: a => `
+        <path d="M2 112 L20 76 H80 L98 112z" fill="${a}" ${S}/>
+        ${suit(36, `<rect x="40" y="94" width="20" height="12" rx="2" fill="${N}"/><circle cx="45" cy="100" r="2" fill="${OR}"/><circle cx="55" cy="100" r="2" fill="${K}"/>`)}
+        <circle cx="50" cy="50" r="21" fill="${SK}" ${S}/>
+        <path d="M30 51 Q50 92 70 51 Q50 62 30 51z" fill="${K}" ${S}/>
+        <path d="M38 55 Q44 50 50 55 Q56 50 62 55" ${L}/>
+        <circle cx="42" cy="45" r="2.600" fill="${N}"/><circle cx="58" cy="45" r="2.600" fill="${N}"/>
+        <path d="M36 39 L46 41 M64 39 L54 41" ${L} stroke-width="3"/>
+        ${helmet(50, 49, 33)}
+        ${crown(50, 19, 40, 18, a)}`,
+      D: a => `
+        ${suit(30, `<path d="M50 93 l2.500 5 l5.500 .5 l-4 4 l1 5.500 l-5 -2.700 l-5 2.700 l1 -5.500 l-4 -4 l5.500 -.5z" fill="${a}" ${S} stroke-width="1.800"/>`)}
+        <circle cx="50" cy="40" r="25" fill="${OR}" ${S}/>
+        <circle cx="26" cy="54" r="8" fill="${OR}" ${S}/><circle cx="74" cy="54" r="8" fill="${OR}" ${S}/>
+        <circle cx="50" cy="52" r="18" fill="${SK}" ${S}/>
+        <path d="M32 46 Q40 30 58 34 Q66 36 68 46 Q56 40 32 46z" fill="${OR}" ${S}/>
+        <path d="M37 51 q4 4 8 0 M55 51 q4 4 8 0" ${L}/>
+        <path d="M36 50 L33 47 M64 50 L67 47" ${L} stroke-width="1.800"/>
+        <ellipse cx="50" cy="62" rx="4.500" ry="2.800" fill="#e8456b" ${S} stroke-width="1.800"/>
+        <circle cx="38" cy="58" r="2.800" fill="#f39a84" opacity=".8"/><circle cx="62" cy="58" r="2.800" fill="#f39a84" opacity=".8"/>
+        ${helmet(50, 48, 34)}
+        ${crown(50, 17, 30, 15, a)}`,
+      V: a => `
+        <path d="M90 112 V6" ${L} stroke-width="3"/>
+        <path d="M90 8 H68 L74 15.500 L68 23 H90z" fill="${a}" ${S}/>
+        ${suit(32, `<path d="M38 96 H62 M38 102 H62" ${L} stroke-width="1.800"/>`)}
+        <circle cx="48" cy="52" r="19" fill="${SK}" ${S}/>
+        <path d="M32 44 Q38 30 52 32 L48 40 L58 34 Q64 38 65 46 Q50 40 32 44z" fill="#b5744a" ${S}/>
+        <circle cx="41" cy="50" r="2.600" fill="${N}"/><circle cx="55" cy="50" r="2.600" fill="${N}"/>
+        <path d="M39 59 Q48 68 57 59z" fill="${N}"/>
+        <circle cx="36" cy="56" r="1" fill="#b5744a"/><circle cx="39" cy="58" r="1" fill="#b5744a"/><circle cx="60" cy="56" r="1" fill="#b5744a"/><circle cx="57" cy="58" r="1" fill="#b5744a"/>
+        ${helmet(48, 50, 32)}
+        <path d="M28 26 L20 10" ${L}/><circle cx="19" cy="8" r="3.800" fill="${OR}" ${S}/>`,
+      A: (a, h) => `
+        <ellipse cx="50" cy="54" rx="47" ry="12" transform="rotate(-18 50 54)" fill="none" stroke="${N}" stroke-width="11"/>
+        <ellipse cx="50" cy="54" rx="47" ry="12" transform="rotate(-18 50 54)" fill="none" stroke="${a}" stroke-width="6"/>
+        <circle cx="50" cy="54" r="27" fill="${K}" ${S}/>
+        <path d="M25 46 Q50 38 75 46 M24 60 Q50 68 76 60" fill="none" stroke="${D2}" stroke-width="3" stroke-linecap="round"/>
+        <path d="M5.500 68.500 A47 12 -18 0 0 94.500 39.500" fill="none" stroke="${N}" stroke-width="11" stroke-linecap="round"/>
+        <path d="M5.500 68.500 A47 12 -18 0 0 94.500 39.500" fill="none" stroke="${a}" stroke-width="6" stroke-linecap="round"/>
+        <text x="50" y="52" text-anchor="middle" font-size="24" font-family="serif" fill="currentColor" stroke="${N}" stroke-width="1.200">${SYM[h]}</text>
+        <circle cx="84" cy="16" r="5" fill="${a}" ${S}/>`
+    };
+
+    /* ───── Casting C : martiens ───── */
+    const G1 = "#a8e6a1";
+    const MARS = {
+      R: a => `
+        <path d="M12 112 Q14 84 50 84 Q86 84 88 112z" fill="${a}" ${S}/>
+        <path d="M28 88 L34 98 L42 88 L50 98 L58 88 L66 98 L72 88" ${L}/>
+        ${tentacle("M36 72 q-8 12 0 26", G1)}${tentacle("M50 74 q6 12 0 28", G1)}${tentacle("M64 72 q8 12 0 26", G1)}
+        <path d="M12 48 Q12 9 50 9 Q88 9 88 48 Q88 74 50 78 Q12 74 12 48z" fill="${G1}" ${S}/>
+        <path d="M26 24 q6 -7 12 0 q6 7 12 0 q6 -7 12 0 q6 7 12 0 M32 33 q5 -5 10 0 M58 33 q5 -5 10 0" ${L} stroke-width="1.800"/>
+        <circle cx="30" cy="52" r="8" fill="${K}" ${S}/><circle cx="50" cy="46" r="9.500" fill="${K}" ${S}/><circle cx="70" cy="52" r="8" fill="${K}" ${S}/>
+        <circle cx="31" cy="53" r="3" fill="${N}"/><circle cx="50" cy="47" r="3.800" fill="${N}"/><circle cx="69" cy="53" r="3" fill="${N}"/>
+        <path d="M42 66 Q50 61 58 66" ${L}/>
+        ${crown(50, 13, 30, 14, a)}`,
+      D: a => `
+        <path d="M26 112 L40 86 H60 L74 112z" fill="${a}" ${S}/>
+        <rect x="45" y="64" width="10" height="24" fill="${G1}" ${S}/>
+        <path d="M22 94 Q50 68 78 94 Q50 86 22 94z" fill="${K}" ${S}/>
+        ${tentacle("M40 20 Q32 12 24 8", G1)}${tentacle("M60 20 Q68 12 76 8", G1)}
+        <circle cx="22" cy="7" r="5.500" fill="${a}" ${S}/><circle cx="78" cy="7" r="5.500" fill="${a}" ${S}/>
+        <ellipse cx="50" cy="42" rx="22" ry="29" fill="${G1}" ${S}/>
+        <ellipse cx="50" cy="40" rx="13.500" ry="11" fill="${K}" ${S}/>
+        <circle cx="50" cy="41" r="6" fill="${a}" ${S}/><circle cx="50" cy="41" r="2.600" fill="${N}"/>
+        <path d="M38 32 L34 26 M43 29 L41 22 M50 28 V21 M57 29 L59 22 M62 32 L66 26" ${L} stroke-width="2"/>
+        <ellipse cx="50" cy="60" rx="5" ry="3" fill="#e8456b" ${S} stroke-width="1.800"/>
+        ${crown(50, 19, 28, 13, a)}`,
+      V: a => `
+        <path d="M24 112 Q26 88 50 88 Q74 88 76 112z" fill="${a}" ${S}/>
+        ${tentacle("M36 50 Q32 38 29 28", G1)}${tentacle("M64 50 Q68 38 71 28", G1)}
+        <ellipse cx="50" cy="64" rx="32" ry="23" fill="${G1}" ${S}/>
+        <circle cx="28" cy="21" r="10.500" fill="${K}" ${S}/><circle cx="72" cy="21" r="10.500" fill="${K}" ${S}/>
+        <circle cx="31" cy="23" r="3.800" fill="${N}"/><circle cx="68" cy="19" r="3.800" fill="${N}"/>
+        <path d="M32 66 Q50 86 68 66z" fill="${N}" ${S}/><rect x="46" y="67" width="8" height="6.500" rx="1" fill="${K}"/>
+        <path d="M37 46 Q50 28 63 46z" fill="${a}" ${S}/>
+        <path d="M50 37 V30" ${L}/><ellipse cx="43" cy="29" rx="7" ry="2.500" fill="${K}" ${S} stroke-width="1.800"/><ellipse cx="57" cy="29" rx="7" ry="2.500" fill="${K}" ${S} stroke-width="1.800"/>
+        <circle cx="24" cy="62" r="2.400" fill="#6fc77a"/><circle cx="76" cy="62" r="2.400" fill="#6fc77a"/>`,
+      A: (a, h) => `
+        <path d="M34 54 L14 112 H86 L66 54z" fill="${K}" opacity=".55"/>
+        <path d="M30 44 Q30 14 50 14 Q70 14 70 44z" fill="${GL}" ${S}/>
+        <circle cx="50" cy="34" r="7" fill="${G1}" ${S}/><circle cx="48" cy="33" r="1.500" fill="${N}"/><circle cx="53" cy="33" r="1.500" fill="${N}"/>
+        <ellipse cx="50" cy="48" rx="44" ry="13" fill="${K}" ${S}/>
+        <ellipse cx="50" cy="44" rx="26" ry="5" fill="${D2}" ${S} stroke-width="1.800"/>
+        <circle cx="16" cy="50" r="3.500" fill="${a}" ${S}/><circle cx="33" cy="56" r="3.500" fill="${a}" ${S}/><circle cx="50" cy="58" r="3.500" fill="${a}" ${S}/><circle cx="67" cy="56" r="3.500" fill="${a}" ${S}/><circle cx="84" cy="50" r="3.500" fill="${a}" ${S}/>
+        <text x="50" y="100" text-anchor="middle" font-size="30" font-family="serif" fill="${N}">${SYM[h]}</text>`
+    };
+
+    /* ───── Casting D : bêtes de l'espace ───── */
+    const FUR = "#e3b98a", BR = "#a9673f";
+    const BETES = {
+      R: a => `
+        ${suit(36, `<rect x="41" y="94" width="18" height="11" rx="2" fill="${a}" ${S} stroke-width="1.800"/>`)}
+        <path d="M25 32 Q8 34 12 60 Q24 56 29 42z" fill="${BR}" ${S}/><path d="M75 32 Q92 34 88 60 Q76 56 71 42z" fill="${BR}" ${S}/>
+        <path d="M23 60 V44 Q23 26 50 26 Q77 26 77 44 V60 Q77 78 50 78 Q23 78 23 60z" fill="${FUR}" ${S}/>
+        <path d="M50 28 Q46 38 50 48" fill="none" stroke="${BR}" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="39" cy="63" r="12" fill="${K}" ${S}/><circle cx="61" cy="63" r="12" fill="${K}" ${S}/>
+        <path d="M43 52 H57 Q57 60 50 60 Q43 60 43 52z" fill="${N}"/>
+        <circle cx="37" cy="43" r="3" fill="${N}"/><circle cx="63" cy="43" r="3" fill="${N}"/>
+        <path d="M30 36 L43 39 M70 36 L57 39" ${L} stroke-width="3.200"/>
+        <path d="M43 73 l2.500 -5 l2.500 5z M52 73 l2.500 -5 l2.500 5z" fill="#fff" ${S} stroke-width="1.500"/>
+        ${helmet(50, 50, 36)}
+        ${crown(50, 17, 40, 16, a)}`,
+      D: a => `
+        ${suit(30, `<circle cx="50" cy="99" r="5" fill="${a}" ${S} stroke-width="1.800"/>`)}
+        <path d="M27 36 L28 12 L46 27z" fill="${N}" ${S}/><path d="M73 36 L72 12 L54 27z" fill="${N}" ${S}/>
+        <path d="M32 28 L32 19 L39 25z" fill="#f39a84"/><path d="M68 28 L68 19 L61 25z" fill="#f39a84"/>
+        <ellipse cx="50" cy="50" rx="26" ry="22" fill="${N}" ${S}/>
+        <path d="M50 42 Q36 52 39 65 Q50 74 61 65 Q64 52 50 42z" fill="#fff"/>
+        <ellipse cx="38" cy="46" rx="6.500" ry="5.500" fill="${a}" ${S} stroke-width="1.800"/><ellipse cx="62" cy="46" rx="6.500" ry="5.500" fill="${a}" ${S} stroke-width="1.800"/>
+        <ellipse cx="38" cy="46" rx="1.600" ry="4.200" fill="${N}"/><ellipse cx="62" cy="46" rx="1.600" ry="4.200" fill="${N}"/>
+        <path d="M31 42 L27 39 M69 42 L73 39" fill="none" stroke="${K}" stroke-width="2" stroke-linecap="round"/>
+        <path d="M47 55 H53 L50 59z" fill="#f39a84" ${S} stroke-width="1.500"/>
+        <path d="M44 63 Q47 66 50 62 Q53 66 56 63" ${L} stroke-width="1.800"/>
+        <path d="M34 58 L20 55 M34 62 L21 64 M66 58 L80 55 M66 62 L79 64" fill="none" stroke="${K}" stroke-width="1.500" stroke-linecap="round"/>
+        ${helmet(50, 49, 35)}
+        ${crown(50, 16, 30, 14, a)}`,
+      V: a => `
+        ${suit(32)}
+        <path d="M70 102 Q86 98 90 80 Q94 94 82 108z" fill="${YE}" ${S}/>
+        <circle cx="22" cy="50" r="10.500" fill="${BR}" ${S}/><circle cx="78" cy="50" r="10.500" fill="${BR}" ${S}/>
+        <circle cx="22" cy="50" r="5" fill="${SK}"/><circle cx="78" cy="50" r="5" fill="${SK}"/>
+        <circle cx="50" cy="49" r="25" fill="${BR}" ${S}/>
+        <path d="M50 37 Q36 30 33 46 Q29 68 50 72 Q71 68 67 46 Q64 30 50 37z" fill="${SK}" ${S} stroke-width="1.800"/>
+        <circle cx="42" cy="46" r="2.800" fill="${N}"/><circle cx="58" cy="46" r="2.800" fill="${N}"/>
+        <circle cx="48" cy="55" r="1.100" fill="${N}"/><circle cx="52" cy="55" r="1.100" fill="${N}"/>
+        <path d="M38 60 Q50 72 62 60" ${L}/>
+        <path d="M26 40 Q29 19 50 19 Q71 19 74 40 Q50 31 26 40z" fill="${a}" ${S}/>
+        <circle cx="50" cy="26" r="3.500" fill="${K}" ${S} stroke-width="1.800"/>
+        ${helmet(50, 48, 36)}`,
+      A: (a, h) => `
+        <ellipse cx="50" cy="56" rx="46" ry="16" transform="rotate(-24 50 56)" fill="none" stroke="${K}" stroke-width="1.800" stroke-dasharray="3 5" opacity=".8"/>
+        <path d="M44 62 L4 100 M50 66 L20 110 M58 66 L44 112 M40 54 L2 74" ${L}/>
+        <circle cx="56" cy="46" r="24" fill="${K}" ${S}/>
+        <path d="M33 40 Q56 30 79 40" fill="none" stroke="${D2}" stroke-width="2.600" stroke-linecap="round"/>
+        <path d="M40 34 Q44 27 52 25" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+        <text x="56" y="58" text-anchor="middle" font-size="26" font-family="serif" fill="currentColor" stroke="${N}" stroke-width="1.200">${SYM[h]}</text>
+        <path d="M86 20 l1.800 4 l4 .5 l-3 3 l.8 4 l-3.600 -2 l-3.600 2 l.8 -4 l-3 -3 l4 -.5z" fill="${a}" ${S} stroke-width="1.500"/>`
+    };
+
+    const CASTS = { robots: ROBOTS, cosmo: COSMO, mars: MARS, betes: BETES };
+
+    function art(cast, house, rank, seed) {
+      const a = accent(house);
+      if (CASTS[cast][rank]) return frame(CASTS[cast][rank](a, house), seed);
+      return frame(`<ellipse cx="50" cy="56" rx="44" ry="14" transform="rotate(-20 50 56)" fill="none" stroke="${K}" stroke-width="2.200" opacity=".7"/>
+        <text x="50" y="77" text-anchor="middle" font-size="60" font-family="serif" fill="${K}" stroke="${N}" stroke-width="1.800">${SYM[house]}</text>
+        <circle cx="88" cy="42" r="4" fill="${a}" ${S} stroke-width="1.800"/>`, seed);
+    }
+
+    /* ───── Décors (280 × 612) ───── */
+    function stars(n, yMin, yMax, seed, xMin = 0, xMax = 280) {
+      const r = rng(seed);
+      let s = "";
+      for (let i = 0; i < n; i += 1) s += `<circle class="tw" cx="${(xMin + r() * (xMax - xMin)).toFixed(0)}" cy="${(yMin + r() * (yMax - yMin)).toFixed(0)}" r="${r() > 0.75 ? 1.6 : 0.9}" fill="${K}"/>`;
+      return s;
+    }
+    const SCENES = {
+      lune() {
+        const crater = (x, y, rx, ry) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="#2a3359"/><ellipse cx="${x}" cy="${y + ry * 0.28}" rx="${rx * 0.86}" ry="${ry * 0.7}" fill="#323d69"/><path d="M${x - rx} ${y} A${rx} ${ry} 0 0 1 ${x + rx} ${y}" fill="none" stroke="#5c6aa3" stroke-width="2"/>`;
+        return `<rect width="280" height="612" fill="#10162b"/>${stars(34, 0, 150, 7)}
+          <circle cx="226" cy="74" r="62" fill="${K}" opacity=".07"/>
+          <circle cx="226" cy="74" r="46" fill="#2fa394"/>
+          <path d="M196 56 q12 -14 28 -8 q10 6 2 16 q-14 8 -30 -8z M222 92 q16 -10 30 0 q4 12 -12 18 q-16 -2 -18 -18z M244 44 q10 2 14 12 q-10 2 -14 -12z" fill="${K}" opacity=".85"/>
+          <path d="M226 28 A46 46 0 0 1 226 120 A60 60 0 0 0 226 28z" fill="#10162b" opacity=".35"/>
+          <path d="M0 156 Q140 116 280 156 V612 H0z" fill="#3b4675"/>
+          <path d="M0 156 Q140 116 280 156 V176 Q140 138 0 176z" fill="#5361a0"/>
+          <path d="M0 440 Q140 420 280 440 V612 H0z" fill="#333d68"/>
+          ${crater(34, 206, 26, 7)}${crater(250, 232, 20, 6)}${crater(26, 360, 30, 9)}${crater(252, 372, 24, 7)}${crater(140, 348, 16, 5)}${crater(60, 492, 40, 11)}${crater(232, 536, 44, 12)}${crater(150, 590, 30, 8)}
+          <path d="M22 150 V124" stroke="${K}" stroke-width="2"/><path d="M22 124 H38 L34 129.500 L38 135 H22z" fill="${OR}"/>
+          <path d="M66 148 l4 -18 q4 -8 8 0 l4 18z" fill="${K}"/><path d="M66 148 l-5 6 h8z M82 148 l5 6 h-8z" fill="${OR}"/><circle cx="74" cy="137" r="2.500" fill="#2fa394"/>
+          <circle cx="110" cy="250" r="2" fill="#2a3359"/><circle cx="196" cy="420" r="3" fill="#2a3359"/><circle cx="90" cy="430" r="2" fill="#2a3359"/><circle cx="204" cy="300" r="2" fill="#2a3359"/>`;
+      },
+      cockpit() {
+        let rivets = "";
+        for (let x = 22; x <= 258; x += 26) rivets += `<circle cx="${x}" cy="9" r="2" fill="${N}"/><circle cx="${x}" cy="183" r="2" fill="${N}"/>`;
+        for (let y = 30; y <= 164; y += 26) rivets += `<circle cx="9" cy="${y}" r="2" fill="${N}"/><circle cx="271" cy="${y}" r="2" fill="${N}"/>`;
+        let stripes = "";
+        for (let x = -10; x < 290; x += 14) stripes += `<path d="M${x} 196 l7 -8 h7 l-7 8z M${x} 240 l7 -8 h7 l-7 8z" fill="${YE}"/>`;
+        const gauge = (x, y, a) => `<circle cx="${x}" cy="${y}" r="11" fill="${K}" stroke="${N}" stroke-width="2.500"/><path d="M${x} ${y} L${x + Math.cos(a) * 8} ${y + Math.sin(a) * 8}" stroke="${OR}" stroke-width="2.500" stroke-linecap="round"/><circle cx="${x}" cy="${y}" r="1.800" fill="${N}"/>`;
+        const sw = (x, y, c) => `<rect x="${x - 6}" y="${y - 4}" width="12" height="8" rx="4" fill="${N}"/><circle cx="${x + 2}" cy="${y}" r="4" fill="${c}" stroke="${N}" stroke-width="1.500"/>`;
+        return `<rect width="280" height="612" fill="#2c6f78"/>
+          <rect x="2" y="2" width="276" height="188" rx="30" fill="${K}"/>
+          <rect x="15" y="15" width="250" height="162" rx="20" fill="#10162b"/>
+          <g clip-path="inset(0)">${stars(26, 18, 174, 11, 18, 262)}</g>
+          <circle cx="44" cy="52" r="20" fill="${OR}"/><path d="M27 46 Q44 40 61 46 M26 58 Q44 64 62 58" fill="none" stroke="#c9502f" stroke-width="3"/>
+          <ellipse cx="44" cy="52" rx="32" ry="7" transform="rotate(-16 44 52)" fill="none" stroke="${YE}" stroke-width="3"/>
+          <circle cx="244" cy="150" r="9" fill="#2fa394"/>
+          <rect x="15" y="15" width="250" height="162" rx="20" fill="none" stroke="${N}" stroke-width="3"/>${rivets}
+          <rect x="0" y="188" width="280" height="52" fill="#1b464e"/>${stripes}
+          <rect x="0" y="240" width="280" height="372" fill="#2c6f78"/>
+          <path d="M0 348 H280 M0 470 H280 M22 240 V612 M258 240 V612" stroke="#205860" stroke-width="2"/>
+          <rect x="0" y="470" width="280" height="142" fill="#205860"/>
+          ${gauge(11, 280, -0.8)}${gauge(269, 280, -2.2)}
+          ${sw(11, 312, OR)}${sw(11, 328, YE)}${sw(269, 312, "#2fa394")}${sw(269, 328, OR)}
+          <rect x="4" y="372" width="14" height="60" rx="3" fill="${N}"/><rect x="6" y="400" width="10" height="30" rx="2" fill="#2fa394"/>
+          <rect x="262" y="372" width="14" height="60" rx="3" fill="${N}"/><rect x="264" y="386" width="10" height="44" rx="2" fill="${OR}"/>
+          <circle cx="11" cy="452" r="5" fill="${OR}" stroke="${N}" stroke-width="2"/><circle cx="269" cy="452" r="5" fill="${YE}" stroke="${N}" stroke-width="2"/>`;
+      },
+      saturne() {
+        return `<rect width="280" height="612" fill="#10162b"/>${stars(70, 0, 612, 23)}
+          <ellipse cx="140" cy="206" rx="232" ry="98" fill="none" stroke="${K}" stroke-width="44" opacity=".2"/>
+          <ellipse cx="140" cy="206" rx="232" ry="98" fill="none" stroke="${YE}" stroke-width="3" opacity=".9"/>
+          <ellipse cx="140" cy="206" rx="258" ry="124" fill="none" stroke="${OR}" stroke-width="5" opacity=".9"/>
+          <ellipse cx="140" cy="206" rx="204" ry="72" fill="none" stroke="${K}" stroke-width="2" stroke-dasharray="2 7" opacity=".7"/>
+          <circle cx="140" cy="206" r="70" fill="#2fa394" opacity=".14"/>
+          <circle cx="140" cy="206" r="52" fill="#2fa394"/>
+          <path d="M90 194 Q140 180 190 194 M89 212 Q140 226 191 212 M100 232 Q140 242 180 232" fill="none" stroke="#23806f" stroke-width="6" stroke-linecap="round"/>
+          <path d="M140 154 A52 52 0 0 1 140 258 A70 70 0 0 0 140 154z" fill="#10162b" opacity=".3"/>
+          <circle cx="40" cy="410" r="13" fill="${OR}"/><path d="M40 397 A13 13 0 0 1 40 423 A18 18 0 0 0 40 397z" fill="#10162b" opacity=".3"/>
+          <circle cx="250" cy="470" r="6" fill="${K}"/>
+          <path d="M228 548 L262 520" stroke="${K}" stroke-width="2" stroke-linecap="round" opacity=".5"/><path d="M236 552 L270 524" stroke="${K}" stroke-width="1.500" stroke-linecap="round" opacity=".35"/><circle cx="226" cy="551" r="4" fill="${YE}"/>
+          <path d="M30 520 l3 -14 q3 -6 6 0 l3 14z" fill="${K}" transform="rotate(40 36 512)"/>`;
+      },
+      mars() {
+        return `<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2a5c"/><stop offset="1" stop-color="${OR}"/></linearGradient></defs>
+          <rect width="280" height="200" fill="url(#sky)"/>${stars(20, 0, 80, 31)}
+          <circle cx="212" cy="62" r="26" fill="${K}"/><circle cx="252" cy="96" r="10" fill="${YE}"/>
+          <path d="M0 196 V150 H22 V134 H58 V160 H88 V176 H112 V196z M168 196 V168 H190 V142 H238 V156 H262 V130 H280 V196z" fill="#7c2f2a"/>
+          <path d="M96 196 V178 H130 V186 H160 V196z" fill="#963a2b"/>
+          <rect y="194" width="280" height="418" fill="#c2492d"/>
+          <path d="M0 194 Q140 180 280 194 V214 Q140 198 0 214z" fill="#d8603a"/>
+          <path d="M0 330 Q70 316 140 330 T280 330 M0 350 Q70 338 140 350 T280 350 M0 452 Q70 436 140 452 T280 452 M0 476 Q70 462 140 476 T280 476 M0 560 Q70 546 140 560 T280 560" fill="none" stroke="#a83c26" stroke-width="3" stroke-linecap="round"/>
+          <rect y="480" width="280" height="132" fill="#8f3322" opacity=".45"/>
+          <ellipse cx="30" cy="250" rx="22" ry="6" fill="#a83c26"/><ellipse cx="254" cy="280" rx="18" ry="5" fill="#a83c26"/><ellipse cx="34" cy="410" rx="26" ry="7" fill="#a83c26"/><ellipse cx="248" cy="418" rx="20" ry="6" fill="#a83c26"/>
+          <path d="M18 390 l8 -14 l10 6 l4 8z M246 262 l6 -10 l8 4 l4 6z M230 400 l6 -12 l10 4 l2 8z" fill="#7c2f2a"/>
+          <ellipse cx="70" cy="60" rx="18" ry="5" fill="${K}"/><path d="M60 58 Q60 46 70 46 Q80 46 80 58z" fill="${GL}"/><circle cx="62" cy="61" r="1.500" fill="${OR}"/><circle cx="70" cy="62.500" r="1.500" fill="${OR}"/><circle cx="78" cy="61" r="1.500" fill="${OR}"/>`;
+      }
+    };
+
+    function card(cast, house, rank, name, seed, cls = "", extra = "", inner = "") {
+      return `<div class="c h-${house} ${cls}" ${extra}>${inner}<div class="top"><span>${rank}</span><span>${SYM[house]}</span></div><div class="art">${art(cast, house, rank, seed)}</div><div class="n">${name}</div></div>`;
+    }
+    function pips(on) { return `<div class="pips">${[0, 1, 2].map(i => `<i class="${i < on ? "on" : ""}"></i>`).join("")}</div>`; }
+    function die() { const on = [0, 2, 4, 6, 8]; return `<div class="die">${Array.from({ length: 9 }, (_, i) => `<i class="${on.includes(i) ? "p" : ""}"></i>`).join("")}</div>`; }
+    function screen(p) {
+      const c = p.cast;
+      return `
+        <div class="screen">
+          <svg class="scene" viewBox="0 0 280 612" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${SCENES[p.scene]()}</svg>
+          <div class="bar"><div class="ava">G</div><div class="nm">Gaspard${pips(2)}</div><div class="stat">Pioche<b>17</b></div><div class="stat">Butin<b>7</b></div></div>
+          <div class="backs">${[-1.5, -0.5, 0.5, 1.5].map(k => `<i style="--k:${k}"></i>`).join("")}</div>
+          <div class="lane">
+            <div class="slot">${card(c, "H", "R", "Roi", 3)}</div>
+            <div class="slot"><div class="c back"></div></div>
+            <div class="slot">Allié</div>
+            <div class="tot">13<small>+ ?</small></div>
+          </div>
+          <div class="mid"><div class="pot">Pot<br><b>5</b> cartes</div><div class="vs">CHOC</div>${die()}</div>
+          <div class="lane">
+            <div class="slot">${card(c, "C", "9", "Bannière", 5)}</div>
+            <div class="slot want">Embus-<br>cade</div>
+            <div class="slot">Allié</div>
+            <div class="tot">9<small>+ ?</small></div>
+          </div>
+          <div class="say">Pose ton embuscade</div>
+          <div class="hand">
+            ${card(c, "S", "D", "Dame", 9, "", 'style="--k:-1.5"')}
+            ${card(c, "C", "8", "Forge", 12, "sel", 'style="--k:-0.5"', '<span class="hint">Serment +3</span>')}
+            ${card(c, "D", "V", "Valet", 15, "", 'style="--k:0.5"')}
+            ${card(c, "C", "A", "As", 18, "", 'style="--k:1.5"')}
+          </div>
+          <div class="bar"><div class="ava">T</div><div class="nm">Toi${pips(1)}</div><div class="stat">Pioche<b>15</b></div><div class="stat">Butin<b>10</b></div></div>
+        </div>`;
+    }
+    function deck(c) {
+      return `<div class="deck">${card(c, "H", "R", "Roi", 3, "big")}${card(c, "S", "D", "Dame", 9, "big")}${card(c, "D", "V", "Valet", 15, "big")}${card(c, "C", "A", "As", 18, "big")}</div>`;
+    }
+
+    const PROPS = [
+      {
+        k: "A", name: "Base lunaire + robots de fer-blanc", scene: "lune", cast: "robots",
+        decor: "On joue posé sur la Lune : la Terre se lève derrière l'adversaire, les cartes atterrissent entre les cratères.",
+        casting: "Jouets mécaniques : Roi massif à moustache-grille et couronne à ampoules, Dame en cloche avec cils et collerette-anneau, Valet cyclope au pistolet laser. As : la fusée.",
+        fx: "Chaque carte se pose en soulevant un nuage de poussière au ralenti, faible gravité oblige. Le dé rebondit haut et retombe lentement."
+      },
+      {
+        k: "B", name: "Cockpit + cosmonautes", scene: "cockpit", cast: "cosmo",
+        decor: "Tu es aux commandes : l'adversaire apparaît dans le hublot, tes cartes se posent sur la console, entre cadrans et interrupteurs.",
+        casting: "Humains sous bulle de verre : Roi barbu à cape et couronne vissée sur le casque, Dame à chignons orange, Valet à taches de rousseur et fanion. As : la planète aux anneaux.",
+        fx: "Les cadrans s'affolent quand le pot grossit, voyants qui clignotent à la révélation, le hublot tremble sur les grosses cartes."
+      },
+      {
+        k: "C", name: "Anneaux de Saturne + martiens", scene: "saturne", cast: "mars",
+        decor: "La table, c'est l'anneau : la planète tient le pot au centre, chaque camp pose ses cartes sur son arc d'orbite.",
+        casting: "Petits hommes verts : Roi à cerveau géant, trois yeux et barbe de tentacules ; Dame cyclope à long cou et antennes ; Valet aux yeux sur tiges et calot à hélice. As : la soucoupe.",
+        fx: "Les cartes arrivent en orbite et se mettent à quai sur l'anneau. Les cartes gagnées sont aspirées par le rayon de la soucoupe."
+      },
+      {
+        k: "D", name: "Désert martien + bêtes de l'espace", scene: "mars", cast: "betes",
+        decor: "Un plateau de roche rouge, deux soleils et des mesas à l'horizon : chaud, lisible, très différent du bleu nuit.",
+        casting: "Les animaux pionniers en scaphandre : Roi bouledogue grognon, Dame chatte noire et blanche (clin d'œil à Félicette), Valet chimpanzé à casquette et banane. As : le Spoutnik.",
+        fx: "Tourbillons de sable à l'impact, ombres doubles des deux soleils, le dé roule en laissant une trace dans la poussière."
+      }
+    ];
+
+    document.querySelector("#grid").innerHTML = PROPS.map(p => `
+      <article class="prop">
+        <h2><span>${p.k}</span>${p.name}</h2>
+        <div class="body">
+          <div class="phone">${screen(p)}</div>
+          <div class="col">
+            ${deck(p.cast)}
+            <div class="notes"><dl>
+              <dt>Décor</dt><dd>${p.decor}</dd>
+              <dt>Casting</dt><dd>${p.casting}</dd>
+              <dt>Effets</dt><dd>${p.fx}</dd>
+            </dl></div>
+          </div>
+        </div>
+      </article>`).join("");
+  </script>
+</body>
+</html>

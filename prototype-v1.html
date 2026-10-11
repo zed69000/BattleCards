@@ -1,0 +1,1302 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bataille des Alliés — Prototype v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f6ecd6;
+      --muted: #b9a988;
+      --night: #120d14;
+      --wood: #2b1a14;
+      --wood-2: #4a2c1c;
+      --felt: #14362d;
+      --felt-2: #0b211c;
+      --brass: #e2b65a;
+      --brass-2: #9c7426;
+      --parch: #f7ecd2;
+      --parch-2: #e6d4ac;
+      --line: rgba(246, 236, 214, 0.16);
+      --s: #5a4aa3;
+      --h: #b8243f;
+      --d: #a56f12;
+      --c: #0c7a5b;
+      --ok: #3ddc97;
+      --bad: #ff5d73;
+      --cw: 92px;
+      --title: "Cinzel", "Trajan Pro", Georgia, serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 50% -10%, rgba(226, 182, 90, 0.16), transparent 55%),
+        radial-gradient(ellipse at 50% 120%, rgba(184, 36, 63, 0.14), transparent 55%),
+        var(--night);
+      overflow-x: hidden;
+    }
+
+    button { font: inherit; cursor: pointer; }
+
+    .btn {
+      border: 1px solid rgba(0, 0, 0, 0.4);
+      border-radius: 8px;
+      padding: 0.62rem 1rem;
+      font-weight: 800;
+      color: #2a1606;
+      background: linear-gradient(180deg, #f3d283, var(--brass) 55%, var(--brass-2));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 6px 16px rgba(0, 0, 0, 0.4);
+      transition: transform 120ms ease, filter 120ms ease;
+    }
+    .btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+    .btn:active { transform: translateY(1px); }
+    .btn.ghost {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--line);
+      box-shadow: none;
+    }
+    .btn.rune { color: #eafff7; background: linear-gradient(180deg, #17a67d, var(--c)); }
+
+    .app { width: min(1280px, calc(100% - 32px)); margin: 0 auto; padding: 18px 0 30px; }
+
+    .top {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .crest {
+      width: 46px; height: 46px; display: grid; place-items: center;
+      border-radius: 50%; font-size: 1.4rem; color: #2a1606;
+      background: radial-gradient(circle at 35% 30%, #fbe6a8, var(--brass) 60%, var(--brass-2));
+      box-shadow: 0 0 0 3px rgba(226, 182, 90, 0.25), 0 8px 18px rgba(0, 0, 0, 0.5);
+    }
+    h1 { margin: 0; font-family: var(--title); font-size: clamp(1.4rem, 3vw, 2rem); letter-spacing: 0.04em; }
+    .brand p { margin: 2px 0 0; color: var(--muted); font-size: 0.86rem; }
+    .hud { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .round-chip {
+      padding: 0.5rem 0.9rem; border-radius: 8px; border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.05); font-weight: 700; color: var(--muted);
+    }
+    .round-chip b { color: var(--brass); font-family: var(--title); font-size: 1.15rem; margin-left: 6px; }
+
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+
+    /* ───── Table ───── */
+    .table {
+      position: relative;
+      border-radius: 18px;
+      padding: 14px;
+      background: linear-gradient(145deg, var(--wood-2), var(--wood) 40%, #1b100c);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+    .felt {
+      position: relative;
+      border-radius: 12px;
+      padding: 14px;
+      background:
+        radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.07), transparent 62%),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.018) 0 2px, transparent 2px 5px),
+        linear-gradient(180deg, var(--felt), var(--felt-2));
+      box-shadow: inset 0 0 0 2px rgba(226, 182, 90, 0.35), inset 0 0 60px rgba(0, 0, 0, 0.65);
+      overflow: hidden;
+    }
+    .table.shake .felt { animation: shake 420ms ease; }
+
+    .seat { display: grid; grid-template-columns: 170px 1fr 150px; gap: 12px; align-items: center; }
+    .who { display: flex; gap: 10px; align-items: center; min-width: 0; }
+    .avatar {
+      flex: none; width: 44px; height: 44px; border-radius: 50%;
+      display: grid; place-items: center; font-family: var(--title); font-weight: 800;
+      background: #241a2c; border: 2px solid var(--brass); color: var(--brass);
+    }
+    .seat.active .avatar { box-shadow: 0 0 0 4px rgba(226, 182, 90, 0.28), 0 0 22px rgba(226, 182, 90, 0.6); }
+    .who b { display: block; }
+    .who small { color: var(--muted); }
+    .tokens { display: flex; gap: 4px; margin-top: 4px; }
+    .tok {
+      width: 13px; height: 13px; border-radius: 50%;
+      border: 1px solid rgba(226, 182, 90, 0.5); background: rgba(0, 0, 0, 0.3);
+    }
+    .tok.on {
+      background: radial-gradient(circle at 35% 30%, #fff1c4, var(--brass) 65%, var(--brass-2));
+      box-shadow: 0 0 8px rgba(226, 182, 90, 0.7);
+    }
+    .tok.pop { animation: tokPop 500ms ease; }
+
+    .piles { display: flex; gap: 10px; justify-content: flex-end; }
+    .pile {
+      min-width: 64px; padding: 6px 8px; text-align: center; border-radius: 8px;
+      border: 1px solid var(--line); background: rgba(0, 0, 0, 0.28);
+      font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .pile b { display: block; font-family: var(--title); font-size: 1.35rem; color: var(--ink); letter-spacing: 0; }
+    .pile.loot b { color: var(--brass); }
+    .pile.bump { animation: bump 450ms ease; }
+
+    .opp-hand { display: flex; justify-content: center; min-height: 56px; }
+    .mini-back {
+      width: 36px; height: 52px; margin-left: -10px; border-radius: 5px;
+      border: 1px solid rgba(226, 182, 90, 0.7);
+      background:
+        repeating-linear-gradient(45deg, rgba(226, 182, 90, 0.22) 0 3px, transparent 3px 7px),
+        linear-gradient(135deg, #3a1d3f, #16232d);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
+      transform: rotate(calc(var(--r) * 5deg)) translateY(calc(var(--r) * var(--r) * 1.5px));
+    }
+
+    /* ───── Champ de bataille ───── */
+    .field { position: relative; display: grid; gap: 8px; margin: 12px 0; }
+    .lane { display: flex; justify-content: center; align-items: center; gap: 14px; }
+    .slots { display: flex; gap: 12px; }
+    .slot-wrap { display: grid; justify-items: center; gap: 4px; }
+    .slot-wrap span { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .slot {
+      position: relative;
+      width: calc(var(--cw) + 8px); height: calc(var(--cw) * 1.42 + 8px);
+      display: grid; place-items: center;
+      border-radius: 10px; border: 1.5px dashed rgba(226, 182, 90, 0.3);
+      background: rgba(0, 0, 0, 0.18);
+    }
+    .slot.want { border-color: var(--brass); box-shadow: 0 0 0 3px rgba(226, 182, 90, 0.16), inset 0 0 24px rgba(226, 182, 90, 0.2); animation: want 1.3s ease-in-out infinite; }
+    .slot.thud::after {
+      content: ""; position: absolute; inset: -4px; border-radius: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.75); animation: ring 480ms ease-out forwards; pointer-events: none;
+    }
+    .slot.ally-slot { border-style: dotted; }
+
+    .tally { width: 128px; display: grid; gap: 4px; justify-items: start; }
+    .tally .num { font-family: var(--title); font-size: 2.5rem; line-height: 1; color: var(--brass); text-shadow: 0 3px 12px rgba(0, 0, 0, 0.6); }
+    .tally .num.bump { animation: bump 380ms ease; }
+    .tally.lead .num { color: var(--ok); }
+    .tally.behind .num { color: var(--bad); }
+    .chips { display: flex; flex-wrap: wrap; gap: 4px; min-height: 20px; }
+    .chip { font-size: 0.68rem; font-weight: 800; padding: 2px 6px; border-radius: 999px; background: rgba(61, 220, 151, 0.16); color: var(--ok); border: 1px solid rgba(61, 220, 151, 0.35); }
+    .chip.neg { background: rgba(255, 93, 115, 0.16); color: var(--bad); border-color: rgba(255, 93, 115, 0.4); }
+
+    .mid {
+      display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px;
+      min-height: 86px; padding: 6px 4px;
+      border-top: 1px solid rgba(226, 182, 90, 0.18); border-bottom: 1px solid rgba(226, 182, 90, 0.18);
+    }
+    .pot { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 0.86rem; }
+    .pot-stack { position: relative; width: 34px; height: 46px; }
+    .pot-stack i {
+      position: absolute; inset: 0; border-radius: 4px; border: 1px solid rgba(226, 182, 90, 0.6);
+      background: linear-gradient(135deg, #3a1d3f, #16232d);
+    }
+    .pot-stack i:nth-child(2) { transform: translate(3px, -3px) rotate(5deg); }
+    .pot-stack i:nth-child(3) { transform: translate(6px, -6px) rotate(-4deg); }
+    .pot.empty .pot-stack { opacity: 0.25; }
+    .pot b { color: var(--brass); font-family: var(--title); font-size: 1.2rem; }
+    .pot.hot b { color: var(--bad); }
+
+    .emblem {
+      font-family: var(--title); font-weight: 800; letter-spacing: 0.2em; font-size: 0.8rem;
+      color: #2a1606; padding: 0.5rem 0.9rem; border-radius: 999px;
+      background: linear-gradient(180deg, #f3d283, var(--brass-2));
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Dé 3D */
+    .tray { display: flex; align-items: center; justify-content: flex-end; gap: 12px; visibility: hidden; opacity: 0; transition: opacity 200ms; }
+    .tray.on { visibility: visible; opacity: 1; }
+    .tray-info { text-align: right; font-size: 0.82rem; color: var(--muted); line-height: 1.3; }
+    .tray-info b { display: block; color: var(--ink); font-size: 1rem; }
+    .tray-info b.ok { color: var(--ok); }
+    .tray-info b.ko { color: var(--bad); }
+    .die-stage { width: 62px; height: 62px; perspective: 420px; flex: none; }
+    .tray.rolling .die-stage { animation: dieHop 1100ms cubic-bezier(.3, .6, .4, 1); }
+    .cube {
+      --h: 31px; position: relative; width: 62px; height: 62px; transform-style: preserve-3d;
+      transition: transform 1100ms cubic-bezier(.16, .8, .28, 1);
+    }
+    .cube .f {
+      position: absolute; inset: 0; border-radius: 10px;
+      display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
+      padding: 8px; gap: 2px;
+      background: linear-gradient(145deg, #fffaf0, #e8d7b0);
+      box-shadow: inset 0 0 0 2px rgba(120, 70, 20, 0.35);
+    }
+    .cube .f i { border-radius: 50%; margin: 1px; }
+    .cube .f i.p { background: radial-gradient(circle at 35% 30%, #d0445c, #6e0f23); }
+    .f1 { transform: translateZ(var(--h)); }
+    .f6 { transform: rotateY(180deg) translateZ(var(--h)); }
+    .f2 { transform: rotateY(90deg) translateZ(var(--h)); }
+    .f5 { transform: rotateY(-90deg) translateZ(var(--h)); }
+    .f3 { transform: rotateX(90deg) translateZ(var(--h)); }
+    .f4 { transform: rotateX(-90deg) translateZ(var(--h)); }
+
+    .banner {
+      position: absolute; left: 50%; top: 50%; z-index: 20; pointer-events: none; opacity: 0;
+      transform: translate(-50%, -50%) scale(0.7);
+      font-family: var(--title); font-weight: 800; white-space: nowrap;
+      font-size: clamp(1.5rem, 4.6vw, 3.1rem); letter-spacing: 0.08em; text-transform: uppercase;
+      color: #fff3cf; text-shadow: 0 0 22px rgba(226, 182, 90, 0.9), 0 4px 0 #5b3b0c, 0 10px 30px #000;
+    }
+    .banner.show { animation: banner 1150ms ease both; }
+    .banner.bad { color: #ffd0d6; text-shadow: 0 0 22px rgba(255, 93, 115, 0.9), 0 4px 0 #5c0f1e, 0 10px 30px #000; }
+
+    .fx { position: absolute; inset: 0; pointer-events: none; z-index: 15; overflow: hidden; }
+    .spark { position: absolute; width: 5px; height: 20px; border-radius: 99px; animation: spark 700ms ease-out forwards; }
+    .float {
+      position: absolute; z-index: 18; pointer-events: none; font-weight: 900; font-size: 1rem;
+      padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+      background: rgba(10, 30, 22, 0.92); color: var(--ok); border: 1px solid var(--ok);
+      animation: floatUp 1400ms ease-out forwards;
+    }
+    .float.neg { color: var(--bad); border-color: var(--bad); background: rgba(40, 8, 14, 0.92); }
+
+    /* ───── Cartes ───── */
+    .card { position: relative; width: var(--cw); height: calc(var(--cw) * 1.42); perspective: 700px; flex: none; }
+    .card-inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 620ms cubic-bezier(.3, 1.3, .5, 1); }
+    .card.facedown .card-inner { transform: rotateY(180deg); }
+    .face { position: absolute; inset: 0; border-radius: 9px; backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden; }
+    .front {
+      display: grid; grid-template-rows: auto 1fr auto auto; padding: 6px 7px;
+      color: var(--hc);
+      background:
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--hc) 14%, transparent), transparent 60%),
+        linear-gradient(160deg, var(--parch), var(--parch-2));
+      border: 2px solid var(--hc);
+      box-shadow: inset 0 0 0 3px var(--parch), inset 0 0 0 4px color-mix(in srgb, var(--hc) 45%, transparent), 0 10px 20px rgba(0, 0, 0, 0.5);
+    }
+    .back {
+      transform: rotateY(180deg);
+      border: 2px solid var(--brass);
+      background:
+        radial-gradient(circle at 50% 50%, rgba(226, 182, 90, 0.5) 0 9px, transparent 10px),
+        repeating-linear-gradient(45deg, rgba(226, 182, 90, 0.2) 0 4px, transparent 4px 10px),
+        repeating-linear-gradient(-45deg, rgba(226, 182, 90, 0.2) 0 4px, transparent 4px 10px),
+        linear-gradient(135deg, #3a1d3f, #16232d);
+      box-shadow: inset 0 0 0 4px #1d1322, 0 10px 20px rgba(0, 0, 0, 0.5);
+    }
+    .h-S { --hc: var(--s); } .h-H { --hc: var(--h); } .h-D { --hc: var(--d); } .h-C { --hc: var(--c); }
+    .corner { display: flex; justify-content: space-between; align-items: center; font-weight: 900; font-size: calc(var(--cw) * 0.2); line-height: 1; font-family: var(--title); }
+    .pip { display: grid; place-items: center; font-size: calc(var(--cw) * 0.5); line-height: 1; filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.6)); }
+    .ctitle { text-align: center; font-size: calc(var(--cw) * 0.115); font-weight: 800; line-height: 1.1; color: #3a2a1c; }
+    .cfoot { display: flex; justify-content: space-between; align-items: center; margin-top: 3px; font-size: calc(var(--cw) * 0.12); font-weight: 900; }
+    .cfoot .val { background: var(--hc); color: #fff; border-radius: 4px; padding: 1px 5px; }
+    .cfoot .thr { color: #5c4630; }
+
+    .card.pending .front { outline: 3px dashed var(--brass); outline-offset: 2px; animation: want 900ms ease-in-out infinite; }
+    .card.joined .front { box-shadow: 0 0 0 3px var(--ok), 0 0 28px rgba(61, 220, 151, 0.7), 0 10px 20px rgba(0, 0, 0, 0.5); }
+    .card.broken { filter: grayscale(1) brightness(0.55); transform: rotate(9deg) translateY(6px); transition: all 400ms ease; }
+    .card.broken::after { content: "✕"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 3rem; color: var(--bad); z-index: 3; }
+
+    /* Main du joueur */
+    .hand { display: flex; justify-content: center; align-items: flex-end; min-height: calc(var(--cw) * 1.42 + 34px); padding-top: 30px; }
+    .hand .card {
+      margin: 0 -7px; cursor: default;
+      transform: rotate(calc(var(--r) * 4deg)) translateY(calc(var(--r) * var(--r) * 4px));
+      transition: transform 170ms ease, filter 170ms ease;
+    }
+    .hand .card.playable { cursor: pointer; }
+    .hand .card.playable:hover { transform: translateY(-24px) scale(1.09); z-index: 5; }
+    .hand .card.playable .front { box-shadow: inset 0 0 0 3px var(--parch), inset 0 0 0 4px color-mix(in srgb, var(--hc) 45%, transparent), 0 0 0 2px rgba(226, 182, 90, 0.75), 0 12px 24px rgba(0, 0, 0, 0.55); }
+    .hand .card.dim { filter: brightness(0.5) saturate(0.6); }
+    .hand .card.drawn { animation: draw 460ms cubic-bezier(.2, .8, .2, 1) backwards; }
+    .hint {
+      position: absolute; left: 50%; top: -24px; transform: translateX(-50%); z-index: 6;
+      white-space: nowrap; font-size: 0.68rem; font-weight: 900; padding: 2px 7px; border-radius: 999px;
+      background: #0b2a20; color: var(--ok); border: 1px solid var(--ok);
+    }
+    .hint.warn { background: #33230a; color: var(--brass); border-color: var(--brass); }
+
+    .prompt {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
+      min-height: 58px; margin-top: 10px; padding: 10px 12px; border-radius: 10px;
+      background: rgba(0, 0, 0, 0.36); border: 1px solid var(--line);
+    }
+    .prompt p { margin: 0; flex: 1 1 260px; line-height: 1.4; }
+    .prompt p b { color: var(--brass); }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    /* ───── Panneau latéral ───── */
+    .side { display: grid; gap: 12px; }
+    .panel { border-radius: 12px; padding: 14px; background: rgba(255, 255, 255, 0.045); border: 1px solid var(--line); }
+    .panel h2 { margin: 0 0 10px; font-family: var(--title); font-size: 0.86rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--brass); }
+    .house { display: grid; grid-template-columns: 30px 1fr; gap: 8px; align-items: center; font-size: 0.82rem; line-height: 1.3; }
+    .house + .house { margin-top: 8px; }
+    .house i { width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; font-style: normal; font-size: 1.1rem; background: var(--parch); color: var(--hc); }
+    .house small { color: var(--muted); display: block; }
+    .kv { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: 0.82rem; color: var(--muted); }
+    .kv b { color: var(--ink); text-align: right; }
+    .log { margin: 0; padding: 0; list-style: none; font-size: 0.8rem; color: var(--muted); line-height: 1.4; max-height: 210px; overflow: auto; }
+    .log li { padding: 4px 0; border-bottom: 1px dashed rgba(255, 255, 255, 0.08); }
+    .log li:first-child { color: var(--ink); }
+
+    /* ───── Modales ───── */
+    .overlay { position: fixed; inset: 0; z-index: 50; display: none; place-items: center; padding: 16px; background: rgba(8, 4, 10, 0.78); backdrop-filter: blur(4px); }
+    .overlay.on { display: grid; }
+    .sheet {
+      width: min(640px, 100%); max-height: 88vh; overflow: auto; border-radius: 14px; padding: 22px;
+      background: linear-gradient(160deg, #2a1a22, #15211d); border: 1px solid rgba(226, 182, 90, 0.5);
+      box-shadow: 0 30px 80px #000;
+    }
+    .sheet h2 { margin: 0 0 12px; font-family: var(--title); color: var(--brass); }
+    .sheet ol { margin: 0 0 16px; padding-left: 1.2rem; line-height: 1.55; color: #e3d6bb; }
+    .sheet li + li { margin-top: 6px; }
+    .sheet .big { font-family: var(--title); font-size: 2.6rem; margin: 6px 0 14px; }
+
+    @keyframes shake { 0%, 100% { transform: none; } 20% { transform: translate(-5px, 2px); } 45% { transform: translate(5px, -2px); } 70% { transform: translate(-3px, 1px); } }
+    @keyframes ring { from { opacity: 1; transform: scale(0.9); } to { opacity: 0; transform: scale(1.35); } }
+    @keyframes want { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.35); } }
+    @keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.3); } 100% { transform: scale(1); } }
+    @keyframes tokPop { 0% { transform: scale(0.2); } 60% { transform: scale(1.6); } 100% { transform: scale(1); } }
+    @keyframes banner {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5) rotate(-4deg); }
+      18% { opacity: 1; transform: translate(-50%, -50%) scale(1.12) rotate(1deg); }
+      75% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -62%) scale(0.96); }
+    }
+    @keyframes spark {
+      from { opacity: 1; transform: rotate(var(--a)) translateY(0) scaleY(0.6); }
+      to { opacity: 0; transform: rotate(var(--a)) translateY(calc(var(--d) * -1)) scaleY(1.3); }
+    }
+    @keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, 6px) scale(0.7); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1.1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -38px) scale(1); } }
+    @keyframes draw { from { opacity: 0; transform: translate(220px, -40px) rotate(25deg) scale(0.6); } }
+    @keyframes dieHop { 0% { transform: translateY(0); } 25% { transform: translateY(-34px); } 50% { transform: translateY(0); } 68% { transform: translateY(-13px); } 84% { transform: translateY(0); } 92% { transform: translateY(-4px); } 100% { transform: translateY(0); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+    }
+    @media (max-width: 1020px) {
+      .layout { grid-template-columns: 1fr; }
+      .side { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      :root { --cw: 62px; }
+      .app { width: calc(100% - 16px); }
+      .table { padding: 7px; } .felt { padding: 8px; }
+      .seat { grid-template-columns: 1fr auto; }
+      .seat .opp-hand, .seat .hand { grid-column: 1 / -1; grid-row: 2; }
+      .lane { gap: 8px; } .slots { gap: 5px; }
+      .tally { width: 74px; } .tally .num { font-size: 1.8rem; }
+      .mid { grid-template-columns: 1fr 1fr; } .emblem { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div class="brand">
+        <div class="crest">⚔</div>
+        <div>
+          <h1>Bataille des Alliés</h1>
+          <p>Prototype v2 — main, embuscade et paris d'allié</p>
+        </div>
+      </div>
+      <div class="hud">
+        <div class="round-chip">Manche<b id="roundNo">1</b></div>
+        <button class="btn ghost" id="rulesBtn">Règles</button>
+        <button class="btn ghost" id="soundBtn" aria-pressed="true">Son : oui</button>
+        <button class="btn ghost" id="newBtn">Nouvelle partie</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <section class="table" id="table" aria-label="Table de jeu">
+        <div class="felt">
+          <div class="fx" id="fx" aria-hidden="true"></div>
+
+          <div class="seat" id="seat1">
+            <div class="who">
+              <div class="avatar">G</div>
+              <div><b>Gaspard</b><small>Vaillance</small><div class="tokens" id="valor1"></div></div>
+            </div>
+            <div class="opp-hand" id="oppHand" aria-label="Main de Gaspard"></div>
+            <div class="piles">
+              <div class="pile">Pioche<b id="deck1">0</b></div>
+              <div class="pile loot" id="lootBox1">Butin<b id="loot1">0</b></div>
+            </div>
+          </div>
+
+          <div class="field" id="field">
+            <div class="banner" id="banner" aria-hidden="true"></div>
+
+            <div class="lane" id="lane1">
+              <div class="slots">
+                <div class="slot-wrap"><div class="slot" id="slot-1-van"></div><span>Avant-garde</span></div>
+                <div class="slot-wrap"><div class="slot" id="slot-1-amb"></div><span>Embuscade</span></div>
+                <div class="slot-wrap"><div class="slot ally-slot" id="slot-1-ally"></div><span>Allié</span></div>
+              </div>
+              <div class="tally" id="tally1"><div class="num" id="total1">0</div><div class="chips" id="chips1"></div></div>
+            </div>
+
+            <div class="mid">
+              <div class="pot empty" id="pot">
+                <div class="pot-stack"><i></i><i></i><i></i></div>
+                <div>Pot en attente<br><b id="potNo">0</b> carte(s)</div>
+              </div>
+              <div class="emblem">CHOC</div>
+              <div class="tray" id="tray">
+                <div class="tray-info"><span id="trayNeed"></span><b id="trayRes"></b></div>
+                <div class="die-stage"><div class="cube" id="cube"></div></div>
+              </div>
+            </div>
+
+            <div class="lane" id="lane0">
+              <div class="slots">
+                <div class="slot-wrap"><div class="slot" id="slot-0-van"></div><span>Avant-garde</span></div>
+                <div class="slot-wrap"><div class="slot" id="slot-0-amb"></div><span>Embuscade</span></div>
+                <div class="slot-wrap"><div class="slot ally-slot" id="slot-0-ally"></div><span>Allié</span></div>
+              </div>
+              <div class="tally" id="tally0"><div class="num" id="total0">0</div><div class="chips" id="chips0"></div></div>
+            </div>
+          </div>
+
+          <div class="seat" id="seat0">
+            <div class="who">
+              <div class="avatar">T</div>
+              <div><b>Toi</b><small>Vaillance</small><div class="tokens" id="valor0"></div></div>
+            </div>
+            <div class="hand" id="hand" aria-label="Ta main"></div>
+            <div class="piles">
+              <div class="pile">Pioche<b id="deck0">0</b></div>
+              <div class="pile loot" id="lootBox0">Butin<b id="loot0">0</b></div>
+            </div>
+          </div>
+
+          <div class="prompt" aria-live="polite">
+            <p id="promptText"></p>
+            <div class="actions" id="actions"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="panel">
+          <h2>Pouvoirs d'embuscade</h2>
+          <div class="house h-S"><i>♠</i><div><b>Lames — Estocade</b><small>−2 au total adverse</small></div></div>
+          <div class="house h-H"><i>♥</i><div><b>Braises — Ferveur</b><small>+1 à ton dé d'allié</small></div></div>
+          <div class="house h-D"><i>♦</i><div><b>Couronnes — Tribut</b><small>+1 Vaillance si tu gagnes la manche</small></div></div>
+          <div class="house h-C"><i>♣</i><div><b>Runes — Présage</b><small>1 relance gratuite du dé d'allié</small></div></div>
+        </section>
+        <section class="panel">
+          <h2>Formations</h2>
+          <div class="kv">
+            <span>Jumeaux (même rang)</span><b>+5</b>
+            <span>Serment (même maison)</span><b>+3</b>
+            <span>Colonne (rangs voisins)</span><b>+2</b>
+          </div>
+          <h2 style="margin-top:14px">Seuil d'allié</h2>
+          <div class="kv">
+            <span>2 à 5</span><b>dé 2+ · 83 %</b>
+            <span>6 à 9</span><b>dé 3+ · 67 %</b>
+            <span>10, Valet</span><b>dé 4+ · 50 %</b>
+            <span>Dame, Roi</span><b>dé 5+ · 33 %</b>
+            <span>As</span><b>dé 6 · 17 %</b>
+          </div>
+        </section>
+        <section class="panel">
+          <h2>Journal</h2>
+          <ol class="log" id="log"></ol>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <div class="overlay" id="rules">
+    <div class="sheet">
+      <h2>Comment jouer</h2>
+      <ol>
+        <li><b>Ta main compte 5 cartes.</b> Tu choisis ce que tu engages, tu repioches à 5 après chaque manche.</li>
+        <li><b>Avant-garde :</b> chacun pose une carte visible. Le vainqueur de la manche précédente pose en premier — l'autre répond en connaissance de cause.</li>
+        <li><b>Embuscade :</b> chacun pose une carte cachée, en même temps. À la révélation, sa maison déclenche un pouvoir.</li>
+        <li><b>Formations :</b> tes deux cartes peuvent se combiner (Jumeaux, Serment, Colonne) pour un bonus.</li>
+        <li><b>Allié :</b> le camp en retard peut engager une 3<sup>e</sup> carte de sa main. Plus elle est forte, plus le dé est exigeant. Raté : la carte est perdue dans les enjeux.</li>
+        <li><b>Vaillance :</b> un jeton = +1 au dé, après le lancer. On en gagne un en perdant une manche.</li>
+        <li><b>Égalité :</b> tout part au pot, que rafle le prochain vainqueur.</li>
+        <li><b>Fin :</b> quand un camp ne peut plus aligner deux cartes, le plus gros butin l'emporte.</li>
+      </ol>
+      <button class="btn" id="rulesClose">Compris</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="endScreen">
+    <div class="sheet" style="text-align:center">
+      <h2 id="endTitle"></h2>
+      <div class="big" id="endScore"></div>
+      <p id="endText" style="color:var(--muted)"></p>
+      <button class="btn" id="endNew">Rejouer</button>
+    </div>
+  </div>
+
+  <script>
+    const HOUSES = {
+      S: { sym: "♠", name: "des Lames", power: "Estocade" },
+      H: { sym: "♥", name: "des Braises", power: "Ferveur" },
+      D: { sym: "♦", name: "des Couronnes", power: "Tribut" },
+      C: { sym: "♣", name: "des Runes", power: "Présage" }
+    };
+    const RANKS = [
+      ["2", 2, "Éclaireur"], ["3", 3, "Sentinelle"], ["4", 4, "Scribe"], ["5", 5, "Lance"],
+      ["6", 6, "Relais"], ["7", 7, "Garde"], ["8", 8, "Forge"], ["9", 9, "Bannière"],
+      ["10", 10, "Bastion"], ["V", 11, "Valet"], ["D", 12, "Dame"], ["R", 13, "Roi"], ["A", 14, "As"]
+    ];
+    const HAND_SIZE = 5;
+    const MAX_VALOR = 3;
+    const NAMES = ["Toi", "Gaspard"];
+    const who = (p, tu, il) => (p === 0 ? `Tu ${tu}` : `Gaspard ${il}`);
+
+    const $ = sel => document.querySelector(sel);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, reduced ? Math.min(ms, 80) : ms));
+    const rand = n => Math.floor(Math.random() * n);
+
+    const S = {};
+    let gameId = 0;
+
+    /* ───── Son (WebAudio, aucun fichier) ───── */
+    let actx = null;
+    let soundOn = true;
+    function tone(freq, dur, type = "sine", vol = 0.08, delay = 0) {
+      if (!soundOn) return;
+      try {
+        actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+        const t = actx.currentTime + delay;
+        const osc = actx.createOscillator();
+        const gain = actx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(vol, t);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        osc.connect(gain).connect(actx.destination);
+        osc.start(t);
+        osc.stop(t + dur);
+      } catch (e) { /* audio indisponible */ }
+    }
+    const sfx = {
+      place: () => { tone(170, 0.1, "triangle", 0.14); tone(85, 0.14, "sine", 0.12, 0.02); },
+      flip: () => { tone(620, 0.05, "triangle", 0.06); tone(880, 0.07, "triangle", 0.05, 0.05); },
+      dice: () => { for (let i = 0; i < 9; i += 1) tone(260 + rand(520), 0.04, "square", 0.03, i * 0.11); },
+      win: () => [523, 659, 784, 1046].forEach((f, i) => tone(f, 0.28, "triangle", 0.08, i * 0.09)),
+      lose: () => { tone(196, 0.3, "sawtooth", 0.05); tone(139, 0.45, "sawtooth", 0.05, 0.14); },
+      coin: () => { tone(1320, 0.08, "square", 0.04); tone(1760, 0.16, "square", 0.04, 0.07); },
+      bonus: () => tone(990, 0.12, "sine", 0.07)
+    };
+
+    /* ───── Règles pures ───── */
+    function threshold(value) {
+      if (value <= 5) return 2;
+      if (value <= 9) return 3;
+      if (value <= 11) return 4;
+      if (value <= 13) return 5;
+      return 6;
+    }
+    function chance(thr, bonus, reroll) {
+      const p = Math.max(0, Math.min(1, (7 - (thr - bonus)) / 6));
+      return reroll ? 1 - (1 - p) * (1 - p) : p;
+    }
+    function formation(a, b) {
+      const parts = [];
+      if (a.value === b.value) parts.push(["Jumeaux", 5]);
+      else if (Math.abs(a.value - b.value) === 1) parts.push(["Colonne", 2]);
+      if (a.house === b.house) parts.push(["Serment", 3]);
+      return parts;
+    }
+    function breakdown(p) {
+      const b = S.board;
+      const o = 1 - p;
+      const parts = [];
+      let total = 0;
+      if (b.van[p]) total += b.van[p].value;
+      if (!S.revealed) return { total, parts };
+      if (b.amb[p]) total += b.amb[p].value;
+      if (b.van[p] && b.amb[p]) parts.push(...formation(b.van[p], b.amb[p]));
+      if (b.amb[o] && b.amb[o].house === "S") parts.push(["Estocade", -2]);
+      if (b.allyOk[p]) parts.push(["Allié", b.ally[p].value]);
+      for (const [, v] of parts) total += v;
+      return { total, parts };
+    }
+    const stake = () => S.pot.length + boardCards().length;
+    function boardCards() {
+      const b = S.board;
+      return [...b.van, ...b.amb, ...b.ally].filter(Boolean);
+    }
+    const cardName = c => `${c.title} ${HOUSES[c.house].name} (${c.label}${HOUSES[c.house].sym})`;
+
+    function shuffle(list) {
+      const copy = [...list];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = rand(i + 1);
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+    function makeDeck() {
+      const deck = [];
+      for (const house of Object.keys(HOUSES)) {
+        for (const [label, value, title] of RANKS) deck.push({ id: label + house, label, value, title, house });
+      }
+      return shuffle(deck);
+    }
+
+    /* ───── Rendu ───── */
+    function cardEl(card, faceDown = false) {
+      const el = document.createElement("div");
+      const h = HOUSES[card.house];
+      el.className = `card h-${card.house}${faceDown ? " facedown" : ""}`;
+      el.dataset.id = card.id;
+      el.setAttribute("aria-label", cardName(card));
+      el.innerHTML = `
+        <div class="card-inner">
+          <div class="face front">
+            <div class="corner"><span>${card.label}</span><span>${h.sym}</span></div>
+            <div class="pip">${h.sym}</div>
+            <div class="ctitle">${card.title}<br>${h.name}</div>
+            <div class="cfoot"><span class="val">${card.value}</span><span class="thr" title="Seuil du dé si joué en allié">dé ${threshold(card.value)}+</span></div>
+          </div>
+          <div class="face back"></div>
+        </div>`;
+      return el;
+    }
+
+    function renderTokens(p, popIndex = -1) {
+      const box = $(`#valor${p}`);
+      box.innerHTML = "";
+      for (let i = 0; i < MAX_VALOR; i += 1) {
+        const tok = document.createElement("span");
+        tok.className = `tok${i < S.valor[p] ? " on" : ""}${i === popIndex ? " pop" : ""}`;
+        box.appendChild(tok);
+      }
+      box.title = `${S.valor[p]} jeton(s) de Vaillance`;
+    }
+
+    function renderHud() {
+      $("#roundNo").textContent = S.round;
+      for (const p of [0, 1]) {
+        $(`#deck${p}`).textContent = S.decks[p].length;
+        $(`#loot${p}`).textContent = S.loot[p];
+        renderTokens(p);
+      }
+      $("#potNo").textContent = S.pot.length;
+      $("#pot").classList.toggle("empty", S.pot.length === 0);
+      $("#pot").classList.toggle("hot", S.pot.length >= 4);
+      const opp = $("#oppHand");
+      opp.innerHTML = "";
+      const n = S.hands[1].length;
+      for (let i = 0; i < n; i += 1) {
+        const back = document.createElement("div");
+        back.className = "mini-back";
+        back.style.setProperty("--r", i - (n - 1) / 2);
+        opp.appendChild(back);
+      }
+      $("#log").innerHTML = S.log.map(line => `<li>${line}</li>`).join("");
+    }
+
+    function renderTotals() {
+      const res = [breakdown(0), breakdown(1)];
+      for (const p of [0, 1]) {
+        const num = $(`#total${p}`);
+        const text = S.board.van[p] && !S.revealed ? `${res[p].total}+?` : String(res[p].total);
+        if (num.textContent !== text) {
+          num.textContent = text;
+          num.classList.remove("bump");
+          void num.offsetWidth;
+          num.classList.add("bump");
+        }
+        $(`#chips${p}`).innerHTML = res[p].parts
+          .map(([name, v]) => `<span class="chip${v < 0 ? " neg" : ""}">${name} ${v > 0 ? "+" : ""}${v}</span>`).join("");
+        const tally = $(`#tally${p}`);
+        tally.classList.toggle("lead", S.revealed && res[p].total > res[1 - p].total);
+        tally.classList.toggle("behind", S.revealed && res[p].total < res[1 - p].total);
+      }
+      return res.map(r => r.total);
+    }
+
+    function renderHand(drawnIds = []) {
+      const box = $("#hand");
+      const hand = S.hands[0];
+      hand.sort((a, b) => a.value - b.value);
+      box.innerHTML = "";
+      const totals = [breakdown(0).total, breakdown(1).total];
+      hand.forEach((card, i) => {
+        const el = cardEl(card);
+        el.style.setProperty("--r", i - (hand.length - 1) / 2);
+        if (drawnIds.includes(card.id)) {
+          el.classList.add("drawn");
+          el.style.animationDelay = `${drawnIds.indexOf(card.id) * 110}ms`;
+        }
+        let playable = !S.busy && (S.phase === "van" || S.phase === "amb");
+        let hint = null;
+        if (S.phase === "amb" && S.board.van[0]) {
+          const combo = formation(S.board.van[0], card);
+          if (combo.length) hint = { text: combo.map(([n, v]) => `${n} +${v}`).join(" · ") };
+        }
+        if (S.phase === "ally") {
+          const enough = totals[0] + card.value >= totals[1];
+          playable = !S.busy && enough;
+          if (enough) {
+            const amb = S.board.amb[0];
+            const pct = Math.round(chance(threshold(card.value), amb.house === "H" ? 1 : 0, amb.house === "C") * 100);
+            const ties = totals[0] + card.value === totals[1];
+            hint = { text: `${pct} %${ties ? " · égalise" : ""}`, warn: ties || pct < 50 };
+          } else {
+            el.classList.add("dim");
+          }
+        }
+        if (hint) {
+          const tag = document.createElement("span");
+          tag.className = `hint${hint.warn ? " warn" : ""}`;
+          tag.textContent = hint.text;
+          el.appendChild(tag);
+        }
+        el.classList.toggle("playable", playable);
+        if (playable) {
+          el.tabIndex = 0;
+          el.setAttribute("role", "button");
+          el.addEventListener("click", () => onHandCard(card));
+          el.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); onHandCard(card); } });
+        }
+        box.appendChild(el);
+      });
+    }
+
+    function renderAll(drawnIds) {
+      renderHud();
+      renderTotals();
+      renderHand(drawnIds);
+      $("#seat0").classList.toggle("active", !S.busy && ["van", "amb", "ally"].includes(S.phase));
+      $("#seat1").classList.toggle("active", S.busy && S.phase !== "next" && S.phase !== "over");
+      for (const slot of ["van", "amb", "ally"]) {
+        $(`#slot-0-${slot}`).classList.toggle("want", !S.busy && S.phase === slot);
+      }
+    }
+
+    function addLog(text) {
+      S.log.unshift(text);
+      S.log = S.log.slice(0, 14);
+    }
+
+    function setPrompt(html, buttons = []) {
+      $("#promptText").innerHTML = html;
+      const box = $("#actions");
+      box.innerHTML = "";
+      for (const b of buttons) {
+        const btn = document.createElement("button");
+        btn.className = `btn ${b.cls || ""}`;
+        btn.textContent = b.label;
+        btn.addEventListener("click", b.fn);
+        box.appendChild(btn);
+      }
+    }
+    function ask(html, options) {
+      return new Promise(resolve => {
+        setPrompt(html, options.map(o => ({ label: o.label, cls: o.cls, fn: () => { setPrompt(html); resolve(o.k); } })));
+      });
+    }
+
+    /* ───── Effets ───── */
+    function banner(text, bad = false) {
+      const el = $("#banner");
+      el.textContent = text;
+      el.className = `banner${bad ? " bad" : ""}`;
+      void el.offsetWidth;
+      el.classList.add("show");
+    }
+    function shake() {
+      const t = $("#table");
+      t.classList.remove("shake");
+      void t.offsetWidth;
+      t.classList.add("shake");
+    }
+    function relPos(el) {
+      const base = $("#fx").getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      return { x: r.left - base.left + r.width / 2, y: r.top - base.top + r.height / 2 };
+    }
+    function burst(target, colors = ["var(--brass)", "#fff", "var(--h)"], count = 14) {
+      const { x, y } = relPos(target);
+      for (let i = 0; i < count; i += 1) {
+        const s = document.createElement("span");
+        s.className = "spark";
+        s.style.left = `${x}px`;
+        s.style.top = `${y}px`;
+        s.style.background = colors[i % colors.length];
+        s.style.setProperty("--a", `${(360 / count) * i + rand(14)}deg`);
+        s.style.setProperty("--d", `${60 + rand(70)}px`);
+        $("#fx").appendChild(s);
+        setTimeout(() => s.remove(), 720);
+      }
+    }
+    function floatText(target, text, neg = false) {
+      const { x, y } = relPos(target);
+      const el = document.createElement("span");
+      el.className = `float${neg ? " neg" : ""}`;
+      el.textContent = text;
+      el.style.left = `${x}px`;
+      el.style.top = `${y - 30}px`;
+      $("#fx").appendChild(el);
+      setTimeout(() => el.remove(), 1420);
+    }
+    function bump(el) {
+      el.classList.remove("bump");
+      void el.offsetWidth;
+      el.classList.add("bump");
+    }
+
+    /* Pose d'une carte : elle vole de la main jusqu'à son emplacement, puis « claque ». */
+    async function playCard(p, slotName, card, faceDown) {
+      const handEl = p === 0 ? $(`#hand .card[data-id="${card.id}"]`) : $("#oppHand");
+      const from = (handEl || $("#hand")).getBoundingClientRect();
+      S.hands[p] = S.hands[p].filter(c => c.id !== card.id);
+      S.board[slotName][p] = card;
+      renderAll();
+
+      const slot = $(`#slot-${p}-${slotName}`);
+      const el = cardEl(card, faceDown);
+      slot.innerHTML = "";
+      slot.appendChild(el);
+      const to = el.getBoundingClientRect();
+      const dx = from.left + from.width / 2 - (to.left + to.width / 2);
+      const dy = from.top + from.height / 2 - (to.top + to.height / 2);
+      el.style.zIndex = 30;
+      const anim = el.animate([
+        { transform: `translate(${dx}px, ${dy}px) rotate(${p === 0 ? -14 : 14}deg) scale(${p === 0 ? 1.12 : 0.5})` },
+        { transform: "translate(0, -14px) rotate(3deg) scale(1.14)", offset: 0.72 },
+        { transform: "none" }
+      ], { duration: reduced ? 1 : 460, easing: "cubic-bezier(.2,.75,.25,1)" });
+      await anim.finished.catch(() => {});
+      el.style.zIndex = "";
+      slot.classList.remove("thud");
+      void slot.offsetWidth;
+      slot.classList.add("thud");
+      sfx.place();
+      if (card.value >= 12 && !faceDown) { shake(); burst(slot, ["var(--brass)", "#fff"], 10); }
+      await sleep(160);
+      return el;
+    }
+
+    async function flipUp(p) {
+      const el = $(`#slot-${p}-amb .card`);
+      el.classList.remove("facedown");
+      sfx.flip();
+      await sleep(520);
+      const card = S.board.amb[p];
+      burst(el, [`var(--${card.house.toLowerCase()})`, "#fff", "var(--brass)"], 12);
+      floatText(el, `${HOUSES[card.house].sym} ${HOUSES[card.house].power}`);
+      sfx.bonus();
+      await sleep(380);
+    }
+
+    async function sweepBoard(target) {
+      const dest = target.getBoundingClientRect();
+      const cards = [...document.querySelectorAll(".slot .card")];
+      await Promise.all(cards.map((el, i) => {
+        const r = el.getBoundingClientRect();
+        const dx = dest.left + dest.width / 2 - (r.left + r.width / 2);
+        const dy = dest.top + dest.height / 2 - (r.top + r.height / 2);
+        el.style.zIndex = 30;
+        return el.animate([
+          { transform: "none", opacity: 1 },
+          { transform: `translate(${dx}px, ${dy}px) rotate(${rand(60) - 30}deg) scale(0.3)`, opacity: 0.2 }
+        ], { duration: reduced ? 1 : 520, delay: reduced ? 0 : i * 70, easing: "cubic-bezier(.5,0,.6,1)", fill: "forwards" })
+          .finished.catch(() => {});
+      }));
+      for (const slot of document.querySelectorAll(".slot")) slot.innerHTML = "";
+      bump(target);
+    }
+
+    /* Dé 3D */
+    const DIE_ROT = { 1: [0, 0], 2: [0, -90], 3: [-90, 0], 4: [90, 0], 5: [0, 90], 6: [0, 180] };
+    const PIPS = { 1: [5], 2: [1, 9], 3: [1, 5, 9], 4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9], 6: [1, 3, 4, 6, 7, 9] };
+    let spins = 0;
+    function buildDie() {
+      $("#cube").innerHTML = [1, 2, 3, 4, 5, 6].map(n => {
+        let cells = "";
+        for (let i = 1; i <= 9; i += 1) cells += `<i${PIPS[n].includes(i) ? ' class="p"' : ""}></i>`;
+        return `<div class="f f${n}">${cells}</div>`;
+      }).join("");
+    }
+    async function rollDie() {
+      const n = 1 + rand(6);
+      spins += 2;
+      const [x, y] = DIE_ROT[n];
+      const tray = $("#tray");
+      $("#trayRes").textContent = "…";
+      $("#trayRes").className = "";
+      tray.classList.remove("rolling");
+      void tray.offsetWidth;
+      tray.classList.add("rolling");
+      $("#cube").style.transform = `rotateX(${x + spins * 360}deg) rotateY(${y + spins * 360}deg)`;
+      sfx.dice();
+      await sleep(1180);
+      tray.classList.remove("rolling");
+      return n;
+    }
+    function showRoll(roll, bonus, spent, thr) {
+      const total = roll + bonus + spent;
+      const bits = [String(roll)];
+      if (bonus) bits.push("+1 Ferveur");
+      if (spent) bits.push(`+${spent} Vaillance`);
+      const el = $("#trayRes");
+      el.textContent = `${bits.join(" ")}${bits.length > 1 ? ` = ${total}` : ""} ${total >= thr ? "— réussi" : "— raté"}`;
+      el.className = total >= thr ? "ok" : "ko";
+    }
+
+    /* ───── IA de Gaspard ───── */
+    function aiPlan(fixedVan) {
+      const hand = S.hands[1];
+      const seen = S.board.van[0];
+      const expected = (seen ? seen.value : 8) + 9;
+      const worth = 4 + S.pot.length;
+      let best = null;
+      const vans = fixedVan ? [fixedVan] : hand;
+      for (const van of vans) {
+        for (const amb of hand) {
+          if (amb.id === van.id) continue;
+          let power = van.value + amb.value;
+          for (const [, v] of formation(van, amb)) power += v;
+          if (amb.house === "S") power += 2;
+          const pWin = 1 / (1 + Math.exp(-(power - expected) / 2.5));
+          let u = pWin * worth - (van.value + amb.value) * 0.11 + Math.random() * 0.45;
+          if (amb.house === "D") u += 0.3 * pWin;
+          if (amb.house === "H" || amb.house === "C") u += 0.3 * (1 - pWin);
+          if (!fixedVan && van.value < amb.value) u += 0.2;
+          if (!best || u > best.u) best = { u, van, amb };
+        }
+      }
+      return best;
+    }
+    function aiAllyPick(totals) {
+      const amb = S.board.amb[1];
+      const bonus = amb.house === "H" ? 1 : 0;
+      const options = S.hands[1]
+        .filter(c => totals[1] + c.value >= totals[0])
+        .map(c => {
+          const wins = totals[1] + c.value > totals[0];
+          const reach = Math.min(S.valor[1], 1);
+          return { c, score: chance(threshold(c.value) - reach, bonus, amb.house === "C") * (wins ? 1 : 0.45) - c.value * 0.004 };
+        })
+        .sort((a, b) => b.score - a.score);
+      if (!options.length) return null;
+      const top = options[0];
+      return top.score >= 0.2 || S.pot.length >= 4 ? top.c : null;
+    }
+
+    /* ───── Déroulé ───── */
+    function newGame() {
+      gameId += 1;
+      const deck = makeDeck();
+      Object.assign(S, {
+        decks: [deck.slice(0, 26), deck.slice(26)],
+        hands: [[], []],
+        loot: [0, 0],
+        valor: [1, 1],
+        pot: [],
+        round: 0,
+        first: rand(2),
+        phase: "idle",
+        busy: true,
+        revealed: false,
+        board: { van: [null, null], amb: [null, null], ally: [null, null], allyOk: [false, false] },
+        log: ["Nouvelle partie. Les maisons se rassemblent."]
+      });
+      for (const slot of document.querySelectorAll(".slot")) slot.innerHTML = "";
+      $("#endScreen").classList.remove("on");
+      $("#tray").classList.remove("on");
+      startRound();
+    }
+
+    async function startRound() {
+      const game = gameId;
+      S.round += 1;
+      S.revealed = false;
+      S.board = { van: [null, null], amb: [null, null], ally: [null, null], allyOk: [false, false] };
+      S.phase = "van";
+      S.busy = true;
+      $("#tray").classList.remove("on");
+
+      const drawn = [];
+      for (const p of [0, 1]) {
+        while (S.hands[p].length < HAND_SIZE && S.decks[p].length) {
+          const card = S.decks[p].shift();
+          S.hands[p].push(card);
+          if (p === 0) drawn.push(card.id);
+        }
+      }
+      setPrompt("");
+      renderAll(drawn);
+      banner(`Manche ${S.round}`);
+      await sleep(900);
+      if (game !== gameId) return;
+
+      if (S.first === 1) {
+        setPrompt("<b>Gaspard</b> a l'initiative et avance son avant-garde…");
+        await sleep(500);
+        if (game !== gameId) return;
+        const plan = aiPlan(null);
+        await playCard(1, "van", plan.van, false);
+        addLog(`Gaspard avance ${cardName(plan.van)}.`);
+        S.busy = false;
+        setPrompt(`Gaspard montre <b>${plan.van.value}</b>. Réponds : choisis ton <b>avant-garde</b> (carte visible).`);
+      } else {
+        S.busy = false;
+        setPrompt("Tu as l'initiative : choisis ton <b>avant-garde</b>. Gaspard la verra avant de répondre.");
+      }
+      renderAll();
+    }
+
+    async function onHandCard(card) {
+      if (S.busy) return;
+      const game = gameId;
+      if (S.phase === "van") {
+        S.busy = true;
+        await playCard(0, "van", card, false);
+        addLog(`Tu avances ${cardName(card)}.`);
+        if (S.first === 0) {
+          setPrompt("<b>Gaspard</b> jauge ta carte…");
+          await sleep(750);
+          if (game !== gameId) return;
+          const plan = aiPlan(null);
+          await playCard(1, "van", plan.van, false);
+          addLog(`Gaspard répond avec ${cardName(plan.van)}.`);
+        }
+        S.phase = "amb";
+        S.busy = false;
+        setPrompt("Choisis maintenant ton <b>embuscade</b> : carte cachée, sa maison déclenche un pouvoir. Les formations possibles sont indiquées.");
+        renderAll();
+      } else if (S.phase === "amb") {
+        S.busy = true;
+        // Gaspard s'engage avant de connaître ta carte cachée.
+        const plan = aiPlan(S.board.van[1]);
+        setPrompt("Les embuscades sont posées…");
+        await Promise.all([playCard(0, "amb", card, true), sleep(180).then(() => playCard(1, "amb", plan.amb, true))]);
+        if (game !== gameId) return;
+        await reveal();
+      } else if (S.phase === "ally") {
+        await attemptAlly(0, card);
+      }
+    }
+
+    async function reveal() {
+      const game = gameId;
+      S.phase = "reveal";
+      await sleep(450);
+      banner("Révélation");
+      await sleep(550);
+      await flipUp(1);
+      await flipUp(0);
+      if (game !== gameId) return;
+      S.revealed = true;
+      const totals = renderTotals();
+      for (const p of [0, 1]) {
+        for (const [name, v] of breakdown(p).parts) floatText($(`#tally${p}`), `${name} ${v > 0 ? "+" : ""}${v}`, v < 0);
+      }
+      shake();
+      addLog(`Révélation : toi ${totals[0]} — Gaspard ${totals[1]}.`);
+      await sleep(900);
+      if (game !== gameId) return;
+
+      if (totals[0] === totals[1]) return finishRound(null, "Égalité parfaite");
+      const loser = totals[0] < totals[1] ? 0 : 1;
+      const canAlly = S.hands[loser].some(c => totals[loser] + c.value >= totals[1 - loser]);
+      if (!canAlly) {
+        addLog(`${who(loser, "n'as", "n'a")} aucun allié capable de combler l'écart.`);
+        return finishRound(1 - loser);
+      }
+      if (loser === 1) {
+        setPrompt("<b>Gaspard</b> est en retard et réfléchit à un allié…");
+        await sleep(900);
+        if (game !== gameId) return;
+        const pick = aiAllyPick(totals);
+        if (!pick) {
+          addLog("Gaspard se replie et garde ses cartes.");
+          return finishRound(0);
+        }
+        return attemptAlly(1, pick);
+      }
+      S.phase = "ally";
+      S.busy = false;
+      setPrompt(
+        `Tu es mené de <b>${totals[1] - totals[0]}</b>. Engage un <b>allié</b> de ta main (le pourcentage indique tes chances au dé) ou replie-toi pour garder tes cartes.`,
+        [{ label: "Se replier", cls: "ghost", fn: () => { if (S.busy) return; S.busy = true; addLog("Tu te replies."); finishRound(1); } }]
+      );
+      renderAll();
+    }
+
+    async function attemptAlly(p, card) {
+      const game = gameId;
+      S.busy = true;
+      S.phase = "roll";
+      const amb = S.board.amb[p];
+      const thr = threshold(card.value);
+      const bonus = amb.house === "H" ? 1 : 0;
+      let reroll = amb.house === "C" ? 1 : 0;
+      let spent = 0;
+
+      setPrompt(`<b>${who(p, "engages", "engage")}</b> ${cardName(card)} — il faut <b>${thr}+</b> au dé.`);
+      const el = await playCard(p, "ally", card, false);
+      el.classList.add("pending");
+      addLog(`${who(p, "tentes", "tente")} l'allié ${cardName(card)} (dé ${thr}+).`);
+      $("#trayNeed").textContent = `Seuil ${thr}+${bonus ? " · Ferveur +1" : ""}${reroll ? " · 1 relance" : ""}`;
+      $("#trayRes").textContent = "";
+      $("#tray").classList.add("on");
+      await sleep(350);
+
+      let roll = await rollDie();
+      if (game !== gameId) return;
+      showRoll(roll, bonus, spent, thr);
+      while (roll + bonus + spent < thr) {
+        const need = thr - (roll + bonus);
+        const options = [];
+        if (reroll > 0) options.push({ k: "reroll", label: "Relance runique ♣", cls: "rune" });
+        if (S.valor[p] >= need) options.push({ k: "valor", label: `Dépenser ${need} Vaillance` });
+        if (!options.length) break;
+        options.push({ k: "stop", label: "Accepter l'échec", cls: "ghost" });
+        let choice;
+        if (p === 0) {
+          choice = await ask(`Le dé donne <b>${roll + bonus}</b>, il manque <b>${need}</b>. Forcer le destin ?`, options);
+        } else {
+          await sleep(800);
+          if (reroll > 0) choice = "reroll";
+          else if (S.valor[p] >= need) choice = "valor";
+          else choice = "stop";
+        }
+        if (game !== gameId) return;
+        if (choice === "reroll") {
+          reroll -= 1;
+          addLog(`${who(p, "utilises", "utilise")} la relance des Runes.`);
+          roll = await rollDie();
+          if (game !== gameId) return;
+          showRoll(roll, bonus, spent, thr);
+        } else if (choice === "valor") {
+          spent = need;
+          S.valor[p] -= need;
+          renderTokens(p);
+          sfx.coin();
+          addLog(`${who(p, "dépenses", "dépense")} ${need} Vaillance.`);
+          showRoll(roll, bonus, spent, thr);
+        } else {
+          break;
+        }
+      }
+
+      const ok = roll + bonus + spent >= thr;
+      el.classList.remove("pending");
+      await sleep(350);
+      if (ok) {
+        S.board.allyOk[p] = true;
+        el.classList.add("joined");
+        burst(el, ["var(--ok)", "#fff", "var(--brass)"], 18);
+        floatText(el, `+${card.value}`);
+        sfx.win();
+      } else {
+        el.classList.add("broken");
+        sfx.lose();
+      }
+      const totals = renderTotals();
+      await sleep(850);
+      if (game !== gameId) return;
+
+      if (!ok) {
+        addLog(`${p === 0 ? "Ton allié" : "L'allié de Gaspard"} ne répond pas : carte perdue.`);
+        return finishRound(1 - p, "Allié perdu", true);
+      }
+      if (totals[p] > totals[1 - p]) return finishRound(p, "Renversement");
+      if (totals[p] === totals[1 - p]) return finishRound(null, "Égalité arrachée");
+      return finishRound(1 - p);
+    }
+
+    async function finishRound(winner, cry = null, bad = false) {
+      const game = gameId;
+      S.busy = true;
+      S.phase = "resolve";
+      const cards = [...boardCards(), ...S.pot];
+      renderAll();
+
+      if (winner === null) {
+        banner(cry || "Égalité");
+        setPrompt(`Égalité : <b>${cards.length} cartes</b> restent au pot. Le prochain vainqueur rafle tout.`);
+        addLog(`Égalité : ${cards.length} cartes au pot.`);
+        await sleep(900);
+        await sweepBoard($("#pot"));
+        S.pot = cards;
+        S.first = 1 - S.first;
+      } else {
+        const loser = 1 - winner;
+        banner(cry || (winner === 0 ? "Manche gagnée" : "Manche perdue"), bad || winner === 1);
+        if (winner === 0) sfx.win(); else if (!cry) sfx.lose();
+        shake();
+        await sleep(950);
+        await sweepBoard($(`#lootBox${winner}`));
+        S.loot[winner] += cards.length;
+        S.pot = [];
+        const tribute = S.board.amb[winner] && S.board.amb[winner].house === "D";
+        addLog(`${who(winner, "remportes", "remporte")} ${cards.length} cartes.`);
+        if (S.valor[loser] < MAX_VALOR) { S.valor[loser] += 1; renderTokens(loser, S.valor[loser] - 1); }
+        if (tribute && S.valor[winner] < MAX_VALOR) {
+          S.valor[winner] += 1;
+          renderTokens(winner, S.valor[winner] - 1);
+          addLog(`Tribut des Couronnes : +1 Vaillance pour ${winner === 0 ? "toi" : "Gaspard"}.`);
+        }
+        sfx.coin();
+        setPrompt(
+          winner === 0
+            ? `Tu ramasses <b>${cards.length} cartes</b>. Gaspard gagne 1 Vaillance. Tu poseras en premier à la prochaine manche.`
+            : `Gaspard ramasse <b>${cards.length} cartes</b>. Tu gagnes 1 Vaillance et tu répondras à son avant-garde.`
+        );
+        S.first = winner;
+      }
+      if (game !== gameId) return;
+
+      S.board = { van: [null, null], amb: [null, null], ally: [null, null], allyOk: [false, false] };
+      S.revealed = false;
+      S.phase = "next";
+      $("#tray").classList.remove("on");
+      $("#hand").innerHTML = "";
+      renderHud();
+      renderTotals();
+      renderHand();
+
+      const canGo = [0, 1].every(p => S.hands[p].length + S.decks[p].length >= 2);
+      if (!canGo) {
+        await sleep(700);
+        return endGame();
+      }
+      const html = $("#promptText").innerHTML;
+      setPrompt(html, [{ label: "Manche suivante", fn: () => { if (S.phase === "next") startRound(); } }]);
+    }
+
+    function endGame() {
+      S.phase = "over";
+      const [a, b] = S.loot;
+      $("#endTitle").textContent = a > b ? "Victoire" : a < b ? "Défaite" : "Match nul";
+      $("#endScore").textContent = `${a} — ${b}`;
+      $("#endText").textContent = a > b
+        ? "Ton butin dépasse celui de Gaspard. Les maisons te saluent."
+        : a < b ? "Gaspard a mieux mené ses alliés cette fois." : "Aucun camp ne l'emporte.";
+      if (a > b) sfx.win(); else sfx.lose();
+      $("#endScreen").classList.add("on");
+      setPrompt("Partie terminée.", [{ label: "Rejouer", fn: newGame }]);
+    }
+
+    /* ───── Branchements ───── */
+    $("#newBtn").addEventListener("click", newGame);
+    $("#endNew").addEventListener("click", newGame);
+    $("#rulesBtn").addEventListener("click", () => $("#rules").classList.add("on"));
+    $("#rulesClose").addEventListener("click", () => $("#rules").classList.remove("on"));
+    $("#rules").addEventListener("click", ev => { if (ev.target.id === "rules") $("#rules").classList.remove("on"); });
+    $("#soundBtn").addEventListener("click", ev => {
+      soundOn = !soundOn;
+      ev.currentTarget.textContent = `Son : ${soundOn ? "oui" : "non"}`;
+      ev.currentTarget.setAttribute("aria-pressed", String(soundOn));
+    });
+
+    buildDie();
+    newGame();
+  </script>
+</body>
+</html>

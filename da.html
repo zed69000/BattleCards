@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bataille des Alliés — 6 pistes de DA mobile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Fredoka:wght@500;700&family=Jost:wght@500;800&family=Lilita+One&family=Patrick+Hand&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --page: #f3f0e9;
+      --text: #1d1b22;
+      --soft: #6a6572;
+      --rule: #d9d3c6;
+      --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page); color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.45; }
+    .wrap { width: min(1180px, 100% - 32px); margin: 0 auto; padding: 28px 0 48px; }
+    header h1 { margin: 0 0 6px; font-size: clamp(1.5rem, 4vw, 2.2rem); letter-spacing: -0.01em; }
+    header p { margin: 0; max-width: 70ch; color: var(--soft); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 36px 20px; margin-top: 28px; }
+    .prop { display: grid; justify-items: center; gap: 14px; align-content: start; }
+    .prop h2 { margin: 0; font-size: 1.15rem; justify-self: stretch; text-align: center; }
+    .prop h2 span { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-right: 8px; border-radius: 50%; background: var(--text); color: var(--page); font-size: 0.85rem; }
+    .notes { width: 300px; font-size: 0.88rem; }
+    .notes p { margin: 0 0 8px; }
+    .notes dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; }
+    .notes dt { font-weight: 700; color: var(--soft); }
+    .notes dd { margin: 0; }
+    .sw { display: flex; gap: 5px; margin: 0 0 10px; }
+    .sw i { flex: 1; height: 16px; border-radius: 4px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
+    .reco { margin-top: 40px; padding: 18px 20px; border: 1px solid var(--rule); border-radius: 12px; background: #fffdf8; }
+    .reco h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .reco p, .reco ul { margin: 0 0 8px; }
+    .reco ul { padding-left: 1.2rem; }
+
+    /* ───── Téléphone + écran commun ───── */
+    .phone { width: 300px; padding: 9px; border-radius: 38px; background: #17161b; box-shadow: 0 22px 44px rgba(30, 20, 10, 0.28); }
+    .screen {
+      position: relative; height: 612px; border-radius: 30px; overflow: hidden; isolation: isolate;
+      display: flex; flex-direction: column; gap: 7px; padding: 12px 10px 10px;
+      background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 13px;
+    }
+    .screen::after { content: ""; position: absolute; inset: 0; z-index: 9; pointer-events: none; background: var(--grain); opacity: var(--grain-o, 0); mix-blend-mode: multiply; }
+    .bar { display: flex; align-items: center; gap: 8px; padding: 5px 9px; border-radius: var(--r); background: var(--panel); color: var(--panel-ink); border: var(--ow) solid var(--line); box-shadow: var(--shadow); }
+    .ava { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); border: var(--ow) solid var(--line); font-weight: 700; }
+    .nm { flex: 1; font-weight: 700; line-height: 1.05; }
+    .pips { display: flex; gap: 3px; margin-top: 3px; }
+    .pips i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid currentColor; }
+    .pips i.on { background: var(--accent); }
+    .stat { text-align: center; font-size: 9px; line-height: 1.1; text-transform: uppercase; letter-spacing: 0.04em; }
+    .stat b { display: block; font-family: var(--font-num); font-size: var(--stat-size, 17px); letter-spacing: 0; }
+    .backs { display: flex; justify-content: center; height: 22px; }
+    .backs i { width: 22px; height: 30px; margin: 0 -3px; border-radius: calc(var(--r) / 3); background: var(--back); border: var(--ow) solid var(--line); transform: rotate(calc(var(--k) * 6deg)); }
+    .lane { display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .slot { position: relative; flex: none; width: 60px; height: 84px; display: grid; place-items: center; border-radius: var(--r); border: 2px dashed var(--slot); font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--slot); }
+    .slot.want { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, transparent); animation: pulse 1.4s ease-in-out infinite; }
+    .tot { width: 50px; text-align: center; font-family: var(--font-num); font-size: var(--tot-size, 27px); font-weight: 700; line-height: 1; }
+    .tot small { display: block; margin-top: 2px; font-family: var(--font); font-size: 10px; font-weight: 400; opacity: 0.75; }
+    .mid { display: flex; align-items: center; justify-content: space-between; padding: 0 8px; min-height: 46px; }
+    .pot { font-size: 11px; line-height: 1.1; }
+    .pot b { font-family: var(--font-num); font-size: var(--stat-size, 17px); }
+    .vs { padding: 4px 12px; border-radius: 99px; background: var(--accent); color: var(--accent-ink); border: var(--ow) solid var(--line); font-weight: 700; letter-spacing: 0.1em; box-shadow: var(--shadow); }
+    .die { width: 38px; height: 38px; padding: 6px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; border-radius: calc(var(--r) / 1.6); background: var(--card); border: var(--ow) solid var(--line); box-shadow: var(--shadow); transform: rotate(-8deg); }
+    .die i { border-radius: 50%; }
+    .die i.p { background: var(--die-pip, var(--line)); }
+    .say { align-self: center; padding: 5px 13px; border-radius: 99px; background: var(--panel); color: var(--panel-ink); border: var(--ow) solid var(--line); font-weight: 700; }
+    .hand { flex: 1; display: flex; justify-content: center; align-items: flex-end; padding-top: 24px; }
+
+    .c { position: relative; flex: none; width: 56px; height: 80px; display: grid; grid-template-rows: auto 1fr auto; padding: 3px 5px 4px; border-radius: var(--r); background: var(--card-bg, var(--card)); color: var(--card-ink); border: var(--ow) solid var(--line); box-shadow: var(--shadow); }
+    .c.h-S { --hc: var(--hS); } .c.h-H { --hc: var(--hH); } .c.h-D { --hc: var(--hD); } .c.h-C { --hc: var(--hC); }
+    .c .top { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-num); font-weight: 700; font-size: var(--num-size, 15px); line-height: 1.1; color: var(--num, var(--hc)); }
+    .c .art { display: grid; place-items: center; color: var(--hc); min-height: 0; }
+    .c .art svg { width: 36px; height: 36px; overflow: visible; }
+    .c .n { font-size: 9px; text-align: center; line-height: 1; white-space: nowrap; }
+    .slot .c { text-transform: none; letter-spacing: 0; }
+    .c.back { background: var(--back); }
+    .c.back > * { display: none; }
+    .hand .c { width: 66px; height: 94px; margin: 0 -5px; transform: rotate(calc(var(--k) * 5deg)) translateY(calc(var(--k) * var(--k) * 3px)); }
+    .hand .c .top { font-size: calc(var(--num-size, 15px) + 3px); }
+    .hand .c .art svg { width: 44px; height: 44px; }
+    .hand .c .n { font-size: 10px; }
+    .hand .c.sel { z-index: 3; animation: bob 1.8s ease-in-out infinite; }
+    .hint { position: absolute; left: 50%; top: -20px; transform: translateX(-50%); padding: 1px 8px; border-radius: 99px; white-space: nowrap; font-size: 10px; font-weight: 700; background: var(--accent); color: var(--accent-ink); border: var(--ow) solid var(--line); }
+
+    @keyframes bob { 0%, 100% { transform: translateY(-16px) rotate(-1deg) scale(1.07); } 50% { transform: translateY(-22px) rotate(1deg) scale(1.07); } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .hand .c.sel { transform: translateY(-18px) scale(1.07); } }
+
+    /* ───── 1 · Verger Mignon ───── */
+    .t-verger {
+      --bg: radial-gradient(ellipse 60px 22px at 18% 30%, #5fc389 98%, transparent), radial-gradient(ellipse 80px 26px at 84% 62%, #5fc389 98%, transparent), radial-gradient(ellipse 50px 18px at 30% 90%, #5fc389 98%, transparent), #74d39b;
+      --ink: #1d4b39; --line: #1d4b39; --ow: 2.5px; --r: 14px;
+      --card: #fff8e3; --card-ink: #1d4b39; --num: #1d4b39;
+      --panel: #fff8e3; --panel-ink: #1d4b39; --accent: #ffd447; --accent-ink: #1d4b39;
+      --slot: rgba(255, 255, 255, 0.85); --shadow: 0 4px 0 #1d4b39;
+      --back: repeating-linear-gradient(45deg, #ff8fab 0 6px, #ffb3c6 6px 12px);
+      --font: "Fredoka", sans-serif; --font-num: "Fredoka", sans-serif;
+      --hS: #8f7bea; --hH: #f25f5c; --hD: #ff9f1c; --hC: #9bd33f;
+    }
+    .t-verger .c:not(.back) { --card-bg: color-mix(in srgb, var(--hc) 38%, #fff8e3); }
+    .t-verger .slot { border-width: 3px; }
+
+    /* ───── 2 · Lucha Sérigraphie ───── */
+    .t-lucha {
+      --bg: radial-gradient(ellipse 34px 14px at 22% 44%, #6cc2ae 98%, transparent), radial-gradient(ellipse 30px 12px at 74% 52%, #6cc2ae 98%, transparent), radial-gradient(ellipse 40px 15px at 60% 88%, #6cc2ae 98%, transparent), #45ab98;
+      --ink: #3a2823; --line: #3a2823; --ow: 0px; --r: 7px; --grain-o: 0.5;
+      --card: #f4e5c2; --card-ink: #3a2823; --num: #3a2823;
+      --panel: #3a2823; --panel-ink: #f4e5c2; --accent: #ef6351; --accent-ink: #f4e5c2;
+      --slot: #2c8576; --shadow: 4px 4px 0 rgba(40, 60, 50, 0.45);
+      --back: repeating-linear-gradient(-45deg, #ef6351 0 7px, #3a2823 7px 14px);
+      --font: "Lilita One", sans-serif; --font-num: "Lilita One", sans-serif;
+      --hS: #3a2823; --hH: #ef6351; --hD: #e9b23c; --hC: #3d6fb0;
+    }
+    .t-lucha .lane .c:nth-child(odd) { transform: rotate(-3deg); }
+    .t-lucha .lane .c { transform: rotate(2deg); }
+    .t-lucha .slot { border-style: solid; background: #3c9d8b; border-color: transparent; }
+    .t-lucha .vs { clip-path: polygon(0 20%, 12% 0, 30% 14%, 50% 0, 68% 16%, 88% 0, 100% 26%, 92% 52%, 100% 80%, 84% 100%, 62% 84%, 46% 100%, 28% 82%, 10% 100%, 0 70%, 8% 46%); padding: 9px 16px; border-radius: 0; background: #f4e5c2; color: #ef6351; font-size: 16px; transform: rotate(-6deg); box-shadow: none; }
+    .t-lucha .tot { color: #f4e5c2; text-shadow: 3px 3px 0 #3a2823; }
+
+    /* ───── 3 · Pixel Taverne ───── */
+    .t-pixel {
+      --bg: repeating-linear-gradient(90deg, transparent 0 58px, rgba(0, 0, 0, 0.22) 58px 60px), repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 4px, transparent 4px 12px), #5b3a2c;
+      --ink: #f0e6c0; --line: #241a2a; --ow: 3px; --r: 3px;
+      --card: #e6deb6; --card-ink: #241a2a; --num: #241a2a;
+      --panel: #2a3b55; --panel-ink: #f0e6c0; --accent: #d9534f; --accent-ink: #fff3d0;
+      --slot: rgba(0, 0, 0, 0.45); --shadow: 4px 4px 0 #1a1220;
+      --back: linear-gradient(#32486b, #32486b) center / 60% 70% no-repeat, #1f2c44;
+      --font: "VT323", monospace; --font-num: "Press Start 2P", monospace;
+      --num-size: 9px; --tot-size: 15px; --stat-size: 10px;
+      --hS: #4b7bd8; --hH: #d9534f; --hD: #e0a82e; --hC: #5aa84f;
+    }
+    .t-pixel .screen, .t-pixel.screen { font-size: 16px; image-rendering: pixelated; }
+    .t-pixel .c:not(.back)::before { content: ""; position: absolute; left: 0; top: 0; width: 15px; height: 15px; background: linear-gradient(135deg, var(--hc) 50%, transparent 50%); }
+    .t-pixel .c:not(.back)::after { content: ""; position: absolute; right: 0; bottom: 0; width: 15px; height: 15px; background: linear-gradient(315deg, var(--hc) 50%, transparent 50%); }
+    .t-pixel .c .top { padding-left: 12px; }
+    .t-pixel .c .art { color: #2f3a55; }
+    .t-pixel .c .n { font-size: 12px; }
+    .t-pixel .slot { border-style: solid; border-width: 3px; background: rgba(0, 0, 0, 0.25); font-size: 12px; }
+    .t-pixel .say, .t-pixel .vs, .t-pixel .hint { border-radius: 0; }
+    .t-pixel .say { background: var(--accent); color: #fff3d0; }
+    .t-pixel .stat, .t-pixel .pot { font-size: 12px; }
+    .t-pixel .pips i, .t-pixel .die i, .t-pixel .ava { border-radius: 0; }
+
+    /* ───── 4 · Papier Découpé ───── */
+    .t-papier {
+      --bg: radial-gradient(circle 70px at 12% 20%, #c4dcbd 99%, transparent), radial-gradient(circle 90px at 92% 70%, #c4dcbd 99%, transparent), #d5e6c9;
+      --ink: #3b4a3d; --line: #3b4a3d; --ow: 0px; --r: 7px; --grain-o: 0.38;
+      --card: #f7eeda; --card-ink: #3b4a3d; --num: #3b4a3d;
+      --panel: #f7eeda; --panel-ink: #3b4a3d; --accent: #d1495b; --accent-ink: #fff4e0;
+      --slot: #ffffff; --shadow: 0 2px 0 #d8c9a3, 2px 6px 7px rgba(60, 60, 30, 0.28);
+      --back: radial-gradient(circle at 50% 50%, #d1495b 0 28%, transparent 30%), #f1d9a7;
+      --font: "Patrick Hand", cursive; --font-num: "Patrick Hand", cursive;
+      --num-size: 17px; --tot-size: 30px; --stat-size: 19px;
+      --hS: #3a7ca5; --hH: #d1495b; --hD: #e39a2d; --hC: #4f9d69;
+    }
+    .t-papier.screen { font-size: 15px; }
+    .t-papier .c:not(.back) { box-shadow: inset 0 0 0 3px var(--card), inset 0 0 0 5px var(--hc), var(--shadow); padding: 6px 8px 6px; }
+    .t-papier .lane .c:nth-child(1) { transform: rotate(-2deg); }
+    .t-papier .bar { transform: rotate(-0.6deg); }
+    .t-papier .say { border-radius: 4px; transform: rotate(1deg); background: #fbe08a; box-shadow: var(--shadow); }
+    .t-papier .vs { border-radius: 50%; padding: 11px 7px; font-size: 11px; box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.12), 0 3px 5px rgba(60, 30, 30, 0.35); }
+    .t-papier .c .n { font-size: 11px; }
+    .t-papier .hand .c .n { font-size: 12px; }
+
+    /* ───── 5 · Ardoise & Craie ───── */
+    .t-ardoise {
+      --bg: radial-gradient(ellipse 160px 90px at 30% 40%, rgba(255, 255, 255, 0.06), transparent), radial-gradient(ellipse 120px 70px at 80% 80%, rgba(255, 255, 255, 0.05), transparent), #27312f;
+      --ink: #f2eee3; --line: #f2eee3; --ow: 2px; --r: 12px; --grain-o: 0.3;
+      --card: #1f2826; --card-ink: #f2eee3;
+      --panel: transparent; --panel-ink: #f2eee3; --accent: #ffd97a; --accent-ink: #27312f;
+      --slot: rgba(242, 238, 227, 0.4); --shadow: none; --die-pip: #f2eee3;
+      --back: repeating-linear-gradient(60deg, transparent 0 5px, rgba(242, 238, 227, 0.5) 5px 6.5px), #1f2826;
+      --font: "Caveat", cursive; --font-num: "Caveat", cursive;
+      --num-size: 19px; --tot-size: 34px; --stat-size: 21px;
+      --hS: #a9bcff; --hH: #ff94a8; --hD: #ffd97a; --hC: #98e2b3;
+    }
+    .t-ardoise.screen { font-size: 16px; }
+    .t-ardoise .c, .t-ardoise .bar, .t-ardoise .die, .t-ardoise .say { border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px; }
+    .t-ardoise .c:not(.back) { border-color: var(--hc); }
+    .t-ardoise .c .n { font-size: 12px; }
+    .t-ardoise .hand .c .n { font-size: 13px; }
+    .t-ardoise .stat, .t-ardoise .pot { font-size: 11px; }
+    .t-ardoise .tot { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+    .t-ardoise .slot { border-radius: 14px; }
+
+    /* ───── 6 · Totems Bauhaus ───── */
+    .t-bauhaus {
+      --bg: radial-gradient(circle 110px at 100% 0, #f2b61b 99.5%, transparent), radial-gradient(circle 80px at 0 58%, #2b4c9b 99.5%, transparent), linear-gradient(#e03a2f, #e03a2f) right 0 bottom 86px / 44px 44px no-repeat, #f1e9d8;
+      --ink: #1b1b1b; --line: #1b1b1b; --ow: 2.5px; --r: 4px;
+      --card: #fffdf6; --card-ink: #1b1b1b; --num: #1b1b1b;
+      --panel: #fffdf6; --panel-ink: #1b1b1b; --accent: #1b1b1b; --accent-ink: #f1e9d8;
+      --slot: #1b1b1b; --shadow: 4px 4px 0 #1b1b1b;
+      --back: repeating-linear-gradient(90deg, #1b1b1b 0 5px, #fffdf6 5px 10px);
+      --font: "Jost", sans-serif; --font-num: "Jost", sans-serif;
+      --num-size: 16px; --tot-size: 30px;
+      --hS: #2b4c9b; --hH: #e03a2f; --hD: #f2b61b; --hC: #2e8b62;
+    }
+    .t-bauhaus .c .top, .t-bauhaus .tot, .t-bauhaus .stat b { font-weight: 800; }
+    .t-bauhaus .c .n { text-transform: uppercase; letter-spacing: 0.08em; font-size: 7.5px; }
+    .t-bauhaus .hand .c .n { font-size: 8.5px; }
+    .t-bauhaus .slot { border-width: 2px; background: rgba(255, 253, 246, 0.6); }
+    .t-bauhaus .slot.want { border-color: #e03a2f; color: #e03a2f; }
+    .t-bauhaus .say, .t-bauhaus .vs, .t-bauhaus .hint { border-radius: 0; }
+    .t-bauhaus .pips i.on { background: #e03a2f; }
+    .t-bauhaus .ava { background: #e03a2f; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Bataille des Alliés — 6 pistes de DA mobile</h1>
+      <p>Le même instant de jeu (choix de l'embuscade, main en bas dans la zone du pouce) habillé de six façons. Les quatre premières prolongent tes références, les deux dernières ouvrent d'autres portes.</p>
+    </header>
+
+    <div class="grid" id="grid"></div>
+
+    <section class="reco">
+      <h2>Mon avis</h2>
+      <p><b>Je partirais sur la piste 4, Papier Découpé.</b> Le papier donne une raison physique à chaque effet (la carte claque, se plie, se déchire quand l'allié échoue, le sceau de cire s'écrase), et c'est ce qui manquait le plus au jeu d'origine.</p>
+      <ul>
+        <li><b>Si tu vises un public très large</b>, la piste 1 (Verger) est la plus immédiate, mais c'est aussi le style le plus répandu sur les stores.</li>
+        <li><b>Si tu veux une identité forte avec peu de moyens</b>, la piste 2 (Lucha) : quatre couleurs, pas de contours, donc peu d'assets à produire.</li>
+        <li><b>La piste 3 (Pixel)</b> demande des chiffres plus gros que sur ta référence pour rester lisible sur un téléphone.</li>
+      </ul>
+      <p>Dis-moi une ou deux pistes et j'habille le proto jouable avec, animations comprises.</p>
+    </section>
+  </div>
+
+  <script>
+    const INK = { verger: "#1d4b39", lucha: "#f4e5c2", papier: "#f7eeda", bauhaus: "#1b1b1b" };
+
+    const SPRITES = {
+      S: ["......##", ".....###", "....###.", "#..###..", ".####...", "..##....", ".#.##...", "#...#..."],
+      H: ["...#....", "...##...", "..###.#.", ".####.#.", ".######.", "###.####", ".##..##.", "..####.."],
+      D: ["........", "#..##..#", "#..##..#", "##.##.##", "########", "########", ".######.", "########"],
+      C: ["...##...", "..####..", ".##..##.", "########", "########", ".#.##.#.", "...##...", "..####.."]
+    };
+    const SYM = { S: "♠", H: "♥", D: "♦", C: "♣" };
+
+    const ART = {
+      // Fruits à visage, contour épais
+      verger(h) {
+        const k = INK.verger;
+        const body = {
+          S: `<circle cx="20" cy="23" r="13"/>`,
+          H: `<circle cx="14.5" cy="23" r="10"/><circle cx="25.5" cy="23" r="10"/>`,
+          D: `<circle cx="20" cy="23" r="13.5"/>`,
+          C: `<circle cx="20" cy="14" r="7.5"/><ellipse cx="20" cy="26" rx="12" ry="11"/>`
+        }[h];
+        const fill = { S: "", H: `<rect x="12" y="15" width="16" height="16" fill="currentColor" stroke="none"/>`, D: "", C: `<rect x="14" y="14" width="12" height="10" fill="currentColor" stroke="none"/>` }[h];
+        return `<svg viewBox="0 0 40 40"><g fill="currentColor" stroke="${k}" stroke-width="2.5" stroke-linejoin="round">${body}</g>${fill}
+          <path d="M20 9 q1 -6 7 -6 q0 6 -7 6z" fill="#3fae6a" stroke="${k}" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="15" cy="24" r="1.8" fill="${k}"/><circle cx="25" cy="24" r="1.8" fill="${k}"/>
+          <path d="M18 27.5 q2 2 4 0" fill="none" stroke="${k}" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="11.5" cy="27.5" r="2.2" fill="#ff8fab" opacity=".8"/><circle cx="28.5" cy="27.5" r="2.2" fill="#ff8fab" opacity=".8"/></svg>`;
+      },
+      // Masque de catcheur, aplats sans contour
+      lucha(h) {
+        const c = INK.lucha;
+        return `<svg viewBox="0 0 40 40"><path d="M7 19 Q7 3 20 3 Q33 3 33 19 Q33 37 20 38 Q7 37 7 19z" fill="currentColor"/>
+          <path d="M9 15 L17 20 Q16 26 10 23z M31 15 L23 20 Q24 26 30 23z" fill="${c}"/>
+          <circle cx="13.5" cy="20.5" r="1.7" fill="#3a2823"/><circle cx="26.5" cy="20.5" r="1.7" fill="#3a2823"/>
+          <ellipse cx="20" cy="31" rx="5" ry="3" fill="${c}"/><path d="M15 31 h10" stroke="#3a2823" stroke-width="1.2"/>
+          <text x="20" y="13.5" text-anchor="middle" font-size="10" fill="${c}">${SYM[h]}</text>
+          <path d="M20 3 L17 0 M20 3 L23 0 M20 3 L20 -1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+      },
+      // Silhouettes 8×8
+      pixel(h) {
+        let r = "";
+        SPRITES[h].forEach((row, y) => [...row].forEach((ch, x) => { if (ch === "#") r += `<rect x="${x * 5}" y="${y * 5}" width="5" height="5"/>`; }));
+        return `<svg viewBox="0 0 40 40" shape-rendering="crispEdges" fill="currentColor">${r}</svg>`;
+      },
+      // Chouette en couches de papier
+      papier(h) {
+        const p = INK.papier;
+        return `<svg viewBox="0 0 40 40"><g transform="translate(1.5 2)" opacity=".22" fill="#2a2a1a"><path d="M8 8 L14 12 H26 L32 8 V26 Q32 38 20 38 Q8 38 8 26z"/></g>
+          <path d="M8 8 L14 12 H26 L32 8 V26 Q32 38 20 38 Q8 38 8 26z" fill="currentColor"/>
+          <ellipse cx="20" cy="29" rx="7" ry="7.5" fill="${p}"/>
+          <path d="M16 27 l2 2 l2 -2 l2 2 l2 -2 M17 32 l1.5 1.5 l1.5 -1.5 l1.5 1.5 l1.5 -1.5" fill="none" stroke="currentColor" stroke-width="1"/>
+          <circle cx="14.5" cy="18" r="5" fill="${p}"/><circle cx="25.5" cy="18" r="5" fill="${p}"/>
+          <circle cx="14.5" cy="18" r="2" fill="#3b4a3d"/><circle cx="25.5" cy="18" r="2" fill="#3b4a3d"/>
+          <path d="M18 21 L22 21 L20 25z" fill="#e39a2d"/></svg>`;
+      },
+      // Enseigne tracée à la craie
+      ardoise(h) {
+        return `<svg viewBox="0 0 40 40"><text x="20" y="33" text-anchor="middle" font-size="38" font-family="serif" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">${SYM[h]}</text>
+          <path d="M9 37 l5 -4 M13 38 l5 -4 M24 38 l5 -4 M28 38.500 l4 -3.500" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity=".6"/></svg>`;
+      },
+      // Totems en formes primaires
+      bauhaus(h) {
+        const k = INK.bauhaus;
+        const g = {
+          S: `<path d="M20 2 L31 20 H9z" fill="currentColor"/><rect x="16" y="20" width="8" height="12" fill="${k}"/><rect x="9" y="32" width="22" height="5" fill="#f2b61b"/>`,
+          H: `<circle cx="20" cy="15" r="12" fill="currentColor"/><path d="M8 27 H32 A12 12 0 0 1 20 39 A12 12 0 0 1 8 27z" fill="${k}"/><circle cx="20" cy="15" r="4" fill="#fffdf6"/>`,
+          D: `<rect x="9" y="9" width="22" height="22" transform="rotate(45 20 20)" fill="currentColor"/><circle cx="20" cy="20" r="6" fill="${k}"/>`,
+          C: `<circle cx="20" cy="10" r="8" fill="currentColor"/><circle cx="11" cy="23" r="8" fill="${k}"/><circle cx="29" cy="23" r="8" fill="currentColor"/><rect x="18" y="24" width="4" height="14" fill="${k}"/>`
+        }[h];
+        return `<svg viewBox="0 0 40 40">${g}</svg>`;
+      }
+    };
+
+    const PROPS = [
+      {
+        id: "verger", name: "Verger Mignon",
+        pitch: "Les quatre maisons deviennent des fruits à bouille ronde. Contours épais, aplats sucrés, tout rebondit.",
+        sw: ["#74d39b", "#fff8e3", "#f25f5c", "#ff9f1c", "#8f7bea", "#1d4b39"],
+        typo: "Fredoka, ronde et grasse",
+        fx: "La carte s'écrase puis rebondit en gelée. Le dé est un fruit qui roule, l'allié arrive en sautillant.",
+        risk: "Style très courant sur mobile, il faudra des personnages forts pour se démarquer."
+      },
+      {
+        id: "lucha", name: "Lucha Sérigraphie",
+        pitch: "Affiche de catch imprimée en quatre encres : pas de contour, du grain, des onomatopées.",
+        sw: ["#45ab98", "#f4e5c2", "#ef6351", "#e9b23c", "#3d6fb0", "#3a2823"],
+        typo: "Lilita One, façon affiche",
+        fx: "Chaque pose déclenche un « PAF ! » en étoile. Révélation avec décalage d'encre, dé lancé comme un coup de poing.",
+        risk: "Palette serrée : les 4 maisons doivent se distinguer par la forme, pas seulement la couleur."
+      },
+      {
+        id: "pixel", name: "Pixel Taverne",
+        pitch: "Table en bois, cartes beiges à coins colorés, monstres en silhouette. Sobre et lisible.",
+        sw: ["#5b3a2c", "#e6deb6", "#d9534f", "#4b7bd8", "#5aa84f", "#241a2a"],
+        typo: "Press Start 2P (chiffres) + VT323 (textes)",
+        fx: "Animations en 4 images, secousse d'écran au pixel près, dé qui tourne sprite par sprite, bandeaux qui se déroulent.",
+        risk: "Les polices pixel prennent de la place : textes courts obligatoires."
+      },
+      {
+        id: "papier", name: "Papier Découpé",
+        pitch: "Tout est en carton et papier kraft : cartes à double liseré, sceaux de cire, emplacements en pointillés.",
+        sw: ["#d5e6c9", "#f7eeda", "#d1495b", "#e39a2d", "#3a7ca5", "#3b4a3d"],
+        typo: "Patrick Hand, manuscrite propre",
+        fx: "La carte claque avec son ombre portée, l'embuscade se déplie, l'allié raté se déchire, le sceau s'écrase à la victoire.",
+        risk: "Les textures demandent du soin pour rester nettes sur petits écrans."
+      },
+      {
+        id: "ardoise", name: "Ardoise & Craie",
+        pitch: "La partie se joue sur l'ardoise d'un bistrot : traits de craie, scores écrits puis effacés d'un revers de main.",
+        sw: ["#27312f", "#f2eee3", "#ff94a8", "#ffd97a", "#a9bcff", "#98e2b3"],
+        typo: "Caveat, écriture à la craie",
+        fx: "Les cartes se dessinent trait par trait, les totaux se barrent et se réécrivent, poussière de craie à l'impact.",
+        risk: "Piste sombre, à l'opposé de tes références. Moins de place pour des personnages."
+      },
+      {
+        id: "bauhaus", name: "Totems Bauhaus",
+        pitch: "Cercles, triangles, carrés et trois couleurs primaires. Chaque maison est un totem géométrique.",
+        sw: ["#f1e9d8", "#fffdf6", "#e03a2f", "#f2b61b", "#2b4c9b", "#1b1b1b"],
+        typo: "Jost, géométrique",
+        fx: "Les formes glissent et s'emboîtent, ombres dures qui s'allongent à la pose, le dé est un cube qui pivote par quarts de tour.",
+        risk: "Plus froid et abstrait : moins d'attachement aux personnages."
+      }
+    ];
+
+    function card(theme, house, value, name, extra = "") {
+      return `<div class="c h-${house}" ${extra}><div class="top"><span>${value}</span><span>${SYM[house]}</span></div><div class="art">${ART[theme](house)}</div><div class="n">${name}</div></div>`;
+    }
+    function pips(on) {
+      return `<div class="pips">${[0, 1, 2].map(i => `<i class="${i < on ? "on" : ""}"></i>`).join("")}</div>`;
+    }
+    function die() {
+      const on = [0, 2, 4, 6, 8];
+      return `<div class="die">${Array.from({ length: 9 }, (_, i) => `<i class="${on.includes(i) ? "p" : ""}"></i>`).join("")}</div>`;
+    }
+    function screen(t) {
+      return `
+        <div class="screen t-${t}">
+          <div class="bar"><div class="ava">G</div><div class="nm">Gaspard${pips(2)}</div><div class="stat">Pioche<b>17</b></div><div class="stat">Butin<b>7</b></div></div>
+          <div class="backs">${[-1.5, -0.5, 0.5, 1.5].map(k => `<i style="--k:${k}"></i>`).join("")}</div>
+          <div class="lane">
+            <div class="slot">${card(t, "H", "R", "Roi")}</div>
+            <div class="slot"><div class="c back"></div></div>
+            <div class="slot">Allié</div>
+            <div class="tot">13<small>+ ?</small></div>
+          </div>
+          <div class="mid"><div class="pot">Pot<br><b>5</b> cartes</div><div class="vs">CHOC</div>${die()}</div>
+          <div class="lane">
+            <div class="slot">${card(t, "C", "9", "Bannière")}</div>
+            <div class="slot want">Embus-<br>cade</div>
+            <div class="slot">Allié</div>
+            <div class="tot">9<small>+ ?</small></div>
+          </div>
+          <div class="say">Pose ton embuscade</div>
+          <div class="hand">
+            ${card(t, "C", "4", "Scribe", 'style="--k:-1.5"')}
+            <div class="c h-C sel" style="--k:-0.5"><span class="hint">Serment +3</span><div class="top"><span>8</span><span>♣</span></div><div class="art">${ART[t]("C")}</div><div class="n">Forge</div></div>
+            ${card(t, "D", "V", "Valet", 'style="--k:0.5"')}
+            ${card(t, "S", "A", "As", 'style="--k:1.5"')}
+          </div>
+          <div class="bar"><div class="ava">T</div><div class="nm">Toi${pips(1)}</div><div class="stat">Pioche<b>15</b></div><div class="stat">Butin<b>10</b></div></div>
+        </div>`;
+    }
+
+    document.querySelector("#grid").innerHTML = PROPS.map((p, i) => `
+      <article class="prop">
+        <h2><span>${i + 1}</span>${p.name}</h2>
+        <div class="phone">${screen(p.id)}</div>
+        <div class="notes">
+          <div class="sw">${p.sw.map(c => `<i style="background:${c}"></i>`).join("")}</div>
+          <p>${p.pitch}</p>
+          <dl>
+            <dt>Typo</dt><dd>${p.typo}</dd>
+            <dt>Effets</dt><dd>${p.fx}</dd>
+            <dt>Risque</dt><dd>${p.risk}</dd>
+          </dl>
+        </div>
+      </article>`).join("");
+  </script>
+</body>
+</html>
