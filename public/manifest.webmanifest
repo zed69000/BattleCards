@@ -1,0 +1,22 @@
+{
+  "name": "Bataille des Alliés",
+  "short_name": "Bataille",
+  "start_url": "./cosmos.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#10162b",
+  "theme_color": "#10162b",
+  "icons": [
+    {
+      "src": "icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

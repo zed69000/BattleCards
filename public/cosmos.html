@@ -4,6 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#10162b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Bataille">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-180.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
@@ -12,11 +18,12 @@
       color-scheme: dark;
       --navy: #1f2a44; --deep: #10162b; --cream: #f5e9cf; --orange: #f26a3d; --yellow: #f5c445; --teal: #2fa394; --violet: #5b5fc7; --pink: #d0508f;
       --ok: #7be0a4; --bad: #ff7a6b;
-      --cwb: clamp(50px, min(17.5vw, 9.4vh), 78px);
+      --cwb: clamp(38px, min(17.5vw, calc((100vh - 345px) / 6.05)), 78px);
+      --cwb: clamp(38px, min(17.5vw, calc((100dvh - 345px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) / 6.05)), 78px);
       --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; }
+    html, body { height: 100%; overscroll-behavior: none; touch-action: manipulation; }
     body { margin: 0; overflow: hidden; background: var(--deep); color: var(--cream); font-family: "Righteous", ui-rounded, system-ui, sans-serif; font-size: 14px; user-select: none; }
     button { font: inherit; color: inherit; cursor: pointer; }
 
@@ -276,7 +283,7 @@
     @keyframes dieHop { 0% { transform: translateY(0); } 25% { transform: translateY(-30px); } 50% { transform: translateY(0); } 68% { transform: translateY(-11px); } 84% { transform: translateY(0); } 92% { transform: translateY(-3px); } 100% { transform: translateY(0); } }
     @keyframes coachIn { from { opacity: 0; scale: 0.85; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } }
-    @media (max-height: 640px) { :root { --cwb: clamp(44px, 13vw, 56px); } .prompt { min-height: 48px; } }
+    @media (max-height: 800px) { .prompt { min-height: 46px; padding: 5px 8px; } .hud { padding: 3px 8px; } .ava { width: 30px; height: 30px; } .mid { min-height: 44px; } .hand { padding-top: 22px; } }
   </style>
 </head>
 <body>
@@ -305,6 +312,7 @@
         <button class="btn ghost" id="tutoBtn">Apprendre à jouer</button>
         <button class="btn ghost" id="menuHelp">Règles</button>
         <button class="btn ghost" id="menuSound">Son : oui</button>
+        <button class="btn ghost" id="fsBtn">Plein écran</button>
       </div>
     </div>
   </main>
@@ -379,6 +387,18 @@
       <div class="cap-stage" id="capStage"></div>
       <p id="capText"></p>
       <div class="stack" id="capActions"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="install">
+    <div class="sheet"><h2>Plein écran</h2>
+      <p>Sur iPhone, Safari ne permet pas à une page de passer en plein écran. Pour jouer sans les barres du navigateur, installe le jeu sur l'écran d'accueil :</p>
+      <div class="help"><ol>
+        <li>Touche le bouton <b>Partager</b> de Safari (le carré avec une flèche vers le haut).</li>
+        <li>Choisis <b>Sur l'écran d'accueil</b>.</li>
+        <li>Lance le jeu depuis la nouvelle icône : il s'ouvre en plein écran.</li>
+      </ol></div>
+      <button class="btn" id="installClose" style="margin-top:8px">Compris</button>
     </div>
   </div>
 
@@ -1089,7 +1109,7 @@
     /* ═════ Déroulé ═════ */
     function show(view) {
       for (const id of ["menu", "game"]) $(`#${id}`).classList.toggle("on", id === view);
-      for (const id of ["pause", "help", "endScreen", "atouts", "capsule"]) $(`#${id}`).classList.remove("on");
+      for (const id of ["pause", "help", "endScreen", "atouts", "capsule", "install"]) $(`#${id}`).classList.remove("on");
     }
     function newGame(tuto = false) {
       gameId += 1;
@@ -1801,6 +1821,17 @@
     $("#pauseHelp").addEventListener("click", () => openHelp("pause"));
     $("#helpClose").addEventListener("click", () => { $("#help").classList.remove("on"); if (helpFrom) $(`#${helpFrom}`).classList.add("on"); });
     $("#menuSound").addEventListener("click", toggleSound);
+    // Plein écran : vraie API là où elle existe ; sur iPhone, on explique l'installation sur l'écran d'accueil.
+    const standalone = window.navigator.standalone || window.matchMedia("(display-mode: standalone), (display-mode: fullscreen)").matches;
+    if (standalone) $("#fsBtn").hidden = true;
+    $("#fsBtn").addEventListener("click", () => {
+      const root = document.documentElement;
+      const request = root.requestFullscreen || root.webkitRequestFullscreen;
+      if (!request) return $("#install").classList.add("on");
+      if (document.fullscreenElement || document.webkitFullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else Promise.resolve(request.call(root)).catch(() => $("#install").classList.add("on"));
+    });
+    $("#installClose").addEventListener("click", () => $("#install").classList.remove("on"));
     $("#pauseSound").addEventListener("click", toggleSound);
     $("#pauseBtn").addEventListener("click", () => $("#pause").classList.add("on"));
     $("#resumeBtn").addEventListener("click", () => $("#pause").classList.remove("on"));
