@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bataille des Alliés — menu, progression et classement</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+  <style>
+    :root { --navy: #1f2a44; --deep: #10162b; --cream: #f5e9cf; --orange: #f26a3d; --yellow: #f5c445; --teal: #2fa394; --violet: #5b5fc7; --pink: #d0508f; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0b0f1e; color: var(--cream); font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.45; }
+    .wrap { width: min(1360px, 100% - 32px); margin: 0 auto; padding: 28px 0 48px; }
+    h1, h2, h3, .r { font-family: "Righteous", sans-serif; font-weight: 400; }
+    header h1 { margin: 0 0 6px; font-size: clamp(1.6rem, 5vw, 2.4rem); color: var(--yellow); }
+    header p { margin: 0 0 6px; max-width: 76ch; color: rgba(245, 233, 207, 0.8); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px 20px; margin-top: 28px; }
+    .prop { display: grid; justify-items: center; gap: 12px; align-content: start; }
+    .prop h2 { margin: 0; font-size: 1.2rem; }
+    .prop h2 span { display: inline-grid; place-items: center; width: 30px; height: 30px; margin-right: 8px; border-radius: 50%; background: var(--yellow); color: var(--navy); }
+    .prop p { margin: 0; max-width: 300px; font-size: 0.88rem; color: rgba(245, 233, 207, 0.85); }
+    .prop dl { margin: 0; max-width: 300px; display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; font-size: 0.84rem; }
+    .prop dt { color: var(--yellow); font-family: "Righteous", sans-serif; }
+    .prop dd { margin: 0; color: rgba(245, 233, 207, 0.85); }
+    .box { margin-top: 36px; padding: 18px 20px; border: 2px solid rgba(245, 233, 207, 0.35); border-radius: 14px; background: rgba(31, 42, 68, 0.6); }
+    .box h2 { margin: 0 0 8px; font-size: 1.15rem; color: var(--yellow); }
+    .box p, .box ul, .box ol { margin: 0 0 8px; }
+    .box ul, .box ol { padding-left: 1.2rem; }
+    .box table { border-collapse: collapse; width: 100%; font-size: 0.9rem; margin: 6px 0 10px; }
+    .box th, .box td { text-align: left; padding: 6px 8px; border-bottom: 1px solid rgba(245, 233, 207, 0.18); vertical-align: top; }
+    .box th { color: var(--yellow); font-family: "Righteous", sans-serif; font-weight: 400; }
+
+    /* ───── Téléphone ───── */
+    .phone { width: 300px; padding: 9px; border-radius: 38px; background: #17161b; box-shadow: 0 22px 44px rgba(0, 0, 0, 0.5); }
+    .screen { position: relative; height: 620px; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 12px 10px 0; font-family: "Righteous", sans-serif; font-size: 12px; color: var(--cream);
+      background: radial-gradient(circle 1.4px at 12% 18%, var(--cream) 99%, transparent), radial-gradient(circle 1px at 82% 9%, var(--cream) 99%, transparent), radial-gradient(circle 1.2px at 92% 44%, var(--yellow) 99%, transparent), radial-gradient(circle 1px at 6% 62%, var(--cream) 99%, transparent), radial-gradient(circle 1.4px at 70% 78%, #8fd8cc 99%, transparent), radial-gradient(circle 1px at 30% 90%, var(--cream) 99%, transparent), radial-gradient(ellipse 220px 200px at 50% 38%, #24315c, transparent), var(--deep); }
+    .top { display: flex; align-items: center; gap: 8px; }
+    .ava { flex: none; width: 34px; height: 34px; border-radius: 50%; overflow: hidden; border: 2px solid var(--cream); background: var(--orange); color: var(--orange); }
+    .ava svg { display: block; width: 100%; height: 100%; }
+    .who { flex: 1; line-height: 1.1; }
+    .who small { color: var(--yellow); }
+    .xp { height: 6px; margin-top: 3px; border-radius: 99px; background: rgba(245, 233, 207, 0.2); overflow: hidden; }
+    .xp i { display: block; height: 100%; width: 62%; background: var(--yellow); }
+    .chip { padding: 3px 9px; border-radius: 99px; border: 2px solid var(--yellow); color: var(--yellow); background: rgba(16, 22, 43, 0.8); white-space: nowrap; }
+    .chip.tr { border-color: var(--cream); color: var(--cream); }
+    .logo { text-align: center; font-size: 25px; line-height: 0.95; text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e; }
+    .logo span { color: var(--yellow); }
+    .btn { display: grid; place-items: center; padding: 9px 14px; border-radius: 99px; border: 2px solid var(--navy); background: var(--yellow); color: var(--navy); box-shadow: 0 4px 0 #0a0f1e; text-align: center; }
+    .btn.hot { background: var(--orange); color: var(--cream); font-size: 19px; padding: 11px 14px; }
+    .btn.ghost { background: rgba(16, 22, 43, 0.85); color: var(--cream); border-color: var(--cream); }
+    .row { display: flex; gap: 8px; }
+    .row > * { flex: 1; }
+    .tabs { margin: auto -10px 0; display: grid; grid-template-columns: repeat(4, 1fr); background: #0a0f1e; border-top: 2px solid rgba(245, 233, 207, 0.25); }
+    .tabs div { display: grid; justify-items: center; gap: 1px; padding: 7px 0 9px; font-size: 9px; color: rgba(245, 233, 207, 0.6); }
+    .tabs div b { font-weight: 400; font-size: 17px; line-height: 1; }
+    .tabs div.on { color: var(--yellow); }
+    .league { display: flex; align-items: center; gap: 8px; padding: 6px 9px; border-radius: 12px; background: rgba(16, 22, 43, 0.85); border: 2px solid rgba(245, 233, 207, 0.4); }
+    .medal { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; color: var(--navy); border: 2px solid var(--navy); background: radial-gradient(circle at 35% 30%, #fff, #c9d2dc 55%, #8d98a8); box-shadow: 0 0 0 2px #c9d2dc; }
+    .medal.gold { background: radial-gradient(circle at 35% 30%, #fff6c9, var(--yellow) 55%, #c98d12); box-shadow: 0 0 0 2px var(--yellow); }
+    .medal.bronze { background: radial-gradient(circle at 35% 30%, #ffd9b0, #d08a4e 55%, #8a5326); box-shadow: 0 0 0 2px #d08a4e; }
+    .league .bar { flex: 1; }
+    .league small { display: block; font-size: 9px; color: rgba(245, 233, 207, 0.7); }
+
+    /* ───── Cartes ───── */
+    .mc { --w: 56px; position: relative; flex: none; width: var(--w); height: calc(var(--w) * 1.42); display: grid; grid-template-rows: auto 1fr auto; gap: 1px; padding: 2px 3px; border-radius: calc(var(--w) * 0.15); background: var(--cream); color: var(--navy); border: 2px solid var(--navy); box-shadow: 0 4px 0 #0a0f1e; }
+    .mc.h-S { --hc: var(--violet); } .mc.h-H { --hc: var(--orange); } .mc.h-D { --hc: #e0a91f; } .mc.h-C { --hc: var(--teal); } .mc.h-X { --hc: var(--pink); }
+    .mc .t { display: flex; justify-content: space-between; padding: 0 2px; font-size: calc(var(--w) * 0.24); line-height: 1.05; }
+    .mc .t span:last-child { color: var(--hc); }
+    .mc .a { min-height: 0; border-radius: calc(var(--w) * 0.09); border: 2px solid var(--navy); background: var(--hc); color: var(--hc); overflow: hidden; }
+    .mc .a svg { display: block; width: 100%; height: 100%; }
+    .mc .n { font-size: calc(var(--w) * 0.135); text-align: center; line-height: 1.1; white-space: nowrap; overflow: hidden; }
+    .mc.back { background: repeating-radial-gradient(circle at 50% 50%, var(--orange) 0 5px, var(--navy) 5px 10px); }
+    .mc.back > * { display: none; }
+    .mc.back::after { content: "?"; position: absolute; inset: 0; display: grid; place-items: center; font-size: calc(var(--w) * 0.6); color: var(--cream); text-shadow: 0 3px 0 var(--navy); }
+    .mc.lock { filter: grayscale(1) brightness(0.4); }
+    .mc.shine { box-shadow: 0 0 0 2px var(--yellow), 0 0 14px var(--yellow), 0 4px 0 #0a0f1e; }
+    .fan { display: flex; justify-content: center; align-items: flex-end; height: 170px; padding-bottom: 6px; }
+    .fan .mc { --w: 78px; margin: 0 -17px; transform: rotate(calc(var(--k) * 9deg)) translateY(calc(var(--k) * var(--k) * 7px)); }
+    .fan .mc:nth-child(3) { z-index: 2; }
+
+    /* B — duel */
+    .versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; justify-items: center; padding: 6px 0; }
+    .versus .mc { --w: 96px; }
+    .versus .mc:first-child { transform: rotate(-5deg); }
+    .versus .mc:last-child { transform: rotate(5deg); }
+    .vs { z-index: 2; margin: 0 -14px; padding: 9px 9px; font-size: 20px; color: var(--orange); background: var(--cream); clip-path: polygon(0 20%, 14% 0, 32% 14%, 50% 0, 68% 16%, 86% 0, 100% 26%, 92% 52%, 100% 80%, 84% 100%, 62% 84%, 46% 100%, 28% 82%, 10% 100%, 0 70%, 8% 46%); }
+    .live { text-align: center; font-size: 10px; color: var(--teal); }
+    .live::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal); }
+    .modes { display: flex; gap: 6px; }
+    .mode { flex: 1; padding: 6px 4px; border-radius: 10px; background: var(--cream); color: var(--navy); border: 2px solid var(--navy); box-shadow: 0 3px 0 #0a0f1e; text-align: center; font-size: 10px; }
+    .mode b { display: block; font-weight: 400; font-size: 18px; color: var(--orange); line-height: 1.1; }
+    .board { display: grid; gap: 3px; padding: 6px 8px; border-radius: 12px; background: rgba(16, 22, 43, 0.85); border: 2px solid rgba(245, 233, 207, 0.4); }
+    .board .ln { display: grid; grid-template-columns: 22px 1fr auto; gap: 6px; align-items: center; font-size: 11px; }
+    .board .ln b { font-weight: 400; color: var(--yellow); }
+    .board .ln.me { margin: 2px -4px 0; padding: 3px 4px; border-radius: 7px; background: var(--yellow); color: var(--navy); }
+    .board .ln.me b { color: var(--navy); }
+    .board .dots { text-align: center; opacity: 0.5; line-height: 0.6; }
+
+    /* C — conquête */
+    .path { position: relative; flex: 1; }
+    .path svg.trail { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .node { position: absolute; display: grid; justify-items: center; gap: 2px; transform: translate(-50%, -50%); font-size: 10px; text-align: center; }
+    .node .mc { --w: 46px; }
+    .node small { color: var(--yellow); letter-spacing: 1px; }
+    .node.now .mc { box-shadow: 0 0 0 3px var(--yellow), 0 0 18px var(--yellow), 0 4px 0 #0a0f1e; }
+    .node.now::before { content: "TOI"; position: absolute; top: -17px; padding: 1px 7px; border-radius: 99px; background: var(--orange); color: var(--cream); font-size: 9px; }
+    .node.todo { opacity: 0.45; }
+
+    /* D — classeur */
+    .binder { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px 5px; justify-items: center; padding: 8px 6px; border-radius: 14px; background: rgba(31, 42, 68, 0.85); border: 2px solid rgba(245, 233, 207, 0.35); }
+    .binder .mc { --w: 58px; }
+    .bar2 { height: 8px; border-radius: 99px; background: rgba(245, 233, 207, 0.2); overflow: hidden; }
+    .bar2 i { display: block; height: 100%; width: 38%; background: var(--teal); }
+    .head { display: flex; justify-content: space-between; align-items: baseline; }
+    .head b { font-weight: 400; font-size: 15px; }
+
+    /* E — classement */
+    .seg { display: grid; grid-template-columns: repeat(3, 1fr); border-radius: 99px; overflow: hidden; border: 2px solid var(--cream); font-size: 11px; text-align: center; }
+    .seg div { padding: 5px 0; }
+    .seg .on { background: var(--cream); color: var(--navy); }
+    .rank { display: grid; gap: 4px; }
+    .rank .ln { display: grid; grid-template-columns: 22px 28px 1fr auto; gap: 7px; align-items: center; padding: 4px 7px; border-radius: 10px; background: rgba(31, 42, 68, 0.85); font-size: 11px; }
+    .rank .ln .ava { width: 28px; height: 28px; }
+    .rank .ln small { display: block; font-size: 9px; color: rgba(245, 233, 207, 0.65); }
+    .rank .ln b { font-weight: 400; color: var(--yellow); }
+    .rank .ln.me { background: var(--yellow); color: var(--navy); }
+    .rank .ln.me b, .rank .ln.me small { color: var(--navy); }
+    .rank .ln.up { outline: 2px dashed var(--teal); }
+    .zone { text-align: center; font-size: 9px; letter-spacing: 1px; color: var(--teal); }
+    .zone.down { color: var(--orange); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Menu, progression et classement</h1>
+      <p>Quatre façons de faire comprendre dès l'écran d'accueil que c'est un jeu de cartes, puis l'écran de classement. Dans les quatre, on retrouve les mêmes repères de progression : niveau, trophées, ligue.</p>
+      <p>Ce sont des maquettes : les noms de joueurs et les chiffres sont inventés.</p>
+    </header>
+    <div class="grid" id="grid"></div>
+
+    <section class="box">
+      <h2>La progression que je propose</h2>
+      <table>
+        <tr><th>Ce qu'on gagne</th><th>Comment</th><th>À quoi ça sert</th></tr>
+        <tr><td>Trophées</td><td>+ en gagnant un duel, − en le perdant, selon la force de l'adversaire</td><td>Ton rang au classement et ta ligue. C'est le chiffre que les joueurs comparent.</td></tr>
+        <tr><td>Ligues</td><td>Bronze, Argent, Or, Platine, Légende, par paliers de trophées</td><td>Un objectif proche à tout moment : « encore 60 trophées pour l'Or ».</td></tr>
+        <tr><td>Saisons</td><td>Remise à zéro partielle toutes les deux à quatre semaines</td><td>Une récompense selon la ligue atteinte, et une raison de revenir.</td></tr>
+        <tr><td>Niveau de joueur</td><td>De l'expérience à chaque partie, même perdue</td><td>Ne redescend jamais : débloque tribus, emplacements d'atout, dos de carte.</td></tr>
+        <tr><td>Cristaux et boosters</td><td>Parties, quêtes du jour, fin de saison</td><td>La collection d'atouts, déjà en place.</td></tr>
+      </table>
+      <p>Trophées et niveau sont volontairement séparés : les trophées montent et descendent, ce qui fait le sel du classement ; le niveau ne fait que monter, pour qu'une mauvaise soirée ne donne jamais l'impression d'avoir tout perdu.</p>
+    </section>
+
+    <section class="box">
+      <h2>Le jeu en ligne : ce que ça implique</h2>
+      <p>Aujourd'hui tout le jeu tourne dans le téléphone du joueur. Pour un classement et des duels entre vraies personnes, il faut un serveur. Comme tu es déjà sur Cloudflare, tout peut y tenir sans autre hébergeur. Je le ferais en deux étapes.</p>
+      <table>
+        <tr><th>Étape</th><th>Ce que le joueur obtient</th><th>Ce qu'il faut construire</th></tr>
+        <tr><td>1. Classement</td><td>Un pseudo, ses trophées, la liste des joueurs, son rang et sa ligue. Les parties restent contre Gaspard.</td><td>Un petit serveur et une base de données sur Cloudflare. Quelques jours.</td></tr>
+        <tr><td>2. Duels en direct</td><td>« Trouver un adversaire », partie en temps réel contre un humain, trophées en jeu.</td><td>Des salons de jeu en temps réel, la mise en relation, et surtout les règles rejouées côté serveur. Nettement plus long.</td></tr>
+      </table>
+      <p>Deux points à décider avant de coder :</p>
+      <ul>
+        <li><b>Identité.</b> Le plus simple pour démarrer : un pseudo choisi au premier lancement, lié à l'appareil, sans mot de passe. Un vrai compte (e-mail, Apple, Google) pourra venir ensuite.</li>
+        <li><b>Triche.</b> À l'étape 1, c'est le téléphone qui annonce le résultat, donc un joueur malin peut tricher. Acceptable pour tester entre amis, pas pour un classement public. L'étape 2 règle le problème, puisque le serveur arbitre la partie.</li>
+      </ul>
+    </section>
+
+    <section class="box">
+      <h2>Mon avis</h2>
+      <p><b>Je prendrais le menu B, « Le duel », avec la barre d'onglets en bas.</b> Deux cartes face à face disent « jeu de cartes » et « affrontement » en une image, et l'aperçu du classement est sous les yeux à chaque ouverture, ce qui est exactement le moteur que tu décris.</p>
+      <ul>
+        <li><b>A, « La main »</b>, est le plus beau et le plus simple à faire, mais il ne montre pas les autres joueurs.</li>
+        <li><b>C, « La conquête »</b>, est idéal tant que le jeu reste solo ; il deviendrait un onglet « Campagne » dans le menu B.</li>
+        <li><b>D, « Le classeur »</b>, a plus sa place comme onglet « Cartes » que comme accueil.</li>
+      </ul>
+      <p>Ordre de construction que je recommande : le menu B et la progression locale (niveau, trophées et ligues contre Gaspard), puis l'étape 1 du serveur pour le vrai classement, puis les duels en direct.</p>
+    </section>
+  </div>
+
+  <script src="casts.js"></script>
+  <script>
+    SYM.X = "★";
+    const mc = (cast, house, rank, name, extra = "", style = "") =>
+      `<div class="mc h-${house} ${extra}" style="${style}"><div class="t"><span>${rank}</span><span>${SYM[house]}</span></div><div class="a">${art(cast, house, rank, 7)}</div><div class="n">${name}</div></div>`;
+    const back = (style = "") => `<div class="mc back" style="${style}"></div>`;
+    const ava = (cast, house = "H", color = "var(--orange)") => `<div class="ava" style="background:${color};color:${color}">${art(cast, house, "R", 5)}</div>`;
+    const topBar = () => `<div class="top">${ava("mars")}<div class="who">Zed <small>· Niv. 7</small><div class="xp"><i></i></div></div><div class="chip tr">1 240 ♛</div><div class="chip">◆ 310</div></div>`;
+    const tabs = on => `<div class="tabs">${[["♠", "Jouer"], ["▣", "Cartes"], ["♛", "Classement"], ["◆", "Boutique"]].map(([g, n], i) => `<div class="${i === on ? "on" : ""}"><b>${g}</b>${n}</div>`).join("")}</div>`;
+    const league = () => `<div class="league"><div class="medal">II</div><div class="bar">Ligue Argent II<small>Encore 60 ♛ pour l'Or</small><div class="xp"><i style="width:78%"></i></div></div></div>`;
+    const logo = () => `<div class="logo">Bataille<br>des <span>Alliés</span></div>`;
+
+    const SCREENS = {
+      A: () => `${topBar()}${logo()}
+        <div class="fan">${[["cranes", "S", "D", "Dame"], ["poulpes", "D", "V", "Valet"], ["mars", "H", "R", "Roi"], ["incognito", "C", "A", "As"], ["mars", "S", "10", "Amiral"]].map((c, i) => mc(c[0], c[1], c[2], c[3], i === 2 ? "shine" : "", `--k:${i - 2}`)).join("")}</div>
+        <div class="btn hot">JOUER</div>
+        <div class="row"><div class="btn ghost">Campagne</div><div class="btn ghost">En ligne</div></div>
+        ${league()}${tabs(0)}`,
+      B: () => `${topBar()}${logo()}
+        <div class="versus">${mc("mars", "H", "R", "Roi", "shine")}<div class="vs">VS</div>${back()}</div>
+        <div class="btn hot">TROUVER UN ADVERSAIRE</div>
+        <div class="live">1 284 joueurs en ligne</div>
+        <div class="modes"><div class="mode"><b>☾</b>Campagne</div><div class="mode"><b>⚑</b>Défi du jour</div><div class="mode"><b>☺</b>Amis</div></div>
+        <div class="board">
+          <div class="ln"><b>1</b>Kiki_92<span>2 410 ♛</span></div>
+          <div class="ln"><b>2</b>LaBaronne<span>2 388 ♛</span></div>
+          <div class="ln"><b>3</b>Tonton_Zap<span>2 301 ♛</span></div>
+          <div class="dots">⋮</div>
+          <div class="ln me"><b>47</b>Toi<span>1 240 ♛</span></div>
+        </div>${tabs(0)}`,
+      C: () => `${topBar()}
+        <div class="path">
+          <svg class="trail" viewBox="0 0 280 400" preserveAspectRatio="none"><path d="M70 350 C150 330 230 310 205 262 C180 215 70 235 75 180 C80 130 215 150 205 96 C198 60 140 50 140 38" fill="none" stroke="#f5e9cf" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round" opacity=".7"/></svg>
+          <div class="node done" style="left:25%;top:87%">${mc("mars", "C", "V", "Novice")}<small>★★★</small>Lune</div>
+          <div class="node done" style="left:73%;top:66%">${mc("poulpes", "D", "D", "Soldat")}<small>★★☆</small>Mars</div>
+          <div class="node now" style="left:27%;top:45%">${mc("cranes", "S", "R", "Stratège")}<small>☆☆☆</small>Saturne</div>
+          <div class="node todo" style="left:73%;top:24%">${back("--w:46px")}Neptune</div>
+          <div class="node todo" style="left:50%;top:7%">${back("--w:46px")}L'Empereur</div>
+        </div>
+        <div class="btn hot">ATTAQUER SATURNE</div>
+        ${league()}${tabs(0)}`,
+      D: () => `${topBar()}
+        <div class="head"><b>Ma collection</b><span>23 / 60 cartes</span></div>
+        <div class="bar2"><i></i></div>
+        <div class="binder">
+          ${mc("mars", "H", "R", "Roi", "shine")}${mc("mars", "S", "D", "Dame")}${mc("mars", "D", "V", "Valet")}${mc("mars", "C", "A", "As")}
+          ${mc("cranes", "S", "R", "Roi")}${mc("cranes", "H", "D", "Dame", "lock")}${mc("cranes", "D", "V", "Valet")}${mc("cranes", "C", "A", "As", "lock")}
+          ${mc("poulpes", "D", "R", "Roi", "lock")}${mc("poulpes", "S", "D", "Dame", "lock")}${mc("incognito", "C", "V", "Valet", "lock")}${mc("incognito", "H", "A", "As", "lock")}
+        </div>
+        <div class="row"><div class="btn hot" style="font-size:15px">JOUER</div><div class="btn">Booster · 60 ◆</div></div>
+        ${tabs(1)}`,
+      E: () => `${topBar()}
+        <div class="seg"><div class="on">Ma ligue</div><div>Amis</div><div>Monde</div></div>
+        <div class="league"><div class="medal">II</div><div class="bar">Ligue Argent II<small>Saison 3 · fin dans 6 j</small></div><div class="chip tr">47ᵉ</div></div>
+        <div class="zone">▲ LES 10 PREMIERS MONTENT EN OR</div>
+        <div class="rank">
+          <div class="ln up"><b>9</b>${ava("cranes", "S", "var(--violet)")}<div>Mimi_Laser<small>Grosses têtes</small></div><span>1 512 ♛</span></div>
+          <div class="ln up"><b>10</b>${ava("poulpes", "D", "#e0a91f")}<div>Capitaine_Flan<small>Tentacules</small></div><span>1 498 ♛</span></div>
+          <div class="ln"><b>45</b>${ava("incognito", "C", "var(--teal)")}<div>M. Dupont<small>Incognito</small></div><span>1 263 ♛</span></div>
+          <div class="ln"><b>46</b>${ava("cranes", "H")}<div>Zorglub_du_13<small>Grosses têtes</small></div><span>1 251 ♛</span></div>
+          <div class="ln me"><b>47</b>${ava("mars")}<div>Toi<small>Petits verts · +32 aujourd'hui</small></div><span>1 240 ♛</span></div>
+          <div class="ln"><b>48</b>${ava("poulpes", "S", "var(--violet)")}<div>Pieuvre_Qui_Rit<small>Tentacules</small></div><span>1 236 ♛</span></div>
+          <div class="ln"><b>49</b>${ava("mars", "D", "#e0a91f")}<div>Gérard_Mars<small>Petits verts</small></div><span>1 229 ♛</span></div>
+        </div>
+        <div class="zone down">▼ LES 10 DERNIERS DESCENDENT EN BRONZE</div>
+        ${tabs(2)}`
+    };
+
+    const PROPS = [
+      { k: "A", name: "La main", pitch: "Ta main de cartes en éventail au centre, comme si tu la tenais déjà. Un seul gros bouton.", pour: "Le plus lisible et le plus rapide à faire.", contre: "Ne montre ni les autres joueurs ni ton rang parmi eux." },
+      { k: "B", name: "Le duel", pitch: "Ta meilleure carte face à une carte inconnue. Le classement est visible dès l'accueil.", pour: "Dit « cartes » et « affrontement » d'un coup d'œil, et donne envie de grimper.", contre: "N'a de sens que si le jeu en ligne existe vraiment." },
+      { k: "C", name: "La conquête", pitch: "Un chemin de planètes : chaque adversaire est une carte à battre, avec des étoiles à gagner.", pour: "Une progression solo très claire, sans serveur.", contre: "Met la campagne en avant, pas les autres joueurs." },
+      { k: "D", name: "Le classeur", pitch: "L'accueil est ta collection : cartes possédées en couleur, cartes manquantes en silhouette.", pour: "Le plaisir de collection est immédiat.", contre: "On voit moins qu'il s'agit d'un duel." },
+      { k: "E", name: "Écran de classement", pitch: "Commun aux quatre menus : ta ligue, tes voisins directs, et les zones de montée et de descente.", pour: "Te montrer tes voisins plutôt que le premier mondial rend l'objectif atteignable.", contre: "Demande un serveur, même sans duel en direct." }
+    ];
+    document.querySelector("#grid").innerHTML = PROPS.map(p => `
+      <article class="prop">
+        <h2><span>${p.k}</span>${p.name}</h2>
+        <div class="phone"><div class="screen">${SCREENS[p.k]()}</div></div>
+        <p>${p.pitch}</p>
+        <dl><dt>Pour</dt><dd>${p.pour}</dd><dt>Contre</dt><dd>${p.contre}</dd></dl>
+      </article>`).join("");
+  </script>
+</body>
+</html>
