@@ -127,14 +127,9 @@
     /* Voyage vers la planète suivante, après une victoire en aventure */
     .voyage { position: fixed; inset: 0; z-index: 55; display: none; overflow: hidden; text-align: center; }
     .voyage.on { display: block; }
-    .vy-planet { position: absolute; left: 50%; border-radius: 50%; border: 4px solid var(--navy); box-shadow: inset -26px -18px 0 rgba(0, 0, 0, 0.22), 0 0 60px rgba(245, 233, 207, 0.25); }
-    .vy-from { width: 260px; height: 260px; bottom: -70px; margin-left: -130px; animation: vyLeave 2.2s cubic-bezier(.5, 0, .8, .4) forwards; }
-    .vy-to { width: 300px; height: 300px; top: 50%; margin: -150px 0 0 -150px; transform: scale(0); animation: vyArrive 2s cubic-bezier(.1, .7, .3, 1) 2.5s forwards; }
-    .vy-title { position: absolute; left: 0; right: 0; top: 16%; font-size: clamp(1.8rem, 9vw, 3rem); text-transform: uppercase; color: var(--yellow); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e, 0 0 30px rgba(245, 196, 69, 0.8); animation: vyText 2.1s ease both; }
-    .vy-sub { position: absolute; left: 0; right: 0; bottom: 14%; font-size: clamp(1.3rem, 6.5vw, 2.1rem); color: var(--cream); text-shadow: 0 3px 0 #0a0f1e; opacity: 0; animation: vyText 2.3s ease 2.4s both; }
+    .vy-title { position: absolute; left: 0; right: 0; top: 34%; font-size: clamp(1.8rem, 9vw, 3rem); text-transform: uppercase; color: var(--yellow); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e, 0 0 30px rgba(245, 196, 69, 0.8); animation: vyText 2.1s ease both; }
+    .vy-sub { position: absolute; left: 0; right: 0; top: 46%; font-size: clamp(1.3rem, 6.5vw, 2.1rem); color: var(--cream); text-shadow: 0 3px 0 #0a0f1e; opacity: 0; animation: vyText 2.3s ease 2.4s both; }
     .vy-skip { position: absolute; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); font-size: 0.7rem; color: rgba(245, 233, 207, 0.6); }
-    @keyframes vyLeave { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(70vh) scale(0.25); opacity: 0; } }
-    @keyframes vyArrive { 0% { transform: scale(0); opacity: 0; } 30% { opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
     @keyframes vyText { 0% { opacity: 0; scale: 0.5; } 18% { opacity: 1; scale: 1.1; } 80% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1.15; } }
     .pane .stack { display: grid; gap: 10px; width: 100%; max-width: 300px; }
     .wallet { padding: 4px 14px; border-radius: 99px; background: rgba(16, 22, 43, 0.86); border: 2px solid var(--yellow); color: var(--yellow); }
@@ -1917,15 +1912,13 @@
       if (game === gameId && S.phase === "next") startRound();
     }
 
-    const planetStyle = lvl => `background: radial-gradient(circle at 34% 30%, #fff8, transparent 46%), ${lvl ? lvl.color : "#f5c445"}`;
     /* Après une victoire en aventure : on quitte la planète conquise et on file vers la suivante. Un toucher passe la séquence. */
     function voyage(from, to) {
       if (reduced) return Promise.resolve();
       return new Promise(resolve => {
         const el = $("#voyage");
         const dest = to ? to.planet : "l'Étoile de la Victoire";
-        el.innerHTML = `<div class="vy-planet vy-from" style="${planetStyle(from)}"></div><div class="vy-planet vy-to" style="${planetStyle(to)}"></div>
-          <div class="vy-title">${from.planet} conquise !</div><div class="vy-sub">${to ? `Cap sur ${dest}` : "La galaxie est à toi"}</div><div class="vy-skip">Toucher pour passer</div>`;
+        el.innerHTML = `<div class="vy-title">${from.planet} conquise !</div><div class="vy-sub">${to ? `Cap sur ${dest}` : "La galaxie est à toi"}</div><div class="vy-skip">Toucher pour passer</div>`;
         for (const id of ["menu", "game"]) $(`#${id}`).classList.remove("on");
         el.classList.add("on");
         sfx.win();
