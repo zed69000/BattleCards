@@ -97,6 +97,9 @@
     .tabs button { display: grid; justify-items: center; gap: 1px; padding: 8px 0 9px; border: 0; background: none; font-size: 0.62rem; color: rgba(245, 233, 207, 0.6); }
     .tabs button b { font-weight: 400; font-size: 1.2rem; line-height: 1; }
     .tabs button.on { color: var(--yellow); }
+    .quick { display: flex; gap: 8px; justify-content: center; width: 100%; max-width: 380px; }
+    .quick .btn { flex: 1; padding: 0.5rem 0.6rem; font-size: 0.86rem; }
+    button.pill { font: inherit; }
     .pane .stack { display: grid; gap: 10px; width: 100%; max-width: 300px; }
     .wallet { padding: 4px 14px; border-radius: 99px; background: rgba(16, 22, 43, 0.86); border: 2px solid var(--yellow); color: var(--yellow); }
     .logo small { display: block; letter-spacing: 0.34em; color: var(--yellow); font-size: 0.72rem; }
@@ -378,7 +381,7 @@
         <div class="ava" id="menuAva"></div>
         <div class="who">Toi <small id="menuLvl">· Niv. 1</small><div class="xp"><i id="menuXp"></i></div></div>
         <div class="pill tr"><span id="trophies">0</span> ♛</div>
-        <div class="pill">◆ <span id="crystals">0</span></div>
+        <button class="pill" id="crystalsBtn" aria-label="Ouvrir un booster">◆ <span id="crystals">0</span></button>
       </div>
       <div class="panes">
         <section class="pane on" data-pane="play">
@@ -389,6 +392,10 @@
           <div class="versus" id="versus"></div>
           <button class="btn big hot" id="playBtn">Combattre</button>
           <div class="stake" id="stake"></div>
+          <div class="quick">
+            <button class="btn teal" id="quickBooster">Booster · 60 ◆</button>
+            <button class="btn" id="quickAtouts">Atouts 0/3</button>
+          </div>
           <div class="levels" id="levels"></div>
           <div class="league" id="leagueBox"></div>
           <div class="board" id="boardMini"></div>
@@ -1828,7 +1835,8 @@
       $("#trophies").textContent = save.trophies;
       $("#crystals").textContent = save.crystals;
       $("#atoutsBtn").textContent = `Atouts ${save.loadout.length}/${MAX_ATOUTS}`;
-      $("#capsuleBtn").textContent = `Booster · ${CAPSULE_COST} ◆`;
+      $("#capsuleBtn").textContent = $("#quickBooster").textContent = `Booster · ${CAPSULE_COST} ◆`;
+      $("#quickAtouts").textContent = $("#atoutsBtn").textContent;
 
       // Le duel : ton roi face à une carte inconnue
       const vs = $("#versus");
@@ -2007,7 +2015,8 @@
     $("#tutoBtn").addEventListener("click", () => newGame(true));
     $("#atoutsBtn").addEventListener("click", openAtouts);
     $("#atClose").addEventListener("click", () => { $("#atouts").classList.remove("on"); renderMenu(); });
-    $("#capsuleBtn").addEventListener("click", openCapsuleShop);
+    for (const id of ["capsuleBtn", "quickBooster", "crystalsBtn"]) $(`#${id}`).addEventListener("click", openCapsuleShop);
+    $("#quickAtouts").addEventListener("click", openAtouts);
     $("#menuHelp").addEventListener("click", () => openHelp(null));
     $("#pauseHelp").addEventListener("click", () => openHelp("pause"));
     $("#helpClose").addEventListener("click", () => { $("#help").classList.remove("on"); if (helpFrom) $(`#${helpFrom}`).classList.add("on"); });
