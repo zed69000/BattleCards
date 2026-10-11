@@ -21,8 +21,8 @@
       color-scheme: dark;
       --navy: #1f2a44; --deep: #10162b; --cream: #f5e9cf; --orange: #f26a3d; --yellow: #f5c445; --teal: #2fa394; --violet: #5b5fc7; --pink: #d0508f;
       --ok: #7be0a4; --bad: #ff7a6b;
-      --cwb: clamp(38px, min(17.5vw, calc((100vh - 345px) / 6.05)), 78px);
-      --cwb: clamp(38px, min(17.5vw, calc((100dvh - 345px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) / 6.05)), 78px);
+      --cwb: clamp(38px, min(17.5vw, calc((100vh - 352px) / 6.05)), 78px);
+      --cwb: clamp(38px, min(17.5vw, calc((100dvh - 352px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) / 6.05)), 78px);
       --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -115,6 +115,27 @@
     .tabs button { position: relative; }
     .tabs button.dot::after { content: ""; position: absolute; top: 5px; left: calc(50% + 9px); width: 9px; height: 9px; border-radius: 50%; background: var(--orange); border: 2px solid #0a0f1e; }
     @keyframes glow { 0%, 100% { box-shadow: 0 0 8px rgba(245, 196, 69, 0.35); } 50% { box-shadow: 0 0 24px rgba(245, 196, 69, 0.85); } }
+    .lvl .st { font-style: normal; font-size: 0.7rem; letter-spacing: 2px; color: var(--yellow); }
+    .lvl .planet.ring { position: relative; }
+    .lvl .planet.ring::after { content: ""; position: absolute; left: -8px; right: -8px; top: 8px; height: 6px; border-radius: 50%; border: 2px solid var(--cream); transform: rotate(-18deg); }
+    .levels { position: relative; }
+    .levels::before { content: ""; position: absolute; left: 14%; right: 14%; top: 20px; border-top: 3px dotted rgba(245, 233, 207, 0.45); }
+    .lvl { position: relative; }
+    .mode-tag { display: inline-block; padding: 2px 10px; border-radius: 99px; background: var(--teal); color: var(--cream); font-size: 0.62rem; letter-spacing: 0.14em; }
+    .mode-tag.multi { background: var(--violet); }
+
+    /* Voyage vers la planète suivante, après une victoire en aventure */
+    .voyage { position: fixed; inset: 0; z-index: 55; display: none; overflow: hidden; text-align: center; }
+    .voyage.on { display: block; }
+    .vy-planet { position: absolute; left: 50%; border-radius: 50%; border: 4px solid var(--navy); box-shadow: inset -26px -18px 0 rgba(0, 0, 0, 0.22), 0 0 60px rgba(245, 233, 207, 0.25); }
+    .vy-from { width: 260px; height: 260px; bottom: -70px; margin-left: -130px; animation: vyLeave 2.2s cubic-bezier(.5, 0, .8, .4) forwards; }
+    .vy-to { width: 300px; height: 300px; top: 50%; margin: -150px 0 0 -150px; transform: scale(0); animation: vyArrive 2s cubic-bezier(.1, .7, .3, 1) 2.5s forwards; }
+    .vy-title { position: absolute; left: 0; right: 0; top: 16%; font-size: clamp(1.8rem, 9vw, 3rem); text-transform: uppercase; color: var(--yellow); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e, 0 0 30px rgba(245, 196, 69, 0.8); animation: vyText 2.1s ease both; }
+    .vy-sub { position: absolute; left: 0; right: 0; bottom: 14%; font-size: clamp(1.3rem, 6.5vw, 2.1rem); color: var(--cream); text-shadow: 0 3px 0 #0a0f1e; opacity: 0; animation: vyText 2.3s ease 2.4s both; }
+    .vy-skip { position: absolute; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); font-size: 0.7rem; color: rgba(245, 233, 207, 0.6); }
+    @keyframes vyLeave { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(70vh) scale(0.25); opacity: 0; } }
+    @keyframes vyArrive { 0% { transform: scale(0); opacity: 0; } 30% { opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes vyText { 0% { opacity: 0; scale: 0.5; } 18% { opacity: 1; scale: 1.1; } 80% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1.15; } }
     .pane .stack { display: grid; gap: 10px; width: 100%; max-width: 300px; }
     .wallet { padding: 4px 14px; border-radius: 99px; background: rgba(16, 22, 43, 0.86); border: 2px solid var(--yellow); color: var(--yellow); }
     .logo small { display: block; letter-spacing: 0.34em; color: var(--yellow); font-size: 0.72rem; }
@@ -164,7 +185,7 @@
     .stat.bump { animation: bump 450ms ease; }
     .icon { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--cream); background: transparent; font-size: 0.8rem; }
 
-    .opp-hand { display: flex; justify-content: center; align-items: flex-start; min-height: calc(var(--cwb) * 1.6 + 16px); padding: 4px 0 12px; }
+    .opp-hand { display: flex; justify-content: center; align-items: flex-end; flex: 0 1 calc(var(--cwb) * 1.6 + 16px); min-height: calc(var(--cwb) * 0.7); overflow: hidden; padding: 0 0 12px; }
     .opp-hand i { position: relative; overflow: hidden; flex: none; width: calc(var(--cwb) * 1.12); height: calc(var(--cwb) * 1.12 * 1.42); margin: 0 -8px; border-radius: calc(var(--cwb) * 0.168); border: 2px solid var(--navy); box-shadow: 0 4px 0 #0a0f1e; background: repeating-radial-gradient(circle at 50% 50%, var(--orange) 0 5px, var(--navy) 5px 10px); transform: rotate(calc(var(--k) * -4deg)) translateY(calc(var(--k) * var(--k) * -3px)); transition: transform 200ms; }
     .opp-hand.tight i, .hand.tight .card { margin: 0 -14px; }
     /* Dos de carte vivant : rayons qui tournent et voyant qui bat. */
@@ -202,17 +223,24 @@
     .tray-info b { display: block; font-weight: 400; font-size: 0.78rem; color: var(--cream); }
     .tray-info b.ok { color: var(--ok); } .tray-info b.ko { color: var(--bad); }
     .die-stage { flex: none; width: 44px; height: 44px; perspective: 360px; }
-    .tray.rolling .die-stage { animation: dieHop 1100ms cubic-bezier(.3, .6, .4, 1); }
+    .die-stage { position: relative; }
+    .tray.rolling .die-stage { z-index: 25; animation: dieThrow 1700ms cubic-bezier(.3, .6, .4, 1); }
     .cube { --h: 22px; position: relative; width: 44px; height: 44px; transform-style: preserve-3d; transition: transform 1100ms cubic-bezier(.16, .8, .28, 1); }
-    .cube .f { position: absolute; inset: 0; border-radius: 9px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 6px; gap: 1px; background: var(--cream); border: 2px solid var(--navy); }
+    .cube .f { position: absolute; inset: 0; border-radius: 9px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 6px; gap: 1px; background: radial-gradient(circle at 30% 24%, #8f93f0, #4a4fb8 55%, #262b78); border: 2px solid var(--cream); box-shadow: inset 0 0 9px rgba(0, 0, 0, 0.55), 0 0 12px rgba(91, 95, 199, 0.7); transition: border-color 200ms, box-shadow 200ms; }
     .cube .f i { border-radius: 50%; margin: 1px; }
-    .cube .f i.p { background: var(--navy); }
+    .cube .f i.p { background: radial-gradient(circle at 35% 30%, #fffbe0, var(--yellow) 55%, #c98d12); box-shadow: 0 0 5px var(--yellow); }
+    .tray.hit .cube .f { border-color: var(--ok); box-shadow: inset 0 0 9px rgba(0, 0, 0, 0.4), 0 0 18px var(--ok); }
+    .tray.miss .cube .f { border-color: var(--bad); box-shadow: inset 0 0 9px rgba(0, 0, 0, 0.4), 0 0 18px var(--bad); }
     .f1 { transform: translateZ(var(--h)); } .f6 { transform: rotateY(180deg) translateZ(var(--h)); }
     .f2 { transform: rotateY(90deg) translateZ(var(--h)); } .f5 { transform: rotateY(-90deg) translateZ(var(--h)); }
     .f3 { transform: rotateX(90deg) translateZ(var(--h)); } .f4 { transform: rotateX(-90deg) translateZ(var(--h)); }
 
     .banner { position: absolute; left: 50%; top: 50%; z-index: 20; pointer-events: none; opacity: 0; white-space: nowrap; transform: translate(-50%, -50%); font-size: clamp(1.5rem, 8.5vw, 2.6rem); letter-spacing: 0.06em; text-transform: uppercase; color: var(--yellow); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e, 0 0 28px rgba(245, 196, 69, 0.8); }
     .banner.show { animation: banner 1200ms ease both; }
+    /* Bandeau sombre derrière le mot, et le centre de la table s'efface le temps de l'annonce. */
+    .banner::before { content: ""; position: absolute; left: -100vw; right: -100vw; top: -10px; bottom: -10px; z-index: -1; background: linear-gradient(90deg, transparent 20%, rgba(8, 11, 22, 0.92) 38%, rgba(8, 11, 22, 0.92) 62%, transparent 80%); }
+    .mid { transition: opacity 160ms; }
+    .field.hush .mid { opacity: 0; }
     .banner.bad { color: var(--cream); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e; }
     .banner.light { font-style: italic; transform: translate(-50%, -50%) skewX(-10deg); }
 
@@ -233,11 +261,11 @@
     .hint { position: absolute; left: 50%; top: -19px; transform: translateX(-50%); z-index: 6; padding: 1px 7px; border-radius: 99px; white-space: nowrap; font-size: 0.6rem; background: var(--ok); color: var(--navy); border: 2px solid var(--navy); }
     .hint.warn { background: var(--yellow); }
 
-    .prompt { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; min-height: 58px; padding: 7px 10px; border-radius: 14px; background: rgba(16, 22, 43, 0.88); border: 2px solid rgba(245, 233, 207, 0.4); text-align: center; }
+    .prompt { flex: none; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; min-height: 58px; padding: 7px 10px; border-radius: 14px; background: rgba(16, 22, 43, 0.88); border: 2px solid rgba(245, 233, 207, 0.4); text-align: center; }
     .prompt p { margin: 0; flex: 1 1 200px; line-height: 1.25; font-size: 0.86rem; }
     .prompt p b { font-weight: 400; color: var(--yellow); }
     .actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-    .actions .btn { padding: 0.45rem 0.9rem; font-size: 0.86rem; }
+    .actions .btn { padding: 0.42rem 0.8rem; font-size: 0.82rem; }
 
     /* ───── Cartes ───── */
     .card { --cw: var(--cwb); position: relative; flex: none; width: var(--cw); height: calc(var(--cw) * 1.42); perspective: 600px; }
@@ -326,6 +354,10 @@
     .help li + li { margin-top: 5px; }
     .help h3 { margin: 14px 0 6px; font-family: "Righteous", sans-serif; font-weight: 400; color: var(--yellow); font-size: 0.95rem; letter-spacing: 0.06em; }
     .help b { color: var(--yellow); font-weight: 600; }
+    .help p { margin: 0 0 10px; }
+    .help details { margin: 0 0 10px; padding: 8px 10px; border-radius: 10px; background: rgba(16, 22, 43, 0.6); }
+    .help summary { font-family: "Righteous", sans-serif; color: var(--yellow); cursor: pointer; }
+    .help details[open] summary { margin-bottom: 8px; }
 
     .at-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 8px; justify-items: center; margin: 6px 0 12px; }
     .at { position: relative; padding: 0; border: 0; background: none; }
@@ -367,6 +399,7 @@
     @keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.3); } 100% { transform: scale(1); } }
     @keyframes ring { from { opacity: 1; transform: scale(0.9); } to { opacity: 0; transform: scale(var(--pow, 1.4)); } }
     @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes dieThrow { 0% { transform: none; } 14% { transform: translate(var(--dx), calc(var(--dy) - 70px)) scale(2.8) rotate(-22deg); } 30% { transform: translate(var(--dx), var(--dy)) scale(2.5) rotate(9deg); } 42% { transform: translate(var(--dx), calc(var(--dy) - 28px)) scale(2.65) rotate(-4deg); } 54% { transform: translate(var(--dx), var(--dy)) scale(2.5); } 61% { transform: translate(var(--dx), calc(var(--dy) - 9px)) scale(2.55); } 67%, 86% { transform: translate(var(--dx), var(--dy)) scale(2.5); } 100% { transform: none; } }
     @keyframes beat { 0%, 100% { scale: 0.82; box-shadow: 0 0 0 rgba(245, 196, 69, 0); } 50% { scale: 1.12; box-shadow: 0 0 14px rgba(245, 196, 69, 0.9); } }
     @keyframes bob { 0%, 100% { transform: translateY(3%) rotate(-3deg); } 50% { transform: translateY(-4%) rotate(3deg) scale(1.05); } }
     @keyframes drift { to { background-position: 44px 66px, 79px 111px; } }
@@ -399,13 +432,14 @@
         <button class="pill" id="crystalsBtn" aria-label="Ouvrir un booster">◆ <span id="crystals">0</span></button>
       </div>
       <div class="panes">
-        <section class="pane on" data-pane="play">
+        <section class="pane on" data-pane="adv">
           <div class="logo">
-            <small>CONQUÊTE DE L'ESPACE</small>
+            <span class="mode-tag">AVENTURE · SOLO</span>
             <h1>Bataille des <span>Alliés</span></h1>
           </div>
-          <div class="versus" id="versus"></div>
-          <button class="btn big hot" id="playBtn">Combattre</button>
+          <div class="section-title">Ta conquête, planète après planète</div>
+          <div class="levels" id="levels"></div>
+          <button class="btn big hot" id="playBtn">Décoller</button>
           <div class="stake" id="stake"></div>
           <button class="boost" id="quickBooster">
             <span class="boost-pack" id="boostPack"></span>
@@ -413,9 +447,19 @@
             <span class="boost-cta" id="boostCta">Ouvrir</span>
           </button>
           <div class="quick"><button class="btn" id="quickAtouts">Atouts 0/3</button></div>
-          <div class="levels" id="levels"></div>
-          <div class="league" id="leagueBox"></div>
-          <div class="board" id="boardMini"></div>
+        </section>
+        <section class="pane" data-pane="arena">
+          <div class="logo">
+            <span class="mode-tag multi">MULTIJOUEUR · CLASSÉ</span>
+            <h1>L'<span>Arène</span></h1>
+          </div>
+          <div class="versus" id="versus"></div>
+          <button class="btn big hot" id="arenaBtn">Duel classé</button>
+          <div class="stake" id="arenaStake"></div>
+          <div class="league" id="leagueBig"></div>
+          <div class="section-title">Classement</div>
+          <div class="rank" id="rankList"></div>
+          <p class="perk">En attendant le jeu en ligne, tes rivaux d'arène sont des robots à score fixe. Les duels contre de vrais joueurs les remplaceront.</p>
         </section>
         <section class="pane" data-pane="cards">
           <div class="section-title">Ta tribu</div>
@@ -426,16 +470,10 @@
             <button class="btn teal" id="capsuleBtn">Booster · 60 ◆</button>
           </div>
         </section>
-        <section class="pane" data-pane="rank">
-          <div class="league" id="leagueBig"></div>
-          <div class="section-title">Rivaux d'entraînement</div>
-          <div class="rank" id="rankList"></div>
-          <p class="perk">Ces rivaux sont des robots à score fixe. Le classement entre vrais joueurs arrivera avec le jeu en ligne.</p>
-        </section>
         <section class="pane" data-pane="more">
           <div class="section-title">Options</div>
           <div class="stack">
-            <button class="btn ghost" id="tutoBtn">Apprendre à jouer</button>
+            <button class="btn ghost" id="tutoBtn">Revoir toutes les explications</button>
             <button class="btn ghost" id="menuHelp">Règles</button>
             <button class="btn ghost" id="menuSound">Son : oui</button>
             <button class="btn ghost" id="fsBtn">Plein écran</button>
@@ -443,9 +481,9 @@
         </section>
       </div>
       <nav class="tabs" id="tabs">
-        <button class="on" data-tab="play"><b>♠</b>Jouer</button>
+        <button class="on" data-tab="adv"><b>☾</b>Aventure</button>
+        <button data-tab="arena"><b>♛</b>Multijoueur</button>
         <button data-tab="cards"><b>▣</b>Cartes</button>
-        <button data-tab="rank"><b>♛</b>Classement</button>
         <button data-tab="more"><b>⚙</b>Options</button>
       </nav>
     </div>
@@ -500,6 +538,8 @@
     <div id="a2hsSide"></div>
   </div>
 
+  <div class="voyage" id="voyage" aria-hidden="true"></div>
+
   <div class="coach" id="coach"><div class="spot" id="coachSpot"></div><div class="bubble" id="coachBubble"></div></div>
 
   <div class="overlay" id="pause">
@@ -545,36 +585,47 @@
   <div class="overlay" id="help">
     <div class="sheet"><h2>Règles</h2>
       <div class="help">
+        <h3>Le but</h3>
+        <p>Ramasser plus de cartes que ton adversaire. Les cartes gagnées vont dans ton <b>butin</b> ; à la fin, le plus gros butin gagne.</p>
+        <h3>Une manche en 3 temps</h3>
         <ol>
-          <li><b>Main de 5 cartes.</b> Glisse une carte vers sa case, ou touche-la puis confirme. Tu repioches à 5 après chaque manche.</li>
-          <li><b>Avant-garde :</b> une carte visible chacun. Le vainqueur de la manche précédente pose en premier.</li>
-          <li><b>Embuscade :</b> une carte cachée chacun, en même temps. Sa famille déclenche un pouvoir à la révélation.</li>
-          <li><b>Allié :</b> le camp en retard peut engager une 3<sup>e</sup> carte. Plus elle est forte, plus le dé est exigeant. Raté : la carte est perdue.</li>
-          <li><b>Carburant :</b> un jeton = +1 au dé, après le lancer. On en gagne un en perdant une manche.</li>
-          <li><b>Contre-attaque :</b> quand un allié adverse réussit, tu peux brûler 1 carburant pour lancer le dé. L'allié perd autant de points que le dé.</li>
-          <li><b>Égalité : bataille galactique.</b> Tout reste en jeu. Chacun met une carte en otage puis retourne la carte du dessus de sa pioche, à l'aveugle : la plus forte rafle tout. Nouvelle égalité, on recommence. 1 carburant permet d'en piocher deux et de garder la meilleure.</li>
-          <li><b>Fin :</b> quand un camp ne peut plus aligner deux cartes, le plus gros butin gagne.</li>
+          <li><b>Carte visible.</b> Chacun pose une carte face visible. Le gagnant de la manche précédente pose en premier.</li>
+          <li><b>Carte cachée.</b> Chacun pose une deuxième carte, face cachée. On retourne : le plus gros total des deux cartes ramasse tout.</li>
+          <li><b>Dernière chance.</b> Celui qui est derrière peut ajouter une 3<sup>e</sup> carte, l'<b>allié</b>, en lançant le dé. Plus la carte est forte, plus le dé est difficile. Raté : la carte est perdue.</li>
         </ol>
-        <h3>Pouvoirs d'embuscade</h3>
+        <p>Tu as toujours 5 cartes en main et tu repioches après chaque manche. La partie s'arrête quand un camp n'a plus assez de cartes.</p>
+        <h3>Le carburant ●</h3>
         <ul>
-          <li><b>♠ Comètes — Impact :</b> −2 au total adverse</li>
-          <li><b>♥ Soleils — Propulsion :</b> +1 à ton dé d'allié</li>
-          <li><b>♦ Étoiles — Ravitaillement :</b> +1 carburant si tu gagnes la manche</li>
-          <li><b>♣ Lunes — Radar :</b> 1 relance du dé d'allié</li>
+          <li><b>Aider son dé :</b> chaque jeton ajoute +1 au dé d'allié, après le lancer.</li>
+          <li><b>Contre-attaquer :</b> quand l'allié adverse réussit, 1 jeton te donne un dé de riposte. L'allié perd autant de points que ton dé.</li>
+          <li>Tu regagnes 1 jeton à chaque manche perdue.</li>
         </ul>
-        <h3>Formations (tes deux cartes)</h3>
-        <ul>
-          <li><b>Jumeaux</b> (même rang) : +5 · <b>Escadron</b> (même famille) : +3 · <b>Sillage</b> (rangs voisins) : +2</li>
-        </ul>
-        <h3>Seuil du dé d'allié</h3>
-        <ul>
-          <li>2 à 5 : dé 2+ · 6 à 9 : dé 3+ · 10 et Valet : dé 4+ · Dame et Roi : dé 5+ · As : dé 6</li>
-        </ul>
-        <h3>Atouts ★ et cristaux</h3>
-        <ul>
-          <li>Chaque partie rapporte des cristaux ◆, davantage en cas de victoire. Un booster en coûte 60 et contient 3 atouts.</li>
-          <li>Tu emportes jusqu'à 3 atouts par partie. Ils sont mélangés dans ta pioche, et l'adversaire en reçoit le même nombre.</li>
-        </ul>
+        <h3>Égalité : la bataille galactique</h3>
+        <p>Rien n'est ramassé. Chacun met une carte en otage, puis retourne la carte du dessus de sa pioche, au hasard. La plus forte rafle tout. Encore égalité ? On recommence.</p>
+        <details><summary>Les bonus des cartes</summary>
+          <p><b>Ta carte cachée</b> déclenche un pouvoir selon sa famille :</p>
+          <ul>
+            <li><b>♠ Comètes — Impact :</b> −2 au total adverse</li>
+            <li><b>♥ Soleils — Propulsion :</b> +1 au dé d'allié</li>
+            <li><b>♦ Étoiles — Ravitaillement :</b> +1 carburant en cas de victoire</li>
+            <li><b>♣ Lunes — Radar :</b> 1 relance du dé d'allié</li>
+          </ul>
+          <p><b>Tes deux cartes ensemble</b> peuvent former :</p>
+          <ul>
+            <li><b>Jumeaux</b> (même valeur) : +5 · <b>Escadron</b> (même famille) : +3 · <b>Sillage</b> (valeurs qui se suivent) : +2</li>
+          </ul>
+          <p><b>Dé à faire pour un allié :</b> carte de 2 à 5, dé 2 ou plus · 6 à 9, dé 3 ou plus · 10 et Valet, dé 4 ou plus · Dame et Roi, dé 5 ou plus · As, dé 6.</p>
+        </details>
+        <details><summary>Les atouts ★</summary>
+          <p>Des cartes spéciales trouvées dans les boosters. Tu en choisis jusqu'à 3 avant la partie ; elles sont mélangées dans ta pioche et ton adversaire en reçoit autant.</p>
+          <ul id="helpAtouts"></ul>
+        </details>
+        <details><summary>Les deux modes</summary>
+          <ul>
+            <li><b>Aventure (solo) :</b> tu conquiers les planètes une par une. Chaque victoire rapporte des étoiles, des cristaux, et débloque tribus et adversaires.</li>
+            <li><b>Multijoueur :</b> des duels classés qui font monter ou descendre tes trophées ♛, ta ligue et ton rang.</li>
+          </ul>
+        </details>
       </div>
       <button class="btn" id="helpClose" style="margin-top:12px">Compris</button>
     </div>
@@ -726,8 +777,8 @@
     /* ═════ Données de jeu ═════ */
     const HOUSES = {
       S: { name: "des Comètes", power: "Impact", desc: "−2 au total adverse" },
-      H: { name: "des Soleils", power: "Propulsion", desc: "+1 à ton dé d'allié" },
-      D: { name: "des Étoiles", power: "Ravitaillement", desc: "+1 carburant si tu gagnes" },
+      H: { name: "des Soleils", power: "Propulsion", desc: "+1 au dé d'allié" },
+      D: { name: "des Étoiles", power: "Ravitaillement", desc: "+1 carburant en cas de victoire" },
       C: { name: "des Lunes", power: "Radar", desc: "1 relance du dé d'allié" },
       X: { name: "", power: "Atout", desc: "" }
     };
@@ -745,14 +796,14 @@
     ];
     const RARITY = [{ name: "Commune", weight: 70, dup: 10 }, { name: "Rare", weight: 25, dup: 25 }, { name: "Légendaire", weight: 5, dup: 60 }];
     const ATOUTS = {
-      spy: { name: "Vache espionne", value: 6, rarity: 0, desc: "En avant-garde : l'adversaire doit poser son embuscade face visible, avant toi." },
-      dice: { name: "Dé pipé", value: 7, thr: 1, rarity: 0, desc: "Jouée en allié, elle réussit à coup sûr." },
-      tank: { name: "Citerne", value: 5, rarity: 0, desc: "Quand elle est révélée : +2 carburant." },
-      shield: { name: "Bouclier", value: 8, rarity: 0, desc: "Tu ignores l'Impact et le Trou noir adverses." },
-      clone: { name: "Clone", value: 0, label: "?", thr: 3, rarity: 1, desc: "Copie la valeur de ton autre carte : Jumeaux garantis." },
-      hole: { name: "Trou noir", value: 0, thr: 5, rarity: 1, desc: "Vaut 0, mais la meilleure carte adverse vaut 0 aussi." },
-      tractor: { name: "Rayon tracteur", value: 4, rarity: 1, desc: "Si tu gagnes la manche, tu voles 2 cartes au butin adverse." },
-      nova: { name: "Supernova", value: 15, thr: 6, rarity: 2, desc: "Vaut 15, mais disparaît après la manche au lieu d'aller au butin." }
+      spy: { name: "Vache espionne", value: 6, rarity: 0, desc: "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 6." },
+      dice: { name: "Dé pipé", value: 7, thr: 1, rarity: 0, desc: "Joue-la en allié (3ᵉ carte) : pas besoin de chance, le dé réussit toujours. Vaut 7." },
+      tank: { name: "Citerne", value: 5, rarity: 0, desc: "Dès qu'elle est visible sur la table, son propriétaire gagne 2 carburants. Vaut 5." },
+      shield: { name: "Bouclier", value: 8, rarity: 0, desc: "Tant qu'elle est sur la table, les malus adverses (Impact −2, Trou noir) ne touchent pas son propriétaire. Vaut 8." },
+      clone: { name: "Clone", value: 0, label: "?", thr: 3, rarity: 1, desc: "Prend la même valeur que l'autre carte posée à côté. Deux cartes égales forment des Jumeaux : +5." },
+      hole: { name: "Trou noir", value: 0, thr: 5, rarity: 1, desc: "Vaut 0, mais annule la meilleure carte d'en face : elle compte 0 elle aussi." },
+      tractor: { name: "Rayon tracteur", value: 4, rarity: 1, desc: "Si son propriétaire gagne la manche, il vole en plus 2 cartes dans le butin d'en face. Vaut 4." },
+      nova: { name: "Supernova", value: 15, thr: 6, rarity: 2, desc: "La plus forte du jeu : vaut 15. Mais elle se consume : elle ne rejoint le butin de personne." }
     };
     const ATOUT_IDS = Object.keys(ATOUTS);
     /* Chaque tribu a un talent, valable pour le joueur comme pour Gaspard. */
@@ -786,7 +837,7 @@
       return list.sort((a, b) => b.t - a.t || (a.me ? -1 : 1));
     }
     const myRank = () => ranking().findIndex(r => r.me) + 1;
-    const foe = () => LEVELS[S.level].who;
+    const foe = () => S.foeName || LEVELS[S.level].who;
     /* Les textes du jeu disent « Gaspard » : on y met le nom de l'adversaire du moment. */
     const named = text => String(text).replace(/Gaspard/g, foe());
 
@@ -814,7 +865,7 @@
 
     /* ═════ Sauvegarde ═════ */
     const SAVE_KEY = "bda_save_v1";
-    const save = Object.assign({ crystals: CAPSULE_COST, owned: {}, loadout: [], unlocked: 0, level: 0, tribe: "mars", tuto: false, wins: [0, 0, 0], xp: 0, trophies: 0 }, (() => {
+    const save = Object.assign({ crystals: CAPSULE_COST, owned: {}, loadout: [], unlocked: 0, level: 0, tribe: "mars", tuto: false, wins: [0, 0, 0], xp: 0, trophies: 0, stars: [0, 0, 0], seen: {}, mute: false }, (() => {
       try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch (e) { return {}; }
     })());
     save.loadout = save.loadout.filter(id => ATOUTS[id] && save.owned[id]);
@@ -826,7 +877,7 @@
     function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* stockage indisponible */ } }
 
     const who = (p, tu, il) => (p === 0 ? `Tu ${tu}` : `${foe()} ${il}`);
-    const S = { cast: [save.tribe, "cranes"], level: save.level };
+    const S = { cast: [save.tribe, "cranes"], level: save.level, ai: save.level, mode: "adv", foeName: null, rival: null };
     let gameId = 0;
 
     /* ═════ Règles ═════ */
@@ -1047,6 +1098,10 @@
       el.className = `banner ${cls}`;
       void el.offsetWidth;
       el.classList.add("show");
+      const field = $("#field");
+      field.classList.add("hush");
+      clearTimeout(banner.timer);
+      banner.timer = setTimeout(() => field.classList.remove("hush"), 1150);
     }
     function center(el) { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
     function burst(target, colors = [YE, "#fff", OR], count = 14) {
@@ -1185,10 +1240,18 @@
       const [x, y] = DIE_ROT[n];
       const tray = $("#tray");
       $("#trayRes").textContent = "…"; $("#trayRes").className = "";
-      tray.classList.remove("rolling"); void tray.offsetWidth; tray.classList.add("rolling");
+      // Le dé est lancé au centre de la table, rebondit, montre sa face, puis regagne son coin.
+      const stage = tray.querySelector(".die-stage"), from = center(stage), to = center($("#field"));
+      stage.style.setProperty("--dx", `${to.x - from.x}px`);
+      stage.style.setProperty("--dy", `${to.y - from.y}px`);
+      tray.classList.remove("rolling", "hit", "miss"); void tray.offsetWidth; tray.classList.add("rolling");
       $("#cube").style.transform = `rotateX(${x + spins * 360}deg) rotateY(${y + spins * 360}deg)`;
       sfx.dice();
-      await sleep(1180);
+      await sleep(1120);
+      burst($("#field"), [YE, "#fff", "#8f93f0"], 14);
+      shake(4);
+      sfx.place(0.7);
+      await sleep(600);
       tray.classList.remove("rolling");
       return n;
     }
@@ -1197,35 +1260,53 @@
       const el = $("#trayRes");
       el.textContent = `${roll}${bonus ? " +1" : ""}${spent ? ` +${spent}` : ""}${bonus || spent ? ` = ${total}` : ""} ${total >= thr ? "réussi" : "raté"}`;
       el.className = total >= thr ? "ok" : "ko";
+      $("#tray").classList.toggle("hit", total >= thr);
+      $("#tray").classList.toggle("miss", total < thr);
     }
 
     /* ═════ Tutoriel ═════ */
     function closeCoach() { $("#coach").classList.remove("on"); }
-    function tip(id, html, target) {
-      if (!S.tuto || S.tuto.seen[id]) return Promise.resolve();
-      S.tuto.seen[id] = true;
+    /* Bulle d'explication : le jeu attend que le joueur l'ait lue. */
+    function bubble(html, target) {
+      if (save.mute) return Promise.resolve();
       return new Promise(resolve => {
-        const spot = $("#coachSpot"), bubble = $("#coachBubble");
-        bubble.innerHTML = `<div class="guide">${art(S.cast[0], "H", "R", 5)}</div><div>${named(html)}</div><div class="row"><button class="skip">Passer le tutoriel</button><button class="btn">Compris</button></div>`;
-        bubble.style.top = bubble.style.bottom = "";
-        if (target) {
-          const r = target.getBoundingClientRect(), pad = 6;
+        const spot = $("#coachSpot"), box = $("#coachBubble");
+        box.innerHTML = `<div class="guide">${art(S.cast[0], "H", "R", 5)}</div><div>${named(html)}</div><div class="row"><button class="skip">Ne plus rien m'expliquer</button><button class="btn">Compris</button></div>`;
+        box.style.top = box.style.bottom = "";
+        const r = target && target.getBoundingClientRect();
+        if (r && r.width) {
+          const pad = 6;
           Object.assign(spot.style, { left: `${r.left - pad}px`, top: `${r.top - pad}px`, width: `${r.width + pad * 2}px`, height: `${r.height + pad * 2}px` });
-          if (r.top + r.height / 2 < window.innerHeight / 2) bubble.style.top = `${r.bottom + 18}px`;
-          else bubble.style.bottom = `${window.innerHeight - r.top + 18}px`;
+          if (r.top + r.height / 2 < window.innerHeight / 2) box.style.top = `${Math.min(r.bottom + 18, window.innerHeight - 220)}px`;
+          else box.style.bottom = `${Math.min(window.innerHeight - r.top + 18, window.innerHeight - 220)}px`;
         } else {
           Object.assign(spot.style, { left: "50%", top: "40%", width: "0px", height: "0px" });
-          bubble.style.top = "34%";
+          box.style.top = "34%";
         }
         $("#coach").classList.add("on");
-        bubble.querySelector(".btn").addEventListener("click", () => { sfx.tap(); closeCoach(); resolve(); });
-        bubble.querySelector(".skip").addEventListener("click", () => { S.tuto = null; closeCoach(); resolve(); });
+        box.querySelector(".btn").addEventListener("click", () => { sfx.tap(); closeCoach(); resolve(); });
+        box.querySelector(".skip").addEventListener("click", () => { save.mute = true; persist(); closeCoach(); resolve(); });
       });
+    }
+    /* Chaque explication n'apparaît qu'une fois, la première fois que la situation se présente. */
+    function tip(id, html, target) {
+      if (save.mute || save.seen[id]) return Promise.resolve();
+      save.seen[id] = true;
+      persist();
+      return bubble(html, target);
+    }
+    /* Plusieurs nouveautés au même moment : une seule bulle les regroupe. */
+    function explain(facts, target) {
+      const fresh = [];
+      for (const [key, html] of facts) if (!save.seen[key]) { save.seen[key] = true; fresh.push(html); }
+      if (!fresh.length || save.mute) return Promise.resolve();
+      persist();
+      return bubble(fresh.join("<br><br>"), target);
     }
 
     /* ═════ IA ═════ */
     function aiPlan(fixedVan, knownAmb = null) {
-      const L = LEVELS[S.level];
+      const L = LEVELS[S.ai];
       const hand = S.hands[1];
       const seen = S.vanHidden[0] ? null : S.board.van[0];
       let expected, slope = L.slope;
@@ -1261,7 +1342,7 @@
       return best;
     }
     function aiAllyPick() {
-      const L = LEVELS[S.level];
+      const L = LEVELS[S.ai];
       if (!L.fuel && Math.random() < 0.4) return null;
       const amb = S.board.amb[1];
       const bonus = amb.house === "H" ? 1 : 0;
@@ -1275,26 +1356,42 @@
     /* ═════ Déroulé ═════ */
     function show(view) {
       for (const id of ["menu", "game"]) $(`#${id}`).classList.toggle("on", id === view);
+      $("#voyage").classList.remove("on");
       for (const id of ["pause", "help", "endScreen", "atouts", "capsule", "install"]) $(`#${id}`).classList.remove("on");
     }
-    function newGame(tuto = false) {
+    function pickRival() {
+      const list = ranking(), me = list.findIndex(r => r.me);
+      const near = [me - 1, me - 2, me + 1].map(i => list[i]).filter(Boolean);
+      return near[rand(near.length)];
+    }
+    /* mode « adv » : la planète choisie en aventure. mode « arena » : un duel classé contre un rival proche au classement. */
+    function newGame(mode = "adv") {
       gameId += 1;
       closeCoach();
-      if (tuto) { save.tuto = true; persist(); }
-      const others = Object.keys(CASTS).filter(k => k !== S.cast[0]);
-      S.cast[1] = others[rand(others.length)];
+      S.mode = mode;
+      if (mode === "arena") {
+        S.rival = S.rival || pickRival();
+        S.foeName = S.rival.name;
+        S.cast[1] = S.rival.cast;
+        S.ai = Math.min(2, leagueOf(S.rival.t));
+      } else {
+        const others = Object.keys(CASTS).filter(k => k !== S.cast[0]);
+        S.cast[1] = others[rand(others.length)];
+        S.foeName = null;
+        S.ai = S.level;
+      }
       const deck = makeDeck();
       const mine = save.loadout.slice(0, MAX_ATOUTS);
       const theirs = shuffle(ATOUT_IDS).slice(0, mine.length);
       Object.assign(S, {
         decks: [inject(deck.slice(0, 26), mine, "a"), inject(deck.slice(26), theirs, "b")],
         hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 2 : 1)), vanHidden: [false, false], pot: [], round: 0, first: rand(2), phase: "idle", busy: true,
-        revealed: false, sel: null, board: emptyBoard(), war: null, spy: null, fx: new Set(), tuto: tuto ? { seen: {} } : null
+        revealed: false, sel: null, board: emptyBoard(), war: null, spy: null, fx: new Set()
       });
       $("#ava0").innerHTML = art(S.cast[0], "H", "R", 5);
       $("#ava1").innerHTML = art(S.cast[1], "S", "R", 9);
       $("#ava1").style.background = "var(--violet)";
-      $("#name1").textContent = `${foe()} · ${LEVELS[S.level].name}`;
+      $("#name1").textContent = mode === "arena" ? `${foe()} · ${S.rival.t} ♛` : `${foe()} · ${LEVELS[S.level].planet}`;
       for (const q of [0, 1]) { $(`#perk${q}`).textContent = PERKS[S.cast[q]].name; $(`#perk${q}`).title = `${CASTS[S.cast[q]].label} : ${PERKS[S.cast[q]].desc}`; }
       labelSlots();
       $("#tray").classList.remove("on");
@@ -1303,7 +1400,7 @@
       warp(1100);
       startRound();
     }
-    function goMenu() { gameId += 1; closeCoach(); holdWarp(0); renderMenu(); showTab("play"); show("menu"); offerInstall(); }
+    function goMenu() { gameId += 1; closeCoach(); holdWarp(0); $("#voyage").classList.remove("on"); renderMenu(); showTab(S.mode === "arena" ? "arena" : "adv"); show("menu"); offerInstall(); }
 
     async function startRound() {
       const game = gameId;
@@ -1330,7 +1427,16 @@
       banner(`Manche ${S.round}`);
       await sleep(900);
       if (game !== gameId) return;
-      if (S.round === 1) await tip("intro", "<b>C'est une bataille.</b> À chaque manche, chacun pose des cartes et le plus gros total remporte tout. La différence : ici tu <b>choisis</b> tes cartes dans ta main de 5.", null);
+      if (S.round === 1) {
+        await tip("intro", "<b>Le but du jeu :</b> ramasser plus de cartes que ton adversaire. Les cartes que tu gagnes vont ici, dans ton <b>butin</b>.", $("#lootBox0"));
+        await tip("intro2", "<b>Une manche :</b> chacun pose 2 cartes sur la table, une visible puis une cachée. Le plus gros total ramasse tout.", $("#field"));
+        await tip(`perk-${S.cast[0]}`, `Ta tribu, les <b>${CASTS[S.cast[0]].label}</b>, a un talent. <b>${PERKS[S.cast[0]].name}</b> : ${PERKS[S.cast[0]].desc}`, $("#hud0"));
+        await tip(`foeperk-${S.cast[1]}`, `Gaspard joue les <b>${CASTS[S.cast[1]].label}</b>. Leur talent, <b>${PERKS[S.cast[1]].name}</b> : ${PERKS[S.cast[1]].desc}`, $("#hud1"));
+      }
+      for (const card of S.hands[0].filter(c => c.special)) {
+        await tip(`atout-${card.special}`, `Tu as pioché un <b>atout ★ ${card.title}</b>, une carte spéciale. ${ATOUTS[card.special].desc}`, $(`#hand .card[data-id="${card.id}"]`));
+        if (game !== gameId) return;
+      }
       if (S.round === 2) await tip("free", "Tu connais l'essentiel. Le vainqueur d'une manche pose en premier à la suivante. Les règles complètes sont dans le menu pause.", $("#pauseBtn"));
       if (game !== gameId) return;
       if (S.first === 1) {
@@ -1510,6 +1616,18 @@
         : totals[0] < totals[1] ? "Révélation ! Gaspard a le plus gros total. Tu es en retard, mais tout n'est pas perdu." : "Révélation ! Égalité parfaite…", $("#field"));
       if (game !== gameId) return;
 
+      // Première apparition d'un pouvoir, d'une formation ou d'un atout adverse : on l'explique une fois.
+      const facts = [];
+      const COMBO = { Jumeaux: "deux cartes de même valeur, +5", Sillage: "deux valeurs qui se suivent, +2", Escadron: "deux cartes de la même famille, +3" };
+      for (const q of [0, 1]) {
+        const amb = S.board.amb[q];
+        if (amb.house !== "X") facts.push([`power-${amb.house}`, `${q === 0 ? "Ta carte cachée" : "La carte cachée de Gaspard"} est un ${SYM[amb.house]}. Son pouvoir, <b>${HOUSES[amb.house].power}</b> : ${HOUSES[amb.house].desc}.`]);
+        if (q === 1) for (const c of [S.board.van[1], amb]) if (c.special) facts.push([`atout-${c.special}`, `Gaspard joue l'atout <b>★ ${c.title}</b>. ${ATOUTS[c.special].desc}`]);
+        for (const [name] of formation(S.board.van[q], amb)) facts.push([`combo-${name}`, `Formation <b>${name}</b> : ${COMBO[name]}.`]);
+      }
+      await explain(facts, $("#field"));
+      if (game !== gameId) return;
+
       if (totals[0] === totals[1]) return galacticBattle();
       const loser = totals[0] < totals[1] ? 0 : 1;
       const canAlly = S.hands[loser].some(c => { const t = afterAlly(loser, c); return t[loser] >= t[1 - loser]; });
@@ -1559,7 +1677,7 @@
         let choice;
         if (p === 0 && S.fuel[0] >= need) await tip("fuel", "Raté de peu ? Chaque jeton de <b>carburant</b> ajoute +1 au dé. Tu en regagnes un à chaque manche perdue.", $("#hud0"));
         if (p === 0) choice = await ask(`Le dé donne <b>${roll + bonus}</b>, il manque <b>${need}</b>.`, options);
-        else { await sleep(800); choice = reroll > 0 ? "reroll" : S.fuel[p] >= need && LEVELS[S.level].fuel ? "fuel" : "stop"; }
+        else { await sleep(800); choice = reroll > 0 ? "reroll" : S.fuel[p] >= need && LEVELS[S.ai].fuel ? "fuel" : "stop"; }
         if (game !== gameId) return;
         if (choice === "reroll") {
           reroll -= 1;
@@ -1612,12 +1730,12 @@
       if (d === 0) {
         await tip("counter", "L'allié de Gaspard a réussi et te passe devant. Tu peux <b>contre-attaquer</b> : pour 1 carburant, tu lances le dé et son allié perd autant de points.", $("#slot-1-ally"));
         if (game !== gameId) return false;
-        go = (await ask(`L'allié de Gaspard vaut <b>+${gain}</b>, il te devance de <b>${margin}</b>. Riposter ? Ton dé lui retire ${S.cast[0] === "cranes" ? "2 à 7" : "1 à 6"} points.`,
-          [{ k: "yes", label: "Contre-attaque · 1 carburant", cls: "hot" }, { k: "no", label: "Laisser passer", cls: "ghost" }])) === "yes";
+        go = (await ask(`L'allié de Gaspard vaut <b>+${gain}</b>, il te devance de <b>${margin}</b>. Ton dé lui retirerait ${S.cast[0] === "cranes" ? "2 à 7" : "1 à 6"} points.`,
+          [{ k: "yes", label: "Riposter · 1 carburant", cls: "hot" }, { k: "no", label: "Laisser", cls: "ghost" }])) === "yes";
       } else {
         setPrompt("<b>Gaspard</b> hésite à contre-attaquer…");
         await sleep(900);
-        go = margin <= 5 && (LEVELS[S.level].fuel ? (6 - margin) / 6 >= 0.33 : Math.random() < 0.4);
+        go = margin <= 5 && (LEVELS[S.ai].fuel ? (6 - margin) / 6 >= 0.33 : Math.random() < 0.4);
       }
       if (game !== gameId || !go) return false;
       S.fuel[d] -= 1;
@@ -1688,7 +1806,7 @@
           await playCard(p, "amb", drawBlind(p), true, { from: deckRect(p) });
           if (game !== gameId) return;
         }
-        const boost = [false, LEVELS[S.level].fuel && S.fuel[1] > 0 && stock(1) >= 2 && (level >= 2 || S.pot.length >= 7 || Math.random() < 0.4)];
+        const boost = [false, LEVELS[S.ai].fuel && S.fuel[1] > 0 && stock(1) >= 2 && (level >= 2 || S.pot.length >= 7 || Math.random() < 0.4)];
         const mise = `Mise : <b>${S.pot.length + boardCards().length} cartes</b>.`;
         const options = [{ k: "flip", label: "Retourner ma carte", cls: "hot" }];
         if (S.fuel[0] > 0 && stock(0) >= 2) options.push({ k: "boost", label: "1 carburant : j'en pioche 2" });
@@ -1799,47 +1917,98 @@
       if (game === gameId && S.phase === "next") startRound();
     }
 
-    function endGame() {
+    const planetStyle = lvl => `background: radial-gradient(circle at 34% 30%, #fff8, transparent 46%), ${lvl ? lvl.color : "#f5c445"}`;
+    /* Après une victoire en aventure : on quitte la planète conquise et on file vers la suivante. Un toucher passe la séquence. */
+    function voyage(from, to) {
+      if (reduced) return Promise.resolve();
+      return new Promise(resolve => {
+        const el = $("#voyage");
+        const dest = to ? to.planet : "l'Étoile de la Victoire";
+        el.innerHTML = `<div class="vy-planet vy-from" style="${planetStyle(from)}"></div><div class="vy-planet vy-to" style="${planetStyle(to)}"></div>
+          <div class="vy-title">${from.planet} conquise !</div><div class="vy-sub">${to ? `Cap sur ${dest}` : "La galaxie est à toi"}</div><div class="vy-skip">Toucher pour passer</div>`;
+        for (const id of ["menu", "game"]) $(`#${id}`).classList.remove("on");
+        el.classList.add("on");
+        sfx.win();
+        let done = false;
+        const timers = [
+          setTimeout(() => { holdWarp(3); flash(); sfx.warp(2600); }, 650),
+          setTimeout(() => { holdWarp(0); flash(); sfx.rare(); }, 3300),
+          setTimeout(() => finish(), 4700)
+        ];
+        function finish() {
+          if (done) return;
+          done = true;
+          timers.forEach(clearTimeout);
+          holdWarp(0);
+          el.removeEventListener("pointerdown", finish);
+          resolve();
+        }
+        el.addEventListener("pointerdown", finish);
+      });
+    }
+
+    async function endGame() {
+      const game = gameId;
       S.phase = "over";
-      const [a, b] = S.loot;
-      const L = LEVELS[S.level], won = a > b, lost = a < b;
+      const [a, b] = S.loot, won = a > b, lost = a < b, arena = S.mode === "arena";
       $("#endTitle").textContent = won ? "Victoire" : lost ? "Défaite" : "Match nul";
       $("#endScore").textContent = `${a} — ${b}`;
-      $("#endText").textContent = won ? `${L.planet} est à toi. Ta tribu rentre en héros.` : lost ? `${foe()} a mieux mené ses alliés cette fois.` : "Aucun camp ne l'emporte.";
-      let gain = won ? L.reward + Math.min(20, a - b) : lost ? 8 : 15;
       const notes = [];
-      if (won) {
-        if (!save.wins[S.level] && TRIBES[S.level + 1]) notes.push(`Nouvelle tribu : ${CASTS[TRIBES[S.level + 1]].label}`);
-        save.wins[S.level] += 1;
-      }
-      if (won && S.level === save.unlocked && S.level < LEVELS.length - 1) {
-        save.unlocked += 1;
-        gain += 40;
-        notes.push(`Nouvel adversaire : ${LEVELS[save.unlocked].who} (+40 ◆)`);
-      }
-      const before = { league: leagueOf(save.trophies), lvl: levelInfo(save.xp).lvl, rank: myRank() };
-      const dT = won ? L.win : lost ? -Math.min(L.lose, save.trophies) : 0;
+      const lvlBefore = levelInfo(save.xp).lvl;
       const dXp = won ? 50 : lost ? 20 : 30;
-      save.trophies += dT;
       save.xp += dXp;
-      const after = { league: leagueOf(save.trophies), lvl: levelInfo(save.xp).lvl, rank: myRank() };
-      if (after.lvl > before.lvl) { gain += 30 * (after.lvl - before.lvl); notes.push(`Niveau ${after.lvl} ! (+30 ◆)`); }
-      if (after.league > before.league) notes.push(`Promotion en ligue ${LEAGUES[after.league].name} !`);
-      if (after.league < before.league) notes.push(`Relégation en ligue ${LEAGUES[after.league].name}`);
-      if (after.rank < before.rank) notes.push(`Tu passes ${after.rank}ᵉ au classement`);
+      let gain, head, trip = null;
+      if (arena) {
+        const above = S.rival.t >= save.trophies;
+        const before = { league: leagueOf(save.trophies), rank: myRank() };
+        const dT = won ? (above ? 26 : 18) : lost ? -Math.min(above ? 8 : 14, save.trophies) : 0;
+        save.trophies += dT;
+        gain = won ? 25 : 8;
+        const after = { league: leagueOf(save.trophies), rank: myRank() };
+        if (after.league > before.league) notes.push(`Promotion en ligue ${LEAGUES[after.league].name} !`);
+        if (after.league < before.league) notes.push(`Relégation en ligue ${LEAGUES[after.league].name}`);
+        if (after.rank < before.rank) notes.push(`Tu passes ${after.rank}ᵉ au classement`);
+        if (after.rank > before.rank) notes.push(`Tu redescends ${after.rank}ᵉ au classement`);
+        $("#endText").textContent = won ? `Tu as battu ${foe()} dans l'arène.` : lost ? `${foe()} garde l'avantage cette fois.` : "Personne ne prend l'avantage.";
+        head = `${dT < 0 ? "−" : "+"}${Math.abs(dT)} ♛ · +${dXp} XP`;
+        S.rival = null;
+      } else {
+        const L = LEVELS[S.level];
+        gain = won ? L.reward + Math.min(20, a - b) : lost ? 8 : 15;
+        $("#endText").textContent = won ? `${L.planet} est à toi. Ta tribu rentre en héros.` : lost ? `${foe()} a mieux mené ses alliés cette fois.` : "Aucun camp ne l'emporte.";
+        let stars = 0;
+        if (won) {
+          stars = a - b >= 16 ? 3 : a - b >= 8 ? 2 : 1;
+          if (stars > save.stars[S.level]) { save.stars[S.level] = stars; notes.push(`Nouveau record sur ${L.planet} : ${"★".repeat(stars)}`); }
+          if (!save.wins[S.level] && TRIBES[S.level + 1]) notes.push(`Nouvelle tribu : ${CASTS[TRIBES[S.level + 1]].label}`);
+          save.wins[S.level] += 1;
+          trip = [L, LEVELS[S.level + 1] || null];
+          if (S.level === save.unlocked && S.level < LEVELS.length - 1) {
+            save.unlocked += 1;
+            gain += 40;
+            notes.push(`Nouvelle planète : ${LEVELS[save.unlocked].planet}, défendue par ${LEVELS[save.unlocked].who} (+40 ◆)`);
+            S.level = save.level = save.unlocked;
+          }
+        }
+        head = `${stars ? `${"★".repeat(stars)}${"☆".repeat(3 - stars)} · ` : ""}+${dXp} XP`;
+      }
+      const lvlAfter = levelInfo(save.xp).lvl;
+      if (lvlAfter > lvlBefore) { gain += 30 * (lvlAfter - lvlBefore); notes.push(`Niveau ${lvlAfter} ! (+30 ◆)`); }
       save.crystals += gain;
       persist();
-      $("#endReward").innerHTML = `${dT < 0 ? "−" : "+"}${Math.abs(dT)} ♛ · +${dXp} XP · +${gain} ◆${notes.map(n => `<br>${n}`).join("")}`;
+      $("#endReward").innerHTML = `${head} · +${gain} ◆${notes.map(n => `<br>${n}`).join("")}`;
       $("#endBooster").hidden = save.crystals < CAPSULE_COST;
-      if (won) { warp(2200); sfx.win(); } else sfx.lose();
+      if (trip) { await voyage(trip[0], trip[1]); if (game !== gameId) return; }
+      else if (won) { warp(2200); sfx.win(); }
+      else sfx.lose();
       $("#endScreen").classList.add("on");
     }
 
     /* ═════ Menu, atouts, capsules ═════ */
-    function leagueHTML(withRank) {
+    function leagueHTML() {
       const t = save.trophies, i = leagueOf(t), L = LEAGUES[i], next = LEAGUES[i + 1];
       const pct = next ? Math.round(((t - L.min) / (next.min - L.min)) * 100) : 100;
-      return `<div class="medal ${L.cls}">♛</div><div class="bar">Ligue ${L.name}<small>${next ? `Encore ${next.min - t} ♛ pour la ligue ${next.name}` : "Le sommet de la galaxie"}</small><div class="xp"><i style="width:${pct}%"></i></div></div>${withRank ? `<div class="pill tr">${myRank()}ᵉ</div>` : ""}`;
+      return `<div class="medal ${L.cls}">♛</div><div class="bar">Ligue ${L.name}<small>${next ? `Encore ${next.min - t} ♛ pour la ligue ${next.name}` : "Le sommet de la galaxie"}</small><div class="xp"><i style="width:${pct}%"></i></div></div><div class="pill tr">${myRank()}ᵉ</div>`;
     }
     function showTab(name) {
       for (const pane of document.querySelectorAll(".pane")) pane.classList.toggle("on", pane.dataset.pane === name);
@@ -1852,7 +2021,7 @@
       $("#menuXp").style.width = `${Math.round((lv.into / lv.need) * 100)}%`;
       $("#trophies").textContent = save.trophies;
       $("#crystals").textContent = save.crystals;
-      $("#atoutsBtn").textContent = `Atouts ${save.loadout.length}/${MAX_ATOUTS}`;
+      $("#atoutsBtn").textContent = $("#quickAtouts").textContent = `Atouts ${save.loadout.length}/${MAX_ATOUTS}`;
       $("#capsuleBtn").textContent = `Booster · ${CAPSULE_COST} ◆`;
       const ready = save.crystals >= CAPSULE_COST;
       $("#quickBooster").classList.toggle("ready", ready);
@@ -1861,9 +2030,21 @@
       $("#boostBar").style.width = `${Math.min(100, Math.round((save.crystals / CAPSULE_COST) * 100))}%`;
       $("#boostCta").textContent = ready ? "Ouvrir !" : `${save.crystals} / ${CAPSULE_COST} ◆`;
       $('#tabs [data-tab="cards"]').classList.toggle("dot", ready);
-      $("#quickAtouts").textContent = $("#atoutsBtn").textContent;
 
-      // Le duel : ton roi face à une carte inconnue
+      // Aventure : les planètes à conquérir
+      $("#levels").innerHTML = LEVELS.map((lvl, i) => {
+        const st = save.stars[i] || 0;
+        return `<button class="lvl${S.level === i ? " on" : ""}" data-level="${i}" ${i > save.unlocked ? "disabled" : ""}>
+          <span class="planet${i === 2 ? " ring" : ""}" style="background:${lvl.color}"></span>${lvl.planet}
+          <small>${i > save.unlocked ? "Verrouillée" : lvl.who}</small><i class="st">${"★".repeat(st)}${"☆".repeat(3 - st)}</i></button>`;
+      }).join("");
+      for (const btn of document.querySelectorAll(".lvl")) btn.addEventListener("click", () => { S.level = save.level = Number(btn.dataset.level); persist(); sfx.tap(); renderMenu(); });
+      $("#playBtn").textContent = `Décoller vers ${L.planet}`;
+      $("#stake").innerHTML = `Adversaire : <b>${L.who}</b>, ${L.name.toLowerCase()}. Victoire : <b>${L.reward} ◆</b> et jusqu'à 3 étoiles.`;
+
+      // Multijoueur : le prochain rival, la ligue, le classement
+      S.rival = S.rival || pickRival();
+      const above = S.rival.t >= save.trophies;
       const vs = $("#versus");
       vs.innerHTML = "";
       const burstEl = document.createElement("div");
@@ -1871,19 +2052,10 @@
       burstEl.textContent = "VS";
       vs.append(cardEl({ id: "menu-me", label: "R", value: 13, title: "Roi", house: "H", seed: 5 }, 0), burstEl,
         cardEl({ id: "menu-foe", label: "R", value: 13, title: "Roi", house: "S", seed: 9 }, 0, true));
-      $("#stake").innerHTML = `Contre <b>${L.who}</b> : victoire <b>+${L.win} ♛</b>, défaite <b>−${L.lose} ♛</b>`;
-      $("#levels").innerHTML = LEVELS.map((lvl, i) => `<button class="lvl${S.level === i ? " on" : ""}" data-level="${i}" ${i > save.unlocked ? "disabled" : ""}>
-        <span class="planet" style="background:${lvl.color}"></span>${lvl.who}<small>${i > save.unlocked ? "Verrouillé" : `${lvl.name} · ${lvl.planet}`}</small></button>`).join("");
-      for (const btn of document.querySelectorAll(".lvl")) btn.addEventListener("click", () => { S.level = save.level = Number(btn.dataset.level); persist(); sfx.tap(); renderMenu(); });
-
-      // Ligue et classement
-      $("#leagueBox").innerHTML = leagueHTML(false);
-      $("#leagueBig").innerHTML = leagueHTML(true);
-      const list = ranking(), me = list.findIndex(r => r.me);
-      const line = (r, i) => `<div class="ln${r.me ? " me" : ""}"><b>${i + 1}</b><span>${r.name}</span><span>${r.t} ♛</span></div>`;
-      $("#boardMini").innerHTML = list.slice(0, 3).map(line).join("") + (me > 2 ? `${me > 3 ? '<div class="dots">⋮</div>' : ""}${line(list[me], me)}` : "");
+      $("#arenaStake").innerHTML = `Prochain rival : <b>${S.rival.name}</b> (${S.rival.t} ♛). Victoire <b>+${above ? 26 : 18} ♛</b>, défaite <b>−${above ? 8 : 14} ♛</b>`;
+      $("#leagueBig").innerHTML = leagueHTML();
       const colors = { mars: "var(--orange)", cranes: "var(--violet)", poulpes: "#e0a91f", incognito: "var(--teal)" };
-      $("#rankList").innerHTML = list.map((r, i) => `<div class="ln${r.me ? " me" : ""}"><b>${i + 1}</b>
+      $("#rankList").innerHTML = ranking().map((r, i) => `<div class="ln${r.me ? " me" : ""}"><b>${i + 1}</b>
         <div class="ava" style="background:${colors[r.cast]};color:${colors[r.cast]}">${art(r.cast, "H", "R", 5)}</div>
         <div>${r.name}<small>${CASTS[r.cast].label} · ligue ${LEAGUES[leagueOf(r.t)].name}</small></div><span>${r.t} ♛</span></div>`).join("");
 
@@ -1893,7 +2065,7 @@
         `<button class="crew h-${houses[key]}${S.cast[0] === key ? " on" : ""}${tribeOpen(key) ? "" : " locked"}" data-cast="${key}" aria-pressed="${S.cast[0] === key}">
           <div class="pic" style="background:var(--hc);color:var(--hc)">${art(key, houses[key], "R", 11)}</div>${cast.label}</button>`).join("");
       const perkLine = key => {
-        const lock = tribeOpen(key) ? "" : ` <b>À gagner en battant ${LEVELS[TRIBES.indexOf(key) - 1].who}.</b>`;
+        const lock = tribeOpen(key) ? "" : ` <b>À gagner en conquérant ${LEVELS[TRIBES.indexOf(key) - 1].planet}.</b>`;
         $("#perk").innerHTML = `<b>${CASTS[key].label} — ${PERKS[key].name}</b> : ${PERKS[key].desc}${lock}`;
       };
       perkLine(S.cast[0]);
@@ -2035,9 +2207,11 @@
     let helpFrom = null;
     function openHelp(from) { helpFrom = from; if (from) $(`#${from}`).classList.remove("on"); $("#help").classList.add("on"); }
 
-    $("#playBtn").addEventListener("click", () => newGame(!save.tuto));
+    $("#playBtn").addEventListener("click", () => newGame("adv"));
+    $("#arenaBtn").addEventListener("click", () => newGame("arena"));
+    $("#helpAtouts").innerHTML = ATOUT_IDS.map(id => `<li><b>${ATOUTS[id].name}</b> (${RARITY[ATOUTS[id].rarity].name.toLowerCase()}) : ${ATOUTS[id].desc}</li>`).join("");
     for (const btn of document.querySelectorAll("#tabs button")) btn.addEventListener("click", () => { sfx.tap(); showTab(btn.dataset.tab); });
-    $("#tutoBtn").addEventListener("click", () => newGame(true));
+    $("#tutoBtn").addEventListener("click", () => { save.seen = {}; save.mute = false; S.level = save.level = 0; persist(); newGame("adv"); });
     $("#atoutsBtn").addEventListener("click", openAtouts);
     $("#atClose").addEventListener("click", () => { $("#atouts").classList.remove("on"); renderMenu(); });
     for (const id of ["capsuleBtn", "quickBooster", "crystalsBtn"]) $(`#${id}`).addEventListener("click", openCapsuleShop);
@@ -2096,7 +2270,7 @@
     $("#pauseBtn").addEventListener("click", () => $("#pause").classList.add("on"));
     $("#resumeBtn").addEventListener("click", () => $("#pause").classList.remove("on"));
     $("#quitBtn").addEventListener("click", goMenu);
-    $("#endAgain").addEventListener("click", () => newGame(false));
+    $("#endAgain").addEventListener("click", () => { if (S.mode === "arena") S.rival = null; newGame(S.mode); });
     $("#endMenu").addEventListener("click", goMenu);
     $("#endBooster").addEventListener("click", () => { goMenu(); openCapsuleShop(); });
 
