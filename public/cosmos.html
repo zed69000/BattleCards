@@ -100,6 +100,21 @@
     .quick { display: flex; gap: 8px; justify-content: center; width: 100%; max-width: 380px; }
     .quick .btn { flex: 1; padding: 0.5rem 0.6rem; font-size: 0.86rem; }
     button.pill { font: inherit; }
+    /* Le booster, mis en avant sur l'accueil : il brille dès qu'on peut l'ouvrir */
+    .boost { position: relative; display: grid; grid-template-columns: 76px 1fr auto; align-items: center; gap: 10px; width: 100%; max-width: 380px; padding: 4px 12px 4px 4px; border-radius: 18px; border: 2px solid var(--teal); background: linear-gradient(110deg, rgba(47, 163, 148, 0.4), rgba(16, 22, 43, 0.92) 70%); color: var(--cream); text-align: left; overflow: hidden; }
+    .boost.ready { border-color: var(--yellow); background: linear-gradient(110deg, rgba(245, 196, 69, 0.42), rgba(16, 22, 43, 0.92) 70%); animation: glow 1.6s ease-in-out infinite; }
+    .boost.ready::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.35) 50%, transparent 62%) no-repeat; background-size: 260% 100%; animation: sheen 2.6s ease-in-out infinite; }
+    .boost-pack { display: grid; place-items: center; height: 106px; }
+    .pack.mini { zoom: 0.46; animation: none; filter: grayscale(0.75) brightness(0.7); }
+    .boost.ready .pack.mini { animation: wobble 1.4s ease-in-out infinite; filter: drop-shadow(0 0 22px rgba(245, 196, 69, 0.9)); }
+    .boost-txt { display: grid; gap: 2px; min-width: 0; }
+    .boost-txt b { font-weight: 400; font-size: 1.15rem; }
+    .boost-txt small { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.74rem; color: rgba(245, 233, 207, 0.8); }
+    .boost-cta { padding: 0.5rem 0.9rem; border-radius: 99px; border: 2px solid var(--cream); background: rgba(16, 22, 43, 0.85); white-space: nowrap; font-size: 0.86rem; }
+    .boost.ready .boost-cta { background: var(--yellow); color: var(--navy); border-color: var(--navy); box-shadow: 0 4px 0 #0a0f1e; }
+    .tabs button { position: relative; }
+    .tabs button.dot::after { content: ""; position: absolute; top: 5px; left: calc(50% + 9px); width: 9px; height: 9px; border-radius: 50%; background: var(--orange); border: 2px solid #0a0f1e; }
+    @keyframes glow { 0%, 100% { box-shadow: 0 0 8px rgba(245, 196, 69, 0.35); } 50% { box-shadow: 0 0 24px rgba(245, 196, 69, 0.85); } }
     .pane .stack { display: grid; gap: 10px; width: 100%; max-width: 300px; }
     .wallet { padding: 4px 14px; border-radius: 99px; background: rgba(16, 22, 43, 0.86); border: 2px solid var(--yellow); color: var(--yellow); }
     .logo small { display: block; letter-spacing: 0.34em; color: var(--yellow); font-size: 0.72rem; }
@@ -392,10 +407,12 @@
           <div class="versus" id="versus"></div>
           <button class="btn big hot" id="playBtn">Combattre</button>
           <div class="stake" id="stake"></div>
-          <div class="quick">
-            <button class="btn teal" id="quickBooster">Booster · 60 ◆</button>
-            <button class="btn" id="quickAtouts">Atouts 0/3</button>
-          </div>
+          <button class="boost" id="quickBooster">
+            <span class="boost-pack" id="boostPack"></span>
+            <span class="boost-txt"><b>Booster</b><small id="boostSub">3 atouts au hasard</small><span class="xp"><i id="boostBar"></i></span></span>
+            <span class="boost-cta" id="boostCta">Ouvrir</span>
+          </button>
+          <div class="quick"><button class="btn" id="quickAtouts">Atouts 0/3</button></div>
           <div class="levels" id="levels"></div>
           <div class="league" id="leagueBox"></div>
           <div class="board" id="boardMini"></div>
@@ -566,7 +583,7 @@
   <div class="overlay" id="endScreen">
     <div class="sheet"><h2 id="endTitle"></h2><div class="score" id="endScore"></div><p id="endText"></p>
       <div class="reward" id="endReward"></div>
-      <div class="stack"><button class="btn" id="endAgain">Rejouer</button><button class="btn ghost" id="endMenu">Menu</button></div>
+      <div class="stack"><button class="btn teal" id="endBooster" hidden>Ouvrir un booster</button><button class="btn" id="endAgain">Rejouer</button><button class="btn ghost" id="endMenu">Menu</button></div>
     </div>
   </div>
 
@@ -1813,6 +1830,7 @@
       save.crystals += gain;
       persist();
       $("#endReward").innerHTML = `${dT < 0 ? "−" : "+"}${Math.abs(dT)} ♛ · +${dXp} XP · +${gain} ◆${notes.map(n => `<br>${n}`).join("")}`;
+      $("#endBooster").hidden = save.crystals < CAPSULE_COST;
       if (won) { warp(2200); sfx.win(); } else sfx.lose();
       $("#endScreen").classList.add("on");
     }
@@ -1835,7 +1853,14 @@
       $("#trophies").textContent = save.trophies;
       $("#crystals").textContent = save.crystals;
       $("#atoutsBtn").textContent = `Atouts ${save.loadout.length}/${MAX_ATOUTS}`;
-      $("#capsuleBtn").textContent = $("#quickBooster").textContent = `Booster · ${CAPSULE_COST} ◆`;
+      $("#capsuleBtn").textContent = `Booster · ${CAPSULE_COST} ◆`;
+      const ready = save.crystals >= CAPSULE_COST;
+      $("#quickBooster").classList.toggle("ready", ready);
+      $("#boostPack").innerHTML = packHTML(true).replace(' id="pack"', "").replace("pack dull", "pack mini");
+      $("#boostSub").textContent = ready ? "3 atouts au hasard t'attendent" : `Encore ${CAPSULE_COST - save.crystals} ◆ pour le prochain`;
+      $("#boostBar").style.width = `${Math.min(100, Math.round((save.crystals / CAPSULE_COST) * 100))}%`;
+      $("#boostCta").textContent = ready ? "Ouvrir !" : `${save.crystals} / ${CAPSULE_COST} ◆`;
+      $('#tabs [data-tab="cards"]').classList.toggle("dot", ready);
       $("#quickAtouts").textContent = $("#atoutsBtn").textContent;
 
       // Le duel : ton roi face à une carte inconnue
@@ -2073,6 +2098,7 @@
     $("#quitBtn").addEventListener("click", goMenu);
     $("#endAgain").addEventListener("click", () => newGame(false));
     $("#endMenu").addEventListener("click", goMenu);
+    $("#endBooster").addEventListener("click", () => { goMenu(); openCapsuleShop(); });
 
     /* Écran d'ouverture : il s'efface seul, un toucher le passe tout de suite. */
     (function () {
