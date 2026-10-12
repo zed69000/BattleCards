@@ -93,6 +93,7 @@
     .rank .ln b { font-weight: 400; color: var(--yellow); }
     .rank .ln.me { background: var(--yellow); color: var(--navy); }
     .rank .ln.me b, .rank .ln.me small { color: var(--navy); }
+    .version { align-self: flex-end; margin: -4px 2px -4px 0; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.62rem; color: rgba(245, 233, 207, 0.4); user-select: text; }
     .tabs { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0 -10px; padding-bottom: env(safe-area-inset-bottom, 0px); background: #0a0f1e; border-top: 2px solid rgba(245, 233, 207, 0.25); }
     .tabs button { display: grid; justify-items: center; gap: 1px; padding: 8px 0 9px; border: 0; background: none; font-size: 0.62rem; color: rgba(245, 233, 207, 0.6); }
     .tabs button b { font-weight: 400; font-size: 1.2rem; line-height: 1; }
@@ -506,6 +507,7 @@
           </div>
         </section>
       </div>
+      <div class="version" id="version"></div>
       <nav class="tabs" id="tabs">
         <button class="on" data-tab="adv"><b>☾</b>Aventure</button>
         <button data-tab="arena"><b>♛</b>Multijoueur</button>
@@ -830,6 +832,8 @@
       ["2", 2, "Sonde"], ["3", 3, "Balise"], ["4", 4, "Drone"], ["5", 5, "Navette"], ["6", 6, "Relais"], ["7", 7, "Patrouille"],
       ["8", 8, "Chasseur"], ["9", 9, "Croiseur"], ["10", 10, "Amiral"], ["V", 11, "Valet"], ["D", 12, "Dame"], ["R", 13, "Roi"], ["A", 14, "As"]
     ];
+    /* Numéro de version affiché en bas du menu : à augmenter à chaque mise en ligne. */
+    const VERSION = "0.15";
     const HAND_SIZE = 5, MAX_FUEL = 3, MAX_ATOUTS = 3, CAPSULE_COST = 60;
 
     /* Adversaires : même nombre d'atouts que le joueur, seule la qualité de jeu change.
@@ -2594,6 +2598,7 @@
       el.addEventListener("pointerdown", () => { clearTimeout(timer); end(); }, { once: true });
     })();
 
+    $("#version").textContent = `v${VERSION}`;
     buildDie();
     renderMenu();
     initSpace();
