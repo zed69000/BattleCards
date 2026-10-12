@@ -131,6 +131,14 @@
     .vy-sub { position: absolute; left: 0; right: 0; top: 46%; font-size: clamp(1.3rem, 6.5vw, 2.1rem); color: var(--cream); text-shadow: 0 3px 0 #0a0f1e; opacity: 0; animation: vyText 2.3s ease 2.4s both; }
     .vy-skip { position: absolute; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); font-size: 0.7rem; color: rgba(245, 233, 207, 0.6); }
     @keyframes vyText { 0% { opacity: 0; scale: 0.5; } 18% { opacity: 1; scale: 1.1; } 80% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1.15; } }
+    .lobby-field { display: grid; gap: 4px; margin: 0 0 12px; text-align: left; font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245, 233, 207, 0.75); }
+    .sheet input { width: 100%; padding: 0.6rem 0.8rem; border-radius: 12px; border: 2px solid var(--cream); background: rgba(16, 22, 43, 0.85); color: var(--cream); font: inherit; font-size: 1rem; user-select: text; }
+    .join { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+    .join input { text-align: center; letter-spacing: 0.3em; text-transform: uppercase; }
+    .room-code { margin: 4px 0 10px; font-size: 2.6rem; letter-spacing: 0.22em; text-indent: 0.22em; color: var(--yellow); text-shadow: 0 3px 0 var(--orange); user-select: text; }
+    #lobbyMsg { min-height: 2.6em; margin: 12px 0; }
+    .friend { width: 100%; max-width: 380px; padding: 12px; border-radius: 16px; background: rgba(91, 95, 199, 0.28); border: 2px solid var(--violet); display: grid; gap: 8px; }
+    .friend small { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.78rem; color: rgba(245, 233, 207, 0.85); }
     .pane .stack { display: grid; gap: 10px; width: 100%; max-width: 300px; }
     .wallet { padding: 4px 14px; border-radius: 99px; background: rgba(16, 22, 43, 0.86); border: 2px solid var(--yellow); color: var(--yellow); }
     .logo small { display: block; letter-spacing: 0.34em; color: var(--yellow); font-size: 0.72rem; }
@@ -448,8 +456,13 @@
             <span class="mode-tag multi">MULTIJOUEUR · CLASSÉ</span>
             <h1>L'<span>Arène</span></h1>
           </div>
+          <div class="friend">
+            <button class="btn big hot" id="friendBtn">Défier un ami</button>
+            <small>Un vrai duel en direct, d'un téléphone à l'autre. L'un crée la partie, l'autre entre le code.</small>
+          </div>
+          <div class="section-title">Arène d'entraînement</div>
           <div class="versus" id="versus"></div>
-          <button class="btn big hot" id="arenaBtn">Duel classé</button>
+          <button class="btn" id="arenaBtn">Duel classé contre un robot</button>
           <div class="stake" id="arenaStake"></div>
           <div class="league" id="leagueBig"></div>
           <div class="section-title">Classement</div>
@@ -562,6 +575,23 @@
       <div class="cap-stage" id="capStage"></div>
       <p id="capText"></p>
       <div class="stack" id="capActions"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="lobby">
+    <div class="sheet">
+      <h2>Duel entre amis</h2>
+      <label class="lobby-field">Ton pseudo<input id="pseudo" maxlength="14" autocomplete="off" placeholder="Ton nom de martien"></label>
+      <div class="stack" id="lobbyHome">
+        <button class="btn hot" id="hostBtn">Créer une partie</button>
+        <div class="join"><input id="joinCode" maxlength="5" autocomplete="off" autocapitalize="characters" placeholder="CODE" aria-label="Code de la partie"><button class="btn" id="joinBtn">Rejoindre</button></div>
+      </div>
+      <div id="lobbyWait" hidden>
+        <div class="room-code" id="roomCode"></div>
+        <button class="btn" id="shareBtn">Envoyer le lien à un ami</button>
+      </div>
+      <p id="lobbyMsg"></p>
+      <button class="btn ghost" id="lobbyClose">Fermer</button>
     </div>
   </div>
 
@@ -862,7 +892,7 @@
 
     /* ═════ Sauvegarde ═════ */
     const SAVE_KEY = "bda_save_v1";
-    const save = Object.assign({ crystals: CAPSULE_COST, owned: {}, loadout: [], unlocked: 0, level: 0, tribe: "mars", tuto: false, wins: [0, 0, 0], xp: 0, trophies: 0, stars: [0, 0, 0], seen: {}, mute: false }, (() => {
+    const save = Object.assign({ crystals: CAPSULE_COST, owned: {}, loadout: [], unlocked: 0, level: 0, tribe: "mars", name: "", tuto: false, wins: [0, 0, 0], xp: 0, trophies: 0, stars: [0, 0, 0], seen: {}, mute: false }, (() => {
       try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch (e) { return {}; }
     })());
     save.loadout = save.loadout.filter(id => ATOUTS[id] && save.owned[id]);
@@ -1231,8 +1261,9 @@
         return `<div class="f f${n}">${cells}</div>`;
       }).join("");
     }
-    async function rollDie() {
-      const n = 1 + rand(6);
+    async function rollDie(roller = 0) {
+      const n = duel() && roller === 1 ? await netNext("roll") : 1 + rand(6);
+      if (roller === 0) netSend("roll", n);
       spins += 2;
       const [x, y] = DIE_ROT[n];
       const tray = $("#tray");
@@ -1301,6 +1332,132 @@
       return bubble(fresh.join("<br><br>"), target);
     }
 
+    /* ═════ Duel entre amis, en pair à pair ═════
+       Les deux téléphones se parlent directement (WebRTC, via la bibliothèque PeerJS et son service public
+       de mise en relation). Chacun fait tourner les mêmes règles et se voit en bas de l'écran ; on s'échange
+       seulement les décisions : cartes posées, lancers de dé, ripostes. Rien n'empêche un tricheur de lire
+       les messages : c'est prévu pour jouer entre amis, pas pour un classement. */
+    const net = { peer: null, conn: null, host: false, them: null, queue: {}, waiters: {} };
+    const duel = () => S.mode === "p2p";
+    const rawSend = (t, v = null) => { if (net.conn && net.conn.open) net.conn.send({ t, v }); };
+    function netSend(t, v = null) { if (duel()) rawSend(t, v); }
+    /* Attend le prochain message d'un type donné (ou le prend dans la file s'il est déjà arrivé). */
+    function netNext(t) {
+      return new Promise(resolve => {
+        const q = net.queue[t];
+        if (q && q.length) resolve(q.shift());
+        else (net.waiters[t] = net.waiters[t] || []).push(resolve);
+      });
+    }
+    function netReceive(msg) {
+      if (!msg || typeof msg.t !== "string") return;
+      if (msg.t === "hello") { net.them = msg.v || {}; if (net.host) dealDuel(); return; }
+      if (msg.t === "deal") { net.queue = {}; net.waiters = {}; startDuel([msg.v.yours, msg.v.theirs], msg.v.first); return; }
+      const w = net.waiters[msg.t];
+      if (w && w.length) w.shift()(msg.v);
+      else (net.queue[msg.t] = net.queue[msg.t] || []).push(msg.v);
+    }
+    function closeNet() {
+      const { conn, peer } = net;
+      Object.assign(net, { conn: null, peer: null, them: null, queue: {}, waiters: {} });
+      try { if (conn) conn.close(); } catch (e) { /* déjà fermée */ }
+      try { if (peer) peer.destroy(); } catch (e) { /* déjà détruit */ }
+    }
+    function netLost() {
+      if (!net.conn) return;
+      const playing = duel() && S.phase !== "over";
+      closeNet();
+      if (!playing) return;
+      gameId += 1;
+      closeCoach();
+      holdWarp(0);
+      S.mode = "arena";
+      renderMenu();
+      showTab("arena");
+      show("menu");
+      openLobby("La connexion avec ton adversaire a été perdue.");
+    }
+    function loadPeerJS() {
+      if (window.Peer) return Promise.resolve();
+      return new Promise((ok, ko) => {
+        const el = document.createElement("script");
+        el.src = "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js";
+        el.onload = ok;
+        el.onerror = () => ko(new Error("peerjs"));
+        document.head.appendChild(el);
+      });
+    }
+    const roomId = code => `bataille-des-allies-${code}`;
+    const lobbyMsg = text => { $("#lobbyMsg").textContent = text; };
+    const myHello = () => ({ name: save.name || "Ami", cast: S.cast[0], loadout: save.loadout.slice(0, MAX_ATOUTS) });
+    function saveName() { save.name = $("#pseudo").value.trim().slice(0, 14) || "Ami"; persist(); }
+    function wire(conn) {
+      net.conn = conn;
+      conn.on("open", () => { lobbyMsg("Connecté ! La partie se prépare…"); rawSend("hello", myHello()); });
+      conn.on("data", netReceive);
+      conn.on("close", netLost);
+      conn.on("error", netLost);
+    }
+    function openLobby(message = "") {
+      $("#pseudo").value = save.name || "";
+      $("#lobbyHome").hidden = false;
+      $("#lobbyWait").hidden = true;
+      lobbyMsg(message);
+      $("#lobby").classList.add("on");
+    }
+    async function hostDuel() {
+      saveName();
+      closeNet();
+      lobbyMsg("Création de la partie…");
+      try { await loadPeerJS(); } catch (e) { return lobbyMsg("Impossible de charger le module réseau. Vérifie ta connexion internet."); }
+      const code = Array.from({ length: 5 }, () => "ABCDEFGHJKMNPQRSTUVWXYZ23456789"[rand(31)]).join("");
+      net.host = true;
+      net.peer = new Peer(roomId(code));
+      net.peer.on("open", () => {
+        $("#lobbyHome").hidden = true;
+        $("#lobbyWait").hidden = false;
+        $("#roomCode").textContent = code;
+        lobbyMsg("Donne ce code à ton ami, puis attends qu'il te rejoigne.");
+      });
+      net.peer.on("connection", conn => { if (net.conn) conn.close(); else wire(conn); });
+      net.peer.on("error", e => lobbyMsg(e.type === "unavailable-id" ? "Ce code est déjà pris. Réessaie." : "Erreur réseau : la partie n'a pas pu être créée."));
+    }
+    async function joinDuel(raw) {
+      const code = String(raw || "").trim().toUpperCase();
+      if (code.length !== 5) return lobbyMsg("Entre le code à 5 caractères de ton ami.");
+      saveName();
+      closeNet();
+      lobbyMsg("Connexion à la partie…");
+      try { await loadPeerJS(); } catch (e) { return lobbyMsg("Impossible de charger le module réseau. Vérifie ta connexion internet."); }
+      net.host = false;
+      net.peer = new Peer();
+      net.peer.on("open", () => wire(net.peer.connect(roomId(code), { reliable: true })));
+      net.peer.on("error", e => lobbyMsg(e.type === "peer-unavailable" ? "Aucune partie avec ce code. Vérifie-le avec ton ami." : "Erreur réseau : connexion impossible."));
+    }
+    /* L'hôte distribue : mêmes cartes pour les deux, et autant d'atouts de chaque côté (le plus petit des deux choix). */
+    function dealDuel() {
+      const me = myHello(), them = net.them || {};
+      const theirs = (them.loadout || []).filter(id => ATOUTS[id]);
+      const n = Math.min(me.loadout.length, theirs.length);
+      const deck = makeDeck();
+      const decks = [inject(deck.slice(0, 26), me.loadout.slice(0, n), "a"), inject(deck.slice(26), theirs.slice(0, n), "b")];
+      const first = rand(2);
+      net.queue = {};
+      net.waiters = {};
+      rawSend("deal", { yours: decks[1], theirs: decks[0], first: 1 - first });
+      startDuel(decks, first);
+    }
+    function startDuel(decks, first) {
+      $("#lobby").classList.remove("on");
+      newGame("p2p", { decks, first });
+    }
+    /* Carte choisie par l'adversaire : l'IA en solo, le message de l'ami en duel. */
+    async function foeCard(kind, known = null) {
+      if (!duel()) return kind === "van" ? aiPlan(null).van : aiPlan(S.board.van[1], known).amb;
+      const id = await netNext(kind);
+      return S.hands[1].find(c => c.id === id);
+    }
+
     /* ═════ IA ═════ */
     function aiPlan(fixedVan, knownAmb = null) {
       const L = LEVELS[S.ai];
@@ -1354,7 +1511,7 @@
     function show(view) {
       for (const id of ["menu", "game"]) $(`#${id}`).classList.toggle("on", id === view);
       $("#voyage").classList.remove("on");
-      for (const id of ["pause", "help", "endScreen", "atouts", "capsule", "install"]) $(`#${id}`).classList.remove("on");
+      for (const id of ["pause", "help", "endScreen", "atouts", "capsule", "install", "lobby"]) $(`#${id}`).classList.remove("on");
     }
     function pickRival() {
       const list = ranking(), me = list.findIndex(r => r.me);
@@ -1362,11 +1519,16 @@
       return near[rand(near.length)];
     }
     /* mode « adv » : la planète choisie en aventure. mode « arena » : un duel classé contre un rival proche au classement. */
-    function newGame(mode = "adv") {
+    function newGame(mode = "adv", pre = null) {
       gameId += 1;
       closeCoach();
       S.mode = mode;
-      if (mode === "arena") {
+      if (mode === "p2p") {
+        const them = net.them || {};
+        S.foeName = String(them.name || "Ami").slice(0, 14);
+        S.cast[1] = CASTS[them.cast] ? them.cast : "mars";
+        S.ai = 1;
+      } else if (mode === "arena") {
         S.rival = S.rival || pickRival();
         S.foeName = S.rival.name;
         S.cast[1] = S.rival.cast;
@@ -1381,14 +1543,14 @@
       const mine = save.loadout.slice(0, MAX_ATOUTS);
       const theirs = shuffle(ATOUT_IDS).slice(0, mine.length);
       Object.assign(S, {
-        decks: [inject(deck.slice(0, 26), mine, "a"), inject(deck.slice(26), theirs, "b")],
-        hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 2 : 1)), vanHidden: [false, false], pot: [], round: 0, first: rand(2), phase: "idle", busy: true,
+        decks: pre ? pre.decks : [inject(deck.slice(0, 26), mine, "a"), inject(deck.slice(26), theirs, "b")],
+        hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 2 : 1)), vanHidden: [false, false], pot: [], round: 0, first: pre ? pre.first : rand(2), phase: "idle", busy: true,
         revealed: false, sel: null, board: emptyBoard(), war: null, spy: null, fx: new Set()
       });
       $("#ava0").innerHTML = art(S.cast[0], "H", "R", 5);
       $("#ava1").innerHTML = art(S.cast[1], "S", "R", 9);
       $("#ava1").style.background = "var(--violet)";
-      $("#name1").textContent = mode === "arena" ? `${foe()} · ${S.rival.t} ♛` : `${foe()} · ${LEVELS[S.level].planet}`;
+      $("#name1").textContent = mode === "p2p" ? `${foe()} · ami` : mode === "arena" ? `${foe()} · ${S.rival.t} ♛` : `${foe()} · ${LEVELS[S.level].planet}`;
       for (const q of [0, 1]) { $(`#perk${q}`).textContent = PERKS[S.cast[q]].name; $(`#perk${q}`).title = `${CASTS[S.cast[q]].label} : ${PERKS[S.cast[q]].desc}`; }
       labelSlots();
       $("#tray").classList.remove("on");
@@ -1397,7 +1559,7 @@
       warp(1100);
       startRound();
     }
-    function goMenu() { gameId += 1; closeCoach(); holdWarp(0); $("#voyage").classList.remove("on"); renderMenu(); showTab(S.mode === "arena" ? "arena" : "adv"); show("menu"); offerInstall(); }
+    function goMenu() { gameId += 1; if (S.mode === "p2p") { closeNet(); S.mode = "arena"; } closeCoach(); holdWarp(0); $("#voyage").classList.remove("on"); renderMenu(); showTab(S.mode === "arena" ? "arena" : "adv"); show("menu"); offerInstall(); }
 
     async function startRound() {
       const game = gameId;
@@ -1441,7 +1603,9 @@
         await sleep(500);
         if (game !== gameId) return;
         S.vanHidden[1] = S.cast[1] === "incognito";
-        await playCard(1, "van", aiPlan(null).van, S.vanHidden[1]);
+        const foeVan = await foeCard("van");
+        if (game !== gameId) return;
+        await playCard(1, "van", foeVan, S.vanHidden[1]);
       }
       await tip("van", S.board.van[1]
         ? "Gaspard a posé sa première carte, visible. <b>Glisse une carte</b> de ta main jusqu'à cette case pour lui répondre. Tu peux aussi la lancer d'un coup sec vers le haut."
@@ -1463,7 +1627,7 @@
         setPrompt(`Tu es mené de <b>${t[1] - t[0]}</b>. <b>Glisse un allié</b> pour tenter le dé, ou replie-toi.`, [{ label: "Se replier", cls: "ghost", fn: fold }]);
       }
     }
-    function fold() { if (S.busy || S.phase !== "ally") return; S.busy = true; S.sel = null; finishRound(1); }
+    function fold() { if (S.busy || S.phase !== "ally") return; S.busy = true; S.sel = null; netSend("ally", null); finishRound(1); }
 
     /* Glisser une carte vers le haut la joue. Il suffit de la monter d'un tiers de carte, ou de lui donner
        une impulsion vers le haut à n'importe quel moment du geste : la vitesse au moment du lâcher ne compte pas. */
@@ -1540,12 +1704,15 @@
         S.busy = true;
         setPrompt("");
         S.vanHidden[0] = S.first === 0 && S.cast[0] === "incognito";
+        netSend("van", card.id);
         await playCard(0, "van", card, S.vanHidden[0], opts);
         if (S.first === 0) {
           setPrompt(S.vanHidden[0] ? "<b>Gaspard</b> doit répondre sans voir ta carte…" : "<b>Gaspard</b> jauge ta carte…");
           await sleep(750);
           if (game !== gameId) return;
-          await playCard(1, "van", aiPlan(null).van, false);
+          const foeVan = await foeCard("van");
+          if (game !== gameId) return;
+          await playCard(1, "van", foeVan, false);
         }
         // Déguisement : la carte posée en premier ne se dévoile qu'une fois la réponse sur la table.
         for (const q of [0, 1]) {
@@ -1568,7 +1735,11 @@
         S.spy = spies[0] !== spies[1] ? (spies[0] ? 0 : 1) : null;
         if (S.spy !== null) { banner(S.spy === 0 ? "Espionné !" : "Tu es espionné", S.spy === 0 ? "light" : "bad"); await sleep(900); }
         if (game !== gameId) return;
-        if (S.spy === 0) await playCard(1, "amb", aiPlan(S.board.van[1]).amb, false);
+        if (S.spy === 0) {
+          const shown = await foeCard("amb");
+          if (game !== gameId) return;
+          await playCard(1, "amb", shown, false);
+        }
         S.phase = "amb";
         await tip("amb", "Deuxième carte, <b>face cachée</b> cette fois. Ton total = avant-garde + embuscade. Une étiquette verte au-dessus d'une carte signale un bonus si tu l'associes à la première.", $("#slot-0-amb"));
         if (game !== gameId) return;
@@ -1577,17 +1748,21 @@
         renderAll();
       } else if (S.phase === "amb") {
         S.busy = true;
-        setPrompt("Les embuscades sont posées…");
+        netSend("amb", card.id);
+        setPrompt(duel() ? "Ta carte est posée. En attente de <b>Gaspard</b>…" : "Les embuscades sont posées…");
         if (S.spy === 0) {
           await playCard(0, "amb", card, true, opts);
         } else {
           // Gaspard s'engage sans connaître ta carte cachée, sauf si sa vache t'espionne.
-          const plan = aiPlan(S.board.van[1], S.spy === 1 ? card : null);
-          await Promise.all([playCard(0, "amb", card, S.spy !== 1, opts), sleep(S.spy === 1 ? 700 : 180).then(() => playCard(1, "amb", plan.amb, true))]);
+          const mine = playCard(0, "amb", card, S.spy !== 1, opts);
+          const theirs = await foeCard("amb", S.spy === 1 ? card : null);
+          if (game !== gameId) return;
+          await Promise.all([mine, sleep(S.spy === 1 ? 700 : 180).then(() => playCard(1, "amb", theirs, true))]);
         }
         if (game !== gameId) return;
         await reveal();
       } else if (S.phase === "ally") {
+        netSend("ally", card.id);
         await attemptAlly(0, card, opts);
       }
     }
@@ -1633,7 +1808,12 @@
         setPrompt("<b>Gaspard</b> est en retard et cherche un allié…");
         await sleep(900);
         if (game !== gameId) return;
-        const pick = aiAllyPick();
+        let pick;
+        if (duel()) {
+          const id = await netNext("ally");
+          if (game !== gameId) return;
+          pick = id ? S.hands[1].find(c => c.id === id) : null;
+        } else pick = aiAllyPick();
         return pick ? attemptAlly(1, pick) : finishRound(0);
       }
       S.phase = "ally";
@@ -1661,7 +1841,7 @@
       $("#tray").classList.add("on");
       await sleep(350);
 
-      let roll = await rollDie();
+      let roll = await rollDie(p);
       if (game !== gameId) return;
       showRoll(roll, bonus, spent, thr);
       while (roll + bonus + spent < thr) {
@@ -1673,12 +1853,13 @@
         options.push({ k: "stop", label: "Accepter", cls: "ghost" });
         let choice;
         if (p === 0 && S.fuel[0] >= need) await tip("fuel", "Raté de peu ? Chaque jeton de <b>carburant</b> ajoute +1 au dé. Tu en regagnes un à chaque manche perdue.", $("#hud0"));
-        if (p === 0) choice = await ask(`Le dé donne <b>${roll + bonus}</b>, il manque <b>${need}</b>.`, options);
+        if (p === 0) { choice = await ask(`Le dé donne <b>${roll + bonus}</b>, il manque <b>${need}</b>.`, options); netSend("pick", choice); }
+        else if (duel()) choice = await netNext("pick");
         else { await sleep(800); choice = reroll > 0 ? "reroll" : S.fuel[p] >= need && LEVELS[S.ai].fuel ? "fuel" : "stop"; }
         if (game !== gameId) return;
         if (choice === "reroll") {
           reroll -= 1;
-          roll = await rollDie();
+          roll = await rollDie(p);
           if (game !== gameId) return;
           showRoll(roll, bonus, spent, thr);
         } else if (choice === "fuel") {
@@ -1729,6 +1910,10 @@
         if (game !== gameId) return false;
         go = (await ask(`L'allié de Gaspard vaut <b>+${gain}</b>, il te devance de <b>${margin}</b>. Ton dé lui retirerait ${S.cast[0] === "cranes" ? "2 à 6" : "1 à 6"} points.`,
           [{ k: "yes", label: "Riposter · 1 carburant", cls: "hot" }, { k: "no", label: "Laisser", cls: "ghost" }])) === "yes";
+        netSend("counter", go);
+      } else if (duel()) {
+        setPrompt("<b>Gaspard</b> hésite à contre-attaquer…");
+        go = await netNext("counter");
       } else {
         setPrompt("<b>Gaspard</b> hésite à contre-attaquer…");
         await sleep(900);
@@ -1742,7 +1927,7 @@
       setPrompt(`<b>${who(d, "ripostes", "riposte")}</b> : le dé retire ses points à l'allié.`);
       $("#trayNeed").textContent = "Défense";
       $("#tray").classList.add("on");
-      const roll = await rollDie();
+      const roll = await rollDie(d);
       if (game !== gameId) return false;
       const cut = Math.min(S.cast[d] === "cranes" ? Math.max(roll, 2) : roll, gain);
       S.board.allyCut[a] = cut;
@@ -1763,10 +1948,16 @@
     /* Égalité : tout reste en jeu, chacun met une carte en otage puis retourne une carte à l'aveugle. */
     const stock = p => S.decks[p].length + S.hands[p].length;
     const deckRect = p => $(`#deck${p}`).getBoundingClientRect();
-    function drawBlind(p) {
+    async function drawBlind(p) {
       if (S.decks[p].length) return S.decks[p].shift();
-      if (S.hands[p].length) return S.hands[p].splice(rand(S.hands[p].length), 1)[0];
-      return null;
+      if (!S.hands[p].length) return null;
+      let i = rand(S.hands[p].length);
+      if (duel()) {
+        // pioche vide : la carte tirée au hasard dans la main est annoncée à l'autre joueur
+        if (p === 0) netSend("blind", S.hands[0][i].id);
+        else { const id = await netNext("blind"); i = S.hands[1].findIndex(c => c.id === id); }
+      }
+      return S.hands[p].splice(i, 1)[0];
     }
     async function galacticBattle() {
       const game = gameId;
@@ -1800,23 +1991,26 @@
         }
         for (const p of [1, 0]) {
           if (stock(p) < 2) continue;
-          await playCard(p, "amb", drawBlind(p), true, { from: deckRect(p) });
+          await playCard(p, "amb", await drawBlind(p), true, { from: deckRect(p) });
           if (game !== gameId) return;
         }
-        const boost = [false, LEVELS[S.ai].fuel && S.fuel[1] > 0 && stock(1) >= 2 && (level >= 2 || S.pot.length >= 7 || Math.random() < 0.4)];
+        const boost = [false, false];
         const mise = `Mise : <b>${S.pot.length + boardCards().length} cartes</b>.`;
         const options = [{ k: "flip", label: "Retourner ma carte", cls: "hot" }];
         if (S.fuel[0] > 0 && stock(0) >= 2) options.push({ k: "boost", label: "1 carburant : j'en pioche 2" });
         boost[0] = (await ask(`${mise} Retourne ta carte à l'aveugle.`, options)) === "boost";
+        netSend("boost", boost[0]);
+        if (duel()) setPrompt(`${mise} En attente de <b>Gaspard</b>…`);
+        boost[1] = duel() ? await netNext("boost") : LEVELS[S.ai].fuel && S.fuel[1] > 0 && stock(1) >= 2 && (level >= 2 || S.pot.length >= 7 || Math.random() < 0.4);
         if (game !== gameId) return;
         setPrompt(`${mise} Les cartes se retournent…`);
         for (const p of [1, 0]) {
-          let card = drawBlind(p);
+          let card = await drawBlind(p);
           if (boost[p]) {
             S.fuel[p] -= 1;
             renderFuel(p);
             sfx.coin();
-            const other = drawBlind(p);
+            const other = await drawBlind(p);
             if (other) {
               const keep = other.value > card.value ? other : card;
               S.pot.push(keep === card ? other : card);
@@ -1953,7 +2147,11 @@
       const dXp = won ? 50 : lost ? 20 : 30;
       save.xp += dXp;
       let gain, head, trip = null;
-      if (arena) {
+      if (S.mode === "p2p") {
+        gain = won ? 20 : 10;
+        $("#endText").textContent = won ? `Tu as battu ${foe()} !` : lost ? `${foe()} remporte ce duel.` : "Égalité parfaite entre amis.";
+        head = `Duel amical · +${dXp} XP`;
+      } else if (arena) {
         const above = S.rival.t >= save.trophies;
         const before = { league: leagueOf(save.trophies), rank: myRank() };
         const dT = won ? (above ? 26 : 18) : lost ? -Math.min(above ? 8 : 14, save.trophies) : 0;
@@ -2265,7 +2463,27 @@
     $("#pauseBtn").addEventListener("click", () => $("#pause").classList.add("on"));
     $("#resumeBtn").addEventListener("click", () => $("#pause").classList.remove("on"));
     $("#quitBtn").addEventListener("click", goMenu);
-    $("#endAgain").addEventListener("click", () => { if (S.mode === "arena") S.rival = null; newGame(S.mode); });
+    $("#endAgain").addEventListener("click", async () => {
+      if (S.mode !== "p2p") { if (S.mode === "arena") S.rival = null; return newGame(S.mode); }
+      // Revanche entre amis : il faut que les deux la demandent, puis l'hôte redistribue.
+      $("#endAgain").disabled = true;
+      $("#endText").textContent = `Revanche demandée. En attente de ${foe()}…`;
+      rawSend("again");
+      await netNext("again");
+      $("#endAgain").disabled = false;
+      if (net.host && net.conn) dealDuel();
+    });
+    $("#friendBtn").addEventListener("click", () => openLobby());
+    $("#hostBtn").addEventListener("click", hostDuel);
+    $("#joinBtn").addEventListener("click", () => joinDuel($("#joinCode").value));
+    $("#lobbyClose").addEventListener("click", () => { if (!duel()) closeNet(); $("#lobby").classList.remove("on"); });
+    $("#shareBtn").addEventListener("click", async () => {
+      const url = `${location.origin}${location.pathname}?duel=${$("#roomCode").textContent}`;
+      try {
+        if (navigator.share) await navigator.share({ title: "Bataille des Alliés", text: "Rejoins-moi pour un duel !", url });
+        else { await navigator.clipboard.writeText(url); lobbyMsg("Lien copié : colle-le dans un message à ton ami."); }
+      } catch (e) { lobbyMsg(`Lien à envoyer : ${url}`); }
+    });
     $("#endMenu").addEventListener("click", goMenu);
     $("#endBooster").addEventListener("click", () => { goMenu(); openCapsuleShop(); });
 
@@ -2286,6 +2504,14 @@
     renderMenu();
     initSpace();
     setTimeout(offerInstall, document.documentElement.classList.contains("splash") ? 3600 : 1200);
+    // Lien d'invitation : ...?duel=CODE ouvre directement le salon avec le code rempli.
+    const invite = new URLSearchParams(location.search).get("duel");
+    if (invite) {
+      showTab("arena");
+      openLobby(save.name ? "" : "Choisis un pseudo, puis touche Rejoindre.");
+      $("#joinCode").value = invite.toUpperCase().slice(0, 5);
+      if (save.name) joinDuel(invite);
+    }
   </script>
 </body>
 </html>
