@@ -783,28 +783,30 @@
     ];
     const HAND_SIZE = 5, MAX_FUEL = 3, MAX_ATOUTS = 3, CAPSULE_COST = 60;
 
-    /* Adversaires : même nombre d'atouts que le joueur, seule la qualité de jeu change. */
+    /* Adversaires : même nombre d'atouts que le joueur, seule la qualité de jeu change.
+       noise = part de hasard dans ses choix, cost = soin qu'il met à économiser ses fortes cartes,
+       skip = chance de renoncer à l'allié. Valeurs réglées avec tools/balance-sim.js. */
     const LEVELS = [
-      { name: "Novice", who: "Blobzor", planet: "Lune", color: "#d9d2c0", noise: 6, cost: 0.05, slope: 4, count: false, fuel: false, reward: 20, win: 18, lose: 6 },
-      { name: "Soldat", who: "Krakmol", planet: "Mars", color: "#f26a3d", noise: 0.45, cost: 0.11, slope: 2.5, count: false, fuel: true, reward: 35, win: 26, lose: 10 },
-      { name: "Stratège", who: "Zygomax", planet: "Saturne", color: "#f5c445", noise: 0.15, cost: 0.14, slope: 2, count: true, fuel: true, reward: 50, win: 34, lose: 14 }
+      { name: "Novice", who: "Blobzor", planet: "Lune", color: "#d9d2c0", noise: 8, cost: 0.05, slope: 4, count: false, fuel: true, skip: 0.5, reward: 20, win: 18, lose: 6 },
+      { name: "Soldat", who: "Krakmol", planet: "Mars", color: "#f26a3d", noise: 0.45, cost: 0.11, slope: 2.5, count: false, fuel: true, skip: 0, reward: 35, win: 26, lose: 10 },
+      { name: "Stratège", who: "Zygomax", planet: "Saturne", color: "#f5c445", noise: 0.15, cost: 0.4, slope: 2, count: true, fuel: true, skip: 0, reward: 50, win: 34, lose: 14 }
     ];
     const RARITY = [{ name: "Commune", weight: 70, dup: 10 }, { name: "Rare", weight: 25, dup: 25 }, { name: "Légendaire", weight: 5, dup: 60 }];
     const ATOUTS = {
-      spy: { name: "Vache espionne", value: 6, rarity: 0, desc: "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 6." },
-      dice: { name: "Dé pipé", value: 7, thr: 1, rarity: 0, desc: "Joue-la en allié (3ᵉ carte) : pas besoin de chance, le dé réussit toujours. Vaut 7." },
+      spy: { name: "Vache espionne", value: 7, rarity: 0, desc: "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 7." },
+      dice: { name: "Dé pipé", value: 6, thr: 1, rarity: 0, desc: "Joue-la en allié (3ᵉ carte) : pas besoin de chance, le dé réussit toujours. Vaut 6." },
       tank: { name: "Citerne", value: 5, rarity: 0, desc: "Dès qu'elle est visible sur la table, son propriétaire gagne 2 carburants. Vaut 5." },
-      shield: { name: "Bouclier", value: 8, rarity: 0, desc: "Tant qu'elle est sur la table, les malus adverses (Impact −2, Trou noir) ne touchent pas son propriétaire. Vaut 8." },
+      shield: { name: "Bouclier", value: 6, rarity: 0, desc: "Tant qu'elle est sur la table, les malus adverses (Impact −2, Trou noir) ne touchent pas son propriétaire. Vaut 6." },
       clone: { name: "Clone", value: 0, label: "?", thr: 3, rarity: 1, desc: "Prend la même valeur que l'autre carte posée à côté. Deux cartes égales forment des Jumeaux : +5." },
-      hole: { name: "Trou noir", value: 0, thr: 5, rarity: 1, desc: "Vaut 0, mais annule la meilleure carte d'en face : elle compte 0 elle aussi." },
-      tractor: { name: "Rayon tracteur", value: 4, rarity: 1, desc: "Si son propriétaire gagne la manche, il vole en plus 2 cartes dans le butin d'en face. Vaut 4." },
+      hole: { name: "Trou noir", value: 2, thr: 5, rarity: 1, desc: "Ne vaut que 2, mais annule la meilleure carte d'en face : elle compte 0." },
+      tractor: { name: "Rayon tracteur", value: 6, rarity: 1, desc: "Si son propriétaire gagne la manche, il vole en plus 2 cartes dans le butin d'en face. Vaut 6." },
       nova: { name: "Supernova", value: 15, thr: 6, rarity: 2, desc: "La plus forte du jeu : vaut 15. Mais elle se consume : elle ne rejoint le butin de personne." }
     };
     const ATOUT_IDS = Object.keys(ATOUTS);
     /* Chaque tribu a un talent, valable pour le joueur comme pour Gaspard. */
     const PERKS = {
       mars: { name: "Ravitaillés", desc: "démarre avec 2 carburants au lieu de 1." },
-      cranes: { name: "Désintégrateur", desc: "ses contre-attaques retirent 1 point de plus." },
+      cranes: { name: "Désintégrateur", desc: "ses contre-attaques retirent toujours au moins 2 points." },
       poulpes: { name: "Huit bras", desc: "main de 6 cartes au lieu de 5." },
       incognito: { name: "Déguisement", desc: "quand elle pose en premier, son avant-garde reste cachée jusqu'à la réponse adverse." }
     };
@@ -1338,7 +1340,7 @@
     }
     function aiAllyPick() {
       const L = LEVELS[S.ai];
-      if (!L.fuel && Math.random() < 0.4) return null;
+      if (Math.random() < (L.skip || 0)) return null;
       const amb = S.board.amb[1];
       const bonus = amb.house === "H" ? 1 : 0;
       const options = S.hands[1].map(c => ({ c, t: afterAlly(1, c) })).filter(o => o.t[1] >= o.t[0]).map(({ c, t }) => ({
@@ -1725,7 +1727,7 @@
       if (d === 0) {
         await tip("counter", "L'allié de Gaspard a réussi et te passe devant. Tu peux <b>contre-attaquer</b> : pour 1 carburant, tu lances le dé et son allié perd autant de points.", $("#slot-1-ally"));
         if (game !== gameId) return false;
-        go = (await ask(`L'allié de Gaspard vaut <b>+${gain}</b>, il te devance de <b>${margin}</b>. Ton dé lui retirerait ${S.cast[0] === "cranes" ? "2 à 7" : "1 à 6"} points.`,
+        go = (await ask(`L'allié de Gaspard vaut <b>+${gain}</b>, il te devance de <b>${margin}</b>. Ton dé lui retirerait ${S.cast[0] === "cranes" ? "2 à 6" : "1 à 6"} points.`,
           [{ k: "yes", label: "Riposter · 1 carburant", cls: "hot" }, { k: "no", label: "Laisser", cls: "ghost" }])) === "yes";
       } else {
         setPrompt("<b>Gaspard</b> hésite à contre-attaquer…");
@@ -1742,7 +1744,7 @@
       $("#tray").classList.add("on");
       const roll = await rollDie();
       if (game !== gameId) return false;
-      const cut = Math.min(roll + (S.cast[d] === "cranes" ? 1 : 0), gain);
+      const cut = Math.min(S.cast[d] === "cranes" ? Math.max(roll, 2) : roll, gain);
       S.board.allyCut[a] = cut;
       $("#trayRes").textContent = `−${cut} à l'allié`;
       $("#trayRes").className = d === 0 ? "ok" : "ko";
