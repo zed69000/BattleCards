@@ -288,7 +288,7 @@ window.BalanceSim = (function () {
     const pickSet = spec => (spec === "random3" ? shuffle(ATOUT_IDS).slice(0, 3) : Array.isArray(spec[0]) ? spec[R(spec.length)] : spec);
     for (let i = 0; i < n; i += 1) {
       const a0 = pickSet(cfg.atouts[0]);
-      const a1 = cfg.atouts[1] === "same" ? shuffle(ATOUT_IDS).slice(0, a0.length) : pickSet(cfg.atouts[1]);
+      const a1 = cfg.atouts[1] === "same" ? shuffle(ATOUT_IDS).slice(0, Math.min(a0.length, cfg.foeMax ?? 99)) : pickSet(cfg.atouts[1]);
       const g = game({ lv: cfg.lv, cast: cfg.cast, boss: cfg.boss, every: cfg.every, atouts: [a0, a1] });
       win += g.win; diff += g.diff; rounds += g.rounds; pts += g.loot[0] + g.loot[1];
       for (const k of Object.keys(g.stats)) agg[k] = (agg[k] || 0) + g.stats[k];
@@ -303,7 +303,7 @@ window.BalanceSim = (function () {
     return STAGES.map((sg, i) => {
       const owned = [...START_ATOUTS, ...STAGES.slice(0, i).map(x => x.gift).filter(Boolean)];
       const mine = owned.length ? Array.from({ length: 12 }, () => shuffle(owned).slice(0, Math.min(MAX_ATOUTS, owned.length))) : [[]];
-      const res = run({ lv: [me, sg.ai], cast: ["mars", sg.cast], boss: [null, sg.boss ? BOSSES[sg.boss].super : null], every: [3, sg.boss ? BOSSES[sg.boss].every : 3], atouts: [mine, "same"] }, n);
+      const res = run({ lv: [me, sg.ai], cast: ["mars", sg.cast], boss: [null, sg.boss ? BOSSES[sg.boss].super : null], every: [3, sg.boss ? BOSSES[sg.boss].every : 3], foeMax: sg.foeAtouts, atouts: [mine, "same"] }, n);
       return { stage: i + 1, name: sg.name, boss: Boolean(sg.boss), win: res.win };
     });
   }

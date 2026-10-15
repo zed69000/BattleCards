@@ -215,6 +215,13 @@
     .p-heart i.p { clip-path: polygon(50% 100%, 6% 54%, 0 30%, 9% 9%, 29% 2%, 50% 20%, 71% 2%, 91% 9%, 100% 30%, 94% 54%); border-radius: 0 !important; box-shadow: none !important; }
     .p-diamond i.p { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); border-radius: 0 !important; }
     .p-eye i.p { background: radial-gradient(circle at 50% 56%, #10162b 0 30%, var(--die-pip, var(--yellow)) 33% 46%, #fff 49%) !important; box-shadow: 0 0 0 1px #10162b !important; }
+    .btn.danger { border-color: var(--bad); color: var(--bad); }
+    .btn.danger.armed { background: var(--bad); color: var(--navy); }
+    .devbox { display: grid; gap: 10px; width: 100%; max-width: 340px; padding: 10px; border-radius: 14px; border: 2px dashed var(--teal); }
+    .devgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .devgrid button { min-height: 44px; border-radius: 10px; border: 2px solid rgba(245, 233, 207, 0.4); background: rgba(16, 22, 43, 0.9); font-size: 0.66rem; line-height: 1.05; }
+    .devgrid button.boss { border-color: var(--orange); color: var(--orange); }
+    .devgrid button.on { background: var(--yellow); color: var(--navy); }
     .mode-tag { display: inline-block; padding: 2px 10px; border-radius: 99px; background: var(--teal); color: var(--cream); font-size: 0.62rem; letter-spacing: 0.14em; }
     .mode-tag.multi { background: var(--violet); }
 
@@ -630,6 +637,19 @@
             <button class="btn ghost" id="menuHelp">Règles</button>
             <button class="btn ghost" id="menuSound">Son : oui</button>
             <button class="btn ghost" id="fsBtn">Plein écran</button>
+            <button class="btn ghost danger" id="resetBtn">Recommencer à zéro</button>
+          </div>
+          <div class="section-title">Code secret</div>
+          <div class="join"><input id="devCode" maxlength="8" inputmode="numeric" autocomplete="off" placeholder="••••" aria-label="Code secret"><button class="btn" id="devGo">OK</button></div>
+          <div class="devbox" id="devBox" hidden>
+            <div class="section-title">Mode test</div>
+            <p class="perk">Choisis une étape pour y aller directement (les étapes d'avant sont validées).</p>
+            <div class="devgrid" id="devStages"></div>
+            <div class="stack">
+              <button class="btn teal" id="devAll">Tout débloquer (persos, atouts, dés, dos)</button>
+              <button class="btn" id="devGems">+500 ◆</button>
+              <button class="btn ghost" id="devOff">Quitter le mode test</button>
+            </div>
           </div>
         </section>
       </div>
@@ -702,6 +722,8 @@
       <button class="btn ghost" id="pauseHelp">Règles</button>
       <button class="btn ghost" id="pauseSound">Son : oui</button>
       <button class="btn hot" id="quitBtn">Retour au menu</button>
+      <button class="btn teal" id="devWin" hidden>Test : victoire immédiate</button>
+      <button class="btn ghost" id="devLose" hidden>Test : défaite immédiate</button>
     </div></div>
   </div>
 
@@ -977,7 +999,7 @@
       ["8", 8, "Chasseur"], ["9", 9, "Croiseur"], ["10", 10, "Amiral"], ["V", 11, "Valet"], ["D", 12, "Dame"], ["R", 13, "Roi"], ["A", 14, "As"]
     ];
     /* Numéro de version affiché en bas du menu : à augmenter à chaque mise en ligne. */
-    const VERSION = "0.21";
+    const VERSION = "0.22";
     const HAND_SIZE = 5, MAX_FUEL = 3, MAX_ATOUTS = 3, CAPSULE_COST = 60;
     /* Butin : les petites cartes perdent les combats mais rapportent gros. La Supernova se consume. */
     const ATOUT_LOOT = 2, TRACTOR_STEAL = 3, CLONE_CAP = 7, SIPHON = 3;
@@ -997,6 +1019,8 @@
        Valeurs réglées avec tools/balance-sim.js (PLAYER = le joueur type des simulations). */
     const STRAT = { greed: 1.2, cost: 0.08, slope: 2.5, noise: 0.1, skip: 0, count: true, exact: true };
     const TIERS = [
+      { greed: 0.3, cost: 0.02, slope: 6, noise: 12, skip: 1, bonusHand: -1, bonusFuel: -1 },
+      { greed: 0.4, cost: 0.02, slope: 6, noise: 10, skip: 0.7, bonusHand: -1 },
       { greed: 0.5, cost: 0.03, slope: 5, noise: 8, skip: 0.5 },
       { greed: 0.535, cost: 0.037, slope: 4.65, noise: 6.6, skip: 0.43 },
       { greed: 0.57, cost: 0.044, slope: 4.3, noise: 5.2, skip: 0.36 },
@@ -1011,7 +1035,7 @@
       { ...STRAT, bonusFuel: 2, bonusHand: 1 },
       { ...STRAT, bonusFuel: 2, bonusHand: 2 }
     ];
-    const TIER_NAMES = ["recrue maladroite", "recrue", "cadet", "soldat", "soldat", "soldat aguerri", "vétéran", "vétéran", "stratège", "stratège rusé", "stratège redoutable", "maître stratège", "légende"];
+    const TIER_NAMES = ["bleu tremblant", "apprenti", "recrue maladroite", "recrue", "cadet", "soldat", "soldat", "soldat aguerri", "vétéran", "vétéran", "stratège", "stratège rusé", "stratège redoutable", "maître stratège", "légende"];
     const PLAYER = { greed: 0.9, cost: 0.1, slope: 2.5, noise: 0.3, skip: 0, count: true };
     /* Les boss : un super coup qui revient toutes les `every` manches, annoncé par une jauge. */
     const BOSSES = {
@@ -1023,11 +1047,11 @@
     };
     /* Campagne : 5 chapitres de 3 soldats et un boss. tiers = niveau d'IA de chaque étape. */
     const CHAPTERS = [
-      { planet: "Lune", color: "#d9d2c0", cast: "mars", soldiers: ["Caporal Blip", "Sergent Glurp", "Lieutenant Zob"], boss: "gloubi", tiers: [0, 1, 2, 2] },
-      { planet: "Mars", color: "#f26a3d", cast: "cranes", soldiers: ["Cadet Neurone", "Major Méninge", "Colonel Lobe"], boss: "krakmar", tiers: [3, 4, 5, 4] },
-      { planet: "Jupiter", color: "#e0a07a", cast: "poulpes", soldiers: ["Mousse Ventouse", "Bosco Calmar", "Capitaine Encre"], boss: "tempete", tiers: [5, 6, 7, 5] },
-      { planet: "Saturne", color: "#f5c445", ring: true, cast: "incognito", soldiers: ["Agent 004", "Agent Trench", "Agent Fantôme"], boss: "zygo", tiers: [7, 8, 9, 8] },
-      { planet: "Neptune", color: "#5b8fd8", cast: "cranes", soldiers: ["Garde Zorg", "Champion Zorg", "Prince Zorgy"], boss: "zorglax", tiers: [8, 9, 10, 7] }
+      { planet: "Lune", color: "#d9d2c0", cast: "mars", soldiers: ["Caporal Blip", "Sergent Glurp", "Lieutenant Zob"], boss: "gloubi", tiers: [0, 1, 2, 2], foeAtouts: [0, 0, 1, 2] },
+      { planet: "Mars", color: "#f26a3d", cast: "cranes", soldiers: ["Cadet Neurone", "Major Méninge", "Colonel Lobe"], boss: "krakmar", tiers: [4, 5, 6, 5] },
+      { planet: "Jupiter", color: "#e0a07a", cast: "poulpes", soldiers: ["Mousse Ventouse", "Bosco Calmar", "Capitaine Encre"], boss: "tempete", tiers: [6, 7, 8, 6] },
+      { planet: "Saturne", color: "#f5c445", ring: true, cast: "incognito", soldiers: ["Agent 004", "Agent Trench", "Agent Fantôme"], boss: "zygo", tiers: [8, 9, 10, 9] },
+      { planet: "Neptune", color: "#5b8fd8", cast: "cranes", soldiers: ["Garde Zorg", "Champion Zorg", "Prince Zorgy"], boss: "zorglax", tiers: [10, 11, 12, 9] }
     ];
     const START_ATOUTS = ["tank", "shield"];
     const GIFTS = [["spy", "dice"], ["tractor", "tresor"], ["cryo", "clone"], ["meteor", "hole"], ["turbo", "nova"]];
@@ -1035,7 +1059,7 @@
     const STAGES = CHAPTERS.flatMap((ch, c) => [0, 1, 2, 3].map(k => {
       const boss = k === 3 ? ch.boss : null;
       return {
-        c, k, boss, name: boss ? BOSSES[boss].name : ch.soldiers[k], cast: boss ? BOSSES[boss].cast : ch.cast, tier: ch.tiers[k], ai: TIERS[ch.tiers[k]],
+        c, k, boss, name: boss ? BOSSES[boss].name : ch.soldiers[k], cast: boss ? BOSSES[boss].cast : ch.cast, tier: ch.tiers[k], ai: TIERS[ch.tiers[k]], foeAtouts: ch.foeAtouts ? ch.foeAtouts[k] : MAX_ATOUTS,
         gift: k === 1 ? GIFTS[c][0] : boss ? GIFTS[c][1] : null, unlocks: boss ? [`boss-${boss}`, NEXT_TRIBE[c]].filter(Boolean) : [],
         reward: boss ? 40 + 15 * c : 15 + 5 * c, char: boss ? `boss-${boss}` : `${ch.cast}${k + 1}`
       };
@@ -1971,13 +1995,13 @@
         S.foeSkin = { dice: DICE[them.dice] ? them.dice : "violet", back: BACKS[them.back] ? them.back : "cible" };
         S.cast[1] = CASTS[them.cast] ? them.cast : "mars";
         S.foeChar = CHARS[them.char] && CHARS[them.char].tribe === S.cast[1] ? them.char : `${S.cast[1]}0`;
-        S.aiL = TIERS[7];
+        S.aiL = TIERS[9];
       } else if (mode === "arena") {
         S.rival = S.rival || pickRival();
         S.foeName = S.rival.name;
         S.cast[1] = S.rival.cast;
         S.foeChar = `${S.rival.cast}${rand(7)}`;
-        S.aiL = TIERS[[3, 5, 7, 9, 10][leagueOf(S.rival.t)]];
+        S.aiL = TIERS[[5, 7, 9, 11, 12][leagueOf(S.rival.t)]];
       } else {
         const sg = STAGES[S.stage];
         S.cast[1] = sg.cast;
@@ -1990,7 +2014,8 @@
       if (mode !== "p2p") S.foeSkin = { dice: Object.keys(DICE)[rand(6)], back: Object.keys(BACKS)[rand(6)] };
       const deck = makeDeck();
       const mine = save.loadout.slice(0, MAX_ATOUTS);
-      const theirs = shuffle(ATOUT_IDS).slice(0, mine.length);
+      // Au début de la campagne, l'adversaire a moins d'atouts que toi (voire aucun).
+      const theirs = shuffle(ATOUT_IDS).slice(0, mode === "adv" ? Math.min(mine.length, STAGES[S.stage].foeAtouts) : mine.length);
       Object.assign(S, {
         decks: pre ? pre.decks : [inject(deck.slice(0, 26), mine, "a"), inject(deck.slice(26), theirs, "b")],
         hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 2 : 1) + aiBonus(q, "bonusFuel")), radar: [false, false], lockAsked: false, ended: null, vanHidden: [false, false], pot: [], round: 0, first: pre ? pre.first : rand(2), phase: "idle", busy: true,
@@ -3172,6 +3197,61 @@
       const timer = setTimeout(end, 2850);
       el.addEventListener("pointerdown", () => { clearTimeout(timer); end(); }, { once: true });
     })();
+
+    /* Recommencer à zéro : deux touches pour confirmer, puis on efface la sauvegarde. */
+    $("#resetBtn").addEventListener("click", () => {
+      const btn = $("#resetBtn");
+      if (!btn.classList.contains("armed")) {
+        btn.classList.add("armed");
+        btn.textContent = "Sûr ? Tout sera effacé — toucher encore";
+        clearTimeout(btn.timer);
+        btn.timer = setTimeout(() => { btn.classList.remove("armed"); btn.textContent = "Recommencer à zéro"; }, 4000);
+        return;
+      }
+      try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* stockage indisponible */ }
+      location.reload();
+    });
+    /* Mode test, réservé au développeur : le code ouvre un panneau pour sauter d'étape et tout débloquer.
+       (C'est un simple verrou de confort : le code est lisible dans la page, ce n'est pas une protection.) */
+    const DEV_CODE = "1803";
+    function renderDev() {
+      $("#devBox").hidden = !save.dev;
+      for (const id of ["devWin", "devLose"]) $(`#${id}`).hidden = !save.dev;
+      if (!save.dev) return;
+      $("#devStages").innerHTML = STAGES.map((sg, i) => `<button class="${sg.boss ? "boss" : ""}${i === S.stage ? " on" : ""}" data-i="${i}">${CHAPTERS[sg.c].planet}<br>${sg.boss ? "BOSS" : `${sg.k + 1}`}</button>`).join("");
+      for (const b of document.querySelectorAll("#devStages button")) b.addEventListener("click", () => {
+        const i = Number(b.dataset.i);
+        save.camp.cleared = Math.max(save.camp.cleared, i);
+        STAGES.forEach((sg, j) => { if (j < i) { if (sg.gift) grantAtouts([sg.gift]); for (const id of sg.unlocks) save.chars[id] = 1; } });
+        S.stage = save.stage = i;
+        chapterView = STAGES[i].c;
+        persist(); sfx.coin(); renderMenu(); renderDev(); showTab("adv");
+      });
+    }
+    $("#devGo").addEventListener("click", () => {
+      const ok = $("#devCode").value.trim() === DEV_CODE;
+      $("#devCode").value = "";
+      if (!ok) { shake(4); sfx.lose(); return; }
+      save.dev = true; persist(); sfx.rare(); renderDev();
+    });
+    $("#devAll").addEventListener("click", () => {
+      CHAR_IDS.forEach(id => { save.chars[id] = 1; });
+      grantAtouts(ATOUT_IDS);
+      Object.keys(DICE).forEach(id => { save.skins.dice[id] = 1; });
+      Object.keys(BACKS).forEach(id => { save.skins.back[id] = 1; });
+      persist(); sfx.rare(); renderMenu();
+    });
+    $("#devGems").addEventListener("click", () => { save.crystals += 500; persist(); sfx.coin(); renderMenu(); });
+    $("#devOff").addEventListener("click", () => { save.dev = false; persist(); renderDev(); });
+    for (const [id, win] of [["devWin", true], ["devLose", false]]) $(`#${id}`).addEventListener("click", () => {
+      if (!save.dev || S.phase === "over") return;
+      gameId += 1;
+      $("#pause").classList.remove("on");
+      closeCoach();
+      S.loot = win ? [Math.max(S.loot[0], S.loot[1] + 20), S.loot[1]] : [S.loot[0], Math.max(S.loot[1], S.loot[0] + 20)];
+      endGame();
+    });
+    renderDev();
 
     $("#version").textContent = `v${VERSION}`;
     buildDie();
