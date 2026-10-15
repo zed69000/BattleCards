@@ -301,7 +301,15 @@
     .opp-hand.tight i, .hand.tight .card { margin: 0 -14px; }
     /* Dos de carte vivant : rayons qui tournent et voyant qui bat. */
     .back::before, .opp-hand i::before { content: ""; position: absolute; inset: -50%; background: repeating-conic-gradient(from 0deg, rgba(245, 233, 207, 0.26) 0 8deg, transparent 8deg 24deg); animation: spin 7s linear infinite; }
-    .back::after, .opp-hand i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 32%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(circle at 38% 34%, #fff6c9, var(--yellow) 55%, #c98d12); border: 2px solid var(--navy); animation: beat 1.6s ease-in-out infinite; }
+    /* Emblème au dos : le visage du personnage du propriétaire, en simple trait de couleur. */
+    .emblem { position: absolute; left: 50%; top: 50%; z-index: 1; width: 76%; aspect-ratio: 1; translate: -50% -50%; display: grid; place-items: center; border-radius: 50%; background: rgba(16, 22, 43, 0.92); border: 2px solid var(--emb, var(--yellow)); color: var(--emb, var(--yellow)); box-shadow: 0 0 10px var(--emb, var(--yellow)); animation: beat 2.4s ease-in-out infinite; }
+    .emblem svg { display: block; width: 92%; height: 92%; overflow: visible; }
+    .emblem svg * { fill: none !important; stroke: currentColor !important; stroke-width: 3.2px !important; }
+    .emblem svg text { display: none; }
+    /* Face cachée = rien ne transparaît : chaque face n'est rendue que lorsqu'elle est tournée vers nous
+       (Safari laisse voir à travers les éléments animés malgré backface-visibility). Bascule à mi-retournement. */
+    .card .front, .card .back { transition: visibility 0s linear 300ms; }
+    .card.facedown .front, .card:not(.facedown) .back { visibility: hidden; }
     .opp-hand i:nth-child(2n)::after { animation-delay: -0.5s; }
     .opp-hand i:nth-child(3n)::after { animation-delay: -1s; }
 
@@ -962,7 +970,7 @@
       ["8", 8, "Chasseur"], ["9", 9, "Croiseur"], ["10", 10, "Amiral"], ["V", 11, "Valet"], ["D", 12, "Dame"], ["R", 13, "Roi"], ["A", 14, "As"]
     ];
     /* Numéro de version affiché en bas du menu : à augmenter à chaque mise en ligne. */
-    const VERSION = "0.17";
+    const VERSION = "0.18";
     const HAND_SIZE = 5, MAX_FUEL = 3, MAX_ATOUTS = 3, CAPSULE_COST = 60;
     /* Butin : les petites cartes perdent les combats mais rapportent gros. La Supernova se consume. */
     const ATOUT_LOOT = 2, TRACTOR_STEAL = 3, CLONE_CAP = 7, SIPHON = 3;
@@ -1291,6 +1299,16 @@
       if (!ch || !ch.hue) return svg;
       return svg.replace("<svg ", `<svg style="filter:hue-rotate(${ch.hue}deg)" `);
     }
+    /* Emblème d'appartenance : le personnage du camp, sans remplissage, tracé d'un seul trait de couleur. */
+    const emblemCache = {};
+    function emblem(owner) {
+      const id = charOf(owner), key = `${id}-${owner}`;
+      if (!emblemCache[key]) {
+        const ch = CHARS[id] || CHARS.mars0;
+        emblemCache[key] = `<span class="emblem" style="--emb:${owner === 0 ? "var(--yellow)" : "#ff8fc4"}"><svg viewBox="0 0 100 110">${CASTS[ch.tribe][ch.rank](YE, ch.house)}</svg></span>`;
+      }
+      return emblemCache[key];
+    }
     function cardEl(card, owner, faceDown = false) {
       const el = document.createElement("div");
       const sp = card.special;
@@ -1306,7 +1324,7 @@
         <div class="top"><span>${card.label}</span><span>${SYM[card.house]}</span></div>
         <div class="art">${sp ? frame(SPECIAL_ART[sp](), card.seed) : tint(art(S.cast[owner], card.house, card.label, card.seed), owner)}</div>
         <div class="n">${card.title}${figure ? ` · ${card.value}` : ""}</div>
-      </div><div class="face back"></div></div>${loot ? `<span class="coin c${loot}" title="Butin : ${loot} point${loot > 1 ? "s" : ""}">${loot}</span>` : ""}`;
+      </div><div class="face back">${emblem(owner)}</div></div>${loot ? `<span class="coin c${loot}" title="Butin : ${loot} point${loot > 1 ? "s" : ""}">${loot}</span>` : ""}`;
       return el;
     }
     function renderFuel(p, popIndex = -1) {
@@ -1339,7 +1357,7 @@
       opp.innerHTML = "";
       const n = S.hands[1].length;
       opp.classList.toggle("tight", n > 5);
-      for (let i = 0; i < n; i += 1) { const back = document.createElement("i"); back.style.setProperty("--k", i - (n - 1) / 2); back.style.setProperty("--back", BACKS[skinOf(1).back].css); opp.appendChild(back); }
+      for (let i = 0; i < n; i += 1) { const back = document.createElement("i"); back.style.setProperty("--k", i - (n - 1) / 2); back.style.setProperty("--back", BACKS[skinOf(1).back].css); back.innerHTML = emblem(1); opp.appendChild(back); }
     }
     function renderTotals() {
       const res = [breakdown(0), breakdown(1)];
@@ -2804,7 +2822,7 @@
         <div class="top"><span>${{ dice: "Dé", back: "Dos", char: "Perso" }[item.kind]}</span><span>★</span></div>
         <div class="art${item.kind === "char" ? "" : " item-art"}">${item.kind === "dice" ? diePrev(item.id) : item.kind === "char" ? charArt(item.id) : backPrev(item.id)}</div>
         <div class="n">${def.name}</div>
-      </div><div class="face back"></div></div>`;
+      </div><div class="face back">${emblem(0)}</div></div>`;
       return el;
     }
     function crimp(top) {
