@@ -42,7 +42,7 @@ window.BalanceSim = (function () {
     st.decks = [inject(d.slice(0, 26), cfg.atouts[0]), inject(d.slice(26), cfg.atouts[1])];
     st.hands = [[], []]; st.loot = [0, 0]; st.pot = [];
     st.fuel = [0, 1].map(p => (cast[p] === "mars" ? 2 : 1) + (Ls[p].bonusFuel || 0));
-    const stats = { ally: 0, allyOk: 0, riposte: 0, riposteOk: 0, reversal: 0, war: 0, super: 0, superWon: 0 };
+    const stats = { ally: 0, allyOk: 0, riposte: 0, riposteOk: 0, reversal: 0, war: 0, super: 0, superWon: 0, wasted: 0, swap: 0 };
     const hs = p => (cast[p] === "poulpes" ? 6 : 5) + (Ls[p].bonusHand || 0);
     let B = empty(), revealed = false, hidden = [false, false], charged = [false, false];
     const sup = (p, k) => charged[p] && boss[p] === k;
@@ -143,12 +143,36 @@ window.BalanceSim = (function () {
     }
     function roll(p, card, role) {
       const thr = thirdThr(p, card), bonus = (B.amb[p].house === "H" ? 1 : 0) + (role === "riposte" && cast[p] === "cranes" ? 1 : 0);
-      let r = 1 + R(6);
+      let r = 1 + R(6) + (surge[p] ? 1 : 0);
+      surge[p] = false;
       if (r + bonus < thr && B.amb[p].house === "C" && !used[p]) { used[p] = true; r = 1 + R(6); }
       return r + bonus >= thr;
     }
     const take = (p, c) => { st.hands[p].splice(st.hands[p].indexOf(c), 1); return c; };
-    const tank = (p, c) => { if (c && c.special === "tank" && !c.done) { c.done = true; st.fuel[p] = Math.min(MAX_FUEL, st.fuel[p] + 2); } };
+    /* Gain de boosts : au-delà du plafond, le surplus devient du butin (« loot »), un dé surchargé (« surge ») ou rien. */
+    const surge = [false, false];
+    const gain = (p, n) => {
+      for (let i = 0; i < n; i += 1) {
+        if (st.fuel[p] < MAX_FUEL) { st.fuel[p] += 1; continue; }
+        stats.wasted += 1;
+        if (OPT.overflow[p] === "loot") st.loot[p] += 1;
+        else if (OPT.overflow[p] === "surge") surge[p] = true;
+      }
+    };
+    const tank = (p, c) => { if (c && c.special === "tank" && !c.done) { c.done = true; gain(p, 2); } };
+    /* Échange : 1 boost = 1 carte de la main glissée sous la pioche contre celle du dessus, une fois par manche. */
+    function swap(p) {
+      const mode = OPT.swap[p], hand = st.hands[p];
+      if (mode === "never" || st.fuel[p] < 1 || !st.decks[p].length) return;
+      const plain = hand.filter(c => !c.special);
+      if (!plain.length) return;
+      const weak = Math.max(...plain.map(c => c.value)) < 10;
+      const full = st.fuel[p] >= MAX_FUEL;
+      if (mode === "full" ? !full : !(full || (weak && st.fuel[p] >= 2))) return;
+      const out = plain.reduce((a, c) => (c.value < a.value ? c : a));
+      st.fuel[p] -= 1; stats.swap += 1;
+      take(p, out); st.decks[p].push(out); hand.push(st.decks[p].shift());
+    }
     const stock = p => st.decks[p].length + st.hands[p].length;
     const blind = p => (st.decks[p].length ? st.decks[p].shift() : st.hands[p].length ? st.hands[p].splice(R(st.hands[p].length), 1)[0] : null);
     const onTable = () => [...B.van, ...B.amb, ...B.ally].filter(Boolean);
@@ -162,8 +186,8 @@ window.BalanceSim = (function () {
       if (charged[w]) stats.superWon += 1;
       const refuel = !war && B.amb[w] && B.amb[w].house === "D";
       st.loot[w] += pts + steal; st.loot[l] -= steal; st.pot = [];
-      if (st.fuel[l] < MAX_FUEL) st.fuel[l] += 1;
-      if (refuel && st.fuel[w] < MAX_FUEL) st.fuel[w] += 1;
+      gain(l, 1);
+      if (refuel) gain(w, 1);
       st.first = w;
     }
     function war() {
@@ -188,6 +212,7 @@ window.BalanceSim = (function () {
       charged = [0, 1].map(p => Boolean(boss[p]) && st.round % every[p] === 0);
       if (charged[0] || charged[1]) stats.super += 1;
       for (const p of [0, 1]) while (st.hands[p].length < hs(p) && st.decks[p].length) st.hands[p].push(st.decks[p].shift());
+      swap(0); swap(1);
       const f = st.first, s = 1 - f;
       hidden[f] = cast[f] === "incognito";
       B.van[f] = take(f, plan(f, null).van);
@@ -267,5 +292,8 @@ window.BalanceSim = (function () {
       return { stage: i + 1, name: sg.name, boss: Boolean(sg.boss), win: res.win };
     });
   }
-  return { game, run, campaign };
+  /* Options de règles à tester, par camp : swap = "never" | "full" | "any", overflow = "none" | "loot" | "surge". */
+  const OPT = { swap: ["never", "never"], overflow: ["none", "none"] };
+  const set = o => Object.assign(OPT, o);
+  return { game, run, campaign, set, OPT };
 })();

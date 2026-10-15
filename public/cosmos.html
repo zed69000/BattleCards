@@ -776,7 +776,8 @@
         <ul>
           <li>1 boost = <b>appeler un allié</b> ou <b>riposter</b>. Sans boost, impossible.</li>
           <li>En bataille galactique, 1 boost te fait piocher 2 cartes et garder la meilleure.</li>
-          <li>Tu en regagnes <b>1 à chaque manche perdue</b> (3 au maximum).</li>
+          <li><b>Échanger une carte :</b> une fois par manche, avant de poser, 1 boost envoie une carte de ta main sous ta pioche contre celle du dessus.</li>
+          <li>Tu en regagnes <b>1 à chaque manche perdue</b> (3 au maximum). Au-delà, chaque boost en trop devient <b>1 point de butin</b>.</li>
         </ul>
         <h3>Primes et fin de partie</h3>
         <ul>
@@ -976,7 +977,7 @@
       ["8", 8, "Chasseur"], ["9", 9, "Croiseur"], ["10", 10, "Amiral"], ["V", 11, "Valet"], ["D", 12, "Dame"], ["R", 13, "Roi"], ["A", 14, "As"]
     ];
     /* Numéro de version affiché en bas du menu : à augmenter à chaque mise en ligne. */
-    const VERSION = "0.19";
+    const VERSION = "0.20";
     const HAND_SIZE = 5, MAX_FUEL = 3, MAX_ATOUTS = 3, CAPSULE_COST = 60;
     /* Butin : les petites cartes perdent les combats mais rapportent gros. La Supernova se consume. */
     const ATOUT_LOOT = 2, TRACTOR_STEAL = 3, CLONE_CAP = 7, SIPHON = 3;
@@ -1488,7 +1489,7 @@
       }
     }
     function floatText(target, text, neg = false, big = false) {
-      const { y } = center(target), x = Math.max(56, Math.min(window.innerWidth - 56, center(target).x));
+      const y = Math.max(64, center(target).y), x = Math.max(56, Math.min(window.innerWidth - 56, center(target).x));
       const el = document.createElement("span");
       el.className = `float${neg ? " neg" : ""}${big ? " big" : ""}`;
       el.textContent = text;
@@ -1543,12 +1544,28 @@
       if (!reduced) space.speed = Math.max(space.speed, 0.25 + w * 1.2);
     }
     /* Effets d'atout déclenchés quand la carte devient visible (une fois par manche). */
+    /* Gagner des boosts : au-delà de 3, chaque boost en trop devient 1 point de butin, rien ne se perd. */
+    function gainFuel(p, n) {
+      let extra = 0;
+      for (let i = 0; i < n; i += 1) { if (S.fuel[p] < MAX_FUEL) S.fuel[p] += 1; else extra += 1; }
+      renderFuel(p, S.fuel[p] - 1);
+      if (extra) {
+        S.loot[p] += extra;
+        setTimeout(() => {
+          floatText($(`#lootBox${p}`), `+${extra} pt · surplus ⚡`, false, true);
+          burst($(`#lootBox${p}`), [YE, "#fff"], 12);
+          bump($(`#lootBox${p}`));
+          renderHud();
+          if (p === 0) tip("overflow", "Tes boosts étaient déjà au maximum : le <b>surplus</b> est converti en <b>point de butin</b>. Astuce : quand tu es plein, échange une carte pour en profiter !", $("#lootBox0"));
+        }, 500);
+      }
+      return extra;
+    }
     function trigger(p, card, el) {
       if (!card.special || S.war || S.fx.has(card.id)) return;
       S.fx.add(card.id);
       if (card.special === "tank") {
-        S.fuel[p] = Math.min(MAX_FUEL, S.fuel[p] + 2);
-        renderFuel(p, S.fuel[p] - 1);
+        gainFuel(p, 2);
         floatText(el, "+2 ⚡");
         sfx.coin();
       }
@@ -1847,6 +1864,7 @@
     /* Carte choisie par l'adversaire : l'IA en solo, le message de l'ami en duel. */
     async function foeCard(kind, known = null) {
       if (!duel()) return kind === "van" ? aiPlan(null).van : aiPlan(S.board.van[1], known).amb;
+      if (kind === "van") { const sw = await netNext("swap"); const c = sw && S.hands[1].find(x => x.id === sw); if (c) await applySwap(1, c); }
       const id = await netNext(kind);
       return S.hands[1].find(c => c.id === id);
     }
@@ -2004,6 +2022,9 @@
       S.spy = null;
       S.vanHidden = [false, false];
       S.radar = [false, false];
+      S.swapped = [false, false];
+      S.swapMode = false;
+      S.swapId = null;
       S.fx = new Set();
       S.charged = Boolean(S.boss) && S.round % BOSSES[S.boss].every === 0;
       $("#field").classList.toggle("charged", S.charged);
@@ -2029,6 +2050,8 @@
       await sleep(900);
       if (game !== gameId) return;
       if (await decided(game)) return;
+      await aiSwap();
+      if (game !== gameId) return;
       if (S.round === 1) {
         await tip("intro", "<b>Le but du jeu :</b> amasser le plus de <b>points de butin</b>. Ils s'affichent ici.", $("#lootBox0"));
         await tip("coins", "Regarde la <b>pièce</b> sur tes cartes : c'est ce qu'elles rapportent si tu les gagnes. Les <b>petites cartes</b> perdent les combats mais valent <b>3 points</b>. Les <b>grosses</b> gagnent les combats mais ne valent qu'<b>1 point</b>.", $("#hand"));
@@ -2061,6 +2084,7 @@
       S.busy = false;
       basePrompt();
       renderAll();
+      if (canSwap(0) && S.fuel[0] >= MAX_FUEL) tip("swap", "Tes boosts sont au maximum ! Le bouton <b>Échanger</b> envoie une carte de ta main sous ta pioche et te donne celle du dessus, pour 1 boost ⚡. Une fois par manche, avant de poser.", $("#actions"));
     }
 
     /* L'écart ne peut plus être comblé : on propose de fuir (ou d'encaisser la victoire) plutôt que de jouer pour rien. */
@@ -2088,7 +2112,8 @@
     function basePrompt() {
       if (S.phase === "van") {
         setPrompt((S.charged ? `<b>${BOSSES[S.boss].move}</b> en cours ! ` : "") + (S.vanHidden[1] ? "Gaspard avance <b>déguisé</b> : sa carte reste cachée. <b>Glisse la tienne</b> vers la case jaune."
-          : S.board.van[1] ? `Gaspard montre <b>${S.board.van[1].title}</b> (${S.board.van[1].label}). <b>Glisse une carte</b> vers la case jaune pour répondre.` : "À toi de commencer : <b>glisse une carte</b> vers la case jaune. Gaspard la verra."));
+          : S.board.van[1] ? `Gaspard montre <b>${S.board.van[1].title}</b> (${S.board.van[1].label}). <b>Glisse une carte</b> vers la case jaune pour répondre.` : "À toi de commencer : <b>glisse une carte</b> vers la case jaune. Gaspard la verra."),
+          canSwap(0) ? [{ label: `Échanger · 1 ⚡${S.fuel[0] >= MAX_FUEL ? " (plein !)" : ""}`, cls: S.fuel[0] >= MAX_FUEL ? "teal" : "ghost", fn: startSwap }] : []);
       } else if (S.phase === "amb") {
         setPrompt(S.spy === 0 ? "Ta vache a tout vu : l'embuscade de Gaspard est visible. <b>Glisse ta 2ᵉ carte</b>." : "<b>Glisse ta 2ᵉ carte</b>, face cachée. Les deux s'additionnent, le plus gros total gagne.");
       } else if (S.phase === "ally") {
@@ -2142,7 +2167,7 @@
         const wasDrag = dragging, play = wasDrag && willPlay();
         const opts = { from: el.getBoundingClientRect(), spin: Math.max(-40, Math.min(40, vel.x * 30)), force: Math.min(1, -peak / 2) };
         release();
-        if (!wasDrag) return onHandCard(card);
+        if (!wasDrag || S.swapMode) return onHandCard(card);
         if (play) return confirmCard(card, opts);
         S.sel = null;
         renderHand();
@@ -2151,7 +2176,60 @@
       el.addEventListener("pointercancel", () => { if (!start) return; release(); renderHand(); });
     }
 
+    /* Échange : 1 boost = 1 carte de ta main glissée sous ta pioche contre celle du dessus. Une fois par manche, avant ta 1ʳᵉ carte. */
+    const canSwap = p => S.phase === "van" && !S.board.van[p] && !S.swapped[p] && S.fuel[p] >= 1 && S.decks[p].length > 0;
+    async function applySwap(p, card) {
+      S.swapped[p] = true;
+      S.fuel[p] -= 1;
+      renderFuel(p);
+      sfx.whoosh();
+      const from = p === 0 ? $(`#hand .card[data-id="${card.id}"]`) : $("#oppHand i:last-child");
+      if (from && !reduced) {
+        const a = center(from), b = center($(`#deck${p}`));
+        await from.animate([{ transform: getComputedStyle(from).transform, opacity: 1 }, { transform: `translate(${b.x - a.x}px, ${b.y - a.y}px) rotate(160deg) scale(0.3)`, opacity: 0 }], { duration: 420, easing: "cubic-bezier(.5,0,.6,1)", fill: "forwards" }).finished.catch(() => {});
+      }
+      S.hands[p] = S.hands[p].filter(c => c.id !== card.id);
+      S.decks[p].push(card);
+      const drawn = S.decks[p].shift();
+      S.hands[p].push(drawn);
+      floatText($(`#deck${p}`), "−1 ⚡ · échange", true);
+      sfx.flip();
+      renderHud();
+      if (p === 0) renderHand([drawn.id]);
+      return drawn;
+    }
+    async function swapCard(card) {
+      if (S.busy || !S.swapMode) return;
+      S.busy = true;
+      S.swapMode = false;
+      S.swapId = card.id;
+      const drawn = await applySwap(0, card);
+      floatText($("#hand"), drawn.special ? `Atout ★ ${drawn.title} !` : `${drawn.title} ${SYM[drawn.house]}`, false, lootCard(drawn) >= 3 || drawn.value >= 11 || Boolean(drawn.special));
+      S.busy = false;
+      basePrompt();
+      renderAll();
+    }
+    function startSwap() {
+      if (S.busy || !canSwap(0)) return;
+      S.swapMode = !S.swapMode;
+      S.sel = null;
+      sfx.tap();
+      if (!S.swapMode) return basePrompt();
+      setPrompt("<b>Touche la carte à échanger</b> : elle part sous ta pioche, tu prends celle du dessus.", [{ label: "Annuler", cls: "ghost", fn: startSwap }]);
+      renderHand();
+    }
+    /* L'IA échange sa plus petite carte quand ses boosts débordent, ou quand sa main est faible et qu'il lui en reste. */
+    async function aiSwap() {
+      if (duel() || !canSwap(1)) return;
+      const plain = S.hands[1].filter(c => !c.special);
+      if (!plain.length) return;
+      const full = S.fuel[1] >= MAX_FUEL, weak = Math.max(...plain.map(c => c.value)) < 10;
+      if (!(full || (weak && S.fuel[1] >= 2))) return;
+      await applySwap(1, plain.reduce((a, c) => (c.value < a.value ? c : a)));
+      await sleep(350);
+    }
     function onHandCard(card) {
+      if (S.swapMode) return swapCard(card);
       if (S.busy) return;
       if (S.sel === card.id) return confirmCard(card);
       S.sel = card.id;
@@ -2183,6 +2261,7 @@
         S.busy = true;
         setPrompt("");
         S.vanHidden[0] = S.first === 0 && S.cast[0] === "incognito";
+        netSend("swap", S.swapId);
         netSend("van", card.id);
         await playCard(0, "van", card, S.vanHidden[0], opts);
         if (S.first === 0) {
@@ -2552,8 +2631,8 @@
         const tierHit = winner === 0 ? LOOT_TIERS.find(([min]) => S.loot[0] >= min && S.loot[0] - pts - steal < min) : null;
         if (tierHit) setTimeout(() => { floatText($("#lootBox0"), `Palier ${tierHit[0]} : +${tierHit[1]} ◆`, false, true); burst($("#lootBox0"), [YE, "#fff", "#8fd8cc"], 22, 1.6); sfx.rare(); buzz(40); }, 650);
         if (steal) { floatText($(`#lootBox${loser}`), `−${steal}`, true); bump($(`#lootBox${loser}`)); }
-        if (S.fuel[loser] < MAX_FUEL) { S.fuel[loser] += 1; renderFuel(loser, S.fuel[loser] - 1); }
-        if (refuel && S.fuel[winner] < MAX_FUEL) { S.fuel[winner] += 1; renderFuel(winner, S.fuel[winner] - 1); }
+        gainFuel(loser, 1);
+        if (refuel) gainFuel(winner, 1);
         sfx.coin();
         const extra = `${steal - siphon ? ` Rayon tracteur : ${steal - siphon} pts volés.` : ""}${siphon ? ` Siphon : ${siphon} pts volés !` : ""}${nova ? " La Supernova s'est consumée." : ""}`;
         setPrompt(winner === 0
