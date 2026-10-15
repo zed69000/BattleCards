@@ -14,6 +14,7 @@ window.BalanceSim = (function () {
   const thrOf = c => c.thr || threshold(c.value);
   const CLONE_CAP = 7;
   const SIPHON = 3;  // points volés par le Siphon d'un boss
+  const LOCK_MARGIN = 6;  // marge de sécurité (vols du Rayon tracteur, Siphon) avant de déclarer une partie jouée
   const ev = (c, o) => (c.special === "clone" ? (o && o.special !== "clone" ? Math.min(o.value, CLONE_CAP) : 0) : c.value);
   function formation(a, b) {
     const out = [], va = ev(a, b), vb = ev(b, a);
@@ -229,8 +230,14 @@ window.BalanceSim = (function () {
       return finish(w, false);
     }
 
-    while (stock(0) >= 2 && stock(1) >= 2 && st.round < 300) round();
-    return { win: st.loot[0] > st.loot[1] ? 1 : st.loot[0] < st.loot[1] ? 0 : 0.5, diff: st.loot[0] - st.loot[1], loot: st.loot, rounds: st.round, stats };
+    // decided = manche à partir de laquelle l'écart de butin ne peut plus être comblé (même règle que le jeu)
+    let decided = null;
+    while (stock(0) >= 2 && stock(1) >= 2 && st.round < 300) {
+      round();
+      const rest = lootSum([...st.decks[0], ...st.decks[1], ...st.hands[0], ...st.hands[1], ...st.pot]);
+      if (decided === null && Math.abs(st.loot[0] - st.loot[1]) > rest + LOCK_MARGIN) decided = st.round;
+    }
+    return { win: st.loot[0] > st.loot[1] ? 1 : st.loot[0] < st.loot[1] ? 0 : 0.5, diff: st.loot[0] - st.loot[1], loot: st.loot, rounds: st.round, decided, stats };
   }
 
   /* cfg.atouts : une liste d'atouts, "random3" (3 au hasard), une liste de listes (une tirée par partie),

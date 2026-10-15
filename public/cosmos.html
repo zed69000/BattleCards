@@ -294,6 +294,7 @@
     .stat.loot b { color: var(--yellow); }
     .stat.loot b::before { content: ""; display: inline-block; width: 0.62em; height: 0.62em; margin-right: 3px; border-radius: 50%; vertical-align: 0.05em; background: radial-gradient(circle at 35% 30%, #fff6c9, var(--yellow) 55%, #b8800e); border: 1.5px solid var(--navy); }
     .stat.bump { animation: bump 450ms ease; }
+    .stat .tier { display: block; margin-top: 1px; font-size: 0.48rem; letter-spacing: 0; text-transform: none; color: var(--teal); white-space: nowrap; }
     .icon { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--cream); background: transparent; font-size: 0.8rem; }
 
     .opp-hand { display: flex; justify-content: center; align-items: flex-end; flex: 0 1 calc(var(--cwb) * 1.6 + 16px); min-height: calc(var(--cwb) * 0.7); overflow: hidden; padding: 0 0 12px; }
@@ -680,7 +681,7 @@
         <div class="ava" id="ava0"></div>
         <div class="nm"><span>Toi</span><small id="perk0">Talent</small><div class="pips" id="valor0" title="Boosts ⚡ : 1 boost pour appeler un allié ou riposter"></div></div>
         <div class="stat">Pioche<b id="deck0">0</b></div>
-        <div class="stat loot" id="lootBox0">Butin<b id="loot0">0</b></div>
+        <div class="stat loot" id="lootBox0">Butin<b id="loot0">0</b><small class="tier" id="nextTier"></small></div>
       </div>
     </div>
   </main>
@@ -776,6 +777,11 @@
           <li>1 boost = <b>appeler un allié</b> ou <b>riposter</b>. Sans boost, impossible.</li>
           <li>En bataille galactique, 1 boost te fait piocher 2 cartes et garder la meilleure.</li>
           <li>Tu en regagnes <b>1 à chaque manche perdue</b> (3 au maximum).</li>
+        </ul>
+        <h3>Primes et fin de partie</h3>
+        <ul>
+          <li><b>Prime de butin :</b> 30 pts = +5 ◆, 40 pts = +10 ◆, 50 pts = +15 ◆, 60 pts = +20 ◆ (cumulables), même si tu perds.</li>
+          <li>Quand l'écart ne peut plus être comblé, le jeu te propose de <b>fuir</b> (ou d'<b>encaisser la victoire</b>) au lieu de jouer pour rien.</li>
         </ul>
         <h3>Égalité : la bataille galactique</h3>
         <p>Rien n'est ramassé. Chacun met une carte en otage, puis retourne la carte du dessus de sa pioche, au hasard. La plus forte rafle tout. Encore égalité ? On recommence.</p>
@@ -970,10 +976,16 @@
       ["8", 8, "Chasseur"], ["9", 9, "Croiseur"], ["10", 10, "Amiral"], ["V", 11, "Valet"], ["D", 12, "Dame"], ["R", 13, "Roi"], ["A", 14, "As"]
     ];
     /* Numéro de version affiché en bas du menu : à augmenter à chaque mise en ligne. */
-    const VERSION = "0.18";
+    const VERSION = "0.19";
     const HAND_SIZE = 5, MAX_FUEL = 3, MAX_ATOUTS = 3, CAPSULE_COST = 60;
     /* Butin : les petites cartes perdent les combats mais rapportent gros. La Supernova se consume. */
     const ATOUT_LOOT = 2, TRACTOR_STEAL = 3, CLONE_CAP = 7, SIPHON = 3;
+    /* Partie jouée : l'écart dépasse tout le butin encore en jeu, plus une marge pour les vols (Rayon tracteur, Siphon). */
+    const LOCK_MARGIN = 6;
+    /* Prime de butin : des cristaux à chaque palier atteint, même en cas de défaite. Paliers calés sur les simulations
+       (un joueur correct marque 30 à 45 points en moyenne selon l'adversaire, 55 et plus dans ses grandes parties). */
+    const LOOT_TIERS = [[30, 5], [40, 10], [50, 15], [60, 20]];
+    const lootBonus = pts => LOOT_TIERS.reduce((t, [min, r]) => t + (pts >= min ? r : 0), 0);
     const lootOf = v => (v <= 3 ? 3 : v <= 5 ? 2 : 1);
     const lootCard = c => (c.special ? ATOUTS[c.special].loot ?? ATOUT_LOOT : lootOf(c.value));
     const lootSum = cards => cards.reduce((t, c) => t + (c ? lootCard(c) : 0), 0);
@@ -1349,6 +1361,7 @@
       for (const p of [0, 1]) {
         $(`#deck${p}`).textContent = S.decks[p].length;
         $(`#loot${p}`).textContent = S.loot[p];
+        if (p === 0) { const next = LOOT_TIERS.find(([min]) => S.loot[0] < min); $("#nextTier").textContent = next ? `${next[0]} pts : +${next[1]} ◆` : "primes au max !"; }
         renderFuel(p);
       }
       $("#potNo").textContent = lootSum(S.pot);
@@ -1962,7 +1975,7 @@
       const theirs = shuffle(ATOUT_IDS).slice(0, mine.length);
       Object.assign(S, {
         decks: pre ? pre.decks : [inject(deck.slice(0, 26), mine, "a"), inject(deck.slice(26), theirs, "b")],
-        hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 2 : 1) + aiBonus(q, "bonusFuel")), radar: [false, false], vanHidden: [false, false], pot: [], round: 0, first: pre ? pre.first : rand(2), phase: "idle", busy: true,
+        hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 2 : 1) + aiBonus(q, "bonusFuel")), radar: [false, false], lockAsked: false, ended: null, vanHidden: [false, false], pot: [], round: 0, first: pre ? pre.first : rand(2), phase: "idle", busy: true,
         revealed: false, sel: null, board: emptyBoard(), war: null, spy: null, fx: new Set()
       });
       $("#ava0").innerHTML = charArt(save.char);
@@ -2015,6 +2028,7 @@
       } else banner(`Manche ${S.round}`);
       await sleep(900);
       if (game !== gameId) return;
+      if (await decided(game)) return;
       if (S.round === 1) {
         await tip("intro", "<b>Le but du jeu :</b> amasser le plus de <b>points de butin</b>. Ils s'affichent ici.", $("#lootBox0"));
         await tip("coins", "Regarde la <b>pièce</b> sur tes cartes : c'est ce qu'elles rapportent si tu les gagnes. Les <b>petites cartes</b> perdent les combats mais valent <b>3 points</b>. Les <b>grosses</b> gagnent les combats mais ne valent qu'<b>1 point</b>.", $("#hand"));
@@ -2049,6 +2063,28 @@
       renderAll();
     }
 
+    /* L'écart ne peut plus être comblé : on propose de fuir (ou d'encaisser la victoire) plutôt que de jouer pour rien. */
+    async function decided(game) {
+      if (duel() || S.lockAsked) return false;
+      const rest = lootSum([...S.decks[0], ...S.decks[1], ...S.hands[0], ...S.hands[1], ...S.pot]);
+      const gap = S.loot[1] - S.loot[0];
+      if (Math.abs(gap) <= rest + LOCK_MARGIN) return false;
+      S.lockAsked = true;
+      let k;
+      if (gap > 0) {
+        banner("Partie jouée", "bad");
+        sfx.lose();
+        k = await ask(`Même en raflant tout ce qui reste (<b>${rest} pts</b>), tu ne rattraperas plus les <b>${gap} pts</b> d'écart. Mieux vaut <b>fuir</b> et retenter ta chance : ton butin et tes primes sont gardés.`,
+          [{ k: "end", label: "Fuir", cls: "hot" }, { k: "go", label: "Continuer", cls: "ghost" }]);
+      } else {
+        boom("Victoire assurée !");
+        k = await ask(`${foe()} ne peut plus te rattraper : <b>${-gap} pts</b> d'écart, il n'en reste que <b>${rest}</b> en jeu. Encaisse, ou finis pour gonfler ton butin (étoiles et primes).`,
+          [{ k: "end", label: "Encaisser la victoire", cls: "hot" }, { k: "go", label: "Finir la partie", cls: "ghost" }]);
+      }
+      if (game !== gameId) return true;
+      if (k === "end") { S.ended = gap > 0 ? "flee" : "claim"; endGame(); return true; }
+      return false;
+    }
     function basePrompt() {
       if (S.phase === "van") {
         setPrompt((S.charged ? `<b>${BOSSES[S.boss].move}</b> en cours ! ` : "") + (S.vanHidden[1] ? "Gaspard avance <b>déguisé</b> : sa carte reste cachée. <b>Glisse la tienne</b> vers la case jaune."
@@ -2513,6 +2549,8 @@
         S.loot[loser] -= steal;
         S.pot = [];
         floatText($(`#lootBox${winner}`), `+${pts + steal} pts`, false, pts + steal >= 6);
+        const tierHit = winner === 0 ? LOOT_TIERS.find(([min]) => S.loot[0] >= min && S.loot[0] - pts - steal < min) : null;
+        if (tierHit) setTimeout(() => { floatText($("#lootBox0"), `Palier ${tierHit[0]} : +${tierHit[1]} ◆`, false, true); burst($("#lootBox0"), [YE, "#fff", "#8fd8cc"], 22, 1.6); sfx.rare(); buzz(40); }, 650);
         if (steal) { floatText($(`#lootBox${loser}`), `−${steal}`, true); bump($(`#lootBox${loser}`)); }
         if (S.fuel[loser] < MAX_FUEL) { S.fuel[loser] += 1; renderFuel(loser, S.fuel[loser] - 1); }
         if (refuel && S.fuel[winner] < MAX_FUEL) { S.fuel[winner] += 1; renderFuel(winner, S.fuel[winner] - 1); }
@@ -2578,7 +2616,7 @@
       const game = gameId;
       S.phase = "over";
       const [a, b] = S.loot, won = a > b, lost = a < b, arena = S.mode === "arena";
-      $("#endTitle").textContent = won ? "Victoire" : lost ? "Défaite" : "Match nul";
+      $("#endTitle").textContent = won ? (S.ended === "claim" ? "Victoire assurée" : "Victoire") : lost ? (S.ended === "flee" ? "Repli" : "Défaite") : "Match nul";
       $("#endScore").textContent = `${a} — ${b}`;
       $("#endScore").title = "Points de butin";
       const notes = [];
@@ -2609,7 +2647,7 @@
         const sg = STAGES[S.stage], ch = CHAPTERS[sg.c], first = S.stage === save.camp.cleared;
         gain = won ? (first ? sg.reward : Math.round(sg.reward / 2)) + Math.min(20, a - b) : lost ? 8 : 12;
         $("#endText").textContent = won ? (sg.boss ? `Victoire contre ${sg.name} : ${ch.planet} est libérée !` : `${sg.name} bat en retraite.`)
-          : lost ? `${foe()} l'emporte cette fois. Change d'atouts et retente ta chance !` : "Aucun camp ne l'emporte.";
+          : lost ? (S.ended === "flee" ? `Repli stratégique : ${foe()} garde le terrain, mais ton butin compte. Change d'atouts et reviens !` : `${foe()} l'emporte cette fois. Change d'atouts et retente ta chance !`) : "Aucun camp ne l'emporte.";
         let stars = 0;
         if (won) {
           stars = a - b >= 20 ? 3 : a - b >= 10 ? 2 : 1;
@@ -2624,6 +2662,8 @@
         }
         head = `${stars ? `${"★".repeat(stars)}${"☆".repeat(3 - stars)} · ` : ""}+${dXp} XP`;
       }
+      const prime = lootBonus(a);
+      if (prime) { gain += prime; notes.push(`Prime de butin (${a} pts) : +${prime} ◆`); }
       const lvlAfter = levelInfo(save.xp).lvl;
       if (lvlAfter > lvlBefore) { gain += 30 * (lvlAfter - lvlBefore); notes.push(`Niveau ${lvlAfter} ! (+30 ◆)`); }
       save.crystals += gain;
