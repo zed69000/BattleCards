@@ -59,7 +59,9 @@
     .pill { padding: 3px 10px; border-radius: 99px; border: 2px solid var(--yellow); color: var(--yellow); background: rgba(16, 22, 43, 0.86); white-space: nowrap; }
     .pill.tr { border-color: var(--cream); color: var(--cream); }
     .panes { flex: 1; min-height: 0; }
-    .pane { display: none; height: 100%; overflow-y: auto; flex-direction: column; align-items: center; gap: 10px; padding: 6px 2px 14px; }
+    .pane { display: none; height: 100%; overflow-x: hidden; overflow-y: auto; scrollbar-width: none; flex-direction: column; align-items: center; gap: 10px; padding: 6px 2px 14px; }
+    .pane::-webkit-scrollbar, .sheet::-webkit-scrollbar, .coach .bubble::-webkit-scrollbar { display: none; }
+    .sheet, .coach .bubble { scrollbar-width: none; }
     .pane.on { display: flex; }
     .pane > * { flex: none; }
     #menu .logo h1 { font-size: clamp(1.5rem, 7.6vw, 2.2rem); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e; }
@@ -122,9 +124,9 @@
     .levels { position: relative; }
     .levels::before { content: ""; position: absolute; left: 14%; right: 14%; top: 20px; border-top: 3px dotted rgba(245, 233, 207, 0.45); }
     .lvl { position: relative; }
-    .hero { position: relative; width: 100%; max-width: 380px; display: grid; justify-items: center; padding: 2px 0 0; }
+    .hero { position: relative; width: 100%; max-width: 380px; display: grid; justify-items: center; padding: 2px 0 0; overflow: hidden; }
     .hero-rays { position: absolute; left: 50%; top: 44%; width: 150%; aspect-ratio: 1; translate: -50% -50%; z-index: 0; pointer-events: none; background: repeating-conic-gradient(from 0deg, rgba(245, 196, 69, 0.2) 0 10deg, transparent 10deg 22deg); -webkit-mask: radial-gradient(circle, #000 12%, transparent 62%); mask: radial-gradient(circle, #000 12%, transparent 62%); animation: spin 26s linear infinite; }
-    .hero-fan { position: relative; z-index: 1; display: flex; justify-content: center; align-items: flex-end; height: calc(var(--hcw) * 1.42 + 22px); --hcw: clamp(50px, 15.5vw, 72px); }
+    .hero-fan { position: relative; z-index: 1; display: flex; justify-content: center; align-items: flex-end; height: calc(var(--hcw) * 1.42 + 18px); --hcw: clamp(42px, 13vw, 64px); }
     .hero-fan .card { --cw: var(--hcw); margin: 0 calc(var(--hcw) * -0.14); transform-origin: 50% 120%; animation: fanBob 3.2s ease-in-out infinite; animation-delay: calc(var(--i) * -0.55s); }
     .hero-fan .card:nth-child(3) { --cw: calc(var(--hcw) * 1.18); z-index: 2; }
     .hero-fan .card.flipper .card-inner { animation: heroFlip 4.6s ease-in-out infinite; }
@@ -137,6 +139,82 @@
     .hero-tag { position: relative; z-index: 2; margin-top: 6px; padding: 2px 12px; border-radius: 99px; background: var(--cream); color: var(--navy); font-size: 0.8rem; letter-spacing: 0.08em; box-shadow: 0 3px 0 #0a0f1e; rotate: -2deg; }
     #playBtn { animation: playPulse 1.6s ease-in-out infinite; }
     @keyframes playPulse { 0%, 100% { scale: 1; box-shadow: 0 4px 0 #0a0f1e, 0 0 0 0 rgba(242, 106, 61, 0.6); } 50% { scale: 1.05; box-shadow: 0 4px 0 #0a0f1e, 0 0 0 10px rgba(242, 106, 61, 0); } }
+    /* Campagne : chapitres de 3 combats + 1 boss */
+    .chapter { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; width: 100%; max-width: 380px; }
+    .ch-nav { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--cream); background: rgba(16, 22, 43, 0.86); font-size: 1.5rem; line-height: 1; }
+    .ch-nav:disabled { opacity: 0.25; }
+    .ch-title { display: grid; justify-items: center; line-height: 1.1; }
+    .ch-title small { font-size: 0.6rem; letter-spacing: 0.14em; color: var(--teal); }
+    .ch-title b { font-weight: 400; font-size: 1.25rem; display: flex; align-items: center; gap: 7px; }
+    .ch-title b i { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--navy); box-shadow: inset -5px -3px 0 rgba(0, 0, 0, 0.22); }
+    .path { position: relative; display: grid; grid-template-columns: 1fr 1fr 1fr 1.25fr; align-items: end; gap: 4px; width: 100%; max-width: 380px; padding: 0 4px; }
+    .path::before { content: ""; position: absolute; left: 12%; right: 14%; top: 30px; border-top: 3px dotted rgba(245, 233, 207, 0.45); }
+    .node { position: relative; display: grid; justify-items: center; gap: 2px; padding: 0; border: 0; background: none; font-size: 0.6rem; line-height: 1.1; color: var(--cream); }
+    .node .pic { width: 52px; height: 52px; border-radius: 50%; overflow: hidden; border: 3px solid var(--cream); background: var(--violet); box-shadow: 0 4px 0 #0a0f1e; }
+    .node .pic svg { display: block; width: 100%; height: 100%; }
+    .node.boss .pic { width: 66px; height: 66px; border-color: var(--orange); background: radial-gradient(circle, var(--pink), #4a1030); box-shadow: 0 0 0 3px var(--yellow), 0 0 18px var(--orange), 0 4px 0 #0a0f1e; }
+    .node.boss::before { content: "BOSS"; position: absolute; top: -9px; z-index: 2; padding: 0 6px; border-radius: 99px; background: var(--orange); border: 2px solid var(--navy); font-size: 0.56rem; letter-spacing: 0.1em; }
+    .node .nm2 { max-width: 82px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgba(245, 233, 207, 0.85); }
+    .node .st { font-style: normal; font-size: 0.62rem; letter-spacing: 1px; color: var(--yellow); }
+    .node.on .pic { border-color: var(--yellow); box-shadow: 0 0 0 3px var(--yellow), 0 0 16px var(--yellow), 0 4px 0 #0a0f1e; transform: translateY(-4px); }
+    .node.next .pic { animation: beat 1.5s ease-in-out infinite; }
+    .node.locked .pic { filter: grayscale(1) brightness(0.35); }
+    .node.locked .pic::after { content: "🔒"; }
+    .node:disabled { cursor: not-allowed; }
+    #playBtn.boss { background: linear-gradient(180deg, #ff5f7a, var(--orange)); }
+    .tiny-tag { font-size: 0.6rem; letter-spacing: 0.14em; color: var(--teal); }
+    /* Collection : onglets internes, grille sans barre de défilement */
+    .subtabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: 100%; max-width: 380px; padding: 4px; border-radius: 14px; background: rgba(16, 22, 43, 0.9); border: 2px solid rgba(245, 233, 207, 0.25); }
+    .subtabs button { min-height: 40px; padding: 4px 2px; border: 0; border-radius: 10px; background: none; font-size: 0.74rem; color: rgba(245, 233, 207, 0.7); line-height: 1.05; }
+    .subtabs button small { display: block; font-size: 0.56rem; opacity: 0.8; }
+    .subtabs button.on { background: var(--yellow); color: var(--navy); }
+    .showcase { display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: center; width: 100%; max-width: 380px; min-height: 128px; padding: 10px; border-radius: 16px; background: rgba(16, 22, 43, 0.9); border: 2px solid rgba(245, 233, 207, 0.4); text-align: left; }
+    .showcase .big { display: grid; place-items: center; }
+    .showcase .big .card { --cw: 84px; }
+    .showcase .big .portrait { width: 92px; height: 92px; }
+    .showcase .big .die-prev { width: 70px; }
+    .showcase .big .back-prev { width: 66px; }
+    .showcase h3 { margin: 0; font-weight: 400; font-size: 1.05rem; color: var(--yellow); }
+    .showcase p { margin: 3px 0 8px; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.78rem; line-height: 1.3; color: rgba(245, 233, 207, 0.85); }
+    .showcase .btn { padding: 0.45rem 1rem; font-size: 0.85rem; }
+    .rar { display: inline-block; padding: 0 7px; border-radius: 99px; font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(245, 233, 207, 0.2); }
+    .rar.r1 { background: var(--teal); } .rar.r2 { background: var(--pink); } .rar.r3 { background: var(--orange); }
+    .colgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; max-width: 380px; }
+    .cell { position: relative; display: grid; justify-items: center; gap: 2px; padding: 5px 2px 4px; border-radius: 12px; border: 2px solid rgba(245, 233, 207, 0.3); background: rgba(16, 22, 43, 0.86); font-size: 0.56rem; line-height: 1.1; min-height: 44px; }
+    .cell .card { --cw: 58px; }
+    .cell .portrait { width: 54px; height: 54px; }
+    .cell .die-prev { width: 44px; } .cell .back-prev { width: 40px; }
+    .cell span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgba(245, 233, 207, 0.8); }
+    .cell.on { border-color: var(--yellow); box-shadow: 0 0 12px rgba(245, 196, 69, 0.7); }
+    .cell.pick { background: rgba(91, 95, 199, 0.45); }
+    .cell.locked > :first-child { filter: grayscale(1) brightness(0.3); }
+    .cell .eq { position: absolute; top: -6px; right: -4px; z-index: 5; padding: 0 5px; border-radius: 99px; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); font-size: 0.6rem; }
+    .portrait { border-radius: 50%; overflow: hidden; border: 3px solid var(--navy); background: var(--hc, var(--orange)); box-shadow: 0 3px 0 #0a0f1e; }
+    .portrait svg { display: block; width: 100%; height: 100%; }
+    .portrait.r1 { box-shadow: 0 0 0 2px var(--teal), 0 3px 0 #0a0f1e; } .portrait.r2 { box-shadow: 0 0 0 2px var(--yellow), 0 0 12px var(--yellow); } .portrait.r3 { box-shadow: 0 0 0 2px var(--orange), 0 0 14px var(--orange); }
+    .rainbow-art { animation: hue 4s linear infinite; }
+    /* Boss : présentation, jauge de super coup, manche chargée */
+    .sheet.boss-sheet { background: radial-gradient(circle at 50% 18%, #6a1838, var(--navy) 62%); border-color: var(--orange); }
+    .boss-sheet .portrait { width: 150px; height: 150px; margin: 4px auto 8px; border-color: var(--orange); box-shadow: 0 0 0 4px var(--yellow), 0 0 40px var(--orange); animation: hover 3s ease-in-out infinite; }
+    .boss-sheet h2 { font-size: 1.8rem; text-shadow: 0 3px 0 var(--orange); }
+    .boss-sheet .move { margin: 0 0 10px; padding: 8px 10px; border-radius: 12px; background: rgba(0, 0, 0, 0.35); border: 2px dashed var(--orange); font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.88rem; line-height: 1.35; text-align: left; }
+    .boss-sheet .move b { font-family: "Righteous", sans-serif; font-weight: 400; color: var(--yellow); }
+    .bossbar { display: flex; align-items: center; gap: 3px; margin-top: 3px; font-size: 0.52rem; letter-spacing: 0.08em; color: var(--orange); text-transform: uppercase; }
+    .bossbar i { width: 12px; height: 7px; border-radius: 3px; border: 1.5px solid var(--orange); }
+    .bossbar i.on { background: var(--orange); }
+    .bossbar.ready { color: #fff; animation: pulse 0.7s ease-in-out infinite; }
+    .bossbar.ready i { background: #ff5f7a; border-color: #fff; }
+    .field.charged::before { content: ""; position: absolute; inset: -6px; border-radius: 18px; pointer-events: none; box-shadow: inset 0 0 0 3px #ff5f7a, inset 0 0 40px rgba(255, 60, 100, 0.45); animation: pulse 1.1s ease-in-out infinite; }
+    /* Formes de dés et de points */
+    .cube.s-galet .f, .die-prev.s-galet { border-radius: 38%; }
+    .cube.s-rond .f, .die-prev.s-rond { border-radius: 50%; }
+    .cube.s-hexa .f, .die-prev.s-hexa { clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); border-radius: 0; }
+    .cube.s-octo .f, .die-prev.s-octo { clip-path: polygon(29% 0, 71% 0, 100% 29%, 100% 71%, 71% 100%, 29% 100%, 0 71%, 0 29%); border-radius: 0; }
+    .cube.s-gemme .f, .die-prev.s-gemme { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); border-radius: 0; padding: 22%; }
+    .p-star i.p { clip-path: polygon(50% 0, 63% 35%, 100% 38%, 71% 60%, 81% 100%, 50% 77%, 19% 100%, 29% 60%, 0 38%, 37% 35%); border-radius: 0 !important; box-shadow: none !important; }
+    .p-heart i.p { clip-path: polygon(50% 100%, 6% 54%, 0 30%, 9% 9%, 29% 2%, 50% 20%, 71% 2%, 91% 9%, 100% 30%, 94% 54%); border-radius: 0 !important; box-shadow: none !important; }
+    .p-diamond i.p { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); border-radius: 0 !important; }
+    .p-eye i.p { background: radial-gradient(circle at 50% 56%, #10162b 0 30%, var(--die-pip, var(--yellow)) 33% 46%, #fff 49%) !important; box-shadow: 0 0 0 1px #10162b !important; }
     .mode-tag { display: inline-block; padding: 2px 10px; border-radius: 99px; background: var(--teal); color: var(--cream); font-size: 0.62rem; letter-spacing: 0.14em; }
     .mode-tag.multi { background: var(--violet); }
 
@@ -492,9 +570,12 @@
             <h1>Bataille des <span>Alliés</span></h1>
             <div class="hero-tag">Pose · Bluffe · Renverse !</div>
           </div>
-          <span class="mode-tag">AVENTURE · SOLO</span>
-          <div class="section-title">Ta conquête, planète après planète</div>
-          <div class="levels" id="levels"></div>
+          <div class="chapter">
+            <button class="ch-nav" id="chPrev" aria-label="Chapitre précédent">‹</button>
+            <div class="ch-title" id="chTitle"></div>
+            <button class="ch-nav" id="chNext" aria-label="Chapitre suivant">›</button>
+          </div>
+          <div class="path" id="path"></div>
           <button class="btn big hot" id="playBtn">Décoller</button>
           <div class="stake" id="stake"></div>
           <button class="boost" id="quickBooster">
@@ -523,18 +604,15 @@
           <p class="perk">En attendant le jeu en ligne, tes rivaux d'arène sont des robots à score fixe. Les duels contre de vrais joueurs les remplaceront.</p>
         </section>
         <section class="pane" data-pane="cards">
-          <div class="section-title">Ta tribu</div>
-          <div class="crews" id="crews"></div>
-          <p class="perk" id="perk"></p>
-          <div class="section-title">Tes dés</div>
-          <div class="skins" id="diceGrid"></div>
-          <div class="section-title">Tes dos de cartes</div>
-          <div class="skins" id="backGrid"></div>
-          <p class="perk" id="skinInfo">Dés et dos de cartes se trouvent dans les boosters. Ton adversaire les voit pendant la partie.</p>
-          <div class="stack">
-            <button class="btn" id="atoutsBtn">Atouts 0/3</button>
-            <button class="btn teal" id="capsuleBtn">Booster · 60 ◆</button>
+          <div class="subtabs" id="subtabs">
+            <button data-sub="chars">Persos<small id="cntChars"></small></button>
+            <button data-sub="atouts">Atouts<small id="cntAtouts"></small></button>
+            <button data-sub="dice">Dés<small id="cntDice"></small></button>
+            <button data-sub="back">Dos<small id="cntBack"></small></button>
           </div>
+          <div class="showcase" id="showcase"></div>
+          <div class="colgrid" id="colGrid"></div>
+          <button class="btn teal" id="capsuleBtn">Booster · 60 ◆</button>
         </section>
         <section class="pane" data-pane="more">
           <div class="section-title">Options</div>
@@ -560,7 +638,7 @@
     <div class="col">
       <div class="hud" id="hud1">
         <div class="ava" id="ava1"></div>
-        <div class="nm"><span id="name1">Gaspard</span><small id="perk1">Talent</small><div class="pips" id="valor1" title="Boosts ⚡ : 1 boost pour appeler un allié ou riposter"></div></div>
+        <div class="nm"><span id="name1">Gaspard</span><small id="perk1">Talent</small><div class="pips" id="valor1" title="Boosts ⚡ : 1 boost pour appeler un allié ou riposter"></div><div class="bossbar" id="bossBar" hidden></div></div>
         <div class="stat">Pioche<b id="deck1">0</b></div>
         <div class="stat loot" id="lootBox1">Butin<b id="loot1">0</b></div>
         <button class="icon" id="pauseBtn" aria-label="Pause">II</button>
@@ -618,13 +696,13 @@
     </div></div>
   </div>
 
-  <div class="overlay" id="atouts">
-    <div class="sheet">
-      <h2>Tes atouts</h2>
-      <p>Choisis-en jusqu'à <b>3</b>. Ils remplacent des petites cartes de ta pioche, mélangés au hasard : rien ne garantit que tu les tireras. Ton adversaire en reçoit autant que toi.</p>
-      <div class="at-grid" id="atGrid"></div>
-      <div class="at-info" id="atInfo"></div>
-      <button class="btn" id="atClose">Valider</button>
+  <div class="overlay" id="bossIntro">
+    <div class="sheet boss-sheet">
+      <span class="tiny-tag" id="bossTag"></span>
+      <div class="portrait" id="bossPic"></div>
+      <h2 id="bossName"></h2>
+      <div class="move" id="bossMove"></div>
+      <div class="stack"><button class="btn big hot" id="bossGo">Affronter !</button><button class="btn ghost" id="bossBack">Plus tard</button></div>
     </div>
   </div>
 
@@ -713,7 +791,8 @@
         <details><summary>Les deux modes</summary>
           <ul>
             <li><b>Aventure (solo) :</b> tu conquiers les planètes une par une. Chaque victoire rapporte des étoiles, des cristaux, et débloque tribus et adversaires.</li>
-            <li><b>Boosters :</b> achetés avec les cristaux ◆ gagnés en jouant, ils contiennent des objets de collection (dés, dos de cartes) que ton adversaire voit en partie. Ils ne rendent pas plus fort.</li>
+            <li><b>Boosters :</b> achetés avec les cristaux ◆ gagnés en jouant, ils contiennent des personnages, des dés, des dos de cartes et parfois un atout rare. Les atouts sont tous équilibrés, et ton adversaire en reçoit toujours autant que toi.</li>
+            <li><b>Campagne :</b> 5 chapitres de 3 combats et un boss. Chaque boss a un <b>super coup</b> annoncé à l'avance par sa jauge : prépare ta main pour l'encaisser. Le battre libère la planète, un atout et un personnage.</li>
             <li><b>Multijoueur :</b> des duels classés qui font monter ou descendre tes trophées ♛, ta ligue et ton rang.</li>
           </ul>
         </details>
@@ -883,24 +962,64 @@
       ["8", 8, "Chasseur"], ["9", 9, "Croiseur"], ["10", 10, "Amiral"], ["V", 11, "Valet"], ["D", 12, "Dame"], ["R", 13, "Roi"], ["A", 14, "As"]
     ];
     /* Numéro de version affiché en bas du menu : à augmenter à chaque mise en ligne. */
-    const VERSION = "0.16";
+    const VERSION = "0.17";
     const HAND_SIZE = 5, MAX_FUEL = 3, MAX_ATOUTS = 3, CAPSULE_COST = 60;
     /* Butin : les petites cartes perdent les combats mais rapportent gros. La Supernova se consume. */
-    const ATOUT_LOOT = 2, TRACTOR_STEAL = 3, CLONE_CAP = 7;
+    const ATOUT_LOOT = 2, TRACTOR_STEAL = 3, CLONE_CAP = 7, SIPHON = 3;
     const lootOf = v => (v <= 3 ? 3 : v <= 5 ? 2 : 1);
-    const lootCard = c => (c.special ? (c.special === "nova" ? 0 : ATOUT_LOOT) : lootOf(c.value));
+    const lootCard = c => (c.special ? ATOUTS[c.special].loot ?? ATOUT_LOOT : lootOf(c.value));
     const lootSum = cards => cards.reduce((t, c) => t + (c ? lootCard(c) : 0), 0);
 
-    /* Adversaires : même nombre d'atouts que le joueur, seule la qualité de jeu change.
-       greed = appétit pour le butin, noise = part de hasard, cost = soin qu'il met à économiser ses fortes cartes,
-       skip = chance de renoncer à l'allié, exact = calcule ses chances carte par carte.
-       Le Stratège a en plus une carte en main et un boost d'avance. Valeurs réglées avec tools/balance-sim.js. */
-    const LEVELS = [
-      { name: "Novice", who: "Blobzor", planet: "Lune", color: "#d9d2c0", greed: 0.6, noise: 4, cost: 0.05, slope: 4, count: false, fuel: true, skip: 0.3, reward: 20, win: 18, lose: 6, gift: ["tank", "shield"], note: "joue un peu au hasard" },
-      { name: "Soldat", who: "Krakmol", planet: "Mars", color: "#f26a3d", greed: 0.6, noise: 0.45, cost: 0.11, slope: 2.5, count: false, fuel: true, skip: 0, reward: 35, win: 26, lose: 10, gift: ["dice", "spy", "tractor"], note: "ne rate pas une occasion d'allié" },
-      { name: "Stratège", who: "Zygomax", planet: "Saturne", color: "#f5c445", greed: 1.2, noise: 0.1, cost: 0.08, slope: 2.5, count: true, exact: true, bonusHand: 1, bonusFuel: 1, fuel: true, skip: 0, reward: 50, win: 34, lose: 14, gift: ["clone", "hole", "nova"], note: "calcule tout, 6 cartes en main et 1 boost d'avance" }
+    /* Niveaux d'IA, du plus tendre au plus coriace : greed = appétit pour le butin, noise = part de hasard,
+       cost = soin qu'elle met à garder ses fortes cartes, skip = chance de renoncer à l'allié, count = compte les
+       cartes sorties, exact = calcule ses chances carte par carte, bonusHand / bonusFuel = cartes et boosts d'avance.
+       Valeurs réglées avec tools/balance-sim.js (PLAYER = le joueur type des simulations). */
+    const STRAT = { greed: 1.2, cost: 0.08, slope: 2.5, noise: 0.1, skip: 0, count: true, exact: true };
+    const TIERS = [
+      { greed: 0.5, cost: 0.03, slope: 5, noise: 8, skip: 0.5 },
+      { greed: 0.535, cost: 0.037, slope: 4.65, noise: 6.6, skip: 0.43 },
+      { greed: 0.57, cost: 0.044, slope: 4.3, noise: 5.2, skip: 0.36 },
+      { greed: 0.6, cost: 0.05, slope: 4, noise: 4, skip: 0.3 },
+      { greed: 0.6, cost: 0.065, slope: 3.6, noise: 3.1, skip: 0.22 },
+      { greed: 0.6, cost: 0.08, slope: 3.25, noise: 2.2, skip: 0.15 },
+      { greed: 0.6, cost: 0.095, slope: 2.9, noise: 1.3, skip: 0.08 },
+      { greed: 0.6, cost: 0.11, slope: 2.5, noise: 0.45, skip: 0 },
+      { ...STRAT, bonusFuel: 1 },
+      { ...STRAT, bonusHand: 1 },
+      { ...STRAT, bonusFuel: 1, bonusHand: 1 },
+      { ...STRAT, bonusFuel: 2, bonusHand: 1 },
+      { ...STRAT, bonusFuel: 2, bonusHand: 2 }
     ];
-    const RARITY = [{ name: "Commune", weight: 70, dup: 10 }, { name: "Rare", weight: 25, dup: 25 }, { name: "Légendaire", weight: 5, dup: 60 }];
+    const TIER_NAMES = ["recrue maladroite", "recrue", "cadet", "soldat", "soldat", "soldat aguerri", "vétéran", "vétéran", "stratège", "stratège rusé", "stratège redoutable", "maître stratège", "légende"];
+    const PLAYER = { greed: 0.9, cost: 0.1, slope: 2.5, noise: 0.3, skip: 0, count: true };
+    /* Les boss : un super coup qui revient toutes les `every` manches, annoncé par une jauge. */
+    const BOSSES = {
+      gloubi: { name: "Reine Gloubi", cast: "mars", rank: "D", hue: 300, super: "storm", every: 2, move: "Ouragan gluant", desc: "tes dés d'allié et de riposte demandent 1 de plus", hint: "Ces manches-là, ne compte pas sur un allié : pose d'emblée tes deux meilleures cartes." },
+      krakmar: { name: "Général Krakmar", cast: "cranes", rank: "R", hue: 0, super: "bomb", every: 3, move: "Bombardement", desc: "−3 à ton total", hint: "Garde une grosse carte ou une paire pour ce tour, ou cède-le avec des cartes qui rapportent peu." },
+      tempete: { name: "Baronne Tempête", cast: "poulpes", rank: "D", hue: 200, super: "siphon", every: 3, move: "Siphon", desc: "si elle gagne la manche, elle te vole 3 points de butin", hint: "Ce tour-là, ne risque pas tes petites cartes trésor : joue fort, ou joue pauvre." },
+      zygo: { name: "Zygomax l'Ancien", cast: "incognito", rank: "R", hue: 120, super: "tide", every: 4, move: "Anneaux de gravité", desc: "+4 à son total", hint: "Vise des Jumeaux ou garde un boost pour un allié ce tour-là." },
+      zorglax: { name: "Empereur Zorglax", cast: "cranes", rank: "R", hue: 250, super: "crush", every: 4, move: "Écrasement impérial", desc: "sa carte visible compte double", hint: "Regarde sa carte visible : si elle est grosse, cède la manche avec des cartes qui rapportent peu." }
+    };
+    /* Campagne : 5 chapitres de 3 soldats et un boss. tiers = niveau d'IA de chaque étape. */
+    const CHAPTERS = [
+      { planet: "Lune", color: "#d9d2c0", cast: "mars", soldiers: ["Caporal Blip", "Sergent Glurp", "Lieutenant Zob"], boss: "gloubi", tiers: [0, 1, 2, 2] },
+      { planet: "Mars", color: "#f26a3d", cast: "cranes", soldiers: ["Cadet Neurone", "Major Méninge", "Colonel Lobe"], boss: "krakmar", tiers: [3, 4, 5, 4] },
+      { planet: "Jupiter", color: "#e0a07a", cast: "poulpes", soldiers: ["Mousse Ventouse", "Bosco Calmar", "Capitaine Encre"], boss: "tempete", tiers: [5, 6, 7, 5] },
+      { planet: "Saturne", color: "#f5c445", ring: true, cast: "incognito", soldiers: ["Agent 004", "Agent Trench", "Agent Fantôme"], boss: "zygo", tiers: [7, 8, 9, 8] },
+      { planet: "Neptune", color: "#5b8fd8", cast: "cranes", soldiers: ["Garde Zorg", "Champion Zorg", "Prince Zorgy"], boss: "zorglax", tiers: [8, 9, 10, 7] }
+    ];
+    const START_ATOUTS = ["tank", "shield"];
+    const GIFTS = [["spy", "dice"], ["tractor", "tresor"], ["cryo", "clone"], ["meteor", "hole"], ["turbo", "nova"]];
+    const NEXT_TRIBE = ["cranes0", "poulpes0", "incognito0", null, null];
+    const STAGES = CHAPTERS.flatMap((ch, c) => [0, 1, 2, 3].map(k => {
+      const boss = k === 3 ? ch.boss : null;
+      return {
+        c, k, boss, name: boss ? BOSSES[boss].name : ch.soldiers[k], cast: boss ? BOSSES[boss].cast : ch.cast, tier: ch.tiers[k], ai: TIERS[ch.tiers[k]],
+        gift: k === 1 ? GIFTS[c][0] : boss ? GIFTS[c][1] : null, unlocks: boss ? [`boss-${boss}`, NEXT_TRIBE[c]].filter(Boolean) : [],
+        reward: boss ? 40 + 15 * c : 15 + 5 * c, char: boss ? `boss-${boss}` : `${ch.cast}${k + 1}`
+      };
+    }));
+    const RARITY = [{ name: "Commune", weight: 70, dup: 10 }, { name: "Rare", weight: 25, dup: 25 }, { name: "Légendaire", weight: 5, dup: 60 }, { name: "Boss", weight: 0, dup: 0 }];
     const ATOUTS = {
       spy: { name: "Vache espionne", value: 7, rarity: 0, desc: "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 7." },
       dice: { name: "Dé pipé", value: 5, thr: 1, rarity: 0, desc: "Joue-la en allié ou en riposte : le dé réussit toujours. Vaut 5." },
@@ -909,17 +1028,29 @@
       clone: { name: "Clone", value: 0, label: "?", thr: 3, rarity: 1, desc: "Copie la valeur de l'autre carte posée à côté (7 au maximum) : ensemble elles forment des Jumeaux, +5." },
       hole: { name: "Trou noir", value: 2, thr: 5, rarity: 1, desc: "Ne vaut que 2, mais aspire la plus faible des deux cartes d'en face : elle compte 0." },
       tractor: { name: "Rayon tracteur", value: 6, rarity: 1, desc: "Si son propriétaire gagne la manche, il vole en plus 3 points dans le butin d'en face. Vaut 6." },
-      nova: { name: "Supernova", value: 10, thr: 6, rarity: 2, desc: "Vaut 10 et explose en arrivant. Mais elle se consume : elle ne rapporte aucun butin." }
+      nova: { name: "Supernova", value: 9, thr: 6, loot: 0, rarity: 2, desc: "Vaut 9 et explose en arrivant. Mais elle se consume : elle ne rapporte aucun butin." },
+      tresor: { name: "Coffre", value: 8, loot: 4, rarity: 0, desc: "Vaut 8 et renferme 4 points de butin : un trésor pour celui qui le gagne… même ton adversaire." },
+      meteor: { name: "Météore", value: 5, rarity: 1, desc: "Tant qu'elle est sur la table, le total adverse perd 3 (le Bouclier protège). Vaut 5." },
+      turbo: { name: "Turbo", value: 3, thr: 3, rarity: 1, desc: "Jouée en allié ou en riposte, elle compte double : +6, avec un dé de 3+. Vaut 3." },
+      cryo: { name: "Cryo", value: 7, rarity: 0, desc: "Tant qu'elle est sur la table, les dés d'allié et de riposte adverses demandent 1 de plus. Vaut 7." }
     };
     const ATOUT_IDS = Object.keys(ATOUTS);
     /* Objets de collection des boosters : purement décoratifs, visibles par l'adversaire. */
     const DICE = {
       violet: { name: "Dé stellaire", rarity: 0, face: "radial-gradient(circle at 30% 24%, #8f93f0, #4a4fb8 55%, #262b78)", pip: "#f5c445", edge: "#f5e9cf" },
-      lave: { name: "Dé de lave", rarity: 0, face: "radial-gradient(circle at 30% 24%, #ffc08a, #f26a3d 52%, #7d2410)", pip: "#fff3c4", edge: "#3a120a" },
-      glace: { name: "Dé de glace", rarity: 0, face: "radial-gradient(circle at 30% 24%, #ffffff, #a8e9f2 52%, #3d8fb0)", pip: "#1f2a44", edge: "#ffffff" },
-      slime: { name: "Dé gluant", rarity: 1, face: "radial-gradient(circle at 30% 24%, #e3ffc4, #7bd65a 52%, #2a7030)", pip: "#d0508f", edge: "#1f2a44" },
-      or: { name: "Dé en or", rarity: 1, face: "radial-gradient(circle at 30% 24%, #fffbe0, #f5c445 48%, #9c6a08)", pip: "#1f2a44", edge: "#fff6c9" },
-      neant: { name: "Dé du néant", rarity: 2, face: "radial-gradient(circle at 30% 24%, #4a4f86, #10162b 58%, #000)", pip: "#ff5fa8", edge: "#d0508f", rainbow: true }
+      lave: { name: "Galet de lave", rarity: 0, shape: "galet", face: "radial-gradient(circle at 30% 24%, #ffc08a, #f26a3d 52%, #7d2410)", pip: "#fff3c4", edge: "#3a120a" },
+      glace: { name: "Cristal de glace", rarity: 0, shape: "hexa", pips: "star", face: "radial-gradient(circle at 30% 24%, #ffffff, #a8e9f2 52%, #3d8fb0)", pip: "#1f2a44", edge: "#ffffff" },
+      menthe: { name: "Dé menthe", rarity: 0, pips: "heart", face: "radial-gradient(circle at 30% 24%, #e8fff4, #8fe3c0 52%, #2a8a6a)", pip: "#d0508f", edge: "#1f2a44" },
+      lunaire: { name: "Boule lunaire", rarity: 0, shape: "rond", face: "radial-gradient(circle at 30% 24%, #ffffff, #c9c4b8 52%, #6f6a60)", pip: "#1f2a44", edge: "#f5e9cf" },
+      bonbon: { name: "Bonbon", rarity: 0, shape: "galet", pips: "heart", face: "radial-gradient(circle at 30% 24%, #fff0f7, #ff8fc4 52%, #b03a78)", pip: "#fff", edge: "#1f2a44" },
+      slime: { name: "Œil gluant", rarity: 1, shape: "rond", pips: "eye", face: "radial-gradient(circle at 30% 24%, #e3ffc4, #7bd65a 52%, #2a7030)", pip: "#d0508f", edge: "#1f2a44" },
+      or: { name: "Octo d'or", rarity: 1, shape: "octo", pips: "diamond", face: "radial-gradient(circle at 30% 24%, #fffbe0, #f5c445 48%, #9c6a08)", pip: "#1f2a44", edge: "#fff6c9" },
+      nuit: { name: "Hexa de nuit", rarity: 1, shape: "hexa", pips: "eye", face: "radial-gradient(circle at 30% 24%, #5b5fc7, #1f2a44 58%, #0a0f1e)", pip: "#7be0a4", edge: "#8f93f0" },
+      corail: { name: "Gemme corail", rarity: 1, shape: "gemme", pips: "star", face: "radial-gradient(circle at 30% 24%, #ffd9c9, #ff7a6b 52%, #9c2a20)", pip: "#fff6c9", edge: "#1f2a44" },
+      radio: { name: "Dé radioactif", rarity: 1, shape: "octo", pips: "dot", face: "radial-gradient(circle at 30% 24%, #f4ffb0, #b8f03d 50%, #4f7a10)", pip: "#1f2a44", edge: "#e8ff6a" },
+      saturne: { name: "Saturnien", rarity: 2, shape: "rond", pips: "star", face: "conic-gradient(from 30deg, #f5c445, #f26a3d, #d0508f, #5b5fc7, #f5c445)", pip: "#fff", edge: "#fff" },
+      oeil: { name: "Œil cosmique", rarity: 2, shape: "gemme", pips: "eye", face: "radial-gradient(circle at 30% 24%, #ffe0f0, #d0508f 50%, #3a0a2a)", pip: "#f5c445", edge: "#fff", rainbow: true },
+      neant: { name: "Dé du néant", rarity: 2, shape: "galet", pips: "star", face: "radial-gradient(circle at 30% 24%, #4a4f86, #10162b 58%, #000)", pip: "#ff5fa8", edge: "#d0508f", rainbow: true }
     };
     const BACKS = {
       cible: { name: "Cible orange", rarity: 0, css: "repeating-radial-gradient(circle at 50% 50%, #f26a3d 0 5px, #1f2a44 5px 10px)" },
@@ -929,11 +1060,9 @@
       or: { name: "Soleil d'or", rarity: 1, css: "repeating-conic-gradient(from 0deg at 50% 50%, #f5c445 0 10deg, #b8800e 10deg 20deg)" },
       galaxie: { name: "Galaxie", rarity: 2, css: "conic-gradient(from 0deg, #d0508f, #5b5fc7, #2fa394, #f5c445, #f26a3d, #d0508f)" }
     };
-    const ITEMS = [...Object.keys(DICE).map(id => ({ kind: "dice", id })), ...Object.keys(BACKS).map(id => ({ kind: "back", id }))]
-      .filter(it => !(it.kind === "dice" && it.id === "violet") && !(it.kind === "back" && it.id === "cible"));
-    const itemDef = it => (it.kind === "dice" ? DICE[it.id] : BACKS[it.id]);
     const dieVars = id => `--die-face:${DICE[id].face};--die-pip:${DICE[id].pip};--die-edge:${DICE[id].edge}`;
-    const diePrev = id => `<div class="die-prev${DICE[id].rainbow ? " rainbow" : ""}" style="${dieVars(id)}">${[1, 0, 1, 0, 1, 0, 1, 0, 1].map(on => `<i${on ? ' class="p"' : ""}></i>`).join("")}</div>`;
+    const dieCls = id => `s-${DICE[id].shape || "cube"} p-${DICE[id].pips || "dot"}${DICE[id].rainbow ? " rainbow" : ""}`;
+    const diePrev = id => `<div class="die-prev ${dieCls(id)}" style="${dieVars(id)}">${[1, 0, 1, 0, 1, 0, 1, 0, 1].map(on => `<i${on ? ' class="p"' : ""}></i>`).join("")}</div>`;
     const backPrev = id => `<div class="back-prev" style="--back:${BACKS[id].css}"></div>`;
     /* Chaque tribu a un talent, valable pour le joueur comme pour Gaspard. */
     const PERKS = {
@@ -943,6 +1072,35 @@
       incognito: { name: "Déguisement", desc: "quand elle pose en premier, son avant-garde reste cachée jusqu'à la réponse adverse." }
     };
     const TRIBES = Object.keys(CASTS);
+    /* 32 personnages (8 par tribu) + les 5 boss, jouables une fois vaincus. Un personnage fixe ta tribu (et son talent)
+       et teinte tes figures. Le premier de chaque tribu se gagne en campagne, les autres dans les boosters. */
+    const CHAR_NAMES = {
+      mars: ["Zib", "Glorp", "Bloubi", "Kiki Zap", "Capitaine Pois", "Tonton Glu", "Mamie Ventouse", "Roi Glouglou"],
+      cranes: ["Pr Cerveau", "Dr Neurone", "Mimi Méninge", "Baron Synapse", "Gus Gyrus", "Lobe Fifi", "Mme Matière-Grise", "Empereur Cortex"],
+      poulpes: ["Octavia", "Ventouse Jr", "Tata Encre", "Pirate Calmar", "Gigi Tentacule", "Sœur Abysse", "Dr Poulpe", "Kraken Doré"],
+      incognito: ["Agent Z", "Mister X", "La Taupe", "Inspecteur Gloop", "Madame Mystère", "Double Zéro", "Le Faux Nez", "Chef Camouflage"]
+    };
+    const CHARS = {};
+    for (const tribe of TRIBES) CHAR_NAMES[tribe].forEach((name, j) => {
+      CHARS[`${tribe}${j}`] = { name, tribe, rank: "RDVARDVR"[j], house: j % 2 ? "D" : "H", hue: [0, 0, 0, 0, 140, 220, 300, 0][j], rarity: j < 4 ? 0 : j < 7 ? 1 : 2 };
+    });
+    for (const [key, b] of Object.entries(BOSSES)) CHARS[`boss-${key}`] = { name: b.name, tribe: b.cast, rank: b.rank, house: "S", hue: b.hue, rarity: 3, boss: key };
+    const CHAR_IDS = Object.keys(CHARS);
+    function charArt(id, seed = 5) {
+      const ch = CHARS[id];
+      const svg = art(ch.tribe, ch.house, ch.rank, seed);
+      if (ch.rarity === 2) return svg.replace("<svg ", '<svg class="rainbow-art" ');
+      return ch.hue ? svg.replace("<svg ", `<svg style="filter:hue-rotate(${ch.hue}deg)" `) : svg;
+    }
+    const portrait = (id, cls = "") => `<div class="portrait r${CHARS[id].rarity} ${cls}" style="--hc:${["var(--orange)", "var(--violet)", "#e0a91f", "var(--teal)"][TRIBES.indexOf(CHARS[id].tribe)]}">${charArt(id)}</div>`;
+    /* Contenu des boosters : personnages, dés, dos, et les atouts rares ou légendaires. */
+    const ITEMS = [
+      ...CHAR_IDS.filter(id => CHARS[id].rarity < 3 && !id.endsWith("0")).map(id => ({ kind: "char", id })),
+      ...Object.keys(DICE).filter(id => id !== "violet").map(id => ({ kind: "dice", id })),
+      ...Object.keys(BACKS).filter(id => id !== "cible").map(id => ({ kind: "back", id })),
+      ...Object.keys(ATOUTS).filter(id => ATOUTS[id].rarity > 0).map(id => ({ kind: "atout", id }))
+    ];
+    const itemDef = it => ({ dice: DICE, back: BACKS, char: CHARS, atout: ATOUTS })[it.kind][it.id];
     /* Progression : les trophées montent et descendent (ligues, classement), l'expérience ne fait que monter (niveau). */
     const LEAGUES = [
       { name: "Bronze", min: 0, cls: "bronze" }, { name: "Argent", min: 150, cls: "" }, { name: "Or", min: 400, cls: "gold" },
@@ -962,12 +1120,13 @@
     }
     function ranking() {
       const list = RIVALS.map(([name, cast, t]) => ({ name, cast, t }));
-      list.push({ name: "Toi", cast: save.tribe, t: save.trophies, me: true });
+      list.push({ name: "Toi", cast: CHARS[save.char].tribe, t: save.trophies, me: true });
       return list.sort((a, b) => b.t - a.t || (a.me ? -1 : 1));
     }
     const myRank = () => ranking().findIndex(r => r.me) + 1;
-    const foe = () => S.foeName || LEVELS[S.level].who;
+    const foe = () => S.foeName || STAGES[S.stage].name;
     const skinOf = owner => (owner === 0 ? save.equip : S.foeSkin || { dice: "violet", back: "cible" });
+    const charOf = owner => (owner === 0 ? save.char : S.foeChar || `${S.cast[1]}0`);
     /* Les textes du jeu disent « Gaspard » : on y met le nom de l'adversaire du moment. */
     const named = text => String(text).replace(/Gaspard/g, foe());
 
@@ -990,40 +1149,55 @@
       hole: () => `<ellipse cx="50" cy="56" rx="47" ry="16" transform="rotate(-18 50 56)" fill="none" stroke="${YE}" stroke-width="5"/><ellipse cx="50" cy="56" rx="38" ry="11" transform="rotate(-18 50 56)" fill="none" stroke="${OR}" stroke-width="4"/>
         <circle cx="50" cy="56" r="25" fill="#0a0d18" ${ST}/><path d="M50 40 a16 16 0 0 1 16 16 a11 11 0 0 1 -11 11 a7 7 0 0 1 -7 -7" fill="none" stroke="${K}" stroke-width="2.4" stroke-linecap="round" opacity=".8"/>`,
       tractor: () => `<path d="M36 46 L22 112 H78 L64 46z" fill="${K}" opacity=".55"/>${saucer(YE, -10)}<g transform="rotate(-14 40 84)"><rect x="30" y="70" width="20" height="28" rx="3" fill="${K}" ${ST} stroke-width="2"/><rect x="34" y="76" width="12" height="12" rx="2" fill="${OR}"/></g><g transform="rotate(12 62 80)"><rect x="52" y="64" width="20" height="28" rx="3" fill="${K}" ${ST} stroke-width="2"/><rect x="56" y="70" width="12" height="12" rx="2" fill="#5b5fc7"/></g>`,
-      nova: () => `<path d="${starPath(50, 56, 50, 26, 12)}" fill="${OR}" ${ST}/><path d="${starPath(50, 56, 38, 18, 12)}" fill="${YE}" ${ST} stroke-width="2"/><circle cx="50" cy="56" r="14" fill="#fff" ${ST} stroke-width="2"/>`
+      nova: () => `<path d="${starPath(50, 56, 50, 26, 12)}" fill="${OR}" ${ST}/><path d="${starPath(50, 56, 38, 18, 12)}" fill="${YE}" ${ST} stroke-width="2"/><circle cx="50" cy="56" r="14" fill="#fff" ${ST} stroke-width="2"/>`,
+      tresor: () => `<rect x="18" y="52" width="64" height="40" rx="4" fill="${OR}" ${ST}/><path d="M18 52 Q18 28 50 28 Q82 28 82 52z" fill="#c9561f" ${ST}/><path d="M18 64 H82 M32 30 V92 M68 30 V92" ${LN} stroke-width="2"/>
+        <rect x="43" y="56" width="14" height="16" rx="3" fill="${YE}" ${ST} stroke-width="2"/>${[[30, 24], [50, 18], [70, 24], [40, 14], [60, 13]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="7" fill="${YE}" ${ST} stroke-width="2"/>`).join("")}`,
+      meteor: () => `<path d="M90 8 L44 50 L58 58 L96 22z M78 4 L36 44 M98 34 L60 66" fill="${YE}" stroke="${OR}" stroke-width="5" stroke-linecap="round" opacity=".9"/><circle cx="40" cy="66" r="24" fill="#9c8a7a" ${ST}/>
+        <circle cx="32" cy="58" r="6" fill="#7a6a5c" ${ST} stroke-width="1.8"/><circle cx="48" cy="74" r="5" fill="#7a6a5c" ${ST} stroke-width="1.8"/><circle cx="46" cy="56" r="3" fill="#7a6a5c"/>`,
+      turbo: () => `<path d="M50 6 Q70 26 66 70 H34 Q30 26 50 6z" fill="#fff" ${ST}/><circle cx="50" cy="40" r="9" fill="#8fd8cc" ${ST}/><path d="M34 56 L20 78 L34 72z M66 56 L80 78 L66 72z" fill="${OR}" ${ST}/>
+        <path d="M38 72 Q50 112 62 72z" fill="${YE}" ${ST}/><path d="M44 74 Q50 96 56 74z" fill="${OR}"/><text x="50" y="100" text-anchor="middle" font-size="16" font-family="Righteous, sans-serif" fill="${K}" stroke="${N}" stroke-width="1">×2</text>`,
+      cryo: () => `<circle cx="50" cy="56" r="34" fill="#a8e9f2" ${ST}/>${[0, 60, 120].map(a => `<g transform="rotate(${a} 50 56)"><path d="M50 26 V86 M42 32 L50 40 L58 32 M42 80 L50 72 L58 80" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M50 26 V86" fill="none" stroke="#3d8fb0" stroke-width="2" stroke-linecap="round"/></g>`).join("")}<circle cx="50" cy="56" r="6" fill="#fff" ${ST} stroke-width="2"/>`
     };
 
     /* ═════ Sauvegarde ═════ */
     const SAVE_KEY = "bda_save_v1";
-    const save = Object.assign({ crystals: CAPSULE_COST, owned: {}, loadout: [], unlocked: 0, level: 0, tribe: "mars", name: "", tuto: false, wins: [0, 0, 0], xp: 0, trophies: 0, stars: [0, 0, 0], seen: {}, mute: false, skins: { dice: { violet: 1 }, back: { cible: 1 } }, equip: { dice: "violet", back: "cible" } }, (() => {
+    const save = Object.assign({ crystals: CAPSULE_COST, owned: {}, loadout: [], unlocked: 0, level: 0, tribe: "mars", name: "", tuto: false, wins: [0, 0, 0], xp: 0, trophies: 0, stars: [0, 0, 0], seen: {}, mute: false, skins: { dice: { violet: 1 }, back: { cible: 1 } }, equip: { dice: "violet", back: "cible" }, camp: null, stage: null, chars: { mars0: 1 }, char: null }, (() => {
       try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch (e) { return {}; }
     })());
     save.loadout = save.loadout.filter(id => ATOUTS[id] && save.owned[id]);
-    for (let i = 0; i < LEVELS.length; i += 1) save.wins[i] = Math.max(save.wins[i] || 0, i < save.unlocked ? 1 : 0);
-    // La première tribu est offerte ; chaque adversaire battu en libère une autre.
-    const tribeOpen = key => TRIBES.indexOf(key) === 0 || save.wins[TRIBES.indexOf(key) - 1] > 0;
-    if (!CASTS[save.tribe] || !tribeOpen(save.tribe)) save.tribe = "mars";
-    save.level = Math.min(save.level, save.unlocked, LEVELS.length - 1);
+    /* Campagne : `cleared` = nombre d'étapes gagnées dans l'ordre. Une ancienne sauvegarde (3 planètes) devient des chapitres finis. */
+    if (!save.camp) save.camp = { cleared: 4 * (save.wins || []).filter(w => w > 0).length, stars: [] };
+    save.stage = Math.min(save.stage ?? save.camp.cleared, save.camp.cleared, STAGES.length - 1);
+    save.chars.mars0 = 1;
+    STAGES.forEach((sg, i) => { if (i < save.camp.cleared) for (const id of sg.unlocks) save.chars[id] = 1; });
+    if (!save.char) save.char = save.chars[`${save.tribe}0`] ? `${save.tribe}0` : "mars0";
+    if (!CHARS[save.char] || !save.chars[save.char]) save.char = "mars0";
     if (!DICE[save.equip.dice] || !save.skins.dice[save.equip.dice]) save.equip.dice = "violet";
     if (!BACKS[save.equip.back] || !save.skins.back[save.equip.back]) save.equip.back = "cible";
-    /* Les atouts se gagnent en conquérant les planètes ; un atout gagné s'équipe tout seul s'il reste une place. */
+    /* Les atouts se gagnent en campagne (et les plus rares dans les boosters) ; un atout gagné s'équipe tout seul s'il reste une place. */
     function grantAtouts(ids) {
       const fresh = ids.filter(id => !save.owned[id]);
       for (const id of fresh) { save.owned[id] = 1; if (save.loadout.length < MAX_ATOUTS) save.loadout.push(id); }
       return fresh;
     }
-    LEVELS.forEach((L, i) => { if (save.wins[i] > 0) grantAtouts(L.gift); });
+    grantAtouts(START_ATOUTS);
+    STAGES.forEach((sg, i) => { if (i < save.camp.cleared && sg.gift) grantAtouts([sg.gift]); });
     function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* stockage indisponible */ } }
 
     const who = (p, tu, il) => (p === 0 ? `Tu ${tu}` : `${foe()} ${il}`);
-    const S = { cast: [save.tribe, "cranes"], level: save.level, ai: save.level, mode: "adv", foeName: null, rival: null };
+    const S = { cast: [CHARS[save.char].tribe, "cranes"], stage: save.stage, aiL: TIERS[0], boss: null, charged: false, mode: "adv", foeName: null, foeChar: null, rival: null };
+    let chapterView = STAGES[save.stage].c;
     let gameId = 0;
 
     /* ═════ Règles ═════ */
     function threshold(v) { return v <= 4 ? 3 : v <= 7 ? 4 : v <= 10 ? 5 : 6; }
     const thrOf = card => card.thr || threshold(card.value);
     /* Bonus de l'IA (main, boosts) : jamais en duel entre amis. */
-    const aiBonus = (q, key) => (q === 1 && S.mode !== "p2p" ? LEVELS[S.ai][key] || 0 : 0);
+    const aiBonus = (q, key) => (q === 1 && S.mode !== "p2p" ? S.aiL[key] || 0 : 0);
+    /* Super coup du boss pendant une manche chargée (null sinon). */
+    const superOn = () => (S.charged && S.boss ? BOSSES[S.boss].super : null);
+    /* Seuil du dé d'une 3ᵉ carte : Cryo adverse et Ouragan du boss le durcissent d'un cran. */
+    const thirdThr = (p, card) => thrOf(card) + (onBoard(1 - p, "cryo") ? 1 : 0) + (p === 0 && superOn() === "storm" ? 1 : 0);
     const handSize = q => (S.cast[q] === "poulpes" ? 6 : HAND_SIZE) + aiBonus(q, "bonusHand");
     /* Bonus au dé d'une 3ᵉ carte : Propulsion, et Désintégrateur pour une riposte. */
     const dieBonus = (p, role) => (S.board.amb[p].house === "H" ? 1 : 0) + (role === "riposte" && S.cast[p] === "cranes" ? 1 : 0);
@@ -1056,16 +1230,21 @@
       let total = vv + va;
       if (van && amb) parts.push(...formation(van, amb));
       const shield = onBoard(p, "shield");
-      const impact = b.amb[o] && b.amb[o].house === "S", hole = onBoard(o, "hole");
-      if (shield && (impact || hole)) parts.push(["Bouclier", 0]);
+      const impact = b.amb[o] && b.amb[o].house === "S", hole = onBoard(o, "hole"), meteor = onBoard(o, "meteor");
+      if (shield && (impact || hole || meteor)) parts.push(["Bouclier", 0]);
       else {
         if (impact) parts.push(["Impact", -2]);
         if (hole && van && amb && Math.min(vv, va) > 0) parts.push(["Trou noir", -Math.min(vv, va)]);
+        if (meteor) parts.push(["Météore", -3]);
       }
       if (b.allyOk[p]) {
-        const gain = b.ally[p].special === "clone" ? Math.min(Math.max(vv, va), CLONE_CAP) : b.ally[p].value;
+        const c = b.ally[p], gain = c.special === "clone" ? Math.min(Math.max(vv, va), CLONE_CAP) : c.special === "turbo" ? c.value * 2 : c.value;
         if (gain) parts.push([b.role[p] === "riposte" ? "Riposte" : "Allié", gain]);
       }
+      const sup = superOn();
+      if (p === 1 && sup === "crush" && vv) parts.push(["Écrasement", vv]);
+      if (p === 1 && sup === "tide") parts.push(["Gravité", 4]);
+      if (p === 0 && sup === "bomb") parts.push(["Bombardement", -3]);
       for (const [, v] of parts) total += v;
       return { total, parts };
     }
@@ -1106,6 +1285,12 @@
     const emptyBoard = () => ({ van: [null, null], amb: [null, null], ally: [null, null], allyOk: [false, false], role: [null, null] });
 
     /* ═════ Rendu ═════ */
+    /* Les figures prennent la teinte du personnage de leur propriétaire. */
+    function tint(svg, owner) {
+      const ch = CHARS[charOf(owner)];
+      if (!ch || !ch.hue) return svg;
+      return svg.replace("<svg ", `<svg style="filter:hue-rotate(${ch.hue}deg)" `);
+    }
     function cardEl(card, owner, faceDown = false) {
       const el = document.createElement("div");
       const sp = card.special;
@@ -1119,7 +1304,7 @@
       if (loot >= 3) el.classList.add("treasure");
       el.innerHTML = `<div class="card-inner"><div class="face front">
         <div class="top"><span>${card.label}</span><span>${SYM[card.house]}</span></div>
-        <div class="art">${sp ? frame(SPECIAL_ART[sp](), card.seed) : art(S.cast[owner], card.house, card.label, card.seed)}</div>
+        <div class="art">${sp ? frame(SPECIAL_ART[sp](), card.seed) : tint(art(S.cast[owner], card.house, card.label, card.seed), owner)}</div>
         <div class="n">${card.title}${figure ? ` · ${card.value}` : ""}</div>
       </div><div class="face back"></div></div>${loot ? `<span class="coin c${loot}" title="Butin : ${loot} point${loot > 1 ? "s" : ""}">${loot}</span>` : ""}`;
       return el;
@@ -1135,6 +1320,14 @@
     }
     function renderHud() {
       $("#roundChip").textContent = `Manche ${S.round}`;
+      const bar = $("#bossBar");
+      bar.hidden = !S.boss;
+      if (S.boss) {
+        const b = BOSSES[S.boss], fill = S.charged ? b.every : (S.round % b.every);
+        bar.classList.toggle("ready", S.charged);
+        bar.innerHTML = `${S.charged ? "Super !" : "Super"} ${Array.from({ length: b.every }, (_, i) => `<i${i < fill ? ' class="on"' : ""}></i>`).join("")}`;
+        bar.title = `${b.move} : ${b.desc}, toutes les ${b.every} manches`;
+      }
       for (const p of [0, 1]) {
         $(`#deck${p}`).textContent = S.decks[p].length;
         $(`#loot${p}`).textContent = S.loot[p];
@@ -1166,7 +1359,7 @@
     }
     const third = () => S.phase === "ally" || S.phase === "riposte";
     function allyInfo(card) {
-      const thr = thrOf(card), bonus = dieBonus(0, S.phase), reroll = S.board.amb[0].house === "C" && !S.radar[0];
+      const thr = thirdThr(0, card), bonus = dieBonus(0, S.phase), reroll = S.board.amb[0].house === "C" && !S.radar[0];
       return { thr, pct: Math.round(chance(thr, bonus, reroll) * 100) };
     }
     function selectable(card) {
@@ -1272,6 +1465,7 @@
       $("#fx").appendChild(el);
       setTimeout(() => el.remove(), 1420);
     }
+    const buzz = pattern => { try { if (navigator.vibrate && soundOn) navigator.vibrate(pattern); } catch (e) { /* pas de vibreur */ } };
     function bump(el) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
     /* Les grands coups (Renversement, Riposte, Jumeaux, bataille gagnée, gros butin) : onde de choc, gerbe, flash, secousse, vitesse lumière. */
     function boom(text, good = true, target = $("#field")) {
@@ -1287,6 +1481,7 @@
       burst(target, good ? [YE, "#fff", OR, "#ff5fa8", "#8fd8cc"] : [OR, "#fff", "#ff5fa8"], 36, 2.6);
       setTimeout(() => burst(target, [YE, "#fff", "#8f93f0"], 22, 1.6), 180);
       sfx.boom();
+      buzz([60, 40, 120]);
       shake(18);
       if (good) warp(1700); else flash(true);
       if (text) {
@@ -1313,6 +1508,7 @@
       sfx.place(w);
       burst(slot, w >= 0.8 ? [YE, "#fff", OR] : [K, "#fff", YE], Math.round(4 + w * 20));
       if (w > 0.4) shake(2 + w * 10);
+      if (w >= 0.8) buzz(25);
       if (!reduced) space.speed = Math.max(space.speed, 0.25 + w * 1.2);
     }
     /* Effets d'atout déclenchés quand la carte devient visible (une fois par manche). */
@@ -1406,10 +1602,10 @@
     async function rollDie(roller = 0) {
       const n = duel() && roller === 1 ? await netNext("roll") : 1 + rand(6);
       if (roller === 0) netSend("roll", n);
-      // chacun lance son propre dé
+      // chacun lance son propre dé, avec sa forme et ses points
       const dieId = skinOf(roller).dice, cube = $("#cube");
       cube.style.cssText += `;${dieVars(dieId)}`;
-      cube.classList.toggle("rainbow", Boolean(DICE[dieId].rainbow));
+      cube.className = `cube ${dieCls(dieId)}`;
       spins += 2;
       const [x, y] = DIE_ROT[n];
       const tray = $("#tray");
@@ -1457,7 +1653,7 @@
       if (save.mute) return Promise.resolve();
       return new Promise(resolve => {
         const spot = $("#coachSpot"), box = $("#coachBubble");
-        box.innerHTML = `<div class="guide">${art(S.cast[0], "H", "R", 5)}</div><div>${named(html)}</div><div class="row"><button class="skip">Ne plus rien m'expliquer</button><button class="btn">Compris</button></div>`;
+        box.innerHTML = `<div class="guide">${charArt(save.char)}</div><div>${named(html)}</div><div class="row"><button class="skip">Ne plus rien m'expliquer</button><button class="btn">Compris</button></div>`;
         box.style.top = box.style.bottom = "";
         const r = target && target.getBoundingClientRect();
         if (r && r.width) {
@@ -1555,7 +1751,7 @@
     }
     const roomId = code => `bataille-des-allies-${code}`;
     const lobbyMsg = text => { $("#lobbyMsg").textContent = text; };
-    const myHello = () => ({ name: save.name || "Ami", cast: S.cast[0], loadout: save.loadout.slice(0, MAX_ATOUTS), dice: save.equip.dice, back: save.equip.back });
+    const myHello = () => ({ name: save.name || "Ami", cast: CHARS[save.char].tribe, char: save.char, loadout: save.loadout.slice(0, MAX_ATOUTS), dice: save.equip.dice, back: save.equip.back });
     function saveName() { save.name = $("#pseudo").value.trim().slice(0, 14) || "Ami"; persist(); }
     function wire(conn) {
       net.conn = conn;
@@ -1631,25 +1827,25 @@
         const vv = ev(v, a), va = ev(a, v);
         let t = vv + va;
         for (const [, x] of formation(v, a)) t += x;
-        const shield = [v, a].some(c => c.special === "shield"), hole = [ov, oa].some(c => c.special === "hole"), impact = oa.house === "S";
-        if (!(shield && (impact || hole))) { if (impact) t -= 2; if (hole) t -= Math.min(vv, va); }
+        const shield = [v, a].some(c => c.special === "shield"), hole = [ov, oa].some(c => c.special === "hole"), met = [ov, oa].some(c => c.special === "meteor"), impact = oa.house === "S";
+        if (!shield) { if (impact) t -= 2; if (hole) t -= Math.min(vv, va); if (met) t -= 3; }
         return t;
       };
       return [side(av, aa, bv, ba), side(bv, ba, av, aa)];
     }
     /* Chances de gagner avec (van, amb), en passant en revue les cartes que l'adversaire peut encore avoir. */
-    function exactOdds(van, amb, seen, knownAmb) {
+    function exactOdds(van, amb, seen, knownAmb, edge = 0) {
       const pool = [...S.decks[0], ...S.hands[0]];
       let win = 0, tie = 0, n = 0;
-      const count = ([a, b]) => { if (a > b) win += 1; else if (a === b) tie += 1; n += 1; };
-      if (seen && knownAmb) { const [a, b] = duelTotals(van, amb, seen, knownAmb); return a > b ? [1, 0] : a === b ? [0, 1] : [0, 0]; }
+      const count = ([a, b]) => { a += edge; if (a > b) win += 1; else if (a === b) tie += 1; n += 1; };
+      if (seen && knownAmb) { count(duelTotals(van, amb, seen, knownAmb)); return [win, tie]; }
       if (seen) for (const x of pool) count(duelTotals(van, amb, seen, x));
       else for (let k = 0; k < 30 && pool.length > 1; k += 1) { const i = rand(pool.length); let j = rand(pool.length - 1); if (j >= i) j += 1; count(duelTotals(van, amb, pool[i], pool[j])); }
       return n ? [win / n, tie / n] : [0.5, 0];
     }
     /* Choix des deux cartes : chances de gagner × butin en jeu, moins le prix des fortes cartes dépensées. */
     function aiPlan(fixedVan, knownAmb = null) {
-      const L = LEVELS[S.ai];
+      const L = S.aiL;
       const hand = S.hands[1];
       const seen = S.vanHidden[0] ? null : S.board.van[0];
       let expected, slope = L.slope;
@@ -1671,10 +1867,13 @@
           let power = ev(van, amb) + ev(amb, van);
           for (const [, v] of formation(van, amb)) power += v;
           if (amb.house === "S") power += 2;
-          if (van.special === "hole" || amb.special === "hole") power += oppBest;
-          let pWin = 1 / (1 + Math.exp(-(power - expected) / slope));
-          if (L.exact) { const [w, t] = exactOdds(van, amb, seen, knownAmb); pWin = w + t * 0.5; }
-          const stake = lootCard(van) + lootCard(amb) + theirLoot + lootSum(S.pot);
+          if (van.special === "hole" || amb.special === "hole") power += Math.min(oppBest, 6);
+          if (van.special === "meteor" || amb.special === "meteor") power += 3;
+          // Pendant son super coup, le boss sait qu'il frappe plus fort.
+          const sup = superOn(), edge = sup === "crush" ? ev(van, null) : sup === "tide" ? 4 : sup === "bomb" ? 3 : 0;
+          let pWin = 1 / (1 + Math.exp(-(power + edge - expected) / slope));
+          if (L.exact) { const [w, t] = exactOdds(van, amb, seen, knownAmb, edge); pWin = w + t * 0.5; }
+          const stake = lootCard(van) + lootCard(amb) + theirLoot + lootSum(S.pot) + (sup === "siphon" ? SIPHON : 0);
           let u = (2 * pWin - 1) * stake * L.greed - (van.value + amb.value) * L.cost + Math.random() * L.noise;
           if (amb.house === "D") u += 0.3 * pWin;
           if (amb.house === "H" || amb.house === "C") u += 0.3 * (1 - pWin);
@@ -1688,11 +1887,11 @@
     }
     /* 3ᵉ carte de l'IA : un allié quand elle est menée, une riposte quand on la dépasse. Il lui faut 1 boost. */
     function aiThird(role) {
-      const L = LEVELS[S.ai];
+      const L = S.aiL;
       if (Math.random() < (L.skip || 0) || S.fuel[1] < 1) return null;
       const amb = S.board.amb[1], bonus = dieBonus(1, role), reroll = amb.house === "C" && !S.radar[1];
       const options = S.hands[1].map(c => ({ c, t: afterAlly(1, c) })).filter(o => o.t[1] >= o.t[0]).map(({ c, t }) => ({
-        c, score: chance(thrOf(c), bonus, reroll) * (t[1] > t[0] ? 1 : 0.45) - c.value * 0.004 - lootCard(c) * 0.03
+        c, score: chance(thirdThr(1, c), bonus, reroll) * (t[1] > t[0] ? 1 : 0.45) - c.value * 0.004 - lootCard(c) * 0.03
       })).sort((a, b) => b.score - a.score);
       if (!options.length) return null;
       return options[0].score >= 0.2 || lootSum(S.pot) >= 6 ? options[0].c : null;
@@ -1702,7 +1901,7 @@
     function show(view) {
       for (const id of ["menu", "game"]) $(`#${id}`).classList.toggle("on", id === view);
       $("#voyage").classList.remove("on");
-      for (const id of ["pause", "help", "endScreen", "atouts", "capsule", "install", "lobby"]) $(`#${id}`).classList.remove("on");
+      for (const id of ["pause", "help", "endScreen", "bossIntro", "capsule", "install", "lobby"]) $(`#${id}`).classList.remove("on");
     }
     function pickRival() {
       const list = ranking(), me = list.findIndex(r => r.me);
@@ -1714,22 +1913,29 @@
       gameId += 1;
       closeCoach();
       S.mode = mode;
+      S.cast[0] = CHARS[save.char].tribe;
+      S.boss = null;
+      S.charged = false;
       if (mode === "p2p") {
         const them = net.them || {};
         S.foeName = String(them.name || "Ami").slice(0, 14);
         S.foeSkin = { dice: DICE[them.dice] ? them.dice : "violet", back: BACKS[them.back] ? them.back : "cible" };
         S.cast[1] = CASTS[them.cast] ? them.cast : "mars";
-        S.ai = 1;
+        S.foeChar = CHARS[them.char] && CHARS[them.char].tribe === S.cast[1] ? them.char : `${S.cast[1]}0`;
+        S.aiL = TIERS[7];
       } else if (mode === "arena") {
         S.rival = S.rival || pickRival();
         S.foeName = S.rival.name;
         S.cast[1] = S.rival.cast;
-        S.ai = Math.min(2, leagueOf(S.rival.t));
+        S.foeChar = `${S.rival.cast}${rand(7)}`;
+        S.aiL = TIERS[[3, 5, 7, 9, 10][leagueOf(S.rival.t)]];
       } else {
-        const others = Object.keys(CASTS).filter(k => k !== S.cast[0]);
-        S.cast[1] = others[rand(others.length)];
-        S.foeName = null;
-        S.ai = S.level;
+        const sg = STAGES[S.stage];
+        S.cast[1] = sg.cast;
+        S.foeName = sg.name;
+        S.foeChar = sg.char;
+        S.aiL = sg.ai;
+        S.boss = sg.boss;
       }
       // Contre l'IA, l'adversaire arbore des objets au hasard : ça montre ce qu'on peut trouver.
       if (mode !== "p2p") S.foeSkin = { dice: Object.keys(DICE)[rand(6)], back: Object.keys(BACKS)[rand(6)] };
@@ -1741,10 +1947,11 @@
         hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 2 : 1) + aiBonus(q, "bonusFuel")), radar: [false, false], vanHidden: [false, false], pot: [], round: 0, first: pre ? pre.first : rand(2), phase: "idle", busy: true,
         revealed: false, sel: null, board: emptyBoard(), war: null, spy: null, fx: new Set()
       });
-      $("#ava0").innerHTML = art(S.cast[0], "H", "R", 5);
-      $("#ava1").innerHTML = art(S.cast[1], "S", "R", 9);
-      $("#ava1").style.background = "var(--violet)";
-      $("#name1").textContent = mode === "p2p" ? `${foe()} · ami` : mode === "arena" ? `${foe()} · ${S.rival.t} ♛` : `${foe()} · ${LEVELS[S.level].planet}`;
+      $("#ava0").innerHTML = charArt(save.char);
+      $("#ava1").innerHTML = charArt(S.foeChar, 9);
+      $("#ava1").style.background = S.boss ? "radial-gradient(circle, var(--pink), #4a1030)" : "var(--violet)";
+      $("#name1").textContent = mode === "p2p" ? `${foe()} · ami` : mode === "arena" ? `${foe()} · ${S.rival.t} ♛` : `${foe()} · ${CHAPTERS[STAGES[S.stage].c].planet}`;
+      $("#field").classList.remove("charged");
       for (const q of [0, 1]) { $(`#perk${q}`).textContent = PERKS[S.cast[q]].name; $(`#perk${q}`).title = `${CASTS[S.cast[q]].label} : ${PERKS[S.cast[q]].desc}`; }
       labelSlots();
       $("#tray").classList.remove("on");
@@ -1767,6 +1974,8 @@
       S.vanHidden = [false, false];
       S.radar = [false, false];
       S.fx = new Set();
+      S.charged = Boolean(S.boss) && S.round % BOSSES[S.boss].every === 0;
+      $("#field").classList.toggle("charged", S.charged);
       $("#tray").classList.remove("on");
       const drawn = [];
       for (const p of [0, 1]) {
@@ -1778,7 +1987,14 @@
       }
       setPrompt("");
       renderAll(drawn);
-      banner(`Manche ${S.round}`);
+      if (S.charged) {
+        const b = BOSSES[S.boss];
+        boom("Super coup !", false, $("#hud1"));
+        setPrompt(`<b>${b.move}</b> : ${b.desc} !`);
+        await sleep(1700);
+        if (game !== gameId) return;
+        await tip("super", `La jauge de ${b.name} est pleine : <b>${b.move}</b> ! Cette manche, ${b.desc}. ${b.hint}`, $("#hud1"));
+      } else banner(`Manche ${S.round}`);
       await sleep(900);
       if (game !== gameId) return;
       if (S.round === 1) {
@@ -1788,6 +2004,7 @@
         await tip("boost", "Tes <b>boosts ⚡</b>, ici : 1 boost pour <b>appeler un allié</b> quand tu es mené, ou pour <b>riposter</b> quand on te dépasse. Tu en regagnes 1 à chaque manche perdue (3 au maximum).", $("#valor0"));
         await tip(`perk-${S.cast[0]}`, `Ta tribu, les <b>${CASTS[S.cast[0]].label}</b>, a un talent. <b>${PERKS[S.cast[0]].name}</b> : ${PERKS[S.cast[0]].desc}`, $("#hud0"));
         await tip(`foeperk-${S.cast[1]}`, `Gaspard joue les <b>${CASTS[S.cast[1]].label}</b>. Leur talent, <b>${PERKS[S.cast[1]].name}</b> : ${PERKS[S.cast[1]].desc}`, $("#hud1"));
+        if (S.boss) { const b = BOSSES[S.boss]; await tip("bossbar", `Voici la jauge de <b>super coup</b> de ${b.name}. Quand elle est pleine (toutes les ${b.every} manches), elle déclenche <b>${b.move}</b> : ${b.desc}. Tu la vois venir : prépare ta main !`, $("#bossBar")); }
       }
       for (const card of S.hands[0].filter(c => c.special)) {
         await tip(`atout-${card.special}`, `Tu as pioché un <b>atout ★ ${card.title}</b>, une carte spéciale. ${ATOUTS[card.special].desc}`, $(`#hand .card[data-id="${card.id}"]`));
@@ -1816,8 +2033,8 @@
 
     function basePrompt() {
       if (S.phase === "van") {
-        setPrompt(S.vanHidden[1] ? "Gaspard avance <b>déguisé</b> : sa carte reste cachée. <b>Glisse la tienne</b> vers la case jaune."
-          : S.board.van[1] ? `Gaspard montre <b>${S.board.van[1].title}</b> (${S.board.van[1].label}). <b>Glisse une carte</b> vers la case jaune pour répondre.` : "À toi de commencer : <b>glisse une carte</b> vers la case jaune. Gaspard la verra.");
+        setPrompt((S.charged ? `<b>${BOSSES[S.boss].move}</b> en cours ! ` : "") + (S.vanHidden[1] ? "Gaspard avance <b>déguisé</b> : sa carte reste cachée. <b>Glisse la tienne</b> vers la case jaune."
+          : S.board.van[1] ? `Gaspard montre <b>${S.board.van[1].title}</b> (${S.board.van[1].label}). <b>Glisse une carte</b> vers la case jaune pour répondre.` : "À toi de commencer : <b>glisse une carte</b> vers la case jaune. Gaspard la verra."));
       } else if (S.phase === "amb") {
         setPrompt(S.spy === 0 ? "Ta vache a tout vu : l'embuscade de Gaspard est visible. <b>Glisse ta 2ᵉ carte</b>." : "<b>Glisse ta 2ᵉ carte</b>, face cachée. Les deux s'additionnent, le plus gros total gagne.");
       } else if (S.phase === "ally") {
@@ -2048,7 +2265,7 @@
       S.busy = true;
       S.phase = "roll";
       const role = S.board.role[p];
-      const thr = thrOf(card), bonus = dieBonus(p, role);
+      const thr = thirdThr(p, card), bonus = dieBonus(p, role);
       S.fuel[p] -= 1;
       renderFuel(p);
       floatText($(`#valor${p}`), "−1 ⚡", true);
@@ -2197,7 +2414,7 @@
         boost[0] = (await ask(`${mise} Retourne ta carte à l'aveugle.`, options)) === "boost";
         netSend("boost", boost[0]);
         if (duel()) setPrompt(`${mise} En attente de <b>Gaspard</b>…`);
-        boost[1] = duel() ? await netNext("boost") : LEVELS[S.ai].fuel && S.fuel[1] > 0 && stock(1) >= 2 && (level >= 2 || lootSum(S.pot) >= 10 || Math.random() < 0.4);
+        boost[1] = duel() ? await netNext("boost") : S.fuel[1] > 0 && stock(1) >= 2 && (level >= 2 || lootSum(S.pot) >= 10 || Math.random() < 0.4);
         if (game !== gameId) return;
         setPrompt(`${mise} Les cartes se retournent…`);
         for (const p of [1, 0]) {
@@ -2252,7 +2469,9 @@
         const loser = 1 - winner;
         const pts = lootSum(cards);
         const nova = cards.some(c => c.special === "nova");
-        const steal = !war && onBoard(winner, "tractor") ? Math.min(TRACTOR_STEAL, S.loot[loser]) : 0;
+        let steal = !war && onBoard(winner, "tractor") ? Math.min(TRACTOR_STEAL, S.loot[loser]) : 0;
+        const siphon = winner === 1 && superOn() === "siphon" ? Math.min(SIPHON, S.loot[0] - steal) : 0;
+        steal += siphon;
         const refuel = !war && S.board.amb[winner] && S.board.amb[winner].house === "D";
         const bigHaul = pts + steal >= 10;
         const epic = war || comeback || bigHaul;
@@ -2280,7 +2499,7 @@
         if (S.fuel[loser] < MAX_FUEL) { S.fuel[loser] += 1; renderFuel(loser, S.fuel[loser] - 1); }
         if (refuel && S.fuel[winner] < MAX_FUEL) { S.fuel[winner] += 1; renderFuel(winner, S.fuel[winner] - 1); }
         sfx.coin();
-        const extra = `${steal ? ` Rayon tracteur : ${steal} pts volés.` : ""}${nova ? " La Supernova s'est consumée." : ""}`;
+        const extra = `${steal - siphon ? ` Rayon tracteur : ${steal - siphon} pts volés.` : ""}${siphon ? ` Siphon : ${siphon} pts volés !` : ""}${nova ? " La Supernova s'est consumée." : ""}`;
         setPrompt(winner === 0
           ? `Tu ramasses <b>${cards.length} cartes</b> : <b>+${pts} pts</b> de butin.${refuel ? " Ravitaillement : +1 ⚡." : ""}${extra}`
           : `« Ack ! Ack ! » Gaspard ramasse <b>+${pts} pts</b> de butin.${extra} Tu gagnes <b>1 boost ⚡</b>.`);
@@ -2346,6 +2565,7 @@
       $("#endScore").title = "Points de butin";
       const notes = [];
       const lvlBefore = levelInfo(save.xp).lvl;
+      $("#endAgain").textContent = S.mode === "adv" && won && S.stage === save.camp.cleared ? "Combat suivant" : "Rejouer";
       const dXp = won ? 50 : lost ? 20 : 30;
       save.xp += dXp;
       let gain, head, trip = null;
@@ -2368,25 +2588,20 @@
         head = `${dT < 0 ? "−" : "+"}${Math.abs(dT)} ♛ · +${dXp} XP`;
         S.rival = null;
       } else {
-        const L = LEVELS[S.level];
-        gain = won ? L.reward + Math.min(20, a - b) : lost ? 8 : 15;
-        $("#endText").textContent = won ? `${L.planet} est à toi. Ta tribu rentre en héros.` : lost ? `${foe()} a mieux mené ses alliés cette fois.` : "Aucun camp ne l'emporte.";
+        const sg = STAGES[S.stage], ch = CHAPTERS[sg.c], first = S.stage === save.camp.cleared;
+        gain = won ? (first ? sg.reward : Math.round(sg.reward / 2)) + Math.min(20, a - b) : lost ? 8 : 12;
+        $("#endText").textContent = won ? (sg.boss ? `Victoire contre ${sg.name} : ${ch.planet} est libérée !` : `${sg.name} bat en retraite.`)
+          : lost ? `${foe()} l'emporte cette fois. Change d'atouts et retente ta chance !` : "Aucun camp ne l'emporte.";
         let stars = 0;
         if (won) {
           stars = a - b >= 20 ? 3 : a - b >= 10 ? 2 : 1;
-          if (stars > save.stars[S.level]) { save.stars[S.level] = stars; notes.push(`Nouveau record sur ${L.planet} : ${"★".repeat(stars)}`); }
-          if (!save.wins[S.level]) {
-            const got = grantAtouts(L.gift);
-            if (got.length) notes.push(`Atout${got.length > 1 ? "s" : ""} gagné${got.length > 1 ? "s" : ""} : ${got.map(id => ATOUTS[id].name).join(", ")}`);
-          }
-          if (!save.wins[S.level] && TRIBES[S.level + 1]) notes.push(`Nouvelle tribu : ${CASTS[TRIBES[S.level + 1]].label}`);
-          save.wins[S.level] += 1;
-          trip = [L, LEVELS[S.level + 1] || null];
-          if (S.level === save.unlocked && S.level < LEVELS.length - 1) {
-            save.unlocked += 1;
-            gain += 40;
-            notes.push(`Nouvelle planète : ${LEVELS[save.unlocked].planet}, défendue par ${LEVELS[save.unlocked].who} (+40 ◆)`);
-            S.level = save.level = save.unlocked;
+          if (stars > (save.camp.stars[S.stage] || 0)) { if (!first) notes.push(`Nouveau record : ${"★".repeat(stars)}`); save.camp.stars[S.stage] = stars; }
+          if (first) {
+            save.camp.cleared += 1;
+            if (sg.gift && grantAtouts([sg.gift]).length) notes.push(`Atout gagné : ${ATOUTS[sg.gift].name}`);
+            for (const id of sg.unlocks) if (!save.chars[id]) { save.chars[id] = 1; notes.push(`Personnage débloqué : ${CHARS[id].name}`); }
+            if (sg.boss) { trip = [ch, CHAPTERS[sg.c + 1] || null]; if (CHAPTERS[sg.c + 1]) notes.push(`Nouveau chapitre : ${CHAPTERS[sg.c + 1].planet}`); }
+            if (save.camp.cleared < STAGES.length) { S.stage = save.stage = save.camp.cleared; chapterView = STAGES[S.stage].c; }
           }
         }
         head = `${stars ? `${"★".repeat(stars)}${"☆".repeat(3 - stars)} · ` : ""}+${dXp} XP`;
@@ -2414,33 +2629,23 @@
       for (const btn of document.querySelectorAll("#tabs button")) btn.classList.toggle("on", btn.dataset.tab === name);
     }
     function renderMenu() {
-      const lv = levelInfo(save.xp), L = LEVELS[S.level];
-      $("#menuAva").innerHTML = art(S.cast[0], "H", "R", 5);
+      const lv = levelInfo(save.xp);
+      $("#menuAva").innerHTML = charArt(save.char);
       $("#menuLvl").textContent = `· Niv. ${lv.lvl}`;
       $("#menuXp").style.width = `${Math.round((lv.into / lv.need) * 100)}%`;
       $("#trophies").textContent = save.trophies;
       $("#crystals").textContent = save.crystals;
-      $("#atoutsBtn").textContent = $("#quickAtouts").textContent = `Atouts ${save.loadout.length}/${MAX_ATOUTS}`;
+      $("#quickAtouts").textContent = `Atouts ${save.loadout.length}/${MAX_ATOUTS}`;
       $("#capsuleBtn").textContent = `Booster · ${CAPSULE_COST} ◆`;
       const ready = save.crystals >= CAPSULE_COST;
       $("#quickBooster").classList.toggle("ready", ready);
       $("#boostPack").innerHTML = packHTML(true).replace(' id="pack"', "").replace("pack dull", "pack mini");
-      $("#boostSub").textContent = ready ? "3 objets de collection t'attendent" : `Encore ${CAPSULE_COST - save.crystals} ◆ pour le prochain`;
+      $("#boostSub").textContent = ready ? "Personnages, dés, atouts rares…" : `Encore ${CAPSULE_COST - save.crystals} ◆ pour le prochain`;
       $("#boostBar").style.width = `${Math.min(100, Math.round((save.crystals / CAPSULE_COST) * 100))}%`;
       $("#boostCta").textContent = ready ? "Ouvrir !" : `${save.crystals} / ${CAPSULE_COST} ◆`;
       $('#tabs [data-tab="cards"]').classList.toggle("dot", ready);
 
-      // Aventure : les planètes à conquérir
-      $("#levels").innerHTML = LEVELS.map((lvl, i) => {
-        const st = save.stars[i] || 0;
-        return `<button class="lvl${S.level === i ? " on" : ""}" data-level="${i}" ${i > save.unlocked ? "disabled" : ""}>
-          <span class="planet${i === 2 ? " ring" : ""}" style="background:${lvl.color}"></span>${lvl.planet}
-          <small>${i > save.unlocked ? "Verrouillée" : lvl.who}</small><i class="st">${"★".repeat(st)}${"☆".repeat(3 - st)}</i></button>`;
-      }).join("");
-      for (const btn of document.querySelectorAll(".lvl")) btn.addEventListener("click", () => { S.level = save.level = Number(btn.dataset.level); persist(); sfx.tap(); renderMenu(); });
-      $("#playBtn").textContent = `Décoller vers ${L.planet}`;
-      $("#stake").innerHTML = `Adversaire : <b>${L.who}</b>, ${L.name.toLowerCase()} — ${L.note}. Victoire : <b>${L.reward} ◆</b> et jusqu'à 3 étoiles.`;
-      renderHero();
+      renderCampaign();
 
       // Multijoueur : le prochain rival, la ligue, le classement
       S.rival = S.rival || pickRival();
@@ -2456,47 +2661,18 @@
       $("#leagueBig").innerHTML = leagueHTML();
       const colors = { mars: "var(--orange)", cranes: "var(--violet)", poulpes: "#e0a91f", incognito: "var(--teal)" };
       $("#rankList").innerHTML = ranking().map((r, i) => `<div class="ln${r.me ? " me" : ""}"><b>${i + 1}</b>
-        <div class="ava" style="background:${colors[r.cast]};color:${colors[r.cast]}">${art(r.cast, "H", "R", 5)}</div>
+        <div class="ava" style="background:${colors[r.cast]};color:${colors[r.cast]}">${r.me ? charArt(save.char) : art(r.cast, "H", "R", 5)}</div>
         <div>${r.name}<small>${CASTS[r.cast].label} · ligue ${LEAGUES[leagueOf(r.t)].name}</small></div><span>${r.t} ♛</span></div>`).join("");
 
-      // Dés et dos de cartes
-      const skinGrid = (kind, defs, prev) => {
-        $(`#${kind}Grid`).innerHTML = Object.keys(defs).map(id => `<button class="skin${save.equip[kind] === id ? " on" : ""}${save.skins[kind][id] ? "" : " locked"}" data-kind="${kind}" data-id="${id}" aria-label="${defs[id].name}">${prev(id)}</button>`).join("");
-      };
-      skinGrid("dice", DICE, diePrev);
-      skinGrid("back", BACKS, backPrev);
-      for (const btn of document.querySelectorAll(".skin")) btn.addEventListener("click", () => {
-        const { kind, id } = btn.dataset, def = kind === "dice" ? DICE[id] : BACKS[id], owned = save.skins[kind][id];
-        sfx.tap();
-        if (owned) { save.equip[kind] = id; persist(); renderMenu(); }
-        $("#skinInfo").innerHTML = `<b>${def.name}</b> · ${RARITY[def.rarity].name.toLowerCase()}${owned ? " — équipé." : " — à trouver dans un booster."}`;
-      });
-
-      // Tribus
-      const houses = { mars: "H", cranes: "S", poulpes: "D", incognito: "C" };
-      $("#crews").innerHTML = Object.entries(CASTS).map(([key, cast]) =>
-        `<button class="crew h-${houses[key]}${S.cast[0] === key ? " on" : ""}${tribeOpen(key) ? "" : " locked"}" data-cast="${key}" aria-pressed="${S.cast[0] === key}">
-          <div class="pic" style="background:var(--hc);color:var(--hc)">${art(key, houses[key], "R", 11)}</div>${cast.label}</button>`).join("");
-      const perkLine = key => {
-        const lock = tribeOpen(key) ? "" : ` <b>À gagner en conquérant ${LEVELS[TRIBES.indexOf(key) - 1].planet}.</b>`;
-        $("#perk").innerHTML = `<b>${CASTS[key].label} — ${PERKS[key].name}</b> : ${PERKS[key].desc}${lock}`;
-      };
-      perkLine(S.cast[0]);
-      for (const btn of document.querySelectorAll(".crew")) btn.addEventListener("click", () => {
-        const key = btn.dataset.cast;
-        sfx.tap();
-        if (!tribeOpen(key)) return perkLine(key);
-        S.cast[0] = save.tribe = key;
-        persist();
-        renderMenu();
-      });
+      renderCollection();
+      renderHero();
     }
 
     /* Vitrine de l'accueil : un éventail de cartes vivantes de ta tribu, dont une qui se retourne. */
     function renderHero() {
       const fan = $("#heroFan");
-      if (fan.dataset.cast === S.cast[0]) return;
-      fan.dataset.cast = S.cast[0];
+      if (fan.dataset.cast === save.char) return;
+      fan.dataset.cast = save.char;
       const deck = [
         { id: "h1", label: "2", value: 2, title: "Sonde", house: "D", seed: 31 },
         { id: "h2", label: "A", value: 14, title: "As", house: "S", seed: 17 },
@@ -2515,38 +2691,98 @@
         fan.appendChild(el);
       });
     }
-    function renderAtouts() {
-      const grid = $("#atGrid");
-      grid.innerHTML = "";
-      for (const id of ATOUT_IDS) {
-        const owned = Boolean(save.owned[id]);
-        const a = ATOUTS[id];
-        const btn = document.createElement("button");
-        btn.className = `at${owned ? "" : " locked"}${save.loadout.includes(id) ? " on" : ""}`;
-        btn.setAttribute("aria-label", owned ? a.name : "Atout inconnu");
-        btn.appendChild(cardEl(makeAtout(id, "show"), 0));
-        btn.addEventListener("click", () => {
-          let msg = "";
-          if (owned) {
-            if (save.loadout.includes(id)) save.loadout = save.loadout.filter(x => x !== id);
-            else if (save.loadout.length < MAX_ATOUTS) save.loadout.push(id);
-            else msg = " Tu en as déjà 3 : retires-en un d'abord.";
-            persist();
-          }
-          sfx.tap();
-          renderAtouts();
-          $("#atInfo").innerHTML = owned
-            ? `<b>${a.name}</b> <i>· ${RARITY[a.rarity].name}</i><br>${a.desc}${msg}`
-            : `<b>Atout inconnu</b> <i>· ${RARITY[a.rarity].name}</i><br>À gagner en conquérant ${LEVELS.find(lvl => lvl.gift.includes(id)).planet}.`;
-        });
-        grid.appendChild(btn);
+    /* Aventure : le chapitre affiché, ses 4 étapes, le bouton de combat. */
+    function renderCampaign() {
+      const ch = CHAPTERS[chapterView], c = chapterView, cleared = save.camp.cleared;
+      $("#chTitle").innerHTML = `<small>AVENTURE · CHAPITRE ${c + 1}/${CHAPTERS.length}</small><b><i style="background:${ch.color}"></i>${ch.planet}</b>`;
+      $("#chPrev").disabled = c === 0;
+      $("#chNext").disabled = c === CHAPTERS.length - 1 || cleared < 4 * (c + 1);
+      $("#path").innerHTML = [0, 1, 2, 3].map(k => {
+        const i = 4 * c + k, sg = STAGES[i], st = save.camp.stars[i] || 0, open = i <= cleared;
+        return `<button class="node${sg.boss ? " boss" : ""}${i === S.stage ? " on" : ""}${i === cleared ? " next" : ""}${open ? "" : " locked"}" data-stage="${i}" ${open ? "" : "disabled"} aria-label="${sg.name}">
+          <div class="pic" style="background:${sg.boss ? "" : ch.color}">${charArt(sg.char, 9)}</div><span class="nm2">${open ? sg.name : "???"}</span><i class="st">${"★".repeat(st)}${"☆".repeat(3 - st)}</i></button>`;
+      }).join("");
+      for (const btn of document.querySelectorAll(".node")) btn.addEventListener("click", () => { S.stage = save.stage = Number(btn.dataset.stage); persist(); sfx.tap(); renderCampaign(); });
+      const sg = STAGES[S.stage], done = S.stage < cleared;
+      $("#playBtn").textContent = sg.boss ? `Affronter ${sg.name}` : `Combattre ${sg.name}`;
+      $("#playBtn").classList.toggle("boss", Boolean(sg.boss));
+      const prize = done ? `${Math.round(sg.reward / 2)} ◆` : `${sg.reward} ◆${sg.gift && !save.owned[sg.gift] ? ` + atout <b>${ATOUTS[sg.gift].name}</b>` : ""}${sg.boss ? " + un personnage" : ""}`;
+      $("#stake").innerHTML = sg.boss
+        ? `<b>Boss</b> · super coup <b>${BOSSES[sg.boss].move}</b> toutes les ${BOSSES[sg.boss].every} manches. Victoire : <b>${prize}</b>`
+        : `${sg.name}, ${TIER_NAMES[sg.tier]}. Victoire : <b>${prize}</b>`;
+    }
+    function openBossIntro() {
+      const sg = STAGES[S.stage], b = BOSSES[sg.boss];
+      $("#bossTag").textContent = `BOSS DE ${CHAPTERS[sg.c].planet.toUpperCase()}`;
+      $("#bossPic").outerHTML = portrait(sg.char).replace('class="portrait', 'id="bossPic" class="portrait');
+      $("#bossName").textContent = b.name;
+      $("#bossMove").innerHTML = `<b>Super coup : ${b.move}</b><br>Toutes les ${b.every} manches, ${b.desc}. Sa jauge te prévient un tour avant.<br><br><b>Le conseil</b> : ${b.hint}`;
+      $("#bossIntro").classList.add("on");
+      sfx.warp(900);
+      buzz([40, 30, 40]);
+    }
+
+    /* Collection : personnages, atouts, dés, dos. Une vitrine en haut, la grille en dessous. */
+    let colSub = "chars", colPick = null;
+    function owns(kind, id) {
+      if (kind === "char") return Boolean(save.chars[id]);
+      if (kind === "atout") return Boolean(save.owned[id]);
+      return Boolean(save.skins[kind][id]);
+    }
+    function equipped(kind, id) {
+      if (kind === "char") return save.char === id;
+      if (kind === "atout") return save.loadout.includes(id);
+      return save.equip[kind] === id;
+    }
+    function howToGet(kind, id) {
+      if (kind === "char") {
+        const sg = STAGES.find(x => x.unlocks.includes(id));
+        if (sg) return `À gagner en battant ${sg.name} (${CHAPTERS[sg.c].planet}).`;
+        return "À trouver dans un booster.";
       }
+      if (kind === "atout") {
+        const sg = STAGES.find(x => x.gift === id);
+        return `À gagner contre ${sg.name} (${CHAPTERS[sg.c].planet})${ATOUTS[id].rarity > 0 ? ", ou dans un booster" : ""}.`;
+      }
+      return "À trouver dans un booster.";
     }
-    function openAtouts() {
-      $("#atInfo").textContent = Object.keys(save.owned).length ? "Touche un atout pour l'équiper ou le retirer." : "Tu n'as encore aucun atout : conquiers la Lune en aventure pour gagner les premiers.";
-      renderAtouts();
-      $("#atouts").classList.add("on");
+    function renderCollection() {
+      const lists = { chars: CHAR_IDS, atouts: ATOUT_IDS, dice: Object.keys(DICE), back: Object.keys(BACKS) };
+      const kinds = { chars: "char", atouts: "atout", dice: "dice", back: "back" };
+      const count = sub => `${lists[sub].filter(id => owns(kinds[sub], id)).length}/${lists[sub].length}`;
+      $("#cntChars").textContent = count("chars");
+      $("#cntAtouts").textContent = `${save.loadout.length}/${MAX_ATOUTS} équipés`;
+      $("#cntDice").textContent = count("dice");
+      $("#cntBack").textContent = count("back");
+      for (const btn of document.querySelectorAll("#subtabs button")) btn.classList.toggle("on", btn.dataset.sub === colSub);
+      const kind = kinds[colSub], ids = lists[colSub];
+      if (!colPick || !ids.includes(colPick)) colPick = ids.find(id => equipped(kind, id)) || ids[0];
+      const visual = (id, big) => kind === "char" ? portrait(id) : kind === "atout" ? cardEl(makeAtout(id, big ? "big" : "cell"), 0).outerHTML : kind === "dice" ? diePrev(id) : backPrev(id);
+      $("#colGrid").innerHTML = ids.map(id => {
+        const own = owns(kind, id), def = kind === "char" ? CHARS[id] : itemDef({ kind, id });
+        return `<button class="cell${own ? "" : " locked"}${equipped(kind, id) ? " on" : ""}${colPick === id ? " pick" : ""}" data-id="${id}">${visual(id)}<span>${own ? def.name : "???"}</span>${kind === "atout" && equipped(kind, id) ? '<b class="eq">✓</b>' : ""}</button>`;
+      }).join("");
+      for (const btn of document.querySelectorAll("#colGrid .cell")) btn.addEventListener("click", () => { colPick = btn.dataset.id; sfx.tap(); renderCollection(); });
+      // Vitrine
+      const id = colPick, own = owns(kind, id), def = kind === "char" ? CHARS[id] : itemDef({ kind, id });
+      let text = "", action = null;
+      if (kind === "char") text = `${CASTS[def.tribe].label} · talent <b>${PERKS[def.tribe].name}</b> : ${PERKS[def.tribe].desc}`;
+      else if (kind === "atout") text = ATOUTS[id].desc;
+      else text = kind === "dice" ? "Ton dé, lancé sous les yeux de ton adversaire." : "Le dos de tes cartes, vu par ton adversaire.";
+      if (!own) text += `<br><i>${howToGet(kind, id)}</i>`;
+      else if (kind === "atout") action = equipped(kind, id) ? { label: "Retirer", cls: "ghost" } : save.loadout.length < MAX_ATOUTS ? { label: "Équiper" } : { label: "3 atouts déjà équipés", cls: "ghost", off: true };
+      else action = equipped(kind, id) ? { label: "Équipé ✓", cls: "ghost", off: true } : { label: "Équiper" };
+      $("#showcase").innerHTML = `<div class="big">${own ? visual(id, true) : `<div class="locked-big" style="filter:grayscale(1) brightness(.3)">${visual(id, true)}</div>`}</div>
+        <div><h3>${own ? def.name : "???"}</h3><span class="rar r${def.rarity}">${RARITY[def.rarity].name}</span><p>${text}</p>${action ? `<button class="btn ${action.cls || ""}" id="equipBtn" ${action.off ? "disabled" : ""}>${action.label}</button>` : ""}</div>`;
+      const eq = $("#equipBtn");
+      if (eq && !action.off) eq.addEventListener("click", () => {
+        if (kind === "char") { save.char = id; S.cast[0] = CHARS[id].tribe; }
+        else if (kind === "atout") save.loadout = equipped(kind, id) ? save.loadout.filter(x => x !== id) : [...save.loadout, id];
+        else save.equip[kind] = id;
+        persist(); sfx.coin(); renderMenu();
+      });
     }
+    function openAtouts() { colSub = "atouts"; colPick = null; showTab("cards"); renderMenu(); }
 
     function rollItem() {
       let r = Math.random() * 100, rarity = 0;
@@ -2554,13 +2790,19 @@
       const pool = ITEMS.filter(it => itemDef(it).rarity === rarity);
       return pool[rand(pool.length)];
     }
+    function grantItem(item) {
+      if (item.kind === "char") save.chars[item.id] = 1;
+      else if (item.kind === "atout") grantAtouts([item.id]);
+      else save.skins[item.kind][item.id] = 1;
+    }
     /* Carte de présentation d'un objet de collection, au format des cartes du jeu. */
     function itemEl(item, faceDown) {
+      if (item.kind === "atout") return cardEl(makeAtout(item.id, "pack"), 0, faceDown);
       const def = itemDef(item), el = document.createElement("div");
       el.className = `card h-X atout rar-${def.rarity}${faceDown ? " facedown" : ""}`;
       el.innerHTML = `<div class="card-inner"><div class="face front">
-        <div class="top"><span>${item.kind === "dice" ? "Dé" : "Dos"}</span><span>★</span></div>
-        <div class="art item-art">${item.kind === "dice" ? diePrev(item.id) : backPrev(item.id)}</div>
+        <div class="top"><span>${{ dice: "Dé", back: "Dos", char: "Perso" }[item.kind]}</span><span>★</span></div>
+        <div class="art${item.kind === "char" ? "" : " item-art"}">${item.kind === "dice" ? diePrev(item.id) : item.kind === "char" ? charArt(item.id) : backPrev(item.id)}</div>
         <div class="n">${def.name}</div>
       </div><div class="face back"></div></div>`;
       return el;
@@ -2588,7 +2830,7 @@
         return fillButtons($("#capActions"), [closeBtn]);
       }
       stage.innerHTML = packHTML();
-      $("#capText").innerHTML = `3 objets de collection au hasard (dés, dos de cartes) pour <b>${CAPSULE_COST} ◆</b>. Tu as ${save.crystals} ◆. Déchire le haut du sachet : glisse le doigt dessus, ou touche-le.`;
+      $("#capText").innerHTML = `3 objets au hasard (personnages, dés, dos de cartes, parfois un atout rare) pour <b>${CAPSULE_COST} ◆</b>. Tu as ${save.crystals} ◆. Déchire le haut du sachet : glisse le doigt dessus, ou touche-le.`;
       fillButtons($("#capActions"), [closeBtn]);
       // Le haut se décolle sous le doigt ; un simple appui suffit aussi.
       const pack = $("#pack"), top = pack.querySelector(".pack-top");
@@ -2611,8 +2853,8 @@
         if (!pulls.some(x => x.kind === item.kind && x.id === item.id)) pulls.push(item);
       }
       const results = pulls.map(item => {
-        const dup = Boolean(save.skins[item.kind][item.id]);
-        if (dup) save.crystals += RARITY[itemDef(item).rarity].dup; else save.skins[item.kind][item.id] = 1;
+        const dup = owns(item.kind, item.id);
+        if (dup) save.crystals += RARITY[itemDef(item).rarity].dup; else grantItem(item);
         return { item, dup };
       });
       persist();
@@ -2643,12 +2885,12 @@
         if (def.rarity > 0) { sfx.rare(); burst(slots[i], def.rarity === 2 ? [YE, "#fff", OR] : ["#2fa394", "#fff", K], def.rarity === 2 ? 28 : 16); if (def.rarity === 2) warp(900); }
         else sfx.flip();
         await sleep(450);
-        slots[i].querySelector("small").textContent = dup ? `Doublon +${RARITY[def.rarity].dup} ◆` : `Nouveau · ${RARITY[def.rarity].name}`;
+        slots[i].querySelector("small").textContent = dup ? `Doublon +${RARITY[def.rarity].dup} ◆` : `${item.kind === "atout" ? "Atout ! " : item.kind === "char" ? `${def.name} · ` : "Nouveau · "}${RARITY[def.rarity].name}`;
         await sleep(350);
       }
       $("#capTitle").textContent = results.some(r => !r.dup) ? "Nouveaux objets !" : "Que des doublons…";
       $("#capText").innerHTML = `Il te reste <b>${save.crystals} ◆</b>.`;
-      const buttons = [{ label: "Voir ma collection", fn: () => { closeCapsule(); showTab("cards"); } }];
+      const buttons = [{ label: "Voir ma collection", fn: () => { colSub = { char: "chars", atout: "atouts", dice: "dice", back: "back" }[results[0].item.kind]; colPick = results[0].item.id; closeCapsule(); showTab("cards"); renderMenu(); } }];
       if (save.crystals >= CAPSULE_COST) buttons.push({ label: `Encore un · ${CAPSULE_COST} ◆`, cls: "teal", fn: openCapsuleShop });
       buttons.push({ label: "Fermer", cls: "ghost", fn: closeCapsule });
       fillButtons($("#capActions"), buttons);
@@ -2660,13 +2902,18 @@
     let helpFrom = null;
     function openHelp(from) { helpFrom = from; if (from) $(`#${from}`).classList.remove("on"); $("#help").classList.add("on"); }
 
-    $("#playBtn").addEventListener("click", () => newGame("adv"));
+    $("#playBtn").addEventListener("click", () => (STAGES[S.stage].boss ? openBossIntro() : newGame("adv")));
+    $("#bossGo").addEventListener("click", () => newGame("adv"));
+    $("#bossBack").addEventListener("click", () => $("#bossIntro").classList.remove("on"));
+    $("#chPrev").addEventListener("click", () => { chapterView -= 1; S.stage = save.stage = Math.min(save.camp.cleared, 4 * chapterView + 3); sfx.tap(); renderCampaign(); });
+    $("#chNext").addEventListener("click", () => { chapterView += 1; S.stage = save.stage = Math.min(save.camp.cleared, 4 * chapterView + 3); sfx.tap(); renderCampaign(); });
+    for (const btn of document.querySelectorAll("#subtabs button")) btn.addEventListener("click", () => { colSub = btn.dataset.sub; colPick = null; sfx.tap(); renderCollection(); });
+    // Appel, autre appli, écran verrouillé : la partie se met en pause toute seule.
+    document.addEventListener("visibilitychange", () => { if (document.hidden && $("#game").classList.contains("on") && !["over"].includes(S.phase)) $("#pause").classList.add("on"); });
     $("#arenaBtn").addEventListener("click", () => newGame("arena"));
     $("#helpAtouts").innerHTML = ATOUT_IDS.map(id => `<li><b>${ATOUTS[id].name}</b> (${RARITY[ATOUTS[id].rarity].name.toLowerCase()}) : ${ATOUTS[id].desc}</li>`).join("");
     for (const btn of document.querySelectorAll("#tabs button")) btn.addEventListener("click", () => { sfx.tap(); showTab(btn.dataset.tab); });
-    $("#tutoBtn").addEventListener("click", () => { save.seen = {}; save.mute = false; S.level = save.level = 0; persist(); newGame("adv"); });
-    $("#atoutsBtn").addEventListener("click", openAtouts);
-    $("#atClose").addEventListener("click", () => { $("#atouts").classList.remove("on"); renderMenu(); });
+    $("#tutoBtn").addEventListener("click", () => { save.seen = {}; save.mute = false; S.stage = save.stage = 0; chapterView = 0; persist(); newGame("adv"); });
     for (const id of ["capsuleBtn", "quickBooster", "crystalsBtn"]) $(`#${id}`).addEventListener("click", openCapsuleShop);
     $("#quickAtouts").addEventListener("click", openAtouts);
     $("#menuHelp").addEventListener("click", () => openHelp(null));

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bataille des Alliés — Propositions v0.17</title>
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+  <style>
+    :root { --navy: #1f2a44; --deep: #10162b; --cream: #f5e9cf; --orange: #f26a3d; --yellow: #f5c445; --teal: #2fa394; --violet: #5b5fc7; --pink: #d0508f; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--deep) radial-gradient(circle at 20% 10%, #24305a, transparent 50%); color: var(--cream); font-family: "Righteous", system-ui, sans-serif; }
+    header { padding: 28px 18px 8px; max-width: 1180px; margin: auto; }
+    h1 { margin: 0; font-weight: 400; font-size: clamp(1.6rem, 5vw, 2.4rem); color: var(--yellow); text-shadow: 0 3px 0 var(--orange); }
+    header p, .note { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.92rem; line-height: 1.45; color: rgba(245, 233, 207, 0.85); max-width: 760px; }
+    section { max-width: 1180px; margin: 0 auto; padding: 18px; }
+    h2 { margin: 0 0 4px; font-weight: 400; font-size: 1.3rem; }
+    h2 small { font-size: 0.7rem; color: var(--teal); letter-spacing: 0.12em; margin-left: 8px; }
+    .row { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 12px; }
+    .opt { width: 250px; }
+    .opt h3 { margin: 8px 0 2px; font-weight: 400; font-size: 1rem; color: var(--yellow); }
+    .opt h3 .pick { font-size: 0.6rem; padding: 1px 7px; border-radius: 99px; background: var(--teal); color: var(--cream); vertical-align: 2px; }
+    .opt p { margin: 0; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.8rem; line-height: 1.35; color: rgba(245, 233, 207, 0.8); }
+    .phone { position: relative; width: 250px; height: 470px; border-radius: 28px; border: 3px solid #0a0f1e; background: #10162b radial-gradient(circle, rgba(255,255,255,.8) 0 1px, transparent 1.5px) 0 0 / 34px 41px; overflow: hidden; box-shadow: 0 10px 0 #0a0f1e; padding: 14px 10px; display: flex; flex-direction: column; gap: 8px; }
+    .pic { border-radius: 50%; overflow: hidden; border: 3px solid var(--cream); background: var(--orange); }
+    .pic svg { display: block; width: 100%; height: 100%; }
+    .btn { display: block; text-align: center; padding: 9px; border-radius: 99px; background: var(--orange); border: 2px solid var(--navy); box-shadow: 0 4px 0 #0a0f1e; font-size: 0.9rem; }
+    .btn.y { background: var(--yellow); color: var(--navy); }
+    .tag { font-size: 0.55rem; letter-spacing: 0.12em; color: var(--teal); text-align: center; }
+    .ttl { text-align: center; font-size: 1.1rem; }
+    /* A : chemin */
+    .path { display: flex; justify-content: space-between; align-items: flex-end; padding: 0 2px; }
+    .path .pic { width: 44px; height: 44px; }
+    .path .boss { width: 58px; height: 58px; border-color: var(--orange); box-shadow: 0 0 0 3px var(--yellow), 0 0 14px var(--orange); background: var(--pink); }
+    .lock { filter: grayscale(1) brightness(.35); }
+    /* B : constellation verticale */
+    .constel { position: relative; flex: 1; }
+    .constel .pic { position: absolute; width: 40px; height: 40px; }
+    .constel svg.line { position: absolute; inset: 0; width: 100%; height: 100%; }
+    /* C : planète */
+    .planet { position: relative; width: 210px; height: 210px; margin: 6px auto; }
+    .planet .ball { position: absolute; inset: 40px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffb08a, var(--orange) 55%, #7d2410); border: 3px solid var(--navy); box-shadow: inset -18px -12px 0 rgba(0,0,0,.25); }
+    .planet .pic { position: absolute; width: 42px; height: 42px; }
+    /* Boss */
+    .bossA { background: radial-gradient(circle at 50% 22%, #6a1838, var(--navy) 62%); }
+    .bossA .pic { width: 120px; height: 120px; margin: 8px auto; border-color: var(--orange); box-shadow: 0 0 0 4px var(--yellow), 0 0 30px var(--orange); }
+    .move { padding: 7px; border-radius: 10px; border: 2px dashed var(--orange); font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.72rem; line-height: 1.3; background: rgba(0,0,0,.3); }
+    .vs { display: grid; grid-template-rows: 1fr auto 1fr; flex: 1; }
+    .vs .half { display: grid; place-items: center; }
+    .vs .top { background: linear-gradient(160deg, #6a1838, transparent); }
+    .vs .burst { justify-self: center; padding: 10px 14px; background: var(--yellow); color: var(--navy); font-size: 1.4rem; clip-path: polygon(0 20%, 14% 0, 32% 14%, 50% 0, 68% 16%, 86% 0, 100% 26%, 92% 52%, 100% 80%, 84% 100%, 62% 84%, 46% 100%, 28% 82%, 10% 100%, 0 70%, 8% 46%); }
+    /* Collection */
+    .tabs4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; padding: 3px; border-radius: 10px; background: #0a0f1e; font-size: 0.62rem; text-align: center; }
+    .tabs4 span { padding: 6px 0; border-radius: 8px; }
+    .tabs4 .on { background: var(--yellow); color: var(--navy); }
+    .show { display: grid; grid-template-columns: 70px 1fr; gap: 8px; align-items: center; padding: 8px; border-radius: 12px; border: 2px solid rgba(245,233,207,.4); font-size: 0.7rem; }
+    .show .pic { width: 66px; height: 66px; }
+    .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .grid4 .pic { width: 46px; height: 46px; margin: auto; }
+    .album { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 8px; border-radius: 10px; background: #f5e9cf; }
+    .album .slot { border-radius: 8px; border: 2px dashed #c9b996; display: grid; place-items: center; }
+    .album .pic { width: 54px; height: 54px; border-color: var(--navy); }
+    /* Dés */
+    .dice { display: flex; flex-wrap: wrap; gap: 14px; }
+    .die { width: 62px; text-align: center; font-size: 0.62rem; color: rgba(245,233,207,.8); }
+    .die-prev { aspect-ratio: 1; display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); padding: 14%; gap: 2%; border-radius: 22%; background: var(--die-face); border: 2px solid var(--die-edge); margin-bottom: 4px; }
+    .die-prev i { border-radius: 50%; }
+    .die-prev i.p { background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.8), transparent 58%), var(--die-pip); box-shadow: 0 0 5px var(--die-pip); }
+    .s-galet { border-radius: 38%; } .s-rond { border-radius: 50%; }
+    .s-hexa { clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); border-radius: 0; }
+    .s-octo { clip-path: polygon(29% 0, 71% 0, 100% 29%, 100% 71%, 71% 100%, 29% 100%, 0 71%, 0 29%); border-radius: 0; }
+    .s-gemme { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); border-radius: 0; padding: 22%; }
+    .p-star i.p { clip-path: polygon(50% 0, 63% 35%, 100% 38%, 71% 60%, 81% 100%, 50% 77%, 19% 100%, 29% 60%, 0 38%, 37% 35%); border-radius: 0; box-shadow: none; }
+    .p-heart i.p { clip-path: polygon(50% 100%, 6% 54%, 0 30%, 9% 9%, 29% 2%, 50% 20%, 71% 2%, 91% 9%, 100% 30%, 94% 54%); border-radius: 0; box-shadow: none; }
+    .p-diamond i.p { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); border-radius: 0; }
+    .p-eye i.p { background: radial-gradient(circle at 50% 56%, #10162b 0 30%, var(--die-pip) 33% 46%, #fff 49%); box-shadow: 0 0 0 1px #10162b; }
+    @keyframes hue { to { filter: hue-rotate(360deg); } }
+    .rainbow i.p, .rainbow-art { animation: hue 2s linear infinite; }
+    /* Courbe */
+    .chart { background: rgba(16,22,43,.85); border: 2px solid rgba(245,233,207,.3); border-radius: 16px; padding: 12px; max-width: 900px; }
+    .chart svg { width: 100%; height: auto; display: block; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Propositions · progression, boss, collection</h1>
+    <p>Trois pistes par écran. Celle marquée « dans le jeu » est intégrée à la v0.17 pour que tu puisses la tester ; dis-moi si tu préfères une autre piste. Les illustrations sont celles du jeu.</p>
+  </header>
+
+  <section>
+    <h2>1 · La carte de campagne <small>5 CHAPITRES × (3 SOLDATS + 1 BOSS)</small></h2>
+    <div class="row" id="maps"></div>
+  </section>
+  <section>
+    <h2>2 · Avant le boss <small>LE SUPER COUP EST ANNONCÉ</small></h2>
+    <div class="row" id="bosses"></div>
+  </section>
+  <section>
+    <h2>3 · L'onglet Cartes <small>PERSONNAGES · ATOUTS · DÉS · DOS</small></h2>
+    <div class="row" id="cols"></div>
+  </section>
+  <section>
+    <h2>4 · Des dés qui ont de la gueule <small>FORME + POINTS + COULEUR</small></h2>
+    <p class="note">Chaque dé combine une forme (cube, galet, boule, hexagone, octogone, gemme), des points (ronds, étoiles, cœurs, losanges, yeux de martien) et une matière. Les légendaires changent de couleur en continu.</p>
+    <div class="dice" id="dice"></div>
+  </section>
+  <section>
+    <h2>5 · La progression, simulée <small>2 500 PARTIES PAR ÉTAPE</small></h2>
+    <p class="note">Chances de victoire d'un joueur correct (ni débutant ni expert) à chaque étape, avec les atouts gagnés jusque-là. Chaque chapitre démarre par un petit répit, chaque boss est un palier. Le simulateur ne sait pas anticiper les super coups : un joueur qui prépare sa main fait mieux.</p>
+    <div class="chart"><svg id="chart" viewBox="0 0 900 300"></svg></div>
+  </section>
+
+  <script src="casts.js"></script>
+  <script>
+    const $ = s => document.querySelector(s);
+    const pic = (cast, rank, hue = 0, cls = "", house = "H") => { let s = art(cast, house, rank, 5); if (hue) s = s.replace("<svg ", `<svg style="filter:hue-rotate(${hue}deg)" `); return `<div class="pic ${cls}">${s}</div>`; };
+    const opt = (title, picked, text, inner, phoneCls = "") => `<div class="opt"><div class="phone ${phoneCls}">${inner}</div><h3>${title} ${picked ? '<span class="pick">DANS LE JEU</span>' : ""}</h3><p>${text}</p></div>`;
+
+    $("#maps").innerHTML = [
+      opt("A · Le chemin du chapitre", true, "Un chapitre à la fois, ses 4 étapes en ligne, le boss au bout. Flèches pour changer de planète. Tout tient dans l'écran, sans défilement.",
+        `<div class="tag">AVENTURE · CHAPITRE 2/5</div><div class="ttl">Mars</div>
+         <div class="path">${pic("cranes", "D", 0)}${pic("cranes", "V", 0)}${pic("cranes", "A", 0, "lock")}${pic("cranes", "R", 0, "boss lock", "S")}</div>
+         <div style="display:flex;justify-content:space-between;font-size:.55rem;color:#f5c445;padding:0 6px"><span>★★☆</span><span>★☆☆</span><span>☆☆☆</span><span>BOSS</span></div>
+         <div style="flex:1"></div><div class="btn">Combattre Major Méninge</div><div style="font-size:.6rem;text-align:center;opacity:.8">Victoire : 25 ◆ + atout Rayon tracteur</div>`),
+      opt("B · La constellation", false, "Toute la campagne sur une seule carte d'étoiles qu'on fait glisser verticalement. Très « conquête spatiale », mais il faut défiler.",
+        `<div class="tag">TA CONQUÊTE · 7/20</div><div class="constel"><svg class="line" viewBox="0 0 230 380"><path d="M40 360 L170 310 L60 250 L180 200 L70 140 L170 90 L110 30" fill="none" stroke="#f5e9cf" stroke-dasharray="4 6" stroke-width="2"/></svg>
+         ${[[20, 340, "mars", "R"], [150, 290, "mars", "D"], [40, 230, "mars", "V"], [160, 180, "mars", "D"], [50, 120, "cranes", "V"], [150, 70, "cranes", "A"], [90, 10, "cranes", "R"]].map(([x, y, c, r], i) => `<div style="position:absolute;left:${x}px;top:${y}px">${pic(c, r, i === 3 ? 300 : 0, i > 4 ? "lock" : "")}</div>`).join("")}</div><div class="btn">Continuer</div>`),
+      opt("C · La planète en orbite", false, "La planète du chapitre au centre, ses 4 adversaires en satellites. Le boss attend sur l'orbite haute. Spectaculaire, moins lisible sur petit écran.",
+        `<div class="tag">CHAPITRE 3</div><div class="ttl">Jupiter</div><div class="planet"><div class="ball"></div>
+         ${[[0, 84, "V"], [84, 168, "D"], [168, 84, "A"], [84, -6, "R"]].map(([x, y, r], i) => `<div style="position:absolute;left:${x}px;top:${y}px">${pic("poulpes", r, i === 3 ? 200 : 0, i === 3 ? "boss" : "")}</div>`).join("")}</div><div style="flex:1"></div><div class="btn">Combattre</div>`)
+    ].join("");
+
+    $("#bosses").innerHTML = [
+      opt("A · La fiche du boss", true, "Portrait géant, nom, super coup, fréquence et un conseil pour l'encaisser. On sait à quoi s'attendre avant de jouer.",
+        `<div class="tag">BOSS DE MARS</div>${pic("cranes", "R", 0, "", "S")}<div class="ttl" style="font-size:1.3rem;color:#f5c445">Général Krakmar</div>
+         <div class="move"><b>Super coup : Bombardement</b><br>Toutes les 3 manches, −3 à ton total. Sa jauge te prévient.<br><br><b>Conseil</b> : garde une paire pour ce tour-là.</div><div style="flex:1"></div><div class="btn">Affronter !</div>`, "bossA"),
+      opt("B · Le face-à-face", false, "Écran coupé en deux façon affiche de combat : le boss en haut, toi en bas, un gros VS au milieu. Plus de spectacle, moins d'explications.",
+        `<div class="vs"><div class="half top">${pic("incognito", "R", 120, "", "S").replace('class="pic', 'style="width:110px;height:110px" class="pic')}<div class="ttl">Zygomax l'Ancien</div></div><div class="burst">VS</div><div class="half">${pic("mars", "R").replace('class="pic', 'style="width:90px;height:90px" class="pic')}<div class="ttl">Toi</div></div></div><div class="btn">Combattre</div>`),
+      opt("C · En jeu : la jauge", true, "Pendant le combat, une jauge sous le nom du boss se remplit à chaque manche. Pleine : « SUPER COUP ! » explose, la table s'entoure de rouge.",
+        `<div style="padding:6px;border:2px solid #f5c445;border-radius:12px;display:flex;gap:8px;align-items:center">${pic("mars", "D", 300).replace('class="pic', 'style="width:34px;height:34px" class="pic')}<div style="font-size:.7rem">Reine Gloubi<div style="color:#f26a3d;font-size:.55rem">SUPER ▮▮▯</div></div></div>
+         <div style="flex:1;border-radius:14px;box-shadow:inset 0 0 0 3px #ff5f7a, inset 0 0 40px rgba(255,60,100,.45);display:grid;place-items:center;font-size:1.5rem;color:#fff;text-shadow:0 3px 0 #f26a3d">SUPER COUP !</div>
+         <div style="font-size:.7rem;text-align:center"><b style="color:#f5c445">Ouragan gluant</b> : tes dés demandent 1 de plus</div>`)
+    ].join("");
+
+    const grid = (ids) => `<div class="grid4">${ids.map(([c, r, h, l]) => pic(c, r, h, l ? "lock" : "")).join("")}</div>`;
+    $("#cols").innerHTML = [
+      opt("A · Onglets + vitrine", true, "Quatre onglets en haut, l'objet choisi en grand avec son effet et un bouton Équiper, la grille en dessous. Défilement vertical seulement, sans barre visible.",
+        `<div class="tabs4"><span class="on">Persos</span><span>Atouts</span><span>Dés</span><span>Dos</span></div>
+         <div class="show">${pic("poulpes", "R", 0)}<div><b style="color:#f5c445">Octavia</b><br>Tentacules · Huit bras<div class="btn y" style="padding:4px;margin-top:5px;font-size:.7rem">Équiper</div></div></div>
+         ${grid([["mars", "R", 0], ["mars", "D", 0], ["mars", "V", 0, 1], ["mars", "A", 0], ["cranes", "R", 140, 1], ["cranes", "D", 0], ["poulpes", "R", 0], ["poulpes", "V", 220, 1], ["incognito", "R", 0, 1], ["incognito", "D", 300], ["incognito", "V", 0, 1], ["poulpes", "A", 0, 1]])}`),
+      opt("B · L'album à vignettes", false, "Un album papier façon autocollants Panini : une page par tribu, les cases vides attendent leur personnage. Très collection, moins de place pour les détails.",
+        `<div class="tag">ALBUM · TENTACULES 5/8</div><div class="album">${[["R"], ["D"], ["V"], ["A"], ["R", 1], ["D", 1]].map(([r, l]) => `<div class="slot">${l ? "?" : pic("poulpes", r)}</div>`).join("")}</div><div class="tag">◀ page 3/4 ▶</div>`),
+      opt("C · Le vestiaire", false, "Ton personnage en grand au centre, entouré de son dé et de son dos de cartes ; on fait défiler les options sous chaque emplacement. Idéal pour la personnalisation, moins pour voir la collection.",
+        `<div style="display:grid;place-items:center;flex:1">${pic("incognito", "V", 300).replace('class="pic', 'style="width:140px;height:140px" class="pic')}</div>
+         <div style="display:flex;justify-content:space-around;font-size:.6rem;text-align:center"><div>‹ Dé ›<br>Octo d'or</div><div>‹ Dos ›<br>Galaxie</div><div>‹ Perso ›<br>Mister X</div></div><div class="btn y">Équiper</div>`)
+    ].join("");
+
+    const DICE = [
+      ["Dé stellaire", "cube", "dot", "radial-gradient(circle at 30% 24%, #8f93f0, #4a4fb8 55%, #262b78)", "#f5c445", "#f5e9cf"],
+      ["Galet de lave", "galet", "dot", "radial-gradient(circle at 30% 24%, #ffc08a, #f26a3d 52%, #7d2410)", "#fff3c4", "#3a120a"],
+      ["Cristal de glace", "hexa", "star", "radial-gradient(circle at 30% 24%, #ffffff, #a8e9f2 52%, #3d8fb0)", "#1f2a44", "#ffffff"],
+      ["Dé menthe", "cube", "heart", "radial-gradient(circle at 30% 24%, #e8fff4, #8fe3c0 52%, #2a8a6a)", "#d0508f", "#1f2a44"],
+      ["Boule lunaire", "rond", "dot", "radial-gradient(circle at 30% 24%, #ffffff, #c9c4b8 52%, #6f6a60)", "#1f2a44", "#f5e9cf"],
+      ["Bonbon", "galet", "heart", "radial-gradient(circle at 30% 24%, #fff0f7, #ff8fc4 52%, #b03a78)", "#fff", "#1f2a44"],
+      ["Œil gluant", "rond", "eye", "radial-gradient(circle at 30% 24%, #e3ffc4, #7bd65a 52%, #2a7030)", "#d0508f", "#1f2a44"],
+      ["Octo d'or", "octo", "diamond", "radial-gradient(circle at 30% 24%, #fffbe0, #f5c445 48%, #9c6a08)", "#1f2a44", "#fff6c9"],
+      ["Hexa de nuit", "hexa", "eye", "radial-gradient(circle at 30% 24%, #5b5fc7, #1f2a44 58%, #0a0f1e)", "#7be0a4", "#8f93f0"],
+      ["Gemme corail", "gemme", "star", "radial-gradient(circle at 30% 24%, #ffd9c9, #ff7a6b 52%, #9c2a20)", "#fff6c9", "#1f2a44"],
+      ["Dé radioactif", "octo", "dot", "radial-gradient(circle at 30% 24%, #f4ffb0, #b8f03d 50%, #4f7a10)", "#1f2a44", "#e8ff6a"],
+      ["Saturnien", "rond", "star", "conic-gradient(from 30deg, #f5c445, #f26a3d, #d0508f, #5b5fc7, #f5c445)", "#fff", "#fff"],
+      ["Œil cosmique", "gemme", "eye", "radial-gradient(circle at 30% 24%, #ffe0f0, #d0508f 50%, #3a0a2a)", "#f5c445", "#fff", 1],
+      ["Dé du néant", "galet", "star", "radial-gradient(circle at 30% 24%, #4a4f86, #10162b 58%, #000)", "#ff5fa8", "#d0508f", 1]
+    ];
+    $("#dice").innerHTML = DICE.map(([n, sh, pp, face, pip, edge, rb]) => `<div class="die"><div class="die-prev s-${sh} p-${pp}${rb ? " rainbow" : ""}" style="--die-face:${face};--die-pip:${pip};--die-edge:${edge}">${[1, 0, 1, 0, 1, 0, 1, 0, 1].map(on => `<i${on ? ' class="p"' : ""}></i>`).join("")}</div>${n}</div>`).join("");
+
+    // Résultats du simulateur (tools/balance-sim.js, BalanceSim.campaign(PLAYER, 2500)), v0.17.
+    const CAMP = [74.4, 71.8, 67.2, 63.6, 60, 56.1, 52.8, 48.1, 53, 49.9, 47.6, 41.3, 51.1, 46.7, 42.7, 37.6, 38.9, 35.6, 32.9, 30.3];
+    const PLANETS = ["Lune", "Mars", "Jupiter", "Saturne", "Neptune"];
+    const W = 900, H = 300, x = i => 50 + i * 42, y = v => 260 - (v - 20) * 3.4;
+    let svg = "";
+    for (const v of [30, 50, 70]) svg += `<line x1="40" x2="${W - 10}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(245,233,207,.15)"/><text x="34" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="rgba(245,233,207,.6)">${v}%</text>`;
+    PLANETS.forEach((p, c) => { svg += `<text x="${x(4 * c + 1.5)}" y="292" text-anchor="middle" font-size="13" fill="#f5c445">${p}</text>`; });
+    svg += `<polyline fill="none" stroke="#2fa394" stroke-width="3" points="${CAMP.map((v, i) => `${x(i)},${y(v)}`).join(" ")}"/>`;
+    CAMP.forEach((v, i) => {
+      const boss = i % 4 === 3;
+      svg += `<circle cx="${x(i)}" cy="${y(v)}" r="${boss ? 8 : 5}" fill="${boss ? "#f26a3d" : "#f5e9cf"}" stroke="#1f2a44" stroke-width="2"/>`;
+      svg += `<text x="${x(i)}" y="${y(v) - 12}" text-anchor="middle" font-size="10" fill="${boss ? "#f26a3d" : "rgba(245,233,207,.8)"}">${Math.round(v)}</text>`;
+    });
+    $("#chart").innerHTML = svg;
+  </script>
+</body>
+</html>
