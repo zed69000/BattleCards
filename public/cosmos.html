@@ -29,6 +29,7 @@
     html, body { height: 100%; overscroll-behavior: none; touch-action: manipulation; }
     body { margin: 0; overflow: hidden; background: var(--deep); color: var(--cream); font-family: "Righteous", ui-rounded, system-ui, sans-serif; font-size: 14px; user-select: none; }
     button { font: inherit; color: inherit; cursor: pointer; }
+    [hidden] { display: none !important; }
 
     #space { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
     #flash { position: fixed; inset: 0; z-index: 40; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 45%, #fff 0, var(--yellow) 30%, transparent 70%); }
@@ -199,18 +200,33 @@
     .boss-sheet h2 { font-size: 1.8rem; text-shadow: 0 3px 0 var(--orange); }
     .boss-sheet .move { margin: 0 0 10px; padding: 8px 10px; border-radius: 12px; background: rgba(0, 0, 0, 0.35); border: 2px dashed var(--orange); font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.88rem; line-height: 1.35; text-align: left; }
     .boss-sheet .move b { font-family: "Righteous", sans-serif; font-weight: 400; color: var(--yellow); }
-    .bossbar { display: flex; align-items: center; gap: 3px; margin-top: 3px; font-size: 0.52rem; letter-spacing: 0.08em; color: var(--orange); text-transform: uppercase; }
+    .bossbar { display: flex; align-items: center; gap: 3px; height: 0.95em; line-height: 1; font-size: 0.52rem; letter-spacing: 0.08em; color: var(--orange); text-transform: uppercase; }
     .bossbar i { width: 12px; height: 7px; border-radius: 3px; border: 1.5px solid var(--orange); }
     .bossbar i.on { background: var(--orange); }
     .bossbar.ready { color: #fff; animation: pulse 0.7s ease-in-out infinite; }
     .bossbar.ready i { background: #ff5f7a; border-color: #fff; }
     .field.charged::before { content: ""; position: absolute; inset: -6px; border-radius: 18px; pointer-events: none; box-shadow: inset 0 0 0 3px #ff5f7a, inset 0 0 40px rgba(255, 60, 100, 0.45); animation: pulse 1.1s ease-in-out infinite; }
     /* Formes de dés et de points */
-    .cube.s-galet .f, .die-prev.s-galet { border-radius: 38%; }
-    .cube.s-rond .f, .die-prev.s-rond { border-radius: 50%; }
-    .cube.s-hexa .f, .die-prev.s-hexa { clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); border-radius: 0; }
-    .cube.s-octo .f, .die-prev.s-octo { clip-path: polygon(29% 0, 71% 0, 100% 29%, 100% 71%, 71% 100%, 29% 100%, 0 71%, 0 29%); border-radius: 0; }
-    .cube.s-gemme .f, .die-prev.s-gemme { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); border-radius: 0; padding: 22%; }
+    /* Le galet reste un cube 3D aux coins arrondis ; boule, hexagone, octogone et gemme sont des jetons en relief. */
+    .cube.s-galet .f, .die-prev.s-galet { border-radius: 30%; }
+    .die-prev.s-rond, .token.s-rond { border-radius: 50%; }
+    .die-prev.s-hexa, .token.s-hexa, .token.s-hexa::before { clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); border-radius: 0; }
+    .die-prev.s-octo, .token.s-octo, .token.s-octo::before { clip-path: polygon(29% 0, 71% 0, 100% 29%, 100% 71%, 71% 100%, 29% 100%, 0 71%, 0 29%); border-radius: 0; }
+    .die-prev.s-gemme, .token.s-gemme, .token.s-gemme::before { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); border-radius: 0; padding: 23%; }
+    .die-prev { box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.28), inset 0 4px 0 rgba(255, 255, 255, 0.35); }
+    .die-prev.s-rond { background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.75), transparent 28%), var(--die-face); box-shadow: inset -6px -8px 12px rgba(0, 0, 0, 0.45); }
+    .token-wrap { position: absolute; inset: 0; display: none; filter: drop-shadow(0 3px 0 #0a0f1e) drop-shadow(0 0 8px rgba(91, 95, 199, 0.7)); }
+    .die-stage.flat .cube { display: none; }
+    .die-stage.flat .token-wrap { display: block; }
+    .token { position: relative; width: 100%; height: 100%; display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); padding: 7px; gap: 1px; background: var(--die-face); }
+    .token::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(160deg, rgba(255, 255, 255, 0.45), transparent 42%, rgba(0, 0, 0, 0.35)); }
+    .token.s-rond { background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.8), transparent 26%), var(--die-face); box-shadow: inset -7px -9px 12px rgba(0, 0, 0, 0.5); }
+    .token.s-rond::before { display: none; }
+    .token i { position: relative; z-index: 1; border-radius: 50%; margin: 1px; }
+    .token i.p { background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.8), transparent 58%), var(--die-pip, var(--yellow)); box-shadow: 0 0 5px var(--die-pip, var(--yellow)); }
+    .token.rainbow i.p { animation: hue 1.6s linear infinite; }
+    .tray.hit .token-wrap { filter: drop-shadow(0 3px 0 #0a0f1e) drop-shadow(0 0 10px var(--ok)); }
+    .tray.miss .token-wrap { filter: drop-shadow(0 3px 0 #0a0f1e) drop-shadow(0 0 10px var(--bad)); }
     .p-star i.p { clip-path: polygon(50% 0, 63% 35%, 100% 38%, 71% 60%, 81% 100%, 50% 77%, 19% 100%, 29% 60%, 0 38%, 37% 35%); border-radius: 0 !important; box-shadow: none !important; }
     .p-heart i.p { clip-path: polygon(50% 100%, 6% 54%, 0 30%, 9% 9%, 29% 2%, 50% 20%, 71% 2%, 91% 9%, 100% 30%, 94% 54%); border-radius: 0 !important; box-shadow: none !important; }
     .p-diamond i.p { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); border-radius: 0 !important; }
@@ -667,7 +683,7 @@
     <div class="col">
       <div class="hud" id="hud1">
         <div class="ava" id="ava1"></div>
-        <div class="nm"><span id="name1">Gaspard</span><small id="perk1">Talent</small><div class="pips" id="valor1" title="Boosts ⚡ : 1 boost pour appeler un allié ou riposter"></div><div class="bossbar" id="bossBar" hidden></div></div>
+        <div class="nm"><span id="name1">Gaspard</span><small id="perk1">Talent</small><div class="bossbar" id="bossBar" hidden></div><div class="pips" id="valor1" title="Boosts ⚡ : 1 boost pour appeler un allié ou riposter"></div></div>
         <div class="stat">Pioche<b id="deck1">0</b></div>
         <div class="stat loot" id="lootBox1">Butin<b id="loot1">0</b></div>
         <button class="icon" id="pauseBtn" aria-label="Pause">II</button>
@@ -685,7 +701,7 @@
           <div class="vs" id="roundChip">Manche 1</div>
           <div class="tray" id="tray">
             <div class="tray-info"><span id="trayNeed"></span><b id="trayRes"></b></div>
-            <div class="die-stage"><div class="cube" id="cube"></div></div>
+            <div class="die-stage"><div class="cube" id="cube"></div><div class="token-wrap"><div class="token" id="token"></div></div></div>
           </div>
         </div>
         <div class="lane">
@@ -999,7 +1015,7 @@
       ["8", 8, "Chasseur"], ["9", 9, "Croiseur"], ["10", 10, "Amiral"], ["V", 11, "Valet"], ["D", 12, "Dame"], ["R", 13, "Roi"], ["A", 14, "As"]
     ];
     /* Numéro de version affiché en bas du menu : à augmenter à chaque mise en ligne. */
-    const VERSION = "0.22";
+    const VERSION = "0.23";
     const HAND_SIZE = 5, MAX_FUEL = 3, MAX_ATOUTS = 3, CAPSULE_COST = 60;
     /* Butin : les petites cartes perdent les combats mais rapportent gros. La Supernova se consume. */
     const ATOUT_LOOT = 2, TRACTOR_STEAL = 3, CLONE_CAP = 7, SIPHON = 3;
@@ -1377,6 +1393,7 @@
       $("#roundChip").textContent = `Manche ${S.round}`;
       const bar = $("#bossBar");
       bar.hidden = !S.boss;
+      $("#perk1").hidden = Boolean(S.boss);
       if (S.boss) {
         const b = BOSSES[S.boss], fill = S.charged ? b.every : (S.round % b.every);
         bar.classList.toggle("ready", S.charged);
@@ -1675,12 +1692,24 @@
       const n = duel() && roller === 1 ? await netNext("roll") : 1 + rand(6);
       if (roller === 0) netSend("roll", n);
       // chacun lance son propre dé, avec sa forme et ses points
-      const dieId = skinOf(roller).dice, cube = $("#cube");
+      const dieId = skinOf(roller).dice, cube = $("#cube"), token = $("#token");
+      const shape = DICE[dieId].shape || "cube", flat = !["cube", "galet"].includes(shape);
       cube.style.cssText += `;${dieVars(dieId)}`;
       cube.className = `cube ${dieCls(dieId)}`;
       spins += 2;
       const [x, y] = DIE_ROT[n];
       const tray = $("#tray");
+      tray.querySelector(".die-stage").classList.toggle("flat", flat);
+      if (flat) {
+        // Jeton : il tournoie en faisant défiler ses faces, puis s'arrête sur la bonne.
+        token.className = `token ${dieCls(dieId)}`;
+        token.style.cssText = dieVars(dieId);
+        const face = k => { token.innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => `<i${PIPS[k].includes(i) ? ' class="p"' : ""}></i>`).join(""); };
+        let t = 0;
+        const tick = setInterval(() => { t += 1; face(t < 11 ? 1 + rand(6) : n); if (t >= 11) clearInterval(tick); }, 95);
+        face(1 + rand(6));
+        token.animate([{ transform: "rotate(0deg) scale(1)" }, { transform: "rotate(540deg) scale(1.15)", offset: 0.6 }, { transform: "rotate(720deg) scale(1)" }], { duration: reduced ? 1 : 1100, easing: "cubic-bezier(.2,.7,.3,1)" });
+      }
       $("#trayRes").textContent = "…"; $("#trayRes").className = "";
       // Le dé est lancé au centre de la table, rebondit, montre sa face, puis regagne son coin.
       const stage = tray.querySelector(".die-stage"), from = center(stage), to = center($("#field"));
@@ -2739,6 +2768,7 @@
           timers.forEach(clearTimeout);
           holdWarp(0);
           el.removeEventListener("pointerdown", finish);
+          el.classList.remove("on");
           resolve();
         }
         el.addEventListener("pointerdown", finish);
