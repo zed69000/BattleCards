@@ -197,6 +197,21 @@ window.BalanceSim = (function () {
         if (!stock(0) || !stock(1)) return finish(!stock(0) && !stock(1) ? null : stock(0) ? 0 : 1, true);
         for (const p of [1, 0]) if (stock(p) >= 2) B.amb[p] = blind(p);
         const val = [0, 0];
+        if (OPT.war === "pick") {
+          // Duel choisi : chacun pose une carte de sa main face cachée (+3 avec 1 boost), révélation simultanée.
+          for (const p of [0, 1]) if (!st.hands[p].length && st.decks[p].length) st.hands[p].push(st.decks[p].shift());
+          if (!st.hands[0].length || !st.hands[1].length) return finish(st.hands[0].length ? 0 : st.hands[1].length ? 1 : null, true);
+          const stake = lootSum(st.pot) + lootSum(onTable());
+          for (const p of [0, 1]) {
+            const sorted = [...st.hands[p]].sort((a, b) => a.value - b.value), r = Math.random() * Ls[p].noise;
+            const c = stake + r >= 9 ? sorted[sorted.length - 1] : stake + r >= 5 ? sorted[Math.floor(sorted.length / 2)] : sorted[0];
+            const boost = st.fuel[p] >= 1 && c === sorted[sorted.length - 1] && (stake >= 10 || level >= 2);
+            if (boost) st.fuel[p] -= 1;
+            B.van[p] = take(p, c); val[p] = c.value + (boost ? 3 : 0);
+          }
+          if (val[0] !== val[1]) return finish(val[0] > val[1] ? 0 : 1, true);
+          continue;
+        }
         for (const p of [1, 0]) {
           const boost = st.fuel[p] > 0 && stock(p) >= 2 && (level >= 2 || lootSum(st.pot) >= 10 || Math.random() < 0.4);
           let c = blind(p);
@@ -293,7 +308,7 @@ window.BalanceSim = (function () {
     });
   }
   /* Options de règles à tester, par camp : swap = "never" | "full" | "any", overflow = "none" | "loot" | "surge". */
-  const OPT = { swap: ["never", "never"], overflow: ["none", "none"] };
+  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "pick" };
   const set = o => Object.assign(OPT, o);
   return { game, run, campaign, set, OPT };
 })();

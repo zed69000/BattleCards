@@ -785,7 +785,7 @@
           <li>Quand l'écart ne peut plus être comblé, le jeu te propose de <b>fuir</b> (ou d'<b>encaisser la victoire</b>) au lieu de jouer pour rien.</li>
         </ul>
         <h3>Égalité : la bataille galactique</h3>
-        <p>Rien n'est ramassé. Chacun met une carte en otage, puis retourne la carte du dessus de sa pioche, au hasard. La plus forte rafle tout. Encore égalité ? On recommence.</p>
+        <p>Rien n'est ramassé. Chacun met la carte du dessus de sa pioche en otage, puis choisit <b>en secret</b> une carte de sa main pour le duel. Une <b>surcharge</b> (1 boost ⚡) lui ajoute +3. Révélation en même temps : la plus forte rafle toute la mise. Encore égalité ? On recommence.</p>
         <details><summary>Les bonus des cartes</summary>
           <p><b>Ta carte cachée</b> déclenche un pouvoir selon sa famille :</p>
           <ul>
@@ -977,7 +977,7 @@
       ["8", 8, "Chasseur"], ["9", 9, "Croiseur"], ["10", 10, "Amiral"], ["V", 11, "Valet"], ["D", 12, "Dame"], ["R", 13, "Roi"], ["A", 14, "As"]
     ];
     /* Numéro de version affiché en bas du menu : à augmenter à chaque mise en ligne. */
-    const VERSION = "0.20";
+    const VERSION = "0.21";
     const HAND_SIZE = 5, MAX_FUEL = 3, MAX_ATOUTS = 3, CAPSULE_COST = 60;
     /* Butin : les petites cartes perdent les combats mais rapportent gros. La Supernova se consume. */
     const ATOUT_LOOT = 2, TRACTOR_STEAL = 3, CLONE_CAP = 7, SIPHON = 3;
@@ -1396,7 +1396,7 @@
     }
     function selectable(card) {
       if (S.busy) return false;
-      if (S.phase === "van" || S.phase === "amb") return true;
+      if (S.phase === "van" || S.phase === "amb" || S.phase === "duel") return true;
       if (third()) { const t = afterAlly(0, card); return t[0] >= t[1]; }
       return false;
     }
@@ -1435,10 +1435,10 @@
       renderHud();
       renderTotals();
       renderHand(drawnIds);
-      const mine = !S.busy && ["van", "amb", "ally", "riposte"].includes(S.phase);
+      const mine = !S.busy && ["van", "amb", "ally", "riposte", "duel"].includes(S.phase);
       $("#hud0").classList.toggle("active", mine);
       $("#hud1").classList.toggle("active", S.busy && !["next", "over", "resolve"].includes(S.phase));
-      for (const slot of ["van", "amb", "ally"]) $(`#slot-0-${slot}`).classList.toggle("want", !S.busy && (S.phase === slot || (slot === "ally" && S.phase === "riposte")));
+      for (const slot of ["van", "amb", "ally"]) $(`#slot-0-${slot}`).classList.toggle("want", !S.busy && (S.phase === slot || (slot === "ally" && S.phase === "riposte") || (slot === "van" && S.phase === "duel")));
     }
     function labelSlots() {
       const names = S.war ? { van: "Duel", amb: "Otage", ally: "" } : { van: "Avant-<br>garde", amb: "Embus-<br>cade", ally: "Allié<br>⚡" };
@@ -2119,11 +2119,14 @@
       } else if (S.phase === "ally") {
         const t = [breakdown(0).total, breakdown(1).total];
         setPrompt(`Tu es mené de <b>${t[1] - t[0]}</b>. <b>Glisse un allié</b> (1 ⚡, il t'en reste ${S.fuel[0]}) pour tenter le dé, ou replie-toi.`, [{ label: "Se replier", cls: "ghost", fn: fold }]);
+      } else if (S.phase === "duel") {
+        setPrompt(`Mise : <b>${lootSum(S.pot) + lootSum(boardCards())} pts</b>. <b>Choisis ta carte de duel</b>, en secret : la plus forte rafle tout.`, surgeBtn());
       } else if (S.phase === "riposte") {
         const t = [breakdown(0).total, breakdown(1).total];
         setPrompt(`L'allié de Gaspard te ${t[1] > t[0] ? `passe devant de <b>${t[1] - t[0]}</b>` : "rattrape"} ! <b>Glisse une carte</b> pour riposter (1 ⚡, il t'en reste ${S.fuel[0]}).`, [{ label: "Laisser filer", cls: "ghost", fn: () => pickRiposte(null) }]);
       }
     }
+    const surgeBtn = () => (S.fuel[0] >= 1 ? [{ label: S.duelBoost ? "Surcharge ✓ +3" : "Surcharge +3 · 1 ⚡", cls: S.duelBoost ? "teal" : "ghost", fn: toggleSurge }] : []);
     function fold() { if (S.busy || S.phase !== "ally") return; S.busy = true; S.sel = null; netSend("ally", null); finishRound(1); }
     function pickRiposte(card, opts = {}) {
       if (S.busy || S.phase !== "riposte" || !S.onRiposte) return;
@@ -2137,7 +2140,7 @@
        une impulsion vers le haut à n'importe quel moment du geste : la vitesse au moment du lâcher ne compte pas. */
     function bindDrag(el, card) {
       let start = null, dragging = false, last = null, vel = { x: 0, y: 0 }, peak = 0, dy = 0;
-      const target = () => $(`#slot-0-${S.phase === "riposte" ? "ally" : S.phase}`);
+      const target = () => $(`#slot-0-${S.phase === "riposte" ? "ally" : S.phase === "duel" ? "van" : S.phase}`);
       const need = () => Math.max(30, el.offsetHeight * 0.3);
       const willPlay = () => dy < -need() || (peak < -0.4 && dy < -10);
       const release = () => { start = null; dragging = false; const t = target(); if (t) t.classList.remove("hot"); };
@@ -2240,7 +2243,9 @@
     function describe(card) {
       const go = { fn: () => confirmCard(card) };
       const atout = card.special ? ` <b>Atout</b> : ${ATOUTS[card.special].desc}` : "";
-      if (S.phase === "van") {
+      if (S.phase === "duel") {
+        setPrompt(`<b>${cardName(card)}</b> en duel : <b>${card.value}${S.duelBoost ? " +3" : ""}</b>. Elle rejoindra la mise.`, [{ label: "Engager", cls: "hot", ...go }, ...surgeBtn()]);
+      } else if (S.phase === "van") {
         setPrompt(`<b>${cardName(card)}</b> (${card.label}) en avant-garde ?${atout}`, [{ label: "Poser", ...go }]);
       } else if (S.phase === "amb") {
         const h = HOUSES[card.house];
@@ -2323,6 +2328,7 @@
         netSend("ally", card.id);
         await attemptAlly(0, card, opts);
       } else if (S.phase === "riposte") pickRiposte(card, opts);
+      else if (S.phase === "duel") pickDuel(card, opts);
     }
 
     async function reveal() {
@@ -2505,6 +2511,30 @@
       }
       return S.hands[p].splice(i, 1)[0];
     }
+    /* Égalité : la bataille galactique. Chaque camp met une carte de sa pioche en otage, puis choisit EN SECRET
+       une carte de sa main pour le duel (+3 avec une surcharge à 1 boost). Révélation simultanée : la plus forte
+       rafle toute la mise. Encore égalité ? On remet ça, la mise grimpe. */
+    function aiDuel(level) {
+      const stake = lootSum(S.pot) + lootSum(boardCards());
+      const sorted = [...S.hands[1]].sort((a, b) => a.value - b.value), r = Math.random() * S.aiL.noise;
+      const card = stake + r >= 9 ? sorted[sorted.length - 1] : stake + r >= 5 ? sorted[Math.floor(sorted.length / 2)] : sorted[0];
+      return { card, boost: S.fuel[1] >= 1 && card === sorted[sorted.length - 1] && (stake >= 10 || level >= 2) };
+    }
+    function pickDuel(card, opts = {}) {
+      if (S.busy || S.phase !== "duel" || !S.onDuel) return;
+      S.busy = true;
+      S.sel = null;
+      const done = S.onDuel;
+      S.onDuel = null;
+      done({ card, opts });
+    }
+    function toggleSurge() {
+      if (S.busy || S.phase !== "duel" || S.fuel[0] < 1) return;
+      S.duelBoost = !S.duelBoost;
+      sfx.tap();
+      if (S.duelBoost) { floatText($("#slot-0-van"), "Surcharge +3 !"); sfx.coin(); }
+      basePrompt();
+    }
     async function galacticBattle() {
       const game = gameId;
       S.busy = true;
@@ -2527,56 +2557,55 @@
         S.revealed = false;
         renderAll();
         if (game !== gameId) return;
-        if (level === 1) {
-          await tip("war", "<b>Bataille galactique !</b> Chacun met une carte en otage, puis retourne la carte du dessus de sa pioche, à l'aveugle. La plus forte rafle toute la mise. Avec 1 boost ⚡, tu en pioches deux et tu gardes la meilleure.", $("#field"));
-          if (game !== gameId) return;
-        }
         if (!stock(0) || !stock(1)) {
           if (!stock(0) && !stock(1)) return finishRound(null, "Égalité");
           return finishRound(stock(0) ? 0 : 1);
         }
+        // Les otages, pris sur le dessus de la pioche, gonflent la mise.
         for (const p of [1, 0]) {
-          if (stock(p) < 2) continue;
-          await playCard(p, "amb", await drawBlind(p), true, { from: deckRect(p) });
+          if (!S.decks[p].length || stock(p) < 2) continue;
+          await playCard(p, "amb", S.decks[p].shift(), true, { from: deckRect(p) });
           if (game !== gameId) return;
         }
-        const boost = [false, false];
-        const mise = `Mise : <b>${lootSum(S.pot) + lootSum(boardCards())} pts de butin</b>.`;
-        const options = [{ k: "flip", label: "Retourner ma carte", cls: "hot" }];
-        if (S.fuel[0] > 0 && stock(0) >= 2) options.push({ k: "boost", label: "1 ⚡ : j'en pioche 2" });
-        boost[0] = (await ask(`${mise} Retourne ta carte à l'aveugle.`, options)) === "boost";
-        netSend("boost", boost[0]);
-        if (duel()) setPrompt(`${mise} En attente de <b>Gaspard</b>…`);
-        boost[1] = duel() ? await netNext("boost") : S.fuel[1] > 0 && stock(1) >= 2 && (level >= 2 || lootSum(S.pot) >= 10 || Math.random() < 0.4);
+        for (const p of [0, 1]) if (!S.hands[p].length && S.decks[p].length) S.hands[p].push(S.decks[p].shift());
+        if (!S.hands[0].length || !S.hands[1].length) return finishRound(S.hands[0].length ? 0 : S.hands[1].length ? 1 : null);
+        // Le duel : chacun choisit sa carte en secret.
+        S.phase = "duel";
+        S.duelBoost = false;
+        S.busy = false;
+        const choice = new Promise(resolve => { S.onDuel = resolve; });
+        basePrompt();
+        renderAll();
+        if (level === 1) tip("duel", "<b>Bataille galactique !</b> Choisis en secret une carte de ta main pour le duel : la plus forte rafle <b>toute la mise</b>. Une <b>surcharge</b> à 1 boost ⚡ lui ajoute +3. Gros coup ou carte sacrifiée ? Gaspard hésite aussi…", $("#slot-0-van"));
+        const mine = await choice;
         if (game !== gameId) return;
-        setPrompt(`${mise} Les cartes se retournent…`);
-        for (const p of [1, 0]) {
-          let card = await drawBlind(p);
-          if (boost[p]) {
-            S.fuel[p] -= 1;
-            renderFuel(p);
-            sfx.coin();
-            const other = await drawBlind(p);
-            if (other) {
-              const keep = other.value > card.value ? other : card;
-              S.pot.push(keep === card ? other : card);
-              card = keep;
-            }
-          }
-          const el = await playCard(p, "van", card, true, { from: deckRect(p) });
-          await sleep(350);
-          el.classList.remove("facedown");
-          sfx.flip();
-          await sleep(520);
-          S.war.val[p] = card.value;
-          renderTotals();
-          impact($(`#slot-${p}-van`), card, false);
-          if (boost[p]) floatText(el, "La meilleure des 2");
-          await sleep(450);
-          if (game !== gameId) return;
-        }
-        const [mine, theirs] = S.war.val;
-        if (mine !== theirs) return finishRound(mine > theirs ? 0 : 1);
+        const boost = [S.duelBoost, false];
+        netSend("duel", { id: mine.card.id, boost: boost[0] });
+        await playCard(0, "van", mine.card, true, mine.opts);
+        if (game !== gameId) return;
+        setPrompt(`<b>Gaspard</b> choisit sa carte de duel…`);
+        let theirs;
+        if (duel()) { const m = await netNext("duel"); theirs = { card: S.hands[1].find(c => c.id === m.id) || S.hands[1][0], boost: Boolean(m.boost) }; }
+        else { await sleep(700); theirs = aiDuel(level); }
+        if (game !== gameId) return;
+        boost[1] = theirs.boost && S.fuel[1] >= 1;
+        await playCard(1, "van", theirs.card, true);
+        for (const p of [0, 1]) if (boost[p]) { S.fuel[p] -= 1; renderFuel(p); floatText($(`#slot-${p}-van`), "Surcharge +3", false, true); sfx.coin(); }
+        setPrompt("Trois… deux… un…");
+        await sleep(650);
+        if (game !== gameId) return;
+        // Révélation simultanée
+        const cards = [mine.card, theirs.card];
+        for (const p of [0, 1]) $(`#slot-${p}-van .card`).classList.remove("facedown");
+        sfx.flip();
+        await sleep(520);
+        S.war.val = cards.map((c, p) => c.value + (boost[p] ? 3 : 0));
+        renderTotals();
+        for (const p of [0, 1]) impact($(`#slot-${p}-van`), cards[p], false, 1);
+        await sleep(700);
+        if (game !== gameId) return;
+        const [v0, v1] = S.war.val;
+        if (v0 !== v1) return finishRound(v0 > v1 ? 0 : 1);
         await sleep(300);
       }
     }
