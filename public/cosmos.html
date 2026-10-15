@@ -122,6 +122,21 @@
     .levels { position: relative; }
     .levels::before { content: ""; position: absolute; left: 14%; right: 14%; top: 20px; border-top: 3px dotted rgba(245, 233, 207, 0.45); }
     .lvl { position: relative; }
+    .hero { position: relative; width: 100%; max-width: 380px; display: grid; justify-items: center; padding: 2px 0 0; }
+    .hero-rays { position: absolute; left: 50%; top: 44%; width: 150%; aspect-ratio: 1; translate: -50% -50%; z-index: 0; pointer-events: none; background: repeating-conic-gradient(from 0deg, rgba(245, 196, 69, 0.2) 0 10deg, transparent 10deg 22deg); -webkit-mask: radial-gradient(circle, #000 12%, transparent 62%); mask: radial-gradient(circle, #000 12%, transparent 62%); animation: spin 26s linear infinite; }
+    .hero-fan { position: relative; z-index: 1; display: flex; justify-content: center; align-items: flex-end; height: calc(var(--hcw) * 1.42 + 22px); --hcw: clamp(50px, 15.5vw, 72px); }
+    .hero-fan .card { --cw: var(--hcw); margin: 0 calc(var(--hcw) * -0.14); transform-origin: 50% 120%; animation: fanBob 3.2s ease-in-out infinite; animation-delay: calc(var(--i) * -0.55s); }
+    .hero-fan .card:nth-child(3) { --cw: calc(var(--hcw) * 1.18); z-index: 2; }
+    .hero-fan .card.flipper .card-inner { animation: heroFlip 4.6s ease-in-out infinite; }
+    @keyframes fanBob { 0%, 100% { transform: rotate(calc(var(--r) * 1deg)) translateY(calc(var(--y) * 1px)); } 50% { transform: rotate(calc(var(--r) * 1deg + 2deg)) translateY(calc(var(--y) * 1px - 8px)); } }
+    @keyframes heroFlip { 0%, 38% { transform: rotateY(180deg); } 48%, 88% { transform: rotateY(0deg); } 98%, 100% { transform: rotateY(180deg); } }
+    .pow { position: absolute; z-index: 3; right: 2%; top: 0; padding: 8px 9px; font-size: 1rem; color: var(--navy); background: var(--yellow); clip-path: polygon(0 20%, 14% 0, 32% 14%, 50% 0, 68% 16%, 86% 0, 100% 26%, 92% 52%, 100% 80%, 84% 100%, 62% 84%, 46% 100%, 28% 82%, 10% 100%, 0 70%, 8% 46%); rotate: 12deg; animation: beat 1.5s ease-in-out infinite; }
+    .pow.l { right: auto; left: 3%; top: 30%; background: var(--orange); color: var(--cream); rotate: -10deg; font-size: 0.8rem; animation-delay: -0.7s; }
+    .hero h1 { position: relative; z-index: 2; margin: -4px 0 0; font-weight: 400; font-size: clamp(1.6rem, 8vw, 2.3rem); line-height: 0.95; text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e; animation: hover 3.2s ease-in-out infinite; }
+    .hero h1 span { color: var(--yellow); }
+    .hero-tag { position: relative; z-index: 2; margin-top: 6px; padding: 2px 12px; border-radius: 99px; background: var(--cream); color: var(--navy); font-size: 0.8rem; letter-spacing: 0.08em; box-shadow: 0 3px 0 #0a0f1e; rotate: -2deg; }
+    #playBtn { animation: playPulse 1.6s ease-in-out infinite; }
+    @keyframes playPulse { 0%, 100% { scale: 1; box-shadow: 0 4px 0 #0a0f1e, 0 0 0 0 rgba(242, 106, 61, 0.6); } 50% { scale: 1.05; box-shadow: 0 4px 0 #0a0f1e, 0 0 0 10px rgba(242, 106, 61, 0); } }
     .mode-tag { display: inline-block; padding: 2px 10px; border-radius: 99px; background: var(--teal); color: var(--cream); font-size: 0.62rem; letter-spacing: 0.14em; }
     .mode-tag.multi { background: var(--violet); }
 
@@ -190,13 +205,16 @@
     .ava svg { display: block; width: 100%; height: 100%; }
     .nm { flex: 1; min-width: 0; line-height: 1.05; }
     .nm small { display: block; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245, 233, 207, 0.65); }
-    .pips { display: flex; gap: 3px; margin-top: 3px; }
-    .pips i { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--cream); }
-    .pips i.on { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+    /* Jauge de boosts ⚡ : un éclair par boost */
+    .pips { display: flex; align-items: center; gap: 2px; margin-top: 3px; }
+    .pips::before { content: "Boost"; margin-right: 3px; font-size: 0.5rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245, 233, 207, 0.65); }
+    .pips i { width: 10px; height: 14px; background: rgba(245, 233, 207, 0.22); clip-path: polygon(62% 0, 4% 58%, 44% 58%, 30% 100%, 96% 38%, 56% 38%); }
+    .pips i.on { background: var(--yellow); }
     .pips i.pop { animation: pop 500ms ease; }
     .stat { text-align: center; font-size: 0.6rem; line-height: 1.1; text-transform: uppercase; letter-spacing: 0.05em; min-width: 38px; }
     .stat b { display: block; font-weight: 400; font-size: 1.2rem; letter-spacing: 0; }
     .stat.loot b { color: var(--yellow); }
+    .stat.loot b::before { content: ""; display: inline-block; width: 0.62em; height: 0.62em; margin-right: 3px; border-radius: 50%; vertical-align: 0.05em; background: radial-gradient(circle at 35% 30%, #fff6c9, var(--yellow) 55%, #b8800e); border: 1.5px solid var(--navy); }
     .stat.bump { animation: bump 450ms ease; }
     .icon { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--cream); background: transparent; font-size: 0.8rem; }
 
@@ -264,6 +282,15 @@
     .spark { position: absolute; width: 5px; height: 18px; border-radius: 99px; animation: spark 700ms ease-out forwards; }
     .float { position: absolute; padding: 2px 9px; border-radius: 99px; white-space: nowrap; font-size: 0.85rem; background: var(--ok); color: var(--navy); border: 2px solid var(--navy); animation: floatUp 1400ms ease-out forwards; }
     .float.neg { background: var(--bad); }
+    .float.big { font-size: 1.25rem; padding: 3px 14px; background: var(--yellow); }
+    .shock { position: absolute; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; border: 7px solid var(--yellow); box-shadow: 0 0 30px var(--yellow), inset 0 0 22px var(--orange); animation: shock 950ms cubic-bezier(.1, .7, .3, 1) both; }
+    .shock.bad { border-color: var(--orange); box-shadow: 0 0 30px var(--orange), inset 0 0 22px var(--pink); }
+    .spark.fat { width: 9px; height: 30px; }
+    @keyframes shock { from { opacity: 1; transform: scale(0.2); } to { opacity: 0; transform: scale(15); border-width: 1px; } }
+    .banner.mega { width: min(94vw, 460px); white-space: normal; text-align: center; line-height: 1.02; font-size: clamp(2rem, 11vw, 3.6rem); color: #fff; text-shadow: 0 0 6px #fff, 0 3px 0 var(--orange), 0 6px 0 var(--pink), 0 9px 0 #0a0f1e, 0 0 40px var(--yellow); }
+    .banner.mega.show { animation: mega 1700ms cubic-bezier(.2, 1.5, .4, 1) both; }
+    .banner.mega.bad { color: var(--cream); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e, 0 0 30px var(--orange); }
+    @keyframes mega { 0% { opacity: 0; scale: 3.2; rotate: -14deg; } 14% { opacity: 1; scale: 0.88; rotate: 5deg; } 24% { scale: 1.12; rotate: -3deg; } 34% { scale: 1; rotate: 0deg; } 82% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1.5; } }
 
     .hand { min-height: calc(var(--cwb) * 1.6 + 34px); display: flex; justify-content: center; align-items: flex-end; padding: 26px 0 12px; }
     .hand .card { --cw: calc(var(--cwb) * 1.12); margin: 0 -8px; transform: rotate(calc(var(--k) * 4deg)) translateY(calc(var(--k) * var(--k) * 3px)); transition: transform 170ms ease, filter 170ms; }
@@ -306,6 +333,13 @@
     .card.rar-1 .front::after { background-image: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.8) 45%, rgba(120, 255, 225, 0.7) 53%, transparent 68%); animation-duration: 2.8s; }
     .card.rar-2 .front::after { background-image: linear-gradient(115deg, transparent 18%, rgba(255, 90, 160, 0.7) 34%, rgba(255, 235, 110, 0.8) 44%, rgba(90, 255, 200, 0.7) 54%, rgba(120, 160, 255, 0.7) 64%, transparent 80%); animation-duration: 2s; }
     .card.struck { animation: hit 420ms ease; }
+    /* Pièce de butin : ce que la carte rapporte si on la gagne. Les petites cartes sont des trésors. */
+    .coin { position: absolute; z-index: 4; left: calc(var(--cw) * -0.07); bottom: calc(var(--cw) * 0.12); display: grid; place-items: center; width: calc(var(--cw) * 0.3); height: calc(var(--cw) * 0.3); border-radius: 50%; font-size: calc(var(--cw) * 0.19); line-height: 1; color: var(--navy); background: radial-gradient(circle at 35% 30%, #fff6c9, var(--yellow) 55%, #b8800e); border: 2px solid var(--navy); box-shadow: 0 2px 0 #0a0f1e; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .coin.c1 { width: calc(var(--cw) * 0.24); height: calc(var(--cw) * 0.24); font-size: calc(var(--cw) * 0.15); filter: saturate(0.35) brightness(0.92); }
+    .coin.c3 { width: calc(var(--cw) * 0.36); height: calc(var(--cw) * 0.36); font-size: calc(var(--cw) * 0.23); box-shadow: 0 0 0 2px var(--yellow), 0 0 12px var(--yellow); animation: beat 1.7s ease-in-out infinite; }
+    .card.facedown .coin, .hero-fan .flipper .coin { display: none; }
+    .card.treasure .front { background: linear-gradient(170deg, var(--cream) 62%, #ffe7a3); }
+    .card.treasure .n { color: #9c6a08; }
     .card .n { font-size: calc(var(--cw) * 0.135); text-align: center; line-height: 1.1; white-space: nowrap; overflow: hidden; }
     .card.atout .n { font-size: calc(var(--cw) * 0.118); }
     .card.atout .front { background: linear-gradient(160deg, #fff6df, #f7d9e6); }
@@ -351,14 +385,15 @@
     .coach .bubble { position: absolute; left: 50%; transform: translateX(-50%); width: min(380px, calc(100% - 24px)); display: grid; grid-template-columns: 56px 1fr; gap: 10px 12px; align-items: center; padding: 12px 14px; border-radius: 18px; background: var(--cream); color: var(--navy); border: 3px solid var(--navy); box-shadow: 0 6px 0 #0a0f1e; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.94rem; line-height: 1.38; animation: coachIn 260ms cubic-bezier(.2, 1.4, .4, 1); }
     .coach .guide { width: 56px; height: 56px; border-radius: 50%; overflow: hidden; border: 3px solid var(--navy); background: var(--orange); color: var(--orange); }
     .coach .guide svg { display: block; width: 100%; height: 100%; }
+    .coach .bubble { overflow-y: auto; overscroll-behavior: contain; }
     .coach .row { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; font-family: "Righteous", sans-serif; }
     .coach .skip { border: 0; background: none; color: var(--navy); opacity: 0.6; text-decoration: underline; font-size: 0.8rem; }
     .coach .btn { padding: 0.45rem 1.1rem; }
 
     /* ───── Feuilles ───── */
-    .overlay { position: fixed; inset: 0; z-index: 50; display: none; place-items: center; padding: 16px; background: rgba(8, 11, 22, 0.82); }
+    .overlay { position: fixed; inset: 0; z-index: 50; display: none; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) 16px max(16px, env(safe-area-inset-bottom, 0px)); background: rgba(8, 11, 22, 0.82); }
     .overlay.on { display: grid; }
-    .sheet { width: min(440px, 100%); max-height: 92vh; overflow: auto; padding: 18px; border-radius: 18px; background: var(--navy); border: 2px solid var(--cream); box-shadow: 0 8px 0 #0a0f1e; text-align: center; }
+    .sheet { width: min(440px, 100%); max-height: 92vh; max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow: auto; padding: 18px; border-radius: 18px; background: var(--navy); border: 2px solid var(--cream); box-shadow: 0 8px 0 #0a0f1e; text-align: center; }
     .sheet h2 { margin: 0 0 10px; font-weight: 400; font-size: 1.5rem; color: var(--yellow); }
     .sheet .stack { display: grid; gap: 10px; }
     .sheet .score { font-size: 3rem; margin: 4px 0 6px; }
@@ -450,10 +485,14 @@
       </div>
       <div class="panes">
         <section class="pane on" data-pane="adv">
-          <div class="logo">
-            <span class="mode-tag">AVENTURE · SOLO</span>
+          <div class="hero">
+            <div class="hero-rays"></div>
+            <span class="pow">POW !</span><span class="pow l">⚡ BOOST</span>
+            <div class="hero-fan" id="heroFan"></div>
             <h1>Bataille des <span>Alliés</span></h1>
+            <div class="hero-tag">Pose · Bluffe · Renverse !</div>
           </div>
+          <span class="mode-tag">AVENTURE · SOLO</span>
           <div class="section-title">Ta conquête, planète après planète</div>
           <div class="levels" id="levels"></div>
           <button class="btn big hot" id="playBtn">Décoller</button>
@@ -521,7 +560,7 @@
     <div class="col">
       <div class="hud" id="hud1">
         <div class="ava" id="ava1"></div>
-        <div class="nm"><span id="name1">Gaspard</span><small id="perk1">Carburant</small><div class="pips" id="valor1"></div></div>
+        <div class="nm"><span id="name1">Gaspard</span><small id="perk1">Talent</small><div class="pips" id="valor1" title="Boosts ⚡ : 1 boost pour appeler un allié ou riposter"></div></div>
         <div class="stat">Pioche<b id="deck1">0</b></div>
         <div class="stat loot" id="lootBox1">Butin<b id="loot1">0</b></div>
         <button class="icon" id="pauseBtn" aria-label="Pause">II</button>
@@ -535,7 +574,7 @@
           <div class="tally" id="tally1"><div class="num" id="total1">0</div><div class="chips" id="chips1"></div></div>
         </div>
         <div class="mid">
-          <div class="pot" id="pot">Pot<br><b id="potNo">0</b> cartes</div>
+          <div class="pot" id="pot">Pot<br><b id="potNo">0</b> pts</div>
           <div class="vs" id="roundChip">Manche 1</div>
           <div class="tray" id="tray">
             <div class="tray-info"><span id="trayNeed"></span><b id="trayRes"></b></div>
@@ -553,7 +592,7 @@
 
       <div class="hud" id="hud0">
         <div class="ava" id="ava0"></div>
-        <div class="nm"><span>Toi</span><small id="perk0">Carburant</small><div class="pips" id="valor0"></div></div>
+        <div class="nm"><span>Toi</span><small id="perk0">Talent</small><div class="pips" id="valor0" title="Boosts ⚡ : 1 boost pour appeler un allié ou riposter"></div></div>
         <div class="stat">Pioche<b id="deck0">0</b></div>
         <div class="stat loot" id="lootBox0">Butin<b id="loot0">0</b></div>
       </div>
@@ -631,19 +670,26 @@
     <div class="sheet"><h2>Règles</h2>
       <div class="help">
         <h3>Le but</h3>
-        <p>Ramasser plus de cartes que ton adversaire. Les cartes gagnées vont dans ton <b>butin</b> ; à la fin, le plus gros butin gagne.</p>
-        <h3>Une manche en 3 temps</h3>
+        <p>Amasser le plus de <b>points de butin</b>. Chaque carte porte une pièce : c'est ce qu'elle rapporte à celui qui la gagne.</p>
+        <ul>
+          <li><b>Petites cartes (2 à 3) : 3 points.</b> Faibles au combat, mais de vrais trésors.</li>
+          <li><b>4 et 5 : 2 points.</b> Atouts ★ : 2 points.</li>
+          <li><b>6 à l'As : 1 point.</b> Elles gagnent les combats, mais rapportent peu.</li>
+        </ul>
+        <p>Tout l'art est là : risquer tes petites cartes pour un gros butin, ou sortir tes grosses cartes pour rafler celui d'en face.</p>
+        <h3>Une manche</h3>
         <ol>
           <li><b>Carte visible.</b> Chacun pose une carte face visible. Le gagnant de la manche précédente pose en premier.</li>
-          <li><b>Carte cachée.</b> Chacun pose une deuxième carte, face cachée. On retourne : le plus gros total des deux cartes ramasse tout.</li>
-          <li><b>Dernière chance.</b> Celui qui est derrière peut ajouter une 3<sup>e</sup> carte, l'<b>allié</b>, en lançant le dé. Plus la carte est forte, plus le dé est difficile. Raté : la carte est perdue.</li>
+          <li><b>Carte cachée.</b> Chacun pose une deuxième carte, face cachée. On retourne : le plus gros total des deux cartes gagne toutes les cartes de la table.</li>
+          <li><b>Allié.</b> Celui qui est derrière peut payer <b>1 boost ⚡</b> pour poser une 3<sup>e</sup> carte et lancer le dé. Réussi, elle s'ajoute à son total. Raté, elle est perdue.</li>
+          <li><b>Riposte.</b> Si l'allié te passe devant, paie à ton tour <b>1 boost ⚡</b>, pose une carte et lance le dé pour reprendre l'avantage.</li>
         </ol>
-        <p>Tu as toujours 5 cartes en main et tu repioches après chaque manche. La partie s'arrête quand un camp n'a plus assez de cartes.</p>
-        <h3>Le carburant ●</h3>
+        <p>Plus la carte appelée est forte, plus le dé est dur : <b>2 à 4</b> dé 3+ · <b>5 à 7</b> dé 4+ · <b>8 à 10</b> dé 5+ · <b>Valet à As</b> dé 6.</p>
+        <h3>Les boosts ⚡</h3>
         <ul>
-          <li><b>Aider son dé :</b> chaque jeton ajoute +1 au dé d'allié, après le lancer.</li>
-          <li><b>Contre-attaquer :</b> quand l'allié adverse réussit, 1 jeton te donne un dé de riposte. L'allié perd autant de points que ton dé.</li>
-          <li>Tu regagnes 1 jeton à chaque manche perdue.</li>
+          <li>1 boost = <b>appeler un allié</b> ou <b>riposter</b>. Sans boost, impossible.</li>
+          <li>En bataille galactique, 1 boost te fait piocher 2 cartes et garder la meilleure.</li>
+          <li>Tu en regagnes <b>1 à chaque manche perdue</b> (3 au maximum).</li>
         </ul>
         <h3>Égalité : la bataille galactique</h3>
         <p>Rien n'est ramassé. Chacun met une carte en otage, puis retourne la carte du dessus de sa pioche, au hasard. La plus forte rafle tout. Encore égalité ? On recommence.</p>
@@ -651,15 +697,14 @@
           <p><b>Ta carte cachée</b> déclenche un pouvoir selon sa famille :</p>
           <ul>
             <li><b>♠ Comètes — Impact :</b> −2 au total adverse</li>
-            <li><b>♥ Soleils — Propulsion :</b> +1 au dé d'allié</li>
-            <li><b>♦ Étoiles — Ravitaillement :</b> +1 carburant en cas de victoire</li>
-            <li><b>♣ Lunes — Radar :</b> 1 relance du dé d'allié</li>
+            <li><b>♥ Soleils — Propulsion :</b> +1 au dé (allié ou riposte)</li>
+            <li><b>♦ Étoiles — Ravitaillement :</b> +1 boost ⚡ en cas de victoire</li>
+            <li><b>♣ Lunes — Radar :</b> le dé raté est relancé une fois</li>
           </ul>
           <p><b>Tes deux cartes ensemble</b> peuvent former :</p>
           <ul>
             <li><b>Jumeaux</b> (même valeur) : +5 · <b>Escadron</b> (même famille) : +3 · <b>Sillage</b> (valeurs qui se suivent) : +2</li>
           </ul>
-          <p><b>Dé à faire pour un allié :</b> carte de 2 à 5, dé 2 ou plus · 6 à 9, dé 3 ou plus · 10 et Valet, dé 4 ou plus · Dame et Roi, dé 5 ou plus · As, dé 6.</p>
         </details>
         <details><summary>Les atouts ★</summary>
           <p>Des cartes spéciales gagnées en conquérant les planètes de l'aventure. Tu en choisis jusqu'à 3 avant la partie ; elles sont mélangées dans ta pioche et ton adversaire en reçoit autant.</p>
@@ -815,6 +860,11 @@
       lose: () => { tone(196, 0.3, "sawtooth", 0.05); tone(139, 0.45, "sawtooth", 0.05, 0.14); },
       coin: () => { tone(1320, 0.08, "square", 0.04); tone(1760, 0.16, "square", 0.04, 0.07); },
       bonus: () => tone(990, 0.12, "sine", 0.07),
+      boom: () => {
+        tone(58, 1, "sawtooth", 0.15, 0, 28); tone(110, 0.55, "square", 0.08, 0, 36);
+        for (let i = 0; i < 14; i += 1) tone(240 + rand(1700), 0.05, "square", 0.03, 0.06 + i * 0.035);
+        [523, 784, 1046, 1318].forEach((f, i) => tone(f, 0.34, "triangle", 0.07, 0.28 + i * 0.08));
+      },
       whoosh: () => tone(260, 0.2, "sine", 0.07, 0, 950),
       rare: () => [659, 880, 1175, 1568].forEach((f, i) => tone(f, 0.3, "sine", 0.07, i * 0.07)),
       warp: ms => { tone(70, ms / 1000, "sawtooth", 0.07, 0, 1400); tone(140, ms / 1000, "sine", 0.08, 0, 2200); }
@@ -823,9 +873,9 @@
     /* ═════ Données de jeu ═════ */
     const HOUSES = {
       S: { name: "des Comètes", power: "Impact", desc: "−2 au total adverse" },
-      H: { name: "des Soleils", power: "Propulsion", desc: "+1 au dé d'allié" },
-      D: { name: "des Étoiles", power: "Ravitaillement", desc: "+1 carburant en cas de victoire" },
-      C: { name: "des Lunes", power: "Radar", desc: "1 relance du dé d'allié" },
+      H: { name: "des Soleils", power: "Propulsion", desc: "+1 au dé d'allié ou de riposte" },
+      D: { name: "des Étoiles", power: "Ravitaillement", desc: "+1 boost ⚡ en cas de victoire" },
+      C: { name: "des Lunes", power: "Radar", desc: "un dé raté est relancé une fois" },
       X: { name: "", power: "Atout", desc: "" }
     };
     const RANKS = [
@@ -833,27 +883,33 @@
       ["8", 8, "Chasseur"], ["9", 9, "Croiseur"], ["10", 10, "Amiral"], ["V", 11, "Valet"], ["D", 12, "Dame"], ["R", 13, "Roi"], ["A", 14, "As"]
     ];
     /* Numéro de version affiché en bas du menu : à augmenter à chaque mise en ligne. */
-    const VERSION = "0.15";
+    const VERSION = "0.16";
     const HAND_SIZE = 5, MAX_FUEL = 3, MAX_ATOUTS = 3, CAPSULE_COST = 60;
+    /* Butin : les petites cartes perdent les combats mais rapportent gros. La Supernova se consume. */
+    const ATOUT_LOOT = 2, TRACTOR_STEAL = 3, CLONE_CAP = 7;
+    const lootOf = v => (v <= 3 ? 3 : v <= 5 ? 2 : 1);
+    const lootCard = c => (c.special ? (c.special === "nova" ? 0 : ATOUT_LOOT) : lootOf(c.value));
+    const lootSum = cards => cards.reduce((t, c) => t + (c ? lootCard(c) : 0), 0);
 
     /* Adversaires : même nombre d'atouts que le joueur, seule la qualité de jeu change.
-       noise = part de hasard dans ses choix, cost = soin qu'il met à économiser ses fortes cartes,
-       skip = chance de renoncer à l'allié. Valeurs réglées avec tools/balance-sim.js. */
+       greed = appétit pour le butin, noise = part de hasard, cost = soin qu'il met à économiser ses fortes cartes,
+       skip = chance de renoncer à l'allié, exact = calcule ses chances carte par carte.
+       Le Stratège a en plus une carte en main et un boost d'avance. Valeurs réglées avec tools/balance-sim.js. */
     const LEVELS = [
-      { name: "Novice", who: "Blobzor", planet: "Lune", color: "#d9d2c0", noise: 8, cost: 0.05, slope: 4, count: false, fuel: true, skip: 0.5, reward: 20, win: 18, lose: 6, gift: ["tank", "shield"] },
-      { name: "Soldat", who: "Krakmol", planet: "Mars", color: "#f26a3d", noise: 0.45, cost: 0.11, slope: 2.5, count: false, fuel: true, skip: 0, reward: 35, win: 26, lose: 10, gift: ["dice", "spy", "tractor"] },
-      { name: "Stratège", who: "Zygomax", planet: "Saturne", color: "#f5c445", noise: 0.15, cost: 0.4, slope: 2, count: true, fuel: true, skip: 0, reward: 50, win: 34, lose: 14, gift: ["clone", "hole", "nova"] }
+      { name: "Novice", who: "Blobzor", planet: "Lune", color: "#d9d2c0", greed: 0.6, noise: 4, cost: 0.05, slope: 4, count: false, fuel: true, skip: 0.3, reward: 20, win: 18, lose: 6, gift: ["tank", "shield"], note: "joue un peu au hasard" },
+      { name: "Soldat", who: "Krakmol", planet: "Mars", color: "#f26a3d", greed: 0.6, noise: 0.45, cost: 0.11, slope: 2.5, count: false, fuel: true, skip: 0, reward: 35, win: 26, lose: 10, gift: ["dice", "spy", "tractor"], note: "ne rate pas une occasion d'allié" },
+      { name: "Stratège", who: "Zygomax", planet: "Saturne", color: "#f5c445", greed: 1.2, noise: 0.1, cost: 0.08, slope: 2.5, count: true, exact: true, bonusHand: 1, bonusFuel: 1, fuel: true, skip: 0, reward: 50, win: 34, lose: 14, gift: ["clone", "hole", "nova"], note: "calcule tout, 6 cartes en main et 1 boost d'avance" }
     ];
     const RARITY = [{ name: "Commune", weight: 70, dup: 10 }, { name: "Rare", weight: 25, dup: 25 }, { name: "Légendaire", weight: 5, dup: 60 }];
     const ATOUTS = {
       spy: { name: "Vache espionne", value: 7, rarity: 0, desc: "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 7." },
-      dice: { name: "Dé pipé", value: 6, thr: 1, rarity: 0, desc: "Joue-la en allié (3ᵉ carte) : pas besoin de chance, le dé réussit toujours. Vaut 6." },
-      tank: { name: "Citerne", value: 5, rarity: 0, desc: "Dès qu'elle est visible sur la table, son propriétaire gagne 2 carburants. Vaut 5." },
+      dice: { name: "Dé pipé", value: 5, thr: 1, rarity: 0, desc: "Joue-la en allié ou en riposte : le dé réussit toujours. Vaut 5." },
+      tank: { name: "Citerne", value: 5, rarity: 0, desc: "Dès qu'elle est visible sur la table, son propriétaire gagne 2 boosts ⚡. Vaut 5." },
       shield: { name: "Bouclier", value: 6, rarity: 0, desc: "Tant qu'elle est sur la table, les malus adverses (Impact −2, Trou noir) ne touchent pas son propriétaire. Vaut 6." },
-      clone: { name: "Clone", value: 0, label: "?", thr: 3, rarity: 1, desc: "Prend la même valeur que l'autre carte posée à côté. Deux cartes égales forment des Jumeaux : +5." },
-      hole: { name: "Trou noir", value: 2, thr: 5, rarity: 1, desc: "Ne vaut que 2, mais annule la meilleure carte d'en face : elle compte 0." },
-      tractor: { name: "Rayon tracteur", value: 6, rarity: 1, desc: "Si son propriétaire gagne la manche, il vole en plus 2 cartes dans le butin d'en face. Vaut 6." },
-      nova: { name: "Supernova", value: 15, thr: 6, rarity: 2, desc: "La plus forte du jeu : vaut 15. Mais elle se consume : elle ne rejoint le butin de personne." }
+      clone: { name: "Clone", value: 0, label: "?", thr: 3, rarity: 1, desc: "Copie la valeur de l'autre carte posée à côté (7 au maximum) : ensemble elles forment des Jumeaux, +5." },
+      hole: { name: "Trou noir", value: 2, thr: 5, rarity: 1, desc: "Ne vaut que 2, mais aspire la plus faible des deux cartes d'en face : elle compte 0." },
+      tractor: { name: "Rayon tracteur", value: 6, rarity: 1, desc: "Si son propriétaire gagne la manche, il vole en plus 3 points dans le butin d'en face. Vaut 6." },
+      nova: { name: "Supernova", value: 10, thr: 6, rarity: 2, desc: "Vaut 10 et explose en arrivant. Mais elle se consume : elle ne rapporte aucun butin." }
     };
     const ATOUT_IDS = Object.keys(ATOUTS);
     /* Objets de collection des boosters : purement décoratifs, visibles par l'adversaire. */
@@ -881,8 +937,8 @@
     const backPrev = id => `<div class="back-prev" style="--back:${BACKS[id].css}"></div>`;
     /* Chaque tribu a un talent, valable pour le joueur comme pour Gaspard. */
     const PERKS = {
-      mars: { name: "Ravitaillés", desc: "démarre avec 2 carburants au lieu de 1." },
-      cranes: { name: "Désintégrateur", desc: "ses contre-attaques retirent toujours au moins 2 points." },
+      mars: { name: "Ravitaillés", desc: "démarre avec 2 boosts ⚡ au lieu de 1." },
+      cranes: { name: "Désintégrateur", desc: "+1 au dé de ses ripostes." },
       poulpes: { name: "Huit bras", desc: "main de 6 cartes au lieu de 5." },
       incognito: { name: "Déguisement", desc: "quand elle pose en premier, son avant-garde reste cachée jusqu'à la réponse adverse." }
     };
@@ -964,16 +1020,20 @@
     let gameId = 0;
 
     /* ═════ Règles ═════ */
-    function threshold(v) { return v <= 5 ? 2 : v <= 9 ? 3 : v <= 11 ? 4 : v <= 13 ? 5 : 6; }
+    function threshold(v) { return v <= 4 ? 3 : v <= 7 ? 4 : v <= 10 ? 5 : 6; }
     const thrOf = card => card.thr || threshold(card.value);
-    const handSize = q => (S.cast[q] === "poulpes" ? 6 : HAND_SIZE);
+    /* Bonus de l'IA (main, boosts) : jamais en duel entre amis. */
+    const aiBonus = (q, key) => (q === 1 && S.mode !== "p2p" ? LEVELS[S.ai][key] || 0 : 0);
+    const handSize = q => (S.cast[q] === "poulpes" ? 6 : HAND_SIZE) + aiBonus(q, "bonusHand");
+    /* Bonus au dé d'une 3ᵉ carte : Propulsion, et Désintégrateur pour une riposte. */
+    const dieBonus = (p, role) => (S.board.amb[p].house === "H" ? 1 : 0) + (role === "riposte" && S.cast[p] === "cranes" ? 1 : 0);
     function chance(thr, bonus, reroll) {
       const p = Math.max(0, Math.min(1, (7 - (thr - bonus)) / 6));
       return reroll ? 1 - (1 - p) * (1 - p) : p;
     }
     /* Valeur réelle d'une carte : le Clone prend celle de sa voisine. */
     function ev(card, other) {
-      if (card.special === "clone") return other && other.special !== "clone" ? other.value : 0;
+      if (card.special === "clone") return other && other.special !== "clone" ? Math.min(other.value, CLONE_CAP) : 0;
       return card.value;
     }
     function formation(a, b) {
@@ -1000,11 +1060,11 @@
       if (shield && (impact || hole)) parts.push(["Bouclier", 0]);
       else {
         if (impact) parts.push(["Impact", -2]);
-        if (hole && Math.max(vv, va) > 0) parts.push(["Trou noir", -Math.max(vv, va)]);
+        if (hole && van && amb && Math.min(vv, va) > 0) parts.push(["Trou noir", -Math.min(vv, va)]);
       }
       if (b.allyOk[p]) {
-        const gain = Math.max(0, (b.ally[p].special === "clone" ? Math.max(vv, va) : b.ally[p].value) - b.allyCut[p]);
-        if (gain) parts.push(["Allié", gain]);
+        const gain = b.ally[p].special === "clone" ? Math.min(Math.max(vv, va), CLONE_CAP) : b.ally[p].value;
+        if (gain) parts.push([b.role[p] === "riposte" ? "Riposte" : "Allié", gain]);
       }
       for (const [, v] of parts) total += v;
       return { total, parts };
@@ -1043,7 +1103,7 @@
       });
       return shuffle(deck);
     }
-    const emptyBoard = () => ({ van: [null, null], amb: [null, null], ally: [null, null], allyOk: [false, false], allyCut: [0, 0] });
+    const emptyBoard = () => ({ van: [null, null], amb: [null, null], ally: [null, null], allyOk: [false, false], role: [null, null] });
 
     /* ═════ Rendu ═════ */
     function cardEl(card, owner, faceDown = false) {
@@ -1055,11 +1115,13 @@
       el.setAttribute("aria-label", sp ? `Atout ${card.title} : ${ATOUTS[sp].desc}` : `${cardName(card)}, ${card.value}`);
       const figure = ["V", "D", "R", "A"].includes(card.label);
       if (figure) el.classList.add("fig");
+      const loot = lootCard(card);
+      if (loot >= 3) el.classList.add("treasure");
       el.innerHTML = `<div class="card-inner"><div class="face front">
         <div class="top"><span>${card.label}</span><span>${SYM[card.house]}</span></div>
         <div class="art">${sp ? frame(SPECIAL_ART[sp](), card.seed) : art(S.cast[owner], card.house, card.label, card.seed)}</div>
         <div class="n">${card.title}${figure ? ` · ${card.value}` : ""}</div>
-      </div><div class="face back"></div></div>`;
+      </div><div class="face back"></div></div>${loot ? `<span class="coin c${loot}" title="Butin : ${loot} point${loot > 1 ? "s" : ""}">${loot}</span>` : ""}`;
       return el;
     }
     function renderFuel(p, popIndex = -1) {
@@ -1078,8 +1140,8 @@
         $(`#loot${p}`).textContent = S.loot[p];
         renderFuel(p);
       }
-      $("#potNo").textContent = S.pot.length;
-      $("#pot").classList.toggle("hot", S.pot.length >= 4);
+      $("#potNo").textContent = lootSum(S.pot);
+      $("#pot").classList.toggle("hot", lootSum(S.pot) >= 6);
       const opp = $("#oppHand");
       opp.innerHTML = "";
       const n = S.hands[1].length;
@@ -1102,15 +1164,15 @@
       }
       return res.map(r => r.total);
     }
+    const third = () => S.phase === "ally" || S.phase === "riposte";
     function allyInfo(card) {
-      const amb = S.board.amb[0];
-      const thr = thrOf(card), bonus = amb.house === "H" ? 1 : 0, reroll = amb.house === "C";
+      const thr = thrOf(card), bonus = dieBonus(0, S.phase), reroll = S.board.amb[0].house === "C" && !S.radar[0];
       return { thr, pct: Math.round(chance(thr, bonus, reroll) * 100) };
     }
     function selectable(card) {
       if (S.busy) return false;
       if (S.phase === "van" || S.phase === "amb") return true;
-      if (S.phase === "ally") { const t = afterAlly(0, card); return t[0] >= t[1]; }
+      if (third()) { const t = afterAlly(0, card); return t[0] >= t[1]; }
       return false;
     }
     function renderHand(drawnIds = []) {
@@ -1129,7 +1191,7 @@
           const combo = formation(S.board.van[0], card);
           if (combo.length) hint = { text: combo.map(partText).join(" · ") };
         }
-        if (S.phase === "ally") {
+        if (third()) {
           if (can) { const { pct } = allyInfo(card); hint = { text: `${pct} %`, warn: pct < 50 }; }
           else el.classList.add("dim");
         }
@@ -1148,13 +1210,13 @@
       renderHud();
       renderTotals();
       renderHand(drawnIds);
-      const mine = !S.busy && ["van", "amb", "ally"].includes(S.phase);
+      const mine = !S.busy && ["van", "amb", "ally", "riposte"].includes(S.phase);
       $("#hud0").classList.toggle("active", mine);
       $("#hud1").classList.toggle("active", S.busy && !["next", "over", "resolve"].includes(S.phase));
-      for (const slot of ["van", "amb", "ally"]) $(`#slot-0-${slot}`).classList.toggle("want", !S.busy && S.phase === slot);
+      for (const slot of ["van", "amb", "ally"]) $(`#slot-0-${slot}`).classList.toggle("want", !S.busy && (S.phase === slot || (slot === "ally" && S.phase === "riposte")));
     }
     function labelSlots() {
-      const names = S.war ? { van: "Duel", amb: "Otage", ally: "" } : { van: "Avant-<br>garde", amb: "Embus-<br>cade", ally: "Allié" };
+      const names = S.war ? { van: "Duel", amb: "Otage", ally: "" } : { van: "Avant-<br>garde", amb: "Embus-<br>cade", ally: "Allié<br>⚡" };
       for (const p of [0, 1]) for (const k of Object.keys(names)) $(`#slot-${p}-${k}`).innerHTML = names[k];
     }
     function fillButtons(box, buttons) {
@@ -1188,29 +1250,51 @@
       banner.timer = setTimeout(() => field.classList.remove("hush"), 1150);
     }
     function center(el) { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
-    function burst(target, colors = [YE, "#fff", OR], count = 14) {
+    function burst(target, colors = [YE, "#fff", OR], count = 14, reach = 1) {
       const { x, y } = center(target);
       for (let i = 0; i < count; i += 1) {
         const s = document.createElement("span");
-        s.className = "spark";
+        s.className = `spark${reach > 1 ? " fat" : ""}`;
         s.style.left = `${x}px`; s.style.top = `${y}px`;
         s.style.background = colors[i % colors.length];
         s.style.setProperty("--a", `${(360 / count) * i + rand(14)}deg`);
-        s.style.setProperty("--d", `${50 + rand(60)}px`);
+        s.style.setProperty("--d", `${(50 + rand(60)) * reach}px`);
         $("#fx").appendChild(s);
         setTimeout(() => s.remove(), 720);
       }
     }
-    function floatText(target, text, neg = false) {
-      const { x, y } = center(target);
+    function floatText(target, text, neg = false, big = false) {
+      const { y } = center(target), x = Math.max(56, Math.min(window.innerWidth - 56, center(target).x));
       const el = document.createElement("span");
-      el.className = `float${neg ? " neg" : ""}`;
+      el.className = `float${neg ? " neg" : ""}${big ? " big" : ""}`;
       el.textContent = text;
       el.style.left = `${x}px`; el.style.top = `${y - 26}px`;
       $("#fx").appendChild(el);
       setTimeout(() => el.remove(), 1420);
     }
     function bump(el) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+    /* Les grands coups (Renversement, Riposte, Jumeaux, bataille gagnée, gros butin) : onde de choc, gerbe, flash, secousse, vitesse lumière. */
+    function boom(text, good = true, target = $("#field")) {
+      const { x, y } = center(target);
+      for (let i = 0; i < 3; i += 1) {
+        const ring = document.createElement("span");
+        ring.className = `shock${good ? "" : " bad"}`;
+        ring.style.left = `${x}px`; ring.style.top = `${y}px`;
+        ring.style.animationDelay = `${i * 120}ms`;
+        $("#fx").appendChild(ring);
+        setTimeout(() => ring.remove(), 1300);
+      }
+      burst(target, good ? [YE, "#fff", OR, "#ff5fa8", "#8fd8cc"] : [OR, "#fff", "#ff5fa8"], 36, 2.6);
+      setTimeout(() => burst(target, [YE, "#fff", "#8f93f0"], 22, 1.6), 180);
+      sfx.boom();
+      shake(18);
+      if (good) warp(1700); else flash(true);
+      if (text) {
+        banner(text, `mega${good ? "" : " bad"}`);
+        clearTimeout(banner.timer);
+        banner.timer = setTimeout(() => $("#field").classList.remove("hush"), 1600);
+      }
+    }
     function shake(amp = 5) {
       const a = Math.round(amp);
       $("#game .col").animate([{ transform: "none" }, { transform: `translate(${-a}px,${a * 0.5}px)` }, { transform: `translate(${a}px,${-a * 0.4}px)` }, { transform: `translate(${-a * 0.6}px,${a * 0.3}px)` }, { transform: "none" }], { duration: reduced ? 1 : 300 + a * 16 });
@@ -1238,9 +1322,10 @@
       if (card.special === "tank") {
         S.fuel[p] = Math.min(MAX_FUEL, S.fuel[p] + 2);
         renderFuel(p, S.fuel[p] - 1);
-        floatText(el, "+2 carburant");
+        floatText(el, "+2 ⚡");
         sfx.coin();
       }
+      if (card.special === "nova") boom(null, p === 0, el);
     }
 
     async function playCard(p, slotName, card, faceDown, opts = {}) {
@@ -1344,10 +1429,10 @@
       tray.classList.remove("rolling");
       return n;
     }
-    function showRoll(roll, bonus, spent, thr) {
-      const total = roll + bonus + spent;
+    function showRoll(roll, bonus, thr) {
+      const total = roll + bonus;
       const el = $("#trayRes");
-      el.textContent = `${roll}${bonus ? " +1" : ""}${spent ? ` +${spent}` : ""}${bonus || spent ? ` = ${total}` : ""} ${total >= thr ? "réussi" : "raté"}`;
+      el.textContent = `${roll}${bonus ? ` +${bonus} = ${total}` : ""} ${total >= thr ? "réussi" : "raté"}`;
       el.className = total >= thr ? "ok" : "ko";
       $("#tray").classList.toggle("hit", total >= thr);
       $("#tray").classList.toggle("miss", total < thr);
@@ -1355,6 +1440,18 @@
 
     /* ═════ Tutoriel ═════ */
     function closeCoach() { $("#coach").classList.remove("on"); }
+    /* Marges de sécurité de l'écran (encoche, barre d'accueil), lues une fois via un élément témoin. */
+    function safeInsets() {
+      if (!safeInsets.v) {
+        const probe = document.createElement("div");
+        probe.style.cssText = "position:fixed;visibility:hidden;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)";
+        document.body.appendChild(probe);
+        const cs = getComputedStyle(probe);
+        safeInsets.v = { top: parseFloat(cs.paddingTop) || 0, bottom: parseFloat(cs.paddingBottom) || 0 };
+        probe.remove();
+      }
+      return safeInsets.v;
+    }
     /* Bulle d'explication : le jeu attend que le joueur l'ait lue. */
     function bubble(html, target) {
       if (save.mute) return Promise.resolve();
@@ -1366,13 +1463,21 @@
         if (r && r.width) {
           const pad = 6;
           Object.assign(spot.style, { left: `${r.left - pad}px`, top: `${r.top - pad}px`, width: `${r.width + pad * 2}px`, height: `${r.height + pad * 2}px` });
-          if (r.top + r.height / 2 < window.innerHeight / 2) box.style.top = `${Math.min(r.bottom + 18, window.innerHeight - 220)}px`;
-          else box.style.bottom = `${Math.min(window.innerHeight - r.top + 18, window.innerHeight - 220)}px`;
-        } else {
-          Object.assign(spot.style, { left: "50%", top: "40%", width: "0px", height: "0px" });
-          box.style.top = "34%";
-        }
+        } else Object.assign(spot.style, { left: "50%", top: "40%", width: "0px", height: "0px" });
         $("#coach").classList.add("on");
+        // On mesure la bulle une fois affichée, puis on la loge sous ou sur la zone montrée, sans jamais
+        // déborder de la partie visible de l'écran (encoche, barre de Safari, bandeau d'installation).
+        const safe = safeInsets(), vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        const lo = safe.top + 8, hi = vh - safe.bottom - 8;
+        box.style.maxHeight = `${hi - lo}px`;
+        const h = box.offsetHeight;
+        let y;
+        if (r && r.width) {
+          if (r.bottom + 14 + h <= hi) y = r.bottom + 14;
+          else if (r.top - 14 - h >= lo) y = r.top - 14 - h;
+          else y = r.top + r.height / 2 < vh / 2 ? hi - h : lo;
+        } else y = (lo + hi - h) / 2;
+        box.style.top = `${Math.max(lo, Math.min(hi - h, y))}px`;
         box.querySelector(".btn").addEventListener("click", () => { sfx.tap(); closeCoach(); resolve(); });
         box.querySelector(".skip").addEventListener("click", () => { save.mute = true; persist(); closeCoach(); resolve(); });
       });
@@ -1520,6 +1625,29 @@
     }
 
     /* ═════ IA ═════ */
+    /* Totaux exacts de deux paires face à face, sans allié : sert au calcul de chances du Stratège. */
+    function duelTotals(av, aa, bv, ba) {
+      const side = (v, a, ov, oa) => {
+        const vv = ev(v, a), va = ev(a, v);
+        let t = vv + va;
+        for (const [, x] of formation(v, a)) t += x;
+        const shield = [v, a].some(c => c.special === "shield"), hole = [ov, oa].some(c => c.special === "hole"), impact = oa.house === "S";
+        if (!(shield && (impact || hole))) { if (impact) t -= 2; if (hole) t -= Math.min(vv, va); }
+        return t;
+      };
+      return [side(av, aa, bv, ba), side(bv, ba, av, aa)];
+    }
+    /* Chances de gagner avec (van, amb), en passant en revue les cartes que l'adversaire peut encore avoir. */
+    function exactOdds(van, amb, seen, knownAmb) {
+      const pool = [...S.decks[0], ...S.hands[0]];
+      let win = 0, tie = 0, n = 0;
+      const count = ([a, b]) => { if (a > b) win += 1; else if (a === b) tie += 1; n += 1; };
+      if (seen && knownAmb) { const [a, b] = duelTotals(van, amb, seen, knownAmb); return a > b ? [1, 0] : a === b ? [0, 1] : [0, 0]; }
+      if (seen) for (const x of pool) count(duelTotals(van, amb, seen, x));
+      else for (let k = 0; k < 30 && pool.length > 1; k += 1) { const i = rand(pool.length); let j = rand(pool.length - 1); if (j >= i) j += 1; count(duelTotals(van, amb, pool[i], pool[j])); }
+      return n ? [win / n, tie / n] : [0.5, 0];
+    }
+    /* Choix des deux cartes : chances de gagner × butin en jeu, moins le prix des fortes cartes dépensées. */
     function aiPlan(fixedVan, knownAmb = null) {
       const L = LEVELS[S.ai];
       const hand = S.hands[1];
@@ -1535,7 +1663,7 @@
         expected = (seen ? ev(seen, null) : mean) + mean + 1;
       }
       const oppBest = seen ? Math.max(seen.value, 8) : 9;
-      const worth = 4 + S.pot.length;
+      const theirLoot = (seen ? lootCard(seen) : 1.5) + (knownAmb ? lootCard(knownAmb) : 1.5);
       let best = null;
       for (const van of fixedVan ? [fixedVan] : hand) {
         for (const amb of hand) {
@@ -1544,8 +1672,10 @@
           for (const [, v] of formation(van, amb)) power += v;
           if (amb.house === "S") power += 2;
           if (van.special === "hole" || amb.special === "hole") power += oppBest;
-          const pWin = 1 / (1 + Math.exp(-(power - expected) / slope));
-          let u = pWin * worth - (van.value + amb.value) * L.cost + Math.random() * L.noise;
+          let pWin = 1 / (1 + Math.exp(-(power - expected) / slope));
+          if (L.exact) { const [w, t] = exactOdds(van, amb, seen, knownAmb); pWin = w + t * 0.5; }
+          const stake = lootCard(van) + lootCard(amb) + theirLoot + lootSum(S.pot);
+          let u = (2 * pWin - 1) * stake * L.greed - (van.value + amb.value) * L.cost + Math.random() * L.noise;
           if (amb.house === "D") u += 0.3 * pWin;
           if (amb.house === "H" || amb.house === "C") u += 0.3 * (1 - pWin);
           if (!fixedVan && van.value < amb.value) u += 0.2;
@@ -1556,16 +1686,16 @@
       }
       return best;
     }
-    function aiAllyPick() {
+    /* 3ᵉ carte de l'IA : un allié quand elle est menée, une riposte quand on la dépasse. Il lui faut 1 boost. */
+    function aiThird(role) {
       const L = LEVELS[S.ai];
-      if (Math.random() < (L.skip || 0)) return null;
-      const amb = S.board.amb[1];
-      const bonus = amb.house === "H" ? 1 : 0;
+      if (Math.random() < (L.skip || 0) || S.fuel[1] < 1) return null;
+      const amb = S.board.amb[1], bonus = dieBonus(1, role), reroll = amb.house === "C" && !S.radar[1];
       const options = S.hands[1].map(c => ({ c, t: afterAlly(1, c) })).filter(o => o.t[1] >= o.t[0]).map(({ c, t }) => ({
-        c, score: chance(thrOf(c) - (L.fuel ? Math.min(S.fuel[1], 1) : 0), bonus, amb.house === "C") * (t[1] > t[0] ? 1 : 0.45) - c.value * 0.004
+        c, score: chance(thrOf(c), bonus, reroll) * (t[1] > t[0] ? 1 : 0.45) - c.value * 0.004 - lootCard(c) * 0.03
       })).sort((a, b) => b.score - a.score);
       if (!options.length) return null;
-      return options[0].score >= 0.2 || S.pot.length >= 4 ? options[0].c : null;
+      return options[0].score >= 0.2 || lootSum(S.pot) >= 6 ? options[0].c : null;
     }
 
     /* ═════ Déroulé ═════ */
@@ -1608,7 +1738,7 @@
       const theirs = shuffle(ATOUT_IDS).slice(0, mine.length);
       Object.assign(S, {
         decks: pre ? pre.decks : [inject(deck.slice(0, 26), mine, "a"), inject(deck.slice(26), theirs, "b")],
-        hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 2 : 1)), vanHidden: [false, false], pot: [], round: 0, first: pre ? pre.first : rand(2), phase: "idle", busy: true,
+        hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 2 : 1) + aiBonus(q, "bonusFuel")), radar: [false, false], vanHidden: [false, false], pot: [], round: 0, first: pre ? pre.first : rand(2), phase: "idle", busy: true,
         revealed: false, sel: null, board: emptyBoard(), war: null, spy: null, fx: new Set()
       });
       $("#ava0").innerHTML = art(S.cast[0], "H", "R", 5);
@@ -1635,6 +1765,7 @@
       S.sel = null;
       S.spy = null;
       S.vanHidden = [false, false];
+      S.radar = [false, false];
       S.fx = new Set();
       $("#tray").classList.remove("on");
       const drawn = [];
@@ -1651,8 +1782,10 @@
       await sleep(900);
       if (game !== gameId) return;
       if (S.round === 1) {
-        await tip("intro", "<b>Le but du jeu :</b> ramasser plus de cartes que ton adversaire. Les cartes que tu gagnes vont ici, dans ton <b>butin</b>.", $("#lootBox0"));
-        await tip("intro2", "<b>Une manche :</b> chacun pose 2 cartes sur la table, une visible puis une cachée. Le plus gros total ramasse tout.", $("#field"));
+        await tip("intro", "<b>Le but du jeu :</b> amasser le plus de <b>points de butin</b>. Ils s'affichent ici.", $("#lootBox0"));
+        await tip("coins", "Regarde la <b>pièce</b> sur tes cartes : c'est ce qu'elles rapportent si tu les gagnes. Les <b>petites cartes</b> perdent les combats mais valent <b>3 points</b>. Les <b>grosses</b> gagnent les combats mais ne valent qu'<b>1 point</b>.", $("#hand"));
+        await tip("intro2", "<b>Une manche :</b> chacun pose 2 cartes sur la table, une visible puis une cachée. Le plus gros total ramasse toutes les cartes, et leur butin.", $("#field"));
+        await tip("boost", "Tes <b>boosts ⚡</b>, ici : 1 boost pour <b>appeler un allié</b> quand tu es mené, ou pour <b>riposter</b> quand on te dépasse. Tu en regagnes 1 à chaque manche perdue (3 au maximum).", $("#valor0"));
         await tip(`perk-${S.cast[0]}`, `Ta tribu, les <b>${CASTS[S.cast[0]].label}</b>, a un talent. <b>${PERKS[S.cast[0]].name}</b> : ${PERKS[S.cast[0]].desc}`, $("#hud0"));
         await tip(`foeperk-${S.cast[1]}`, `Gaspard joue les <b>${CASTS[S.cast[1]].label}</b>. Leur talent, <b>${PERKS[S.cast[1]].name}</b> : ${PERKS[S.cast[1]].desc}`, $("#hud1"));
       }
@@ -1661,6 +1794,7 @@
         if (game !== gameId) return;
       }
       if (S.round === 2) await tip("free", "Tu connais l'essentiel. Le vainqueur d'une manche pose en premier à la suivante. Les règles complètes sont dans le menu pause.", $("#pauseBtn"));
+      if (S.round === 2 && aiBonus(1, "bonusHand")) await tip("strat", `${foe()} est un <b>Stratège</b> : il calcule chaque coup, joue avec 6 cartes en main et part avec un boost d'avance. À toi de le surprendre !`, $("#hud1"));
       if (game !== gameId) return;
       if (S.first === 1) {
         setPrompt("<b>Gaspard</b> a l'initiative et avance son avant-garde…");
@@ -1688,16 +1822,26 @@
         setPrompt(S.spy === 0 ? "Ta vache a tout vu : l'embuscade de Gaspard est visible. <b>Glisse ta 2ᵉ carte</b>." : "<b>Glisse ta 2ᵉ carte</b>, face cachée. Les deux s'additionnent, le plus gros total gagne.");
       } else if (S.phase === "ally") {
         const t = [breakdown(0).total, breakdown(1).total];
-        setPrompt(`Tu es mené de <b>${t[1] - t[0]}</b>. <b>Glisse un allié</b> pour tenter le dé, ou replie-toi.`, [{ label: "Se replier", cls: "ghost", fn: fold }]);
+        setPrompt(`Tu es mené de <b>${t[1] - t[0]}</b>. <b>Glisse un allié</b> (1 ⚡, il t'en reste ${S.fuel[0]}) pour tenter le dé, ou replie-toi.`, [{ label: "Se replier", cls: "ghost", fn: fold }]);
+      } else if (S.phase === "riposte") {
+        const t = [breakdown(0).total, breakdown(1).total];
+        setPrompt(`L'allié de Gaspard te ${t[1] > t[0] ? `passe devant de <b>${t[1] - t[0]}</b>` : "rattrape"} ! <b>Glisse une carte</b> pour riposter (1 ⚡, il t'en reste ${S.fuel[0]}).`, [{ label: "Laisser filer", cls: "ghost", fn: () => pickRiposte(null) }]);
       }
     }
     function fold() { if (S.busy || S.phase !== "ally") return; S.busy = true; S.sel = null; netSend("ally", null); finishRound(1); }
+    function pickRiposte(card, opts = {}) {
+      if (S.busy || S.phase !== "riposte" || !S.onRiposte) return;
+      S.busy = true; S.sel = null;
+      const done = S.onRiposte;
+      S.onRiposte = null;
+      done(card ? { card, opts } : null);
+    }
 
     /* Glisser une carte vers le haut la joue. Il suffit de la monter d'un tiers de carte, ou de lui donner
        une impulsion vers le haut à n'importe quel moment du geste : la vitesse au moment du lâcher ne compte pas. */
     function bindDrag(el, card) {
       let start = null, dragging = false, last = null, vel = { x: 0, y: 0 }, peak = 0, dy = 0;
-      const target = () => $(`#slot-0-${S.phase}`);
+      const target = () => $(`#slot-0-${S.phase === "riposte" ? "ally" : S.phase}`);
       const need = () => Math.max(30, el.offsetHeight * 0.3);
       const willPlay = () => dy < -need() || (peak < -0.4 && dy < -10);
       const release = () => { start = null; dragging = false; const t = target(); if (t) t.classList.remove("hot"); };
@@ -1753,11 +1897,11 @@
         const h = HOUSES[card.house];
         const combo = formation(S.board.van[0], card).map(partText).join(", ");
         setPrompt(`<b>${cardName(card)}</b> (${card.label})${card.special ? `.${atout}` : ` — ${h.power} : ${h.desc}.`}${combo ? ` <b>${combo}</b>.` : ""}`, [{ label: "Poser cachée", ...go }]);
-      } else if (S.phase === "ally") {
+      } else if (third()) {
         const { thr, pct } = allyInfo(card);
         const t = afterAlly(0, card);
         setPrompt(`<b>${card.title}</b> : dé <b>${thr}+</b> (${pct} %). Total ${t[0]} contre ${t[1]}${t[0] === t[1] ? " — égalité" : ""}.${atout}`,
-          [{ label: "Lancer le dé", cls: "hot", ...go }, { label: "Se replier", cls: "ghost", fn: fold }]);
+          [{ label: "Lancer le dé · 1 ⚡", cls: "hot", ...go }, S.phase === "ally" ? { label: "Se replier", cls: "ghost", fn: fold } : { label: "Laisser filer", cls: "ghost", fn: () => pickRiposte(null) }]);
       }
     }
 
@@ -1828,7 +1972,7 @@
       } else if (S.phase === "ally") {
         netSend("ally", card.id);
         await attemptAlly(0, card, opts);
-      }
+      } else if (S.phase === "riposte") pickRiposte(card, opts);
     }
 
     async function reveal() {
@@ -1844,7 +1988,8 @@
       const totals = renderTotals();
       for (const p of [0, 1]) for (const part of breakdown(p).parts) floatText($(`#tally${p}`), partText(part), part[1] < 0);
       shake();
-      if (breakdown(0).parts.some(([n]) => n === "Jumeaux")) { banner("Jumeaux !", "light"); warp(1200); }
+      const twins = [0, 1].find(q => breakdown(q).parts.some(([n]) => n === "Jumeaux"));
+      if (twins !== undefined) { boom(twins === 0 ? "Jumeaux !" : "Jumeaux adverses", twins === 0, $(`#tally${twins}`)); await sleep(700); }
       await sleep(950);
       if (game !== gameId) return;
       await tip("reveal", totals[0] > totals[1]
@@ -1868,6 +2013,15 @@
       const loser = totals[0] < totals[1] ? 0 : 1;
       const canAlly = S.hands[loser].some(c => { const t = afterAlly(loser, c); return t[loser] >= t[1 - loser]; });
       if (!canAlly) return finishRound(1 - loser);
+      if (S.fuel[loser] < 1) {
+        if (loser === 0) {
+          setPrompt("Plus de <b>boost ⚡</b> : impossible d'appeler un allié. Tu en regagnes un en perdant cette manche.");
+          await tip("noboost", "Sans <b>boost ⚡</b>, pas d'allié ni de riposte. Garde-en un sous le coude pour les manches qui comptent !", $("#valor0"));
+          await sleep(1300);
+          if (game !== gameId) return;
+        }
+        return finishRound(1 - loser);
+      }
       if (loser === 1) {
         setPrompt("<b>Gaspard</b> est en retard et cherche un allié…");
         await sleep(900);
@@ -1877,65 +2031,48 @@
           const id = await netNext("ally");
           if (game !== gameId) return;
           pick = id ? S.hands[1].find(c => c.id === id) : null;
-        } else pick = aiAllyPick();
+        } else pick = aiThird("ally");
         return pick ? attemptAlly(1, pick) : finishRound(0);
       }
       S.phase = "ally";
-      await tip("ally", "<b>Dernière chance.</b> Glisse une 3ᵉ carte ici, puis le dé décide. Plus la carte est forte, plus le dé est difficile : le pourcentage au-dessus de chaque carte donne tes chances. Raté, la carte est perdue. Tu peux aussi te replier.", $("#slot-0-ally"));
+      await tip("ally", "<b>Appelle un allié !</b> Pour 1 boost ⚡, glisse une 3ᵉ carte ici, puis le dé décide. Plus la carte est forte, plus le dé est difficile : le pourcentage au-dessus de chaque carte donne tes chances. Raté, la carte est perdue. Tu peux aussi te replier.", $("#slot-0-ally"));
       if (game !== gameId) return;
       S.busy = false;
       basePrompt();
       renderAll();
     }
 
-    async function attemptAlly(p, card, opts = {}) {
+    /* Une 3ᵉ carte (allié ou riposte) : 1 boost, la carte arrive, le dé décide. Le radar relance un dé raté, une fois par manche. */
+    async function throwThird(p, card, opts = {}) {
       const game = gameId;
       S.busy = true;
       S.phase = "roll";
-      const amb = S.board.amb[p];
-      const thr = thrOf(card);
-      const bonus = amb.house === "H" ? 1 : 0;
-      let reroll = amb.house === "C" ? 1 : 0;
-      let spent = 0;
-      setPrompt(`<b>${who(p, "engages", "engage")}</b> ${cardName(card)} — il faut <b>${thr}+</b> au dé.`);
+      const role = S.board.role[p];
+      const thr = thrOf(card), bonus = dieBonus(p, role);
+      S.fuel[p] -= 1;
+      renderFuel(p);
+      floatText($(`#valor${p}`), "−1 ⚡", true);
+      sfx.coin();
+      setPrompt(`<b>${who(p, role === "riposte" ? "ripostes avec" : "engages", role === "riposte" ? "riposte avec" : "engage")}</b> ${cardName(card)} — il faut <b>${thr}+</b> au dé.`);
       const el = await playCard(p, "ally", card, false, opts);
       el.classList.add("pending");
-      $("#trayNeed").textContent = `Seuil ${thr}+${bonus ? " · +1" : ""}${reroll ? " · relance" : ""}`;
+      const radar = S.board.amb[p].house === "C" && !S.radar[p];
+      $("#trayNeed").textContent = `${role === "riposte" ? "Riposte" : "Allié"} · ${thr}+${bonus ? ` · +${bonus}` : ""}${radar ? " · radar" : ""}`;
       $("#trayRes").textContent = "";
       $("#tray").classList.add("on");
       await sleep(350);
-
       let roll = await rollDie(p);
-      if (game !== gameId) return;
-      showRoll(roll, bonus, spent, thr);
-      while (roll + bonus + spent < thr) {
-        const need = thr - (roll + bonus);
-        const options = [];
-        if (reroll > 0) options.push({ k: "reroll", label: "Relance radar ♣", cls: "teal" });
-        if (S.fuel[p] >= need) options.push({ k: "fuel", label: `Brûler ${need} carburant` });
-        if (!options.length) break;
-        options.push({ k: "stop", label: "Accepter", cls: "ghost" });
-        let choice;
-        if (p === 0 && S.fuel[0] >= need) await tip("fuel", "Raté de peu ? Chaque jeton de <b>carburant</b> ajoute +1 au dé. Tu en regagnes un à chaque manche perdue.", $("#hud0"));
-        if (p === 0) { choice = await ask(`Le dé donne <b>${roll + bonus}</b>, il manque <b>${need}</b>.`, options); netSend("pick", choice); }
-        else if (duel()) choice = await netNext("pick");
-        else { await sleep(800); choice = reroll > 0 ? "reroll" : S.fuel[p] >= need && LEVELS[S.ai].fuel ? "fuel" : "stop"; }
-        if (game !== gameId) return;
-        if (choice === "reroll") {
-          reroll -= 1;
-          roll = await rollDie(p);
-          if (game !== gameId) return;
-          showRoll(roll, bonus, spent, thr);
-        } else if (choice === "fuel") {
-          spent = need;
-          S.fuel[p] -= need;
-          renderFuel(p);
-          sfx.coin();
-          showRoll(roll, bonus, spent, thr);
-        } else break;
+      if (game !== gameId) return false;
+      showRoll(roll, bonus, thr);
+      if (roll + bonus < thr && radar) {
+        S.radar[p] = true;
+        await sleep(500);
+        floatText($("#tray"), "Radar : relance !");
+        roll = await rollDie(p);
+        if (game !== gameId) return false;
+        showRoll(roll, bonus, thr);
       }
-
-      const ok = roll + bonus + spent >= thr;
+      const ok = roll + bonus >= thr;
       el.classList.remove("pending");
       await sleep(350);
       if (ok) {
@@ -1950,63 +2087,58 @@
         el.classList.add("broken");
         sfx.lose();
       }
-      let totals = renderTotals();
+      renderTotals();
       await sleep(850);
-      if (game !== gameId) return;
-      if (!ok) return finishRound(1 - p, p === 0 ? "Allié perdu" : "Allié adverse perdu");
-      const countered = await counterAttack(1 - p, totals);
-      if (game !== gameId) return;
-      totals = [breakdown(0).total, breakdown(1).total];
-      if (totals[p] > totals[1 - p]) return finishRound(p, "Renversement", true);
-      if (totals[p] === totals[1 - p]) return galacticBattle();
-      return finishRound(1 - p, countered ? (p === 0 ? "Contré !" : "Bien paré !") : null);
+      return ok;
     }
 
-    /* Le camp visé par un allié peut riposter : 1 carburant, un dé, et l'allié perd autant de points. */
-    async function counterAttack(d, totals) {
+    async function attemptAlly(p, card, opts = {}) {
+      const game = gameId;
+      S.board.role[p] = "ally";
+      const ok = await throwThird(p, card, opts);
+      if (game !== gameId) return;
+      if (!ok) return finishRound(1 - p, p === 0 ? "Allié perdu" : "Allié adverse perdu");
+      const riposted = await riposte(1 - p);
+      if (game !== gameId) return;
+      const totals = [breakdown(0).total, breakdown(1).total];
+      if (totals[p] > totals[1 - p]) return finishRound(p, "Renversement", true);
+      if (totals[p] === totals[1 - p]) return galacticBattle();
+      return finishRound(1 - p, riposted ? (p === 0 ? "Riposte adverse" : "Riposte gagnante") : null);
+    }
+
+    /* Le camp dépassé par un allié peut riposter : 1 boost, une carte posée, et le dé décide. */
+    async function riposte(d) {
       const game = gameId, a = 1 - d;
-      const gain = (breakdown(a).parts.find(([name]) => name === "Allié") || [0, 0])[1];
-      if (!gain || totals[a] < totals[d] || S.fuel[d] < 1) return false;
-      const margin = totals[a] - totals[d];
-      let go;
+      const totals = [breakdown(0).total, breakdown(1).total];
+      if (totals[a] < totals[d] || S.fuel[d] < 1) return false;
+      if (!S.hands[d].some(c => { const t = afterAlly(d, c); return t[d] >= t[a]; })) return false;
+      let pick = null;
       if (d === 0) {
-        await tip("counter", "L'allié de Gaspard a réussi et te passe devant. Tu peux <b>contre-attaquer</b> : pour 1 carburant, tu lances le dé et son allié perd autant de points.", $("#slot-1-ally"));
+        await tip("riposte", "L'allié de Gaspard te passe devant ! <b>Riposte</b> : pour 1 boost ⚡, glisse une carte ici et lance le dé. Réussie, elle s'ajoute à ton total et tu reprends l'avantage.", $("#slot-0-ally"));
         if (game !== gameId) return false;
-        go = (await ask(`L'allié de Gaspard vaut <b>+${gain}</b>, il te devance de <b>${margin}</b>. Ton dé lui retirerait ${S.cast[0] === "cranes" ? "2 à 6" : "1 à 6"} points.`,
-          [{ k: "yes", label: "Riposter · 1 carburant", cls: "hot" }, { k: "no", label: "Laisser", cls: "ghost" }])) === "yes";
-        netSend("counter", go);
-      } else if (duel()) {
-        setPrompt("<b>Gaspard</b> hésite à contre-attaquer…");
-        go = await netNext("counter");
+        S.phase = "riposte";
+        S.busy = false;
+        $("#slot-0-ally").innerHTML = "Riposte<br>⚡";
+        const choice = new Promise(resolve => { S.onRiposte = resolve; });
+        basePrompt();
+        renderAll();
+        const res = await choice;
+        if (game !== gameId) return false;
+        netSend("riposte", res ? res.card.id : null);
+        pick = res;
       } else {
-        setPrompt("<b>Gaspard</b> hésite à contre-attaquer…");
-        await sleep(900);
-        go = margin <= 5 && (LEVELS[S.ai].fuel ? (6 - margin) / 6 >= 0.33 : Math.random() < 0.4);
+        setPrompt("<b>Gaspard</b> prépare une riposte…");
+        if (duel()) { const id = await netNext("riposte"); const c = id ? S.hands[1].find(x => x.id === id) : null; pick = c ? { card: c } : null; }
+        else { await sleep(900); const c = aiThird("riposte"); pick = c ? { card: c } : null; }
       }
-      if (game !== gameId || !go) return false;
-      S.fuel[d] -= 1;
-      renderFuel(d);
-      sfx.coin();
-      banner("Contre-attaque !", d === 0 ? "light" : "bad");
-      setPrompt(`<b>${who(d, "ripostes", "riposte")}</b> : le dé retire ses points à l'allié.`);
-      $("#trayNeed").textContent = "Défense";
-      $("#tray").classList.add("on");
-      const roll = await rollDie(d);
+      if (game !== gameId || !pick) { S.phase = "roll"; return false; }
+      banner("Riposte !", d === 0 ? "light" : "bad");
+      await sleep(700);
+      S.board.role[d] = "riposte";
+      const ok = await throwThird(d, pick.card, pick.opts || {});
       if (game !== gameId) return false;
-      const cut = Math.min(S.cast[d] === "cranes" ? Math.max(roll, 2) : roll, gain);
-      S.board.allyCut[a] = cut;
-      $("#trayRes").textContent = `−${cut} à l'allié`;
-      $("#trayRes").className = d === 0 ? "ok" : "ko";
-      const el = $(`#slot-${a}-ally .card`);
-      el.classList.remove("joined");
-      el.classList.add("struck");
-      floatText(el, `−${cut}`, true);
-      burst(el, [OR, "#fff", YE], 8 + roll * 3);
-      shake(3 + roll * 1.5);
-      sfx.lose();
-      renderTotals();
-      await sleep(1000);
-      return true;
+      if (ok) { boom(d === 0 ? "Riposte !" : "Contré !", d === 0, $(`#slot-${d}-ally`)); await sleep(1500); }
+      return ok;
     }
 
     /* Égalité : tout reste en jeu, chacun met une carte en otage puis retourne une carte à l'aveugle. */
@@ -2046,7 +2178,7 @@
         renderAll();
         if (game !== gameId) return;
         if (level === 1) {
-          await tip("war", "<b>Bataille galactique !</b> Chacun met une carte en otage, puis retourne la carte du dessus de sa pioche, à l'aveugle. La plus forte rafle toute la mise. Avec 1 carburant, tu en pioches deux et tu gardes la meilleure.", $("#field"));
+          await tip("war", "<b>Bataille galactique !</b> Chacun met une carte en otage, puis retourne la carte du dessus de sa pioche, à l'aveugle. La plus forte rafle toute la mise. Avec 1 boost ⚡, tu en pioches deux et tu gardes la meilleure.", $("#field"));
           if (game !== gameId) return;
         }
         if (!stock(0) || !stock(1)) {
@@ -2059,13 +2191,13 @@
           if (game !== gameId) return;
         }
         const boost = [false, false];
-        const mise = `Mise : <b>${S.pot.length + boardCards().length} cartes</b>.`;
+        const mise = `Mise : <b>${lootSum(S.pot) + lootSum(boardCards())} pts de butin</b>.`;
         const options = [{ k: "flip", label: "Retourner ma carte", cls: "hot" }];
-        if (S.fuel[0] > 0 && stock(0) >= 2) options.push({ k: "boost", label: "1 carburant : j'en pioche 2" });
+        if (S.fuel[0] > 0 && stock(0) >= 2) options.push({ k: "boost", label: "1 ⚡ : j'en pioche 2" });
         boost[0] = (await ask(`${mise} Retourne ta carte à l'aveugle.`, options)) === "boost";
         netSend("boost", boost[0]);
         if (duel()) setPrompt(`${mise} En attente de <b>Gaspard</b>…`);
-        boost[1] = duel() ? await netNext("boost") : LEVELS[S.ai].fuel && S.fuel[1] > 0 && stock(1) >= 2 && (level >= 2 || S.pot.length >= 7 || Math.random() < 0.4);
+        boost[1] = duel() ? await netNext("boost") : LEVELS[S.ai].fuel && S.fuel[1] > 0 && stock(1) >= 2 && (level >= 2 || lootSum(S.pot) >= 10 || Math.random() < 0.4);
         if (game !== gameId) return;
         setPrompt(`${mise} Les cartes se retournent…`);
         for (const p of [1, 0]) {
@@ -2111,49 +2243,54 @@
       if (winner === null) {
         holdWarp(0);
         banner(cry || "Égalité", "bad");
-        setPrompt(`Égalité : <b>${cards.length} cartes</b> au pot. Le prochain vainqueur rafle tout.`);
+        setPrompt(`Égalité : <b>${lootSum(cards)} pts</b> de butin au pot. Le prochain vainqueur rafle tout.`);
         await sleep(900);
         await sweepBoard($("#pot"));
         S.pot = cards;
         S.first = 1 - S.first;
       } else {
         const loser = 1 - winner;
-        const kept = cards.filter(c => c.special !== "nova").length;
-        const steal = !war && onBoard(winner, "tractor") ? Math.min(2, S.loot[loser]) : 0;
+        const pts = lootSum(cards);
+        const nova = cards.some(c => c.special === "nova");
+        const steal = !war && onBoard(winner, "tractor") ? Math.min(TRACTOR_STEAL, S.loot[loser]) : 0;
         const refuel = !war && S.board.amb[winner] && S.board.amb[winner].house === "D";
-        const bigHaul = kept >= 8;
+        const bigHaul = pts + steal >= 10;
+        const epic = war || comeback || bigHaul;
         if (winner === 0) {
-          if (war) { banner("Bataille gagnée !", "light"); warp(2000); }
-          else if (comeback || bigHaul) { banner(comeback ? "Renversement !" : "Vitesse lumière !", "light"); warp(1700); }
+          if (war) { holdWarp(0); boom("Bataille gagnée !"); }
+          else if (comeback) boom("Renversement !");
+          else if (bigHaul) boom("Jackpot !", true, $("#lootBox0"));
           else banner(cry || "Manche gagnée");
           sfx.win();
         } else {
           if (war) holdWarp(0);
-          banner(war ? "Bataille perdue" : cry && !comeback ? cry : comeback ? "Gaspard renverse" : "Manche perdue", "bad");
-          if (war || comeback || bigHaul) flash(true);
+          if (comeback) boom("Gaspard renverse", false);
+          else banner(war ? "Bataille perdue" : cry || (bigHaul ? "Gros butin perdu" : "Manche perdue"), "bad");
+          if (war || bigHaul) flash(true);
           sfx.lose();
         }
-        shake();
-        await sleep(war || comeback || bigHaul ? 1500 : 950);
+        if (!epic) shake();
+        await sleep(epic ? 1700 : 950);
         await sweepBoard($(`#lootBox${winner}`));
-        S.loot[winner] += kept + steal;
+        S.loot[winner] += pts + steal;
         S.loot[loser] -= steal;
         S.pot = [];
+        floatText($(`#lootBox${winner}`), `+${pts + steal} pts`, false, pts + steal >= 6);
         if (steal) { floatText($(`#lootBox${loser}`), `−${steal}`, true); bump($(`#lootBox${loser}`)); }
         if (S.fuel[loser] < MAX_FUEL) { S.fuel[loser] += 1; renderFuel(loser, S.fuel[loser] - 1); }
         if (refuel && S.fuel[winner] < MAX_FUEL) { S.fuel[winner] += 1; renderFuel(winner, S.fuel[winner] - 1); }
         sfx.coin();
-        const extra = `${steal ? ` Rayon tracteur : ${steal} cartes volées.` : ""}${kept < cards.length ? " La Supernova s'est consumée." : ""}`;
+        const extra = `${steal ? ` Rayon tracteur : ${steal} pts volés.` : ""}${nova ? " La Supernova s'est consumée." : ""}`;
         setPrompt(winner === 0
-          ? `Tu ramasses <b>${kept} cartes</b>.${refuel ? " Ravitaillement : +1 carburant." : ""}${extra} Tu poseras en premier.`
-          : `« Ack ! Ack ! » Gaspard ramasse <b>${kept} cartes</b>.${extra} Tu gagnes <b>1 carburant</b>.`);
+          ? `Tu ramasses <b>${cards.length} cartes</b> : <b>+${pts} pts</b> de butin.${refuel ? " Ravitaillement : +1 ⚡." : ""}${extra}`
+          : `« Ack ! Ack ! » Gaspard ramasse <b>+${pts} pts</b> de butin.${extra} Tu gagnes <b>1 boost ⚡</b>.`);
         S.first = winner;
       }
       if (game !== gameId) return;
       if (winner === null) await tip("pot", "Égalité : personne ne prend les cartes. Elles attendent au <b>pot</b>, et le vainqueur de la prochaine manche rafle tout.", $("#pot"));
       else await tip("loot", winner === 0
-        ? "Les cartes gagnées rejoignent ton <b>butin</b>. À la fin de la partie, le plus gros butin l'emporte."
-        : "Gaspard empoche les cartes dans son <b>butin</b>. À la fin, le plus gros butin l'emporte. En consolation, tu reçois 1 carburant.", $(`#lootBox${winner}`));
+        ? "Chaque carte gagnée ajoute ses <b>points de butin</b> à ton score. À la fin de la partie, le plus gros butin l'emporte."
+        : "Gaspard empoche les points de butin des cartes. En consolation, tu reçois <b>1 boost ⚡</b> : de quoi appeler un allié la prochaine fois.", $(`#lootBox${winner}`));
       if (game !== gameId) return;
 
       S.board = emptyBoard();
@@ -2206,6 +2343,7 @@
       const [a, b] = S.loot, won = a > b, lost = a < b, arena = S.mode === "arena";
       $("#endTitle").textContent = won ? "Victoire" : lost ? "Défaite" : "Match nul";
       $("#endScore").textContent = `${a} — ${b}`;
+      $("#endScore").title = "Points de butin";
       const notes = [];
       const lvlBefore = levelInfo(save.xp).lvl;
       const dXp = won ? 50 : lost ? 20 : 30;
@@ -2235,7 +2373,7 @@
         $("#endText").textContent = won ? `${L.planet} est à toi. Ta tribu rentre en héros.` : lost ? `${foe()} a mieux mené ses alliés cette fois.` : "Aucun camp ne l'emporte.";
         let stars = 0;
         if (won) {
-          stars = a - b >= 16 ? 3 : a - b >= 8 ? 2 : 1;
+          stars = a - b >= 20 ? 3 : a - b >= 10 ? 2 : 1;
           if (stars > save.stars[S.level]) { save.stars[S.level] = stars; notes.push(`Nouveau record sur ${L.planet} : ${"★".repeat(stars)}`); }
           if (!save.wins[S.level]) {
             const got = grantAtouts(L.gift);
@@ -2301,7 +2439,8 @@
       }).join("");
       for (const btn of document.querySelectorAll(".lvl")) btn.addEventListener("click", () => { S.level = save.level = Number(btn.dataset.level); persist(); sfx.tap(); renderMenu(); });
       $("#playBtn").textContent = `Décoller vers ${L.planet}`;
-      $("#stake").innerHTML = `Adversaire : <b>${L.who}</b>, ${L.name.toLowerCase()}. Victoire : <b>${L.reward} ◆</b> et jusqu'à 3 étoiles.`;
+      $("#stake").innerHTML = `Adversaire : <b>${L.who}</b>, ${L.name.toLowerCase()} — ${L.note}. Victoire : <b>${L.reward} ◆</b> et jusqu'à 3 étoiles.`;
+      renderHero();
 
       // Multijoueur : le prochain rival, la ligue, le classement
       S.rival = S.rival || pickRival();
@@ -2353,6 +2492,29 @@
       });
     }
 
+    /* Vitrine de l'accueil : un éventail de cartes vivantes de ta tribu, dont une qui se retourne. */
+    function renderHero() {
+      const fan = $("#heroFan");
+      if (fan.dataset.cast === S.cast[0]) return;
+      fan.dataset.cast = S.cast[0];
+      const deck = [
+        { id: "h1", label: "2", value: 2, title: "Sonde", house: "D", seed: 31 },
+        { id: "h2", label: "A", value: 14, title: "As", house: "S", seed: 17 },
+        { id: "h3", label: "R", value: 13, title: "Roi", house: "H", seed: 5 },
+        makeAtout("nova", "hero"),
+        { id: "h5", label: "3", value: 3, title: "Balise", house: "C", seed: 23 }
+      ];
+      const pose = [[-16, 10], [-8, 2], [0, -4], [8, 2], [16, 10]];
+      fan.innerHTML = "";
+      deck.forEach((card, i) => {
+        const el = cardEl(card, 0);
+        el.style.setProperty("--i", i);
+        el.style.setProperty("--r", pose[i][0]);
+        el.style.setProperty("--y", pose[i][1]);
+        if (i === 1) el.classList.add("flipper");
+        fan.appendChild(el);
+      });
+    }
     function renderAtouts() {
       const grid = $("#atGrid");
       grid.innerHTML = "";
