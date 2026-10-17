@@ -563,5 +563,9 @@ BDAi18n.add("ko", {
   "Langue": "언어",
   "<b>Prime de butin :</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (cumulables), même si tu perds.": "<b>전리품 보너스:</b> 30점 = +5 ◆, 40점 = +10 ◆, 50점 = +15 ◆, 60점 = +20 ◆ (누적), 져도 받아요.",
   "Mise": "판돈",
-  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>이게 핵심 카드예요!</b> 문양이 능력을 발동해요: ♠ 상대 합계 −2, ♥ 주사위 +1, ♦ 이기면 부스트 +1, ♣ 주사위 다시 굴리기. <b>카드를 끌지 말고 탭</b>하면 내기 전에 효과를 볼 수 있어요."
+  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>이게 핵심 카드예요!</b> 문양이 능력을 발동해요: ♠ 상대 합계 −2, ♥ 주사위 +1, ♦ 이기면 부스트 +1, ♣ 주사위 다시 굴리기. <b>카드를 끌지 말고 탭</b>하면 내기 전에 효과를 볼 수 있어요.",
+  "Cristaux": "크리스탈",
+  "Niveau {n}": "레벨 {n}",
+  "Trophées": "트로피",
+  "Étoiles": "별"
 });

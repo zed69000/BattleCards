@@ -563,5 +563,9 @@ BDAi18n.add("en", {
   "✂ déchire ici": "✂ tear here",
   "<b>Prime de butin :</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (cumulables), même si tu perds.": "<b>Loot bonus:</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (they stack), even if you lose.",
   "Mise": "Stake",
-  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>This is the key card!</b> Its symbol triggers a power: ♠ −2 to the enemy total, ♥ +1 to the die, ♦ +1 boost if you win, ♣ die reroll. <b>Tap a card without dragging it</b> to read its effect before playing it."
+  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>This is the key card!</b> Its symbol triggers a power: ♠ −2 to the enemy total, ♥ +1 to the die, ♦ +1 boost if you win, ♣ die reroll. <b>Tap a card without dragging it</b> to read its effect before playing it.",
+  "Cristaux": "Crystals",
+  "Niveau {n}": "Level {n}",
+  "Trophées": "Trophies",
+  "Étoiles": "Stars"
 });

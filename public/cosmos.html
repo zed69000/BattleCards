@@ -14,8 +14,8 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.29";</script>
-  <script src="i18n.js?v=0.29"></script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.30";</script>
+  <script src="i18n.js?v=0.30"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
   <style>
@@ -549,6 +549,41 @@
     .sheet .score { font-size: 3rem; margin: 4px 0 6px; }
     .sheet p { margin: 0 0 12px; color: rgba(245, 233, 207, 0.85); font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.9rem; line-height: 1.4; }
     .sheet p b { color: var(--yellow); }
+    /* Écran de fin : ta tête domine l'adversaire, chaque récompense a sa tuile, pluie de pièces à la victoire */
+    #endScreen { overflow: hidden; }
+    .end-sheet { position: relative; z-index: 2; }
+    .end-sheet.win { border-color: var(--yellow); box-shadow: 0 0 0 3px rgba(245, 196, 69, 0.35), 0 0 40px rgba(245, 196, 69, 0.35), 0 8px 0 #0a0f1e; background: radial-gradient(circle at 50% 0%, rgba(245, 196, 69, 0.28), var(--navy) 55%); }
+    .end-sheet.win h2 { font-size: 2.2rem; text-shadow: 0 3px 0 var(--orange), 0 0 20px rgba(245, 196, 69, 0.7); animation: titleIn 900ms cubic-bezier(.2, 1.5, .4, 1) both; }
+    @keyframes titleIn { 0% { opacity: 0; scale: 2.4; rotate: -10deg; } 45% { opacity: 1; scale: 0.92; rotate: 3deg; } 70% { scale: 1.06; rotate: 0deg; } 100% { opacity: 1; scale: 1; } }
+    .end-sheet .stack { position: sticky; bottom: -18px; z-index: 3; margin: 0 -18px -18px; padding: 10px 18px 16px; background: linear-gradient(180deg, transparent, var(--navy) 22%); }
+    .end-sheet .score { font-size: 2.4rem; margin: 0 0 2px; }
+    .end-sheet p { margin-bottom: 8px; }
+    .duelists { position: relative; height: 116px; margin: -6px 0 0; }
+    .duelists .portrait { position: absolute; }
+    .duelists .top { left: 50%; top: 2px; width: 112px; height: 112px; translate: -62% 0; z-index: 2; animation: hover 2.6s ease-in-out infinite; }
+    .duelists .low { left: 50%; top: 58px; width: 64px; height: 64px; translate: 34% 0; rotate: 18deg; filter: grayscale(0.8) brightness(0.7); }
+    .duelists .low::after { content: "✦ ✧ ✦"; position: absolute; left: 50%; top: -14px; translate: -50% 0; font-size: 0.7rem; color: var(--yellow); animation: spin 2.4s linear infinite; }
+    .duelists .crown { position: absolute; left: 50%; top: -14px; z-index: 3; translate: -95% 0; rotate: -14deg; font-size: 1.9rem; filter: drop-shadow(0 2px 0 #0a0f1e); animation: bob 1.6s ease-in-out infinite; }
+    .duelists.even .top, .duelists.even .low { width: 84px; height: 84px; top: 20px; rotate: 0deg; filter: none; }
+    .duelists.even .top { translate: -110% 0; } .duelists.even .low { translate: 10% 0; } .duelists.even .low::after { display: none; }
+    .rewards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 12px; }
+    .rw { display: grid; grid-template-columns: 40px 1fr; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 12px; text-align: left; background: rgba(16, 22, 43, 0.7); border: 2px solid rgba(245, 196, 69, 0.45); animation: rwIn 480ms cubic-bezier(.2, 1.5, .4, 1) backwards; }
+    .rw.wide { grid-column: 1 / -1; }
+    .rw.hot { border-color: var(--yellow); background: linear-gradient(120deg, rgba(245, 196, 69, 0.32), rgba(16, 22, 43, 0.8)); box-shadow: 0 0 14px rgba(245, 196, 69, 0.35); }
+    .rw .ic { display: grid; place-items: center; width: 40px; height: 40px; font-size: 1.4rem; color: var(--yellow); }
+    .rw .ic .card { --cw: 34px; }
+    .rw .ic .portrait { width: 40px; height: 40px; }
+    .rw .ic .mcoin { width: 32px; height: 32px; font-size: 0.9rem; }
+    .rw b { display: block; font-weight: 400; font-size: 1.2rem; line-height: 1.05; color: var(--cream); }
+    .rw small { display: block; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.68rem; line-height: 1.2; color: rgba(245, 233, 207, 0.75); }
+    .rw .bar { height: 5px; margin-top: 4px; border-radius: 99px; background: rgba(245, 233, 207, 0.2); overflow: hidden; }
+    .rw .bar i { display: block; height: 100%; width: var(--w); background: var(--teal); animation: barIn 900ms ease-out 400ms backwards; }
+    .rw .stars { font-size: 1.15rem; letter-spacing: 1px; color: var(--yellow); text-shadow: 0 0 8px rgba(245, 196, 69, 0.8); }
+    @keyframes rwIn { from { opacity: 0; transform: translateY(18px) scale(0.7); } }
+    @keyframes barIn { from { width: 0; } }
+    .end-rain { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+    .end-rain .mcoin { position: absolute; top: -40px; width: 26px; height: 26px; font-size: 0.7rem; animation: coinFall var(--d) linear var(--dl) infinite; }
+    @keyframes coinFall { 0% { transform: translateY(0) rotateY(0deg); opacity: 0; } 8% { opacity: 1; } 100% { transform: translateY(110vh) rotateY(1080deg); opacity: 0.9; } }
     .reward { margin: 0 0 12px; padding: 8px; border-radius: 12px; background: rgba(245, 196, 69, 0.14); border: 2px dashed var(--yellow); color: var(--yellow); }
     .help { text-align: left; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.9rem; line-height: 1.45; user-select: text; }
     .help ol, .help ul { margin: 0 0 12px; padding-left: 1.2rem; }
@@ -905,8 +940,9 @@
   </div>
 
   <div class="overlay" id="endScreen">
-    <div class="sheet"><h2 id="endTitle"></h2><div class="score" id="endScore"></div><p id="endText"></p>
-      <div class="reward" id="endReward"></div>
+    <div class="end-rain" id="endRain" aria-hidden="true"></div>
+    <div class="sheet end-sheet"><div class="duelists" id="endDuel"></div><h2 id="endTitle"></h2><div class="score" id="endScore"></div><p id="endText"></p>
+      <div class="rewards" id="endReward"></div>
       <div class="stack"><button class="btn teal" id="endBooster" hidden>Ouvrir un booster</button><button class="btn" id="endAgain">Rejouer</button><button class="btn ghost" id="endMenu">Menu</button></div>
     </div>
   </div>
@@ -2952,8 +2988,9 @@
       $("#endTitle").textContent = won ? (S.ended === "claim" ? tr("Victoire assurée") : tr("Victoire")) : lost ? (S.ended === "flee" ? tr("Repli") : tr("Défaite")) : tr("Match nul");
       $("#endScore").textContent = `${a} — ${b}`;
       $("#endScore").title = tr("Points de butin");
-      const notes = [];
+      const notes = [];   // { v: visuel, t: titre, s: sous-titre, hot: mise en avant }
       const lvlBefore = levelInfo(save.xp).lvl;
+      let starsWon = 0, trophyDelta = null;
       $("#endAgain").textContent = S.mode === "adv" && won && S.stage === save.camp.cleared ? tr("Combat suivant") : tr("Rejouer");
       const dXp = won ? 50 : lost ? 20 : 30;
       save.xp += dXp;
@@ -2969,10 +3006,11 @@
         save.trophies += dT;
         gain = won ? 25 : 8;
         const after = { league: leagueOf(save.trophies), rank: myRank() };
-        if (after.league > before.league) notes.push(tr("Promotion en ligue {league} !", { league: tr(LEAGUES[after.league].name) }));
-        if (after.league < before.league) notes.push(tr("Relégation en ligue {league}", { league: tr(LEAGUES[after.league].name) }));
-        if (after.rank < before.rank) notes.push(tr("Tu passes {n}ᵉ au classement", { n: after.rank }));
-        if (after.rank > before.rank) notes.push(tr("Tu redescends {n}ᵉ au classement", { n: after.rank }));
+        trophyDelta = dT;
+        if (after.league > before.league) notes.push({ v: "♛", t: tr("Promotion en ligue {league} !", { league: tr(LEAGUES[after.league].name) }), hot: true });
+        if (after.league < before.league) notes.push({ v: "♛", t: tr("Relégation en ligue {league}", { league: tr(LEAGUES[after.league].name) }) });
+        if (after.rank < before.rank) notes.push({ v: "▲", t: tr("Tu passes {n}ᵉ au classement", { n: after.rank }), hot: true });
+        if (after.rank > before.rank) notes.push({ v: "▼", t: tr("Tu redescends {n}ᵉ au classement", { n: after.rank }) });
         $("#endText").textContent = won ? tr("Tu as battu {name} dans l'arène.", { name: foe() }) : lost ? tr("{name} garde l'avantage cette fois.", { name: foe() }) : tr("Personne ne prend l'avantage.");
         head = `${dT < 0 ? "−" : "+"}${Math.abs(dT)} ♛ · +${dXp} XP`;
         S.rival = null;
@@ -2984,29 +3022,52 @@
         let stars = 0;
         if (won) {
           stars = a - b >= 20 ? 3 : a - b >= 10 ? 2 : 1;
-          if (stars > (save.camp.stars[S.stage] || 0)) { if (!first) notes.push(tr("Nouveau record : {stars}", { stars: "★".repeat(stars) })); save.camp.stars[S.stage] = stars; }
+          starsWon = stars;
+          if (stars > (save.camp.stars[S.stage] || 0)) { if (!first) notes.push({ v: "★", t: tr("Nouveau record : {stars}", { stars: "★".repeat(stars) }), hot: true }); save.camp.stars[S.stage] = stars; }
           if (first) {
             save.camp.cleared += 1;
-            if (sg.gift && grantAtouts([sg.gift]).length) notes.push(tr("Atout gagné : {name}", { name: tr(ATOUTS[sg.gift].name) }));
-            for (const id of sg.unlocks) if (!save.chars[id]) { save.chars[id] = 1; notes.push(tr("Personnage débloqué : {name}", { name: tr(CHARS[id].name) })); }
-            if (sg.boss) { trip = [ch, CHAPTERS[sg.c + 1] || null]; if (CHAPTERS[sg.c + 1]) notes.push(tr("Nouveau chapitre : {planet}", { planet: tr(CHAPTERS[sg.c + 1].planet) })); }
+            if (sg.gift && grantAtouts([sg.gift]).length) notes.push({ v: cardEl(makeAtout(sg.gift, "end"), 0).outerHTML, t: tr("Atout gagné : {name}", { name: tr(ATOUTS[sg.gift].name) }), hot: true, wide: true });
+            for (const id of sg.unlocks) if (!save.chars[id]) { save.chars[id] = 1; notes.push({ v: portrait(id), t: tr("Personnage débloqué : {name}", { name: tr(CHARS[id].name) }), hot: true, wide: true }); }
+            if (sg.boss) { trip = [ch, CHAPTERS[sg.c + 1] || null]; if (CHAPTERS[sg.c + 1]) notes.push({ v: `<i class="pdot" style="display:block;width:30px;height:30px;border-radius:50%;border:2px solid var(--navy);background:${CHAPTERS[sg.c + 1].color}"></i>`, t: tr("Nouveau chapitre : {planet}", { planet: tr(CHAPTERS[sg.c + 1].planet) }), wide: true }); }
             if (save.camp.cleared < STAGES.length) { S.stage = save.stage = save.camp.cleared; chapterView = STAGES[S.stage].c; }
           }
         }
         head = `${stars ? `${"★".repeat(stars)}${"☆".repeat(3 - stars)} · ` : ""}+${dXp} XP`;
       }
       const prime = lootBonus(a);
-      if (prime) { gain += prime; notes.push(tr("Prime de butin ({pts} pts) : +{gems} ◆", { pts: a, gems: prime })); }
+      if (prime) { gain += prime; notes.push({ v: '<span class="mcoin">★</span>', t: tr("Prime de butin ({pts} pts) : +{gems} ◆", { pts: a, gems: prime }), hot: true }); }
       const lvlAfter = levelInfo(save.xp).lvl;
-      if (lvlAfter > lvlBefore) { gain += 30 * (lvlAfter - lvlBefore); notes.push(tr("Niveau {n} ! (+30 ◆)", { n: lvlAfter })); }
+      if (lvlAfter > lvlBefore) { gain += 30 * (lvlAfter - lvlBefore); notes.unshift({ v: `<b style="font-size:1.3rem;color:var(--yellow)">${lvlAfter}</b>`, t: tr("Niveau {n} ! (+30 ◆)", { n: lvlAfter }), hot: true, wide: true }); }
       save.crystals += gain;
       persist();
-      $("#endReward").innerHTML = `${head} · +${gain} ◆${notes.map(n => `<br>${n}`).join("")}`;
+      // Les tuiles de récompense : étoiles, cristaux, XP (ou trophées), puis chaque nouveauté
+      const lv = levelInfo(save.xp), tiles = [];
+      if (starsWon) tiles.push(`<div class="rw hot"><div class="ic">★</div><div><span class="stars">${"★".repeat(starsWon)}${"☆".repeat(3 - starsWon)}</span><small>${tr("Étoiles")}</small></div></div>`);
+      if (trophyDelta !== null) tiles.push(`<div class="rw${trophyDelta > 0 ? " hot" : ""}"><div class="ic">♛</div><div><b>${trophyDelta < 0 ? "−" : "+"}${Math.abs(trophyDelta)}</b><small>${tr("Trophées")}</small></div></div>`);
+      tiles.push(`<div class="rw hot"><div class="ic"><span class="mcoin">◆</span></div><div><b id="gemCount">+0</b><small>${tr("Cristaux")}</small></div></div>`);
+      tiles.push(`<div class="rw"><div class="ic">✦</div><div><b>+${dXp} XP</b><small>${tr("Niveau {n}", { n: lv.lvl })}</small><div class="bar"><i style="--w:${Math.round((lv.into / lv.need) * 100)}%"></i></div></div></div>`);
+      for (const n of notes) tiles.push(`<div class="rw${n.hot ? " hot" : ""}${n.wide ? " wide" : ""}"><div class="ic">${n.v}</div><div><small>${n.t}</small></div></div>`);
+      $("#endReward").innerHTML = tiles.join("");
+      [...$("#endReward").children].forEach((el, i) => { el.style.animationDelay = `${300 + i * 220}ms`; setTimeout(() => sfx.coin(), 300 + i * 220); });
+      // Les cristaux défilent jusqu'au total
+      let shown = 0;
+      clearInterval(endGame.count);
+      endGame.count = setInterval(() => { shown = Math.min(gain, shown + Math.max(1, Math.ceil(gain / 25))); const el = $("#gemCount"); if (el) el.textContent = `+${shown}`; if (shown >= gain) clearInterval(endGame.count); }, 40);
+      // Ta tête domine l'adversaire (ou l'inverse)
+      const me = portrait(save.char), them = portrait(S.foeChar || `${S.cast[1]}0`);
+      $("#endDuel").className = `duelists${won || lost ? "" : " even"}`;
+      $("#endDuel").innerHTML = won ? `<span class="crown">👑</span>${me.replace('class="portrait', 'class="portrait top')}${them.replace('class="portrait', 'class="portrait low')}`
+        : lost ? `${them.replace('class="portrait', 'class="portrait top')}${me.replace('class="portrait', 'class="portrait low')}`
+          : `${me.replace('class="portrait', 'class="portrait top')}${them.replace('class="portrait', 'class="portrait low')}`;
+      $(".end-sheet").classList.toggle("win", won);
+      // Pluie de pièces à la victoire
+      $("#endRain").innerHTML = won && !reduced ? Array.from({ length: 26 }, (_, i) => `<span class="mcoin${i % 5 === 0 ? " c2" : i % 7 === 0 ? " c1" : ""}" style="left:${rand(96)}%;--d:${2.2 + Math.random() * 1.8}s;--dl:${(Math.random() * 2.4).toFixed(2)}s">★</span>`).join("") : "";
       $("#endBooster").hidden = save.crystals < CAPSULE_COST;
       if (trip) { await voyage(trip[0], trip[1]); if (game !== gameId) return; }
       else if (won) { warp(2200); sfx.win(); }
       else sfx.lose();
       $("#endScreen").classList.add("on");
+      if (won) { boom(null, true, $("#endDuel")); buzz([40, 30, 80]); }
     }
 
     /* ═════ Menu, atouts, capsules ═════ */

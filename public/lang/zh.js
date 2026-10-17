@@ -563,5 +563,9 @@ BDAi18n.add("zh", {
   "Langue": "语言",
   "<b>Prime de butin :</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (cumulables), même si tu perds.": "<b>战利品奖励：</b>25 点 = +5 ◆，32 点 = +10 ◆，40 点 = +15 ◆，48 点 = +20 ◆（可叠加），输了也有。",
   "Mise": "赌注",
-  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>这是关键牌！</b>它的花色会触发能力：♠ 对手总分 −2，♥ 骰子 +1，♦ 获胜时 +1 能量，♣ 重掷骰子。<b>轻点一张牌（不要拖动）</b>，出牌前先看它的效果。"
+  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>这是关键牌！</b>它的花色会触发能力：♠ 对手总分 −2，♥ 骰子 +1，♦ 获胜时 +1 能量，♣ 重掷骰子。<b>轻点一张牌（不要拖动）</b>，出牌前先看它的效果。",
+  "Cristaux": "水晶",
+  "Niveau {n}": "等级 {n}",
+  "Trophées": "奖杯",
+  "Étoiles": "星星"
 });

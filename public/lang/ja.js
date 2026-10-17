@@ -563,5 +563,9 @@ BDAi18n.add("ja", {
   "✂ déchire ici": "✂ ここを破る",
   "<b>Prime de butin :</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (cumulables), même si tu perds.": "<b>戦利品ボーナス：</b>25 pts＝+5 ◆、32 pts＝+10 ◆、40 pts＝+15 ◆、48 pts＝+20 ◆（累積可）、負けてももらえる。",
   "Mise": "賭け",
-  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>これが勝負のカギ！</b>マークで能力が発動：♠ 相手の合計−2、♥ ダイス+1、♦ 勝てばブースト+1、♣ ダイス振り直し。<b>カードをスワイプせずにタップ</b>すると、出す前に効果を確認できるよ。"
+  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>これが勝負のカギ！</b>マークで能力が発動：♠ 相手の合計−2、♥ ダイス+1、♦ 勝てばブースト+1、♣ ダイス振り直し。<b>カードをスワイプせずにタップ</b>すると、出す前に効果を確認できるよ。",
+  "Cristaux": "クリスタル",
+  "Niveau {n}": "レベル {n}",
+  "Trophées": "トロフィー",
+  "Étoiles": "スター"
 });

@@ -563,5 +563,9 @@ BDAi18n.add("es", {
   "Langue": "Idioma",
   "<b>Prime de butin :</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (cumulables), même si tu perds.": "<b>Prima de botín:</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (acumulables), aunque pierdas.",
   "Mise": "Apuesta",
-  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>¡Es la carta clave!</b> Su símbolo activa un poder: ♠ −2 al total rival, ♥ +1 al dado, ♦ +1 boost si ganas, ♣ repetir el dado. <b>Toca una carta sin arrastrarla</b> para leer su efecto antes de jugarla."
+  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>¡Es la carta clave!</b> Su símbolo activa un poder: ♠ −2 al total rival, ♥ +1 al dado, ♦ +1 boost si ganas, ♣ repetir el dado. <b>Toca una carta sin arrastrarla</b> para leer su efecto antes de jugarla.",
+  "Cristaux": "Cristales",
+  "Niveau {n}": "Nivel {n}",
+  "Trophées": "Trofeos",
+  "Étoiles": "Estrellas"
 });

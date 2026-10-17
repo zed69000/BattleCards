@@ -563,5 +563,9 @@ BDAi18n.add("de", {
   "Langue": "Sprache",
   "<b>Prime de butin :</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (cumulables), même si tu perds.": "<b>Beuteprämie:</b> 25 Pkt = +5 ◆, 32 Pkt = +10 ◆, 40 Pkt = +15 ◆, 48 Pkt = +20 ◆ (kumulierbar), auch wenn du verlierst.",
   "Mise": "Einsatz",
-  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>Das ist die Schlüsselkarte!</b> Ihr Symbol löst eine Kraft aus: ♠ −2 für den Gegner, ♥ +1 auf den Würfel, ♦ +1 Boost bei Sieg, ♣ Würfel neu werfen. <b>Tippe eine Karte an, ohne sie zu ziehen</b>, um ihren Effekt zu lesen."
+  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>Das ist die Schlüsselkarte!</b> Ihr Symbol löst eine Kraft aus: ♠ −2 für den Gegner, ♥ +1 auf den Würfel, ♦ +1 Boost bei Sieg, ♣ Würfel neu werfen. <b>Tippe eine Karte an, ohne sie zu ziehen</b>, um ihren Effekt zu lesen.",
+  "Cristaux": "Kristalle",
+  "Niveau {n}": "Level {n}",
+  "Trophées": "Trophäen",
+  "Étoiles": "Sterne"
 });
