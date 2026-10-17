@@ -14,8 +14,8 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.37";</script>
-  <script src="i18n.js?v=0.37"></script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.38";</script>
+  <script src="i18n.js?v=0.38"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
   <style>
@@ -476,6 +476,12 @@
     .card.rar-1 .front::after { background-image: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.8) 45%, rgba(120, 255, 225, 0.7) 53%, transparent 68%); animation-duration: 2.8s; }
     .card.rar-2 .front::after { background-image: linear-gradient(115deg, transparent 18%, rgba(255, 90, 160, 0.7) 34%, rgba(255, 235, 110, 0.8) 44%, rgba(90, 255, 200, 0.7) 54%, rgba(120, 160, 255, 0.7) 64%, transparent 80%); animation-duration: 2s; }
     .card.struck { animation: hit 420ms ease; }
+    /* Fragments de dissolution : carte aplatie (sans 3D), sinon Safari n'affiche rien une fois découpée */
+    .card.frag { perspective: none; pointer-events: none; }
+    .card.frag .card-inner { transform-style: flat; transform: none !important; transition: none; }
+    .card.frag .face { backface-visibility: visible; -webkit-backface-visibility: visible; }
+    .card.frag .back { display: none; }
+    .card.frag .front { box-shadow: inset 0 0 0 3px #ffd76a, inset 0 0 18px rgba(255, 215, 106, 0.9); }
     /* Pièce de butin : ce que la carte rapporte si on la gagne. Les petites cartes sont des trésors. */
     /* Pièces de butin : or = 3 pts, argent = 2 pts, bronze = 1 pt. Tranche crantée, face bombée, reflet. */
     .coin, .mcoin { --c1: #fff6c9; --c2: #f5c445; --c3: #a8730a; --ink: #5a3d00; display: grid; place-items: center; border-radius: 50%; line-height: 1; color: var(--ink); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6); background: radial-gradient(circle at 50% 50%, transparent 52%, rgba(0, 0, 0, 0.22) 55%, transparent 60%), radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.95) 0 9%, transparent 26%), radial-gradient(circle at 50% 40%, var(--c1), var(--c2) 55%, var(--c3)); border: 2px solid var(--c3); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25), 0 0 0 1.5px var(--navy), 0 2px 0 #0a0f1e; }
@@ -1592,7 +1598,7 @@
        en petits carreaux découpés (clip-path), chacun s'envole avec un léger décalage. */
     async function dissolveBoard(target) {
       const els = [...document.querySelectorAll(".slot .card")];
-      const COLS = 4, ROWS = 5, DUR = reduced ? 1 : 520, fx = $("#fx");
+      const COLS = 4, ROWS = 5, DUR = 520, fx = $("#fx");
       const tg = center(target);
       let longest = 0;
       els.forEach((el, i) => {
@@ -1601,7 +1607,8 @@
         const coin = el.querySelector(".coin");
         if (coin) coin.remove();
         const base = el.cloneNode(true);
-        base.classList.remove("stacked", "sel", "pending", "joined", "broken", "drawn");
+        base.classList.remove("stacked", "sel", "pending", "joined", "broken", "drawn", "facedown");
+        base.classList.add("frag");
         Object.assign(base.style, { position: "absolute", left: `${r.left}px`, top: `${r.top}px`, margin: "0", rotate: "0deg", zIndex: "1", animation: "none", transition: "none", transform: "none", opacity: "1", filter: "none" });
         base.style.setProperty("--cw", `${r.width}px`);
         el.style.visibility = "hidden";
@@ -1610,16 +1617,16 @@
           const f = base.cloneNode(true);
           f.style.clipPath = f.style.webkitClipPath = `inset(${(row / ROWS) * 100}% ${100 - ((col + 1) / COLS) * 100}% ${100 - ((row + 1) / ROWS) * 100}% ${(col / COLS) * 100}%)`;
           fx.appendChild(f);
-          const delay = reduced ? 0 : i * 60 + (col + row * 0.35) * 45 + Math.random() * 60;
+          const delay = i * 60 + (col + row * 0.35) * 45 + Math.random() * 60;
           const dx = (col - 1.5) * 10 + (Math.random() - 0.5) * 26 + pushX, dy = -18 - Math.random() * 34 + pushY;
           longest = Math.max(longest, delay + DUR);
           f.animate([
-            { transform: "none", opacity: 1, filter: "brightness(1)" },
-            { transform: `translate(${dx * 0.3}px, ${dy * 0.3}px)`, opacity: 1, filter: "brightness(1.9) drop-shadow(0 0 4px #ffd76a)", offset: 0.3 },
-            { transform: `translate(${dx}px, ${dy}px) rotate(${(Math.random() - 0.5) * 70}deg) scale(0.5)`, opacity: 0, filter: "brightness(2.6) drop-shadow(0 0 6px #ffd76a)" }
+            { transform: "none", opacity: 1 },
+            { transform: `translate(${dx * 0.3}px, ${dy * 0.3}px)`, opacity: 1, offset: 0.3 },
+            { transform: `translate(${dx}px, ${dy}px) rotate(${(Math.random() - 0.5) * 70}deg) scale(0.5)`, opacity: 0 }
           ], { duration: DUR, delay, easing: "cubic-bezier(.3,.6,.5,1)", fill: "forwards" }).finished.then(() => f.remove()).catch(() => f.remove());
         }
-        setTimeout(() => burst(el, [YE, "#fff", OR], 10), reduced ? 0 : i * 60 + 80);
+        setTimeout(() => burst(el, [YE, "#fff", OR], 10), i * 60 + 80);
       });
       if (els.length) { sfx.rare(); tone(180, 0.5, "sawtooth", 0.03, 0, 900); }
       await hold(Math.min(longest, 1100) + 120);
