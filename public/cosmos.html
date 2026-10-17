@@ -14,8 +14,8 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.40";</script>
-  <script src="i18n.js?v=0.40"></script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.41";</script>
+  <script src="i18n.js?v=0.41"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
   <style>
@@ -1591,42 +1591,55 @@
       };
       requestAnimationFrame(frame);
     }
-    /* Fin de manche : chaque carte se dissout en ÉCLATS. La carte s'efface pendant qu'une grille de petits carreaux
-       (crème, couleur de sa famille et or) apparaît à sa place puis s'éparpille vers le butin du gagnant.
-       Uniquement des carrés animés en transform/opacité : rendu garanti sur tous les téléphones. */
+    /* Fin de manche : la VRAIE carte se consume. Un bord déchiqueté avance d'un côté à l'autre et la ronge
+       (découpe recalculée à chaque image), pendant que des éclats et des étincelles dorées s'échappent du bord
+       et filent vers le butin du gagnant. Aucune 3D ni filtre : compatible Safari. */
     async function dissolveBoard(target) {
       const els = [...document.querySelectorAll(".slot .card")];
-      const COLS = 4, ROWS = 5, DUR = 560, fx = $("#fx"), tg = center(target);
+      const DUR = 620, STEP = 80, fx = $("#fx"), tg = center(target);
       const houseColor = { S: "#5b5fc7", H: "#f26a3d", D: "#e0a91f", C: "#2fa394", X: "#d0508f" };
-      let longest = 0;
+      const N = 9;
       els.forEach((el, i) => {
-        const r = el.getBoundingClientRect();
-        if (!r.width) return;
         const h = (el.className.match(/\bh-([SHDCX])\b/) || [0, "X"])[1];
-        const palette = ["#f5e9cf", "#f5e9cf", houseColor[h], "#ffd76a"];
-        const start = i * 70;
-        el.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(1.06)" }], { duration: 260, delay: start, fill: "forwards" });
-        const cw = r.width / COLS, ch = r.height / ROWS;
-        const pushX = (tg.x - (r.left + r.width / 2)) * 0.35, pushY = (tg.y - (r.top + r.height / 2)) * 0.35;
-        for (let row = 0; row < ROWS; row += 1) for (let col = 0; col < COLS; col += 1) {
-          const d = document.createElement("span");
-          d.className = "shard";
-          Object.assign(d.style, { left: `${r.left + col * cw}px`, top: `${r.top + row * ch}px`, width: `${cw + 0.5}px`, height: `${ch + 0.5}px`, background: palette[(row * 3 + col * 5 + i) % palette.length] });
-          fx.appendChild(d);
-          const delay = start + 90 + (col + row * 0.4) * 38 + Math.random() * 50;
-          const dx = (col - 1.5) * 14 + (Math.random() - 0.5) * 30 + pushX, dy = (row - 2) * 6 - 20 - Math.random() * 40 + pushY;
-          longest = Math.max(longest, delay + DUR);
-          d.animate([
-            { opacity: 0, transform: "scale(1)" },
-            { opacity: 1, transform: "scale(1)", offset: 0.12 },
-            { opacity: 1, transform: `translate(${dx * 0.35}px, ${dy * 0.35}px) rotate(${(Math.random() - 0.5) * 60}deg) scale(0.8)`, offset: 0.45 },
-            { opacity: 0, transform: `translate(${dx}px, ${dy}px) rotate(${(Math.random() - 0.5) * 220}deg) scale(0.15)` }
-          ], { duration: DUR, delay, easing: "cubic-bezier(.3,.6,.5,1)", fill: "forwards" }).finished.then(() => d.remove()).catch(() => d.remove());
-        }
-        setTimeout(() => burst(el, [YE, "#fff", OR], 10), start + 120);
+        const colors = ["#ffd76a", "#fff3c4", "#f5e9cf", houseColor[h]];
+        const jag = Array.from({ length: N }, () => (Math.random() - 0.5) * 16);
+        const dir = i % 2 ? -1 : 1;   // une carte sur deux se consume de droite à gauche
+        setTimeout(() => {
+          const t0 = performance.now();
+          let lastSpark = 0;
+          const frame = now => {
+            const k = Math.min(1, (now - t0) / DUR), p = -12 + k * 124;
+            // bord déchiqueté : N points sur la hauteur, chacun décalé de son « grain »
+            const edge = jag.map((j, n) => [Math.max(-5, Math.min(105, p + j + Math.sin(now / 60 + n) * 2)), (n / (N - 1)) * 100]);
+            const pts = dir > 0
+              ? [...edge.map(([x, y]) => `${x}% ${y}%`), "105% 100%", "105% 0%"]
+              : [...edge.map(([x, y]) => `${100 - x}% ${y}%`), "-5% 100%", "-5% 0%"];
+            el.style.clipPath = el.style.webkitClipPath = `polygon(${pts.join(",")})`;
+            // éclats et étincelles le long du bord
+            if (now - lastSpark > 22 && k < 0.98) {
+              lastSpark = now;
+              const r = el.getBoundingClientRect();
+              for (let n = 0; n < 3; n += 1) {
+                const [ex, ey] = edge[rand(N)];
+                const x = r.left + ((dir > 0 ? ex : 100 - ex) / 100) * r.width, y = r.top + (ey / 100) * r.height;
+                const d = document.createElement("span");
+                d.className = n === 1 ? "ctrail" : "shard";
+                if (n !== 1) Object.assign(d.style, { width: `${4 + rand(6)}px`, height: `${4 + rand(6)}px`, background: colors[rand(colors.length)] });
+                d.style.left = `${x}px`; d.style.top = `${y}px`;
+                fx.appendChild(d);
+                const dx = (tg.x - x) * 0.18 + (Math.random() - 0.5) * 40, dy = (tg.y - y) * 0.18 - 20 - Math.random() * 30;
+                d.animate([{ transform: "translate(0,0) scale(1)", opacity: 1 }, { transform: `translate(${dx}px, ${dy}px) rotate(${rand(360)}deg) scale(0.2)`, opacity: 0 }],
+                  { duration: 420 + rand(220), easing: "cubic-bezier(.2,.7,.4,1)", fill: "forwards" }).finished.then(() => d.remove()).catch(() => d.remove());
+              }
+            }
+            if (k < 1) requestAnimationFrame(frame);
+            else el.style.opacity = "0";
+          };
+          requestAnimationFrame(frame);
+        }, i * STEP);
       });
       if (els.length) { sfx.rare(); tone(180, 0.5, "sawtooth", 0.03, 0, 900); }
-      await hold(Math.min(longest, 1100) + 100);
+      await hold(DUR + els.length * STEP + 160);
       labelSlots();
       bump(target);
     }
