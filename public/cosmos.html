@@ -14,8 +14,8 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.39";</script>
-  <script src="i18n.js?v=0.39"></script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.40";</script>
+  <script src="i18n.js?v=0.40"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
   <style>
@@ -133,8 +133,10 @@
     .hero-fan .card { --cw: var(--hcw); margin: 0 calc(var(--hcw) * -0.14); transform-origin: 50% 120%; animation: fanBob 3.2s ease-in-out infinite; animation-delay: calc(var(--i) * -0.55s); }
     .hero-fan .card:nth-child(3) { --cw: calc(var(--hcw) * 1.18); z-index: 2; }
     .hero-fan .card.flipper .card-inner { animation: heroFlip 4.6s ease-in-out infinite; }
+    .hero-fan .card.flipper .back { visibility: visible; animation: heroBack 4.6s steps(1) infinite; }
     @keyframes fanBob { 0%, 100% { transform: rotate(calc(var(--r) * 1deg)) translateY(calc(var(--y) * 1px)); } 50% { transform: rotate(calc(var(--r) * 1deg + 2deg)) translateY(calc(var(--y) * 1px - 8px)); } }
-    @keyframes heroFlip { 0%, 38% { transform: rotateY(180deg); } 48%, 88% { transform: rotateY(0deg); } 98%, 100% { transform: rotateY(180deg); } }
+    @keyframes heroFlip { 0%, 38% { transform: scaleX(1); } 43% { transform: scaleX(0.04) skewY(8deg); } 48%, 88% { transform: scaleX(1); } 93% { transform: scaleX(0.04) skewY(-8deg); } 98%, 100% { transform: scaleX(1); } }
+    @keyframes heroBack { 0% { opacity: 1; } 43% { opacity: 0; } 93% { opacity: 1; } }
     .pow { position: absolute; z-index: 3; right: 2%; top: 0; padding: 8px 9px; font-size: 1rem; color: var(--navy); background: var(--yellow); clip-path: polygon(0 20%, 14% 0, 32% 14%, 50% 0, 68% 16%, 86% 0, 100% 26%, 92% 52%, 100% 80%, 84% 100%, 62% 84%, 46% 100%, 28% 82%, 10% 100%, 0 70%, 8% 46%); rotate: 12deg; animation: beat 1.5s ease-in-out infinite; }
     .pow.l { right: auto; left: 3%; top: 30%; background: var(--orange); color: var(--cream); rotate: -10deg; font-size: 0.8rem; animation-delay: -0.7s; }
     .hero h1 { position: relative; z-index: 2; margin: -4px 0 0; font-weight: 400; font-size: clamp(1.6rem, 8vw, 2.3rem); line-height: 0.95; text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e; animation: hover 3.2s ease-in-out infinite; }
@@ -344,7 +346,7 @@
     .emblem svg text { display: none; }
     /* Face cachée = rien ne transparaît : chaque face n'est rendue que lorsqu'elle est tournée vers nous
        (Safari laisse voir à travers les éléments animés malgré backface-visibility). Bascule à mi-retournement. */
-    .card .front, .card .back { transition: visibility 0s linear 300ms; }
+    /* Une seule face visible à la fois ; le retournement est joué par flipCard() (écrasement 2D sur la tranche). */
     .card.facedown .front, .card:not(.facedown) .back { visibility: hidden; }
     .opp-hand i:nth-child(2n)::after { animation-delay: -0.5s; }
     .opp-hand i:nth-child(3n)::after { animation-delay: -1s; }
@@ -456,10 +458,11 @@
     /* ───── Cartes ───── */
     .card { --cw: var(--cwb); position: relative; flex: none; width: var(--cw); height: calc(var(--cw) * 1.42); perspective: 600px; }
     .card-inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 420ms cubic-bezier(.3, 1.3, .5, 1); }
-    .card.facedown .card-inner { transform: rotateY(180deg); }
-    .face { position: absolute; inset: 0; border-radius: calc(var(--cw) * 0.15); border: 2px solid var(--navy); backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden; box-shadow: 0 4px 0 #0a0f1e; }
+    .card-inner { transform-style: flat; }
+    .card.mid .face { filter: brightness(1.6); box-shadow: 0 0 0 2px #fff, 0 0 14px rgba(255, 255, 255, 0.8); }
+    .face { position: absolute; inset: 0; border-radius: calc(var(--cw) * 0.15); border: 2px solid var(--navy); overflow: hidden; box-shadow: 0 4px 0 #0a0f1e; }
     .front { display: grid; grid-template-rows: auto 1fr auto; gap: 1px; padding: 2px 3px; background: var(--cream); color: var(--navy); }
-    .back { transform: rotateY(180deg); background: var(--back, repeating-radial-gradient(circle at 50% 50%, var(--orange) 0 5px, var(--navy) 5px 10px)); }
+    .back { background: var(--back, repeating-radial-gradient(circle at 50% 50%, var(--orange) 0 5px, var(--navy) 5px 10px)); }
     .h-S { --hc: var(--violet); } .h-H { --hc: var(--orange); } .h-D { --hc: #e0a91f; } .h-C { --hc: var(--teal); } .h-X { --hc: var(--pink); }
     .card .top { display: flex; justify-content: space-between; align-items: center; padding: 0 2px; font-size: calc(var(--cw) * 0.24); line-height: 1.05; }
     .card .top span:last-child { color: var(--hc); }
@@ -476,12 +479,7 @@
     .card.rar-1 .front::after { background-image: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.8) 45%, rgba(120, 255, 225, 0.7) 53%, transparent 68%); animation-duration: 2.8s; }
     .card.rar-2 .front::after { background-image: linear-gradient(115deg, transparent 18%, rgba(255, 90, 160, 0.7) 34%, rgba(255, 235, 110, 0.8) 44%, rgba(90, 255, 200, 0.7) 54%, rgba(120, 160, 255, 0.7) 64%, transparent 80%); animation-duration: 2s; }
     .card.struck { animation: hit 420ms ease; }
-    /* Fragments de dissolution : carte aplatie (sans 3D), sinon Safari n'affiche rien une fois découpée */
-    .card.frag { perspective: none; pointer-events: none; }
-    .card.frag .card-inner { transform-style: flat; transform: none !important; transition: none; }
-    .card.frag .face { backface-visibility: visible; -webkit-backface-visibility: visible; }
-    .card.frag .back { display: none; }
-    .card.frag .front { box-shadow: inset 0 0 0 3px #ffd76a, inset 0 0 18px rgba(255, 215, 106, 0.9); }
+    .shard { position: absolute; z-index: 61; border-radius: 2px; pointer-events: none; box-shadow: 0 0 6px rgba(255, 215, 106, 0.85); }
     /* Pièce de butin : ce que la carte rapporte si on la gagne. Les petites cartes sont des trésors. */
     /* Pièces de butin : or = 3 pts, argent = 2 pts, bronze = 1 pt. Tranche crantée, face bombée, reflet. */
     .coin, .mcoin { --c1: #fff6c9; --c2: #f5c445; --c3: #a8730a; --ink: #5a3d00; display: grid; place-items: center; border-radius: 50%; line-height: 1; color: var(--ink); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6); background: radial-gradient(circle at 50% 50%, transparent 52%, rgba(0, 0, 0, 0.22) 55%, transparent 60%), radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.95) 0 9%, transparent 26%), radial-gradient(circle at 50% 40%, var(--c1), var(--c2) 55%, var(--c3)); border: 2px solid var(--c3); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25), 0 0 0 1.5px var(--navy), 0 2px 0 #0a0f1e; }
@@ -1593,43 +1591,42 @@
       };
       requestAnimationFrame(frame);
     }
-    /* Fin de manche : chaque carte se DÉSAGRÈGE en fragments qui s'éparpillent et s'éteignent en lumière dorée,
-       d'un bord à l'autre. Technique compatible avec tous les navigateurs (Safari compris) : la carte est copiée
-       en petits carreaux découpés (clip-path), chacun s'envole avec un léger décalage. */
+    /* Fin de manche : chaque carte se dissout en ÉCLATS. La carte s'efface pendant qu'une grille de petits carreaux
+       (crème, couleur de sa famille et or) apparaît à sa place puis s'éparpille vers le butin du gagnant.
+       Uniquement des carrés animés en transform/opacité : rendu garanti sur tous les téléphones. */
     async function dissolveBoard(target) {
       const els = [...document.querySelectorAll(".slot .card")];
-      const COLS = 4, ROWS = 5, DUR = 520, fx = $("#fx");
-      const tg = center(target);
+      const COLS = 4, ROWS = 5, DUR = 560, fx = $("#fx"), tg = center(target);
+      const houseColor = { S: "#5b5fc7", H: "#f26a3d", D: "#e0a91f", C: "#2fa394", X: "#d0508f" };
       let longest = 0;
       els.forEach((el, i) => {
         const r = el.getBoundingClientRect();
         if (!r.width) return;
-        const coin = el.querySelector(".coin");
-        if (coin) coin.remove();
-        const base = el.cloneNode(true);
-        base.classList.remove("stacked", "sel", "pending", "joined", "broken", "drawn", "facedown");
-        base.classList.add("frag");
-        Object.assign(base.style, { position: "absolute", left: `${r.left}px`, top: `${r.top}px`, margin: "0", rotate: "0deg", zIndex: "1", animation: "none", transition: "none", transform: "none", opacity: "1", filter: "none" });
-        base.style.setProperty("--cw", `${r.width}px`);
-        el.style.visibility = "hidden";
-        const pushX = (tg.x - (r.left + r.width / 2)) * 0.25, pushY = (tg.y - (r.top + r.height / 2)) * 0.25;
+        const h = (el.className.match(/\bh-([SHDCX])\b/) || [0, "X"])[1];
+        const palette = ["#f5e9cf", "#f5e9cf", houseColor[h], "#ffd76a"];
+        const start = i * 70;
+        el.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(1.06)" }], { duration: 260, delay: start, fill: "forwards" });
+        const cw = r.width / COLS, ch = r.height / ROWS;
+        const pushX = (tg.x - (r.left + r.width / 2)) * 0.35, pushY = (tg.y - (r.top + r.height / 2)) * 0.35;
         for (let row = 0; row < ROWS; row += 1) for (let col = 0; col < COLS; col += 1) {
-          const f = base.cloneNode(true);
-          f.style.clipPath = f.style.webkitClipPath = `inset(${(row / ROWS) * 100}% ${100 - ((col + 1) / COLS) * 100}% ${100 - ((row + 1) / ROWS) * 100}% ${(col / COLS) * 100}%)`;
-          fx.appendChild(f);
-          const delay = i * 60 + (col + row * 0.35) * 45 + Math.random() * 60;
-          const dx = (col - 1.5) * 10 + (Math.random() - 0.5) * 26 + pushX, dy = -18 - Math.random() * 34 + pushY;
+          const d = document.createElement("span");
+          d.className = "shard";
+          Object.assign(d.style, { left: `${r.left + col * cw}px`, top: `${r.top + row * ch}px`, width: `${cw + 0.5}px`, height: `${ch + 0.5}px`, background: palette[(row * 3 + col * 5 + i) % palette.length] });
+          fx.appendChild(d);
+          const delay = start + 90 + (col + row * 0.4) * 38 + Math.random() * 50;
+          const dx = (col - 1.5) * 14 + (Math.random() - 0.5) * 30 + pushX, dy = (row - 2) * 6 - 20 - Math.random() * 40 + pushY;
           longest = Math.max(longest, delay + DUR);
-          f.animate([
-            { transform: "none", opacity: 1 },
-            { transform: `translate(${dx * 0.3}px, ${dy * 0.3}px)`, opacity: 1, offset: 0.3 },
-            { transform: `translate(${dx}px, ${dy}px) rotate(${(Math.random() - 0.5) * 70}deg) scale(0.5)`, opacity: 0 }
-          ], { duration: DUR, delay, easing: "cubic-bezier(.3,.6,.5,1)", fill: "forwards" }).finished.then(() => f.remove()).catch(() => f.remove());
+          d.animate([
+            { opacity: 0, transform: "scale(1)" },
+            { opacity: 1, transform: "scale(1)", offset: 0.12 },
+            { opacity: 1, transform: `translate(${dx * 0.35}px, ${dy * 0.35}px) rotate(${(Math.random() - 0.5) * 60}deg) scale(0.8)`, offset: 0.45 },
+            { opacity: 0, transform: `translate(${dx}px, ${dy}px) rotate(${(Math.random() - 0.5) * 220}deg) scale(0.15)` }
+          ], { duration: DUR, delay, easing: "cubic-bezier(.3,.6,.5,1)", fill: "forwards" }).finished.then(() => d.remove()).catch(() => d.remove());
         }
-        setTimeout(() => burst(el, [YE, "#fff", OR], 10), i * 60 + 80);
+        setTimeout(() => burst(el, [YE, "#fff", OR], 10), start + 120);
       });
       if (els.length) { sfx.rare(); tone(180, 0.5, "sawtooth", 0.03, 0, 900); }
-      await hold(Math.min(longest, 1100) + 120);
+      await hold(Math.min(longest, 1100) + 100);
       labelSlots();
       bump(target);
     }
@@ -1871,23 +1868,43 @@
       el.style.zIndex = "";
       impact(slot, card, hidden, opts.force || 0);
       if (flipAfter) {
-        await sleep(280);
-        el.classList.remove("facedown");
+        await sleep(200);
         sfx.flip();
-        await sleep(430);
+        await flipCard(el, true);
+        await sleep(120);
         impact(slot, card, false);
       }
       if (!faceDown) trigger(p, card, el);
       await sleep(150);
       return el;
     }
+    /* Retournement d'une carte : elle s'écrase sur sa tranche (avec une image intermédiaire inclinée et éclairée),
+       change de face, puis se rouvre avec un petit rebond. Pas de 3D : fonctionne sur tous les navigateurs. */
+    async function flipCard(el, faceUp = true) {
+      if (!el) return;
+      if (reduced) { el.classList.toggle("facedown", !faceUp); return; }
+      const inner = el.querySelector(".card-inner"), tilt = faceUp ? 1 : -1;
+      await inner.animate([
+        { transform: "scaleX(1) skewY(0deg)" },
+        { transform: `scaleX(0.55) skewY(${4 * tilt}deg) scaleY(1.03)`, offset: 0.55 },
+        { transform: `scaleX(0.04) skewY(${9 * tilt}deg) scaleY(1.06)` }
+      ], { duration: 150, easing: "ease-in" }).finished.catch(() => {});
+      el.classList.add("mid");
+      el.classList.toggle("facedown", !faceUp);
+      await inner.animate([
+        { transform: `scaleX(0.04) skewY(${-9 * tilt}deg) scaleY(1.06)` },
+        { transform: `scaleX(0.6) skewY(${-4 * tilt}deg) scaleY(1.03)`, offset: 0.4 },
+        { transform: "scaleX(1.08) skewY(0deg) scaleY(1.02)", offset: 0.75 },
+        { transform: "scaleX(1) skewY(0deg)" }
+      ], { duration: 210, easing: "ease-out" }).finished.catch(() => {});
+      el.classList.remove("mid");
+    }
     async function flipUp(p) {
       const slot = $(`#slot-${p}-amb`), el = slot.querySelector(".card:last-child");
       const card = S.board.amb[p];
       if (el.classList.contains("facedown")) {
-        el.classList.remove("facedown");
         sfx.flip();
-        await sleep(480);
+        await flipCard(el, true);
       }
       impact(slot, card, false);
       floatText(el, card.special ? tr(card.title) : tr(HOUSES[card.house].power));
@@ -2566,9 +2583,8 @@
           S.vanHidden[q] = false;
           const slot = $(`#slot-${q}-van`), shown = slot.querySelector(".card:last-child");
           await sleep(300);
-          shown.classList.remove("facedown");
           sfx.flip();
-          await sleep(430);
+          await flipCard(shown, true);
           impact(slot, S.board.van[q], false);
           floatText(shown, tr("Démasqué"));
           trigger(q, S.board.van[q], shown);
@@ -3335,7 +3351,7 @@
       for (let i = 0; i < slots.length; i += 1) {
         const { item, dup } = results[i], def = itemDef(item);
         if (def.rarity === 2) { slots[i].querySelector(".card").animate([{ transform: "none" }, { transform: "scale(1.12) rotate(-3deg)" }, { transform: "scale(1.12) rotate(3deg)" }, { transform: "none" }], { duration: reduced ? 1 : 700 }); await sleep(650); }
-        slots[i].querySelector(".card").classList.remove("facedown");
+        await flipCard(slots[i].querySelector(".card"), true);
         if (def.rarity > 0) { sfx.rare(); burst(slots[i], def.rarity === 2 ? [YE, "#fff", OR] : ["#2fa394", "#fff", K], def.rarity === 2 ? 28 : 16); if (def.rarity === 2) warp(900); }
         else sfx.flip();
         await sleep(450);
