@@ -14,8 +14,8 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.28";</script>
-  <script src="i18n.js?v=0.28"></script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.29";</script>
+  <script src="i18n.js?v=0.29"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
   <style>
@@ -23,8 +23,8 @@
       color-scheme: dark;
       --navy: #1f2a44; --deep: #10162b; --cream: #f5e9cf; --orange: #f26a3d; --yellow: #f5c445; --teal: #2fa394; --violet: #5b5fc7; --pink: #d0508f;
       --ok: #7be0a4; --bad: #ff7a6b;
-      --cwb: clamp(38px, min(17.5vw, calc((100vh - 352px) / 6.05)), 78px);
-      --cwb: clamp(38px, min(17.5vw, calc((100dvh - 352px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) / 6.05)), 78px);
+      --cwb: clamp(38px, min(17.5vw, calc((100vh - 368px) / 6.05)), 78px);
+      --cwb: clamp(38px, min(17.5vw, calc((100dvh - 368px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) / 6.05)), 78px);
       --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -375,6 +375,14 @@
     /* Bataille galactique : le pot devient un vortex au centre de la table. */
     .slot .card.stacked { position: absolute; z-index: calc(2 + var(--n)); top: calc(4px - var(--n) * 7px); left: calc(4px + var(--n) * 2px); rotate: var(--r); }
     .slot.pile::after { content: "×" attr(data-pile); position: absolute; right: -8px; bottom: -8px; z-index: 30; padding: 0 6px; border-radius: 99px; background: var(--orange); color: var(--cream); border: 2px solid var(--navy); font-size: 0.7rem; letter-spacing: 0; }
+    /* Ambiance de bataille galactique : vignette violette qui bat, éclairs, table qui respire */
+    #battleFx { position: fixed; inset: 0; z-index: 3; pointer-events: none; opacity: 0; transition: opacity 500ms; background: radial-gradient(ellipse 75% 95% at 50% 46%, transparent 45%, rgba(120, 30, 110, 0.4) 78%, rgba(12, 4, 24, 0.75)); }
+    body.battle #battleFx { opacity: 1; animation: vign var(--beat, 900ms) ease-in-out infinite; }
+    #battleFx.zap { background: radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.55), rgba(143, 147, 240, 0.4) 40%, rgba(12, 4, 24, 0.85)); }
+    @keyframes vign { 0%, 100% { opacity: 0.8; } 18% { opacity: 1; } 32% { opacity: 0.86; } 46% { opacity: 1; } }
+    body.battle #field { animation: breathe var(--beat, 900ms) ease-in-out infinite; }
+    @keyframes breathe { 0%, 100% { transform: scale(1); } 20% { transform: scale(1.025); } 45% { transform: scale(1.012); } }
+    body.battle .slot .card.stacked:last-child { filter: drop-shadow(0 0 10px rgba(245, 196, 69, 0.8)); }
     .pot.war { z-index: 6; transform: translateX(8px) scale(1.4); transform-origin: 0 50%; }
     .pot.war::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; width: 80px; height: 80px; translate: -50% -50%; border-radius: 50%; background: conic-gradient(from 0deg, transparent, rgba(245, 196, 69, 0.85), transparent 30%, rgba(208, 80, 143, 0.8), transparent 60%, rgba(143, 147, 240, 0.85), transparent); -webkit-mask: radial-gradient(circle, transparent 30%, #000 34%, #000 62%, transparent 66%); mask: radial-gradient(circle, transparent 30%, #000 34%, #000 62%, transparent 66%); animation: spin 1.4s linear infinite; }
     .pot.war b { color: #fff; text-shadow: 0 0 12px var(--yellow), 0 2px 0 var(--orange); }
@@ -437,11 +445,12 @@
     .hint { position: absolute; left: 50%; top: -19px; transform: translateX(-50%); z-index: 6; padding: 1px 7px; border-radius: 99px; white-space: nowrap; font-size: 0.6rem; background: var(--ok); color: var(--navy); border: 2px solid var(--navy); }
     .hint.warn { background: var(--yellow); }
 
-    .prompt { flex: none; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; min-height: 58px; padding: 7px 10px; border-radius: 14px; background: rgba(16, 22, 43, 0.88); border: 2px solid rgba(245, 233, 207, 0.4); text-align: center; }
-    .prompt p { margin: 0; flex: 1 1 200px; line-height: 1.25; font-size: 0.86rem; }
+    .prompt { flex: none; display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 8px; height: 78px; overflow: hidden; padding: 6px 10px; border-radius: 14px; background: rgba(16, 22, 43, 0.88); border: 2px solid rgba(245, 233, 207, 0.4); text-align: center; }
+    .prompt p { margin: 0; flex: 1 1 auto; min-width: 0; max-height: 100%; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; line-height: 1.22; font-size: 0.8rem; }
     .prompt p b { font-weight: 400; color: var(--yellow); }
-    .actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-    .actions .btn { padding: 0.42rem 0.8rem; font-size: 0.82rem; }
+    .actions { flex: none; display: flex; flex-direction: column; gap: 6px; justify-content: center; max-width: 48%; }
+    .actions:empty { display: none; }
+    .actions .btn { padding: 0.38rem 0.7rem; font-size: 0.76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* ───── Cartes ───── */
     .card { --cw: var(--cwb); position: relative; flex: none; width: var(--cw); height: calc(var(--cw) * 1.42); perspective: 600px; }
@@ -607,7 +616,7 @@
     @keyframes dieHop { 0% { transform: translateY(0); } 25% { transform: translateY(-30px); } 50% { transform: translateY(0); } 68% { transform: translateY(-11px); } 84% { transform: translateY(0); } 92% { transform: translateY(-3px); } 100% { transform: translateY(0); } }
     @keyframes coachIn { from { opacity: 0; scale: 0.85; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } }
-    @media (max-height: 800px) { .prompt { min-height: 46px; padding: 5px 8px; } .hud { padding: 3px 8px; } .ava { width: 30px; height: 30px; } .mid { min-height: 44px; } .hand { padding-top: 22px; } }
+    @media (max-height: 800px) { .prompt { height: 72px; padding: 5px 8px; } .hud { padding: 3px 8px; } .ava { width: 30px; height: 30px; } .mid { min-height: 44px; } .hand { padding-top: 22px; } }
   </style>
 </head>
 <body>
@@ -615,6 +624,7 @@
   <canvas id="space" aria-hidden="true"></canvas>
   <div id="flash" aria-hidden="true"></div>
   <div class="fx" id="fx" aria-hidden="true"></div>
+  <div id="battleFx" aria-hidden="true"></div>
 
   <main class="view on" id="menu">
     <div class="col">
@@ -1490,6 +1500,24 @@
         if (i % 3 === 0) setTimeout(() => tone(1500 + rand(600), 0.06, "square", 0.025), 700 + i * 45);
       }
     }
+    /* Fin de manche : chaque carte se dissout en lumière et libère ses pièces (or 3, argent 2, bronze 1),
+       qui s'envolent vers le butin du gagnant. */
+    async function dissolveBoard(target) {
+      const els = [...document.querySelectorAll(".slot .card")];
+      els.forEach((el, i) => {
+        const coin = el.querySelector(".coin"), n = coin ? (coin.classList.contains("c3") ? 3 : coin.classList.contains("c2") ? 2 : 1) : 0;
+        setTimeout(() => { if (n) coinRain(el, target, n); burst(el, [YE, "#fff"], 8); }, i * 90);
+        el.style.zIndex = 30;
+        el.animate([{ opacity: 1, filter: "brightness(1)", transform: "none" },
+          { opacity: 0.9, filter: "brightness(2.6) saturate(1.6)", transform: "scale(1.12) rotate(-2deg)", offset: 0.35 },
+          { opacity: 0, filter: "brightness(4) blur(6px)", transform: "scale(0.6) translateY(-30px)" }],
+          { duration: reduced ? 1 : 620, delay: reduced ? 0 : i * 90, easing: "ease-in", fill: "forwards" });
+      });
+      if (els.length) sfx.rare();
+      await sleep(620 + els.length * 90 + 350);
+      labelSlots();
+      bump(target);
+    }
     function renderTotals() {
       const res = [breakdown(0), breakdown(1)];
       const shown = S.war ? S.war.val : S.revealed ? res.map(r => r.total) : [null, null];
@@ -2147,7 +2175,7 @@
       warp(1100);
       startRound();
     }
-    function goMenu() { gameId += 1; if (S.mode === "p2p") { closeNet(); S.mode = "arena"; } closeCoach(); holdWarp(0); $("#voyage").classList.remove("on"); renderMenu(); showTab(S.mode === "arena" ? "arena" : "adv"); show("menu"); offerInstall(); }
+    function goMenu() { battleFx(0); gameId += 1; if (S.mode === "p2p") { closeNet(); S.mode = "arena"; } closeCoach(); holdWarp(0); $("#voyage").classList.remove("on"); renderMenu(); showTab(S.mode === "arena" ? "arena" : "adv"); show("menu"); offerInstall(); }
 
     async function startRound() {
       const game = gameId;
@@ -2683,6 +2711,24 @@
       if (S.duelBoost) { floatText($("#slot-0-van"), tr("Surcharge +3 !")); sfx.coin(); }
       basePrompt();
     }
+    /* Ambiance de bataille : battements de cœur qui accélèrent avec la mise, éclairs, vignette. */
+    function battleFx(level) {
+      clearInterval(battleFx.beat); clearTimeout(battleFx.zap);
+      if (!level) { document.body.classList.remove("battle"); return; }
+      const ms = Math.max(420, 900 - level * 160);
+      document.body.style.setProperty("--beat", `${ms}ms`);
+      document.body.classList.add("battle");
+      const thump = () => { tone(58, 0.14, "sine", 0.16); tone(46, 0.12, "sine", 0.12, 0.16); };
+      thump();
+      battleFx.beat = setInterval(thump, ms);
+      const zap = () => {
+        const el = $("#battleFx");
+        el.classList.add("zap"); setTimeout(() => el.classList.remove("zap"), 90);
+        tone(1800 + rand(900), 0.05, "sawtooth", 0.03);
+        battleFx.zap = setTimeout(zap, 1300 + rand(2200));
+      };
+      battleFx.zap = setTimeout(zap, 900);
+    }
     async function galacticBattle() {
       const game = gameId;
       S.busy = true;
@@ -2693,6 +2739,8 @@
         S.war = { val: [null, null], level };
         $("#pot").classList.add("war");
         boom(level === 1 ? tr("Bataille galactique !") : tr("Encore ! ×{n}", { n: level }), true, $("#pot"));
+        battleFx(level);
+        sfx.warp(1600);
         holdWarp(level);
         setPrompt(level === 1 ? tr("<b>Égalité !</b> Tout reste en jeu.") : tr("<b>Encore égalité !</b> La mise grimpe."));
         await sleep(1700);
@@ -2758,11 +2806,14 @@
           c.remove();
           if (game !== gameId) return;
         }
-        // Révélation simultanée
+        // Révélation simultanée : silence, flash blanc, onde de choc
+        clearInterval(battleFx.beat);
         const cards = [mine.card, theirs.card];
         for (const p of [0, 1]) $(`#slot-${p}-van .card:last-child`).classList.remove("facedown");
         sfx.flip();
+        flash();
         await sleep(520);
+        boom(null, true, $("#field"));
         S.war.val = cards.map((c, p) => c.value + (boost[p] ? 3 : 0));
         renderTotals();
         for (const p of [0, 1]) impact($(`#slot-${p}-van`), cards[p], false, 1);
@@ -2777,6 +2828,7 @@
 
     async function finishRound(winner, cry = null, comeback = false) {
       const game = gameId;
+      battleFx(0);
       S.busy = true;
       S.phase = "resolve";
       S.sel = null;
@@ -2821,8 +2873,8 @@
         if (!epic) shake();
         await sleep(epic ? 1700 : 950);
         const potPts = lootSum(S.pot);
-        if (potPts) coinRain($("#pot"), $(`#lootBox${winner}`), Math.min(24, potPts * 2));
-        await sweepBoard($(`#lootBox${winner}`));
+        if (potPts) coinRain($("#pot"), $(`#lootBox${winner}`), Math.min(30, potPts * (war ? 2 : 1)));
+        await dissolveBoard($(`#lootBox${winner}`));
         $("#pot").classList.remove("war");
         for (const sl of document.querySelectorAll(".slot.pile")) sl.classList.remove("pile");
         S.loot[winner] += pts + steal;
