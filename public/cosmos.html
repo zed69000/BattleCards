@@ -14,8 +14,8 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.35";</script>
-  <script src="i18n.js?v=0.35"></script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.36";</script>
+  <script src="i18n.js?v=0.36"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
   <style>
@@ -1715,7 +1715,7 @@
       const mine = !S.busy && ["van", "amb", "ally", "riposte", "duel"].includes(S.phase);
       $("#hud0").classList.toggle("active", mine);
       $("#hud1").classList.toggle("active", S.busy && !["next", "over", "resolve"].includes(S.phase));
-      for (const slot of ["van", "amb", "ally"]) $(`#slot-0-${slot}`).classList.toggle("want", !S.busy && (S.phase === slot || (slot === "ally" && S.phase === "riposte") || (slot === "van" && S.phase === "duel")));
+      for (const slot of ["van", "amb", "ally"]) $(`#slot-0-${slot}`).classList.toggle("want", !S.busy && (S.phase === slot || (slot === "ally" && S.phase === "riposte") || (slot === "amb" && S.phase === "duel")));
     }
     function labelSlots() {
       const names = S.war ? { van: tr("Duel"), amb: tr("Otage"), ally: "" } : { van: tr("Avant-<br>garde"), amb: tr("Embus-<br>cade"), ally: tr("Allié<br>⚡") };
@@ -2441,7 +2441,7 @@
        une impulsion vers le haut à n'importe quel moment du geste : la vitesse au moment du lâcher ne compte pas. */
     function bindDrag(el, card) {
       let start = null, dragging = false, last = null, vel = { x: 0, y: 0 }, peak = 0, dy = 0;
-      const target = () => $(`#slot-0-${S.phase === "riposte" ? "ally" : S.phase === "duel" ? "van" : S.phase}`);
+      const target = () => $(`#slot-0-${S.phase === "riposte" ? "ally" : S.phase === "duel" ? "amb" : S.phase}`);
       const need = () => Math.max(30, el.offsetHeight * 0.3);
       const willPlay = () => dy < -need() || (peak < -0.4 && dy < -10);
       const release = () => { start = null; dragging = false; const t = target(); if (t) t.classList.remove("hot"); };
@@ -2896,7 +2896,7 @@
           shake(3 + level * 2);
           if (game !== gameId) return;
         }
-        for (const p of [0, 1]) { const slot = $(`#slot-${p}-van`), n = slot.querySelectorAll(".card").length; slot.classList.toggle("pile", n > 1); slot.dataset.pile = n + 1; }
+        for (const p of [0, 1]) for (const k of ["van", "amb"]) { const slot = $(`#slot-${p}-${k}`), n = slot.querySelectorAll(".card").length + (k === "amb" ? 1 : 0); slot.classList.toggle("pile", n > 1); slot.dataset.pile = n; }
         renderHud();
         for (const p of [0, 1]) if (!S.hands[p].length && S.decks[p].length) S.hands[p].push(S.decks[p].shift());
         if (!S.hands[0].length || !S.hands[1].length) return finishRound(S.hands[0].length ? 0 : S.hands[1].length ? 1 : null);
@@ -2907,12 +2907,12 @@
         const choice = new Promise(resolve => { S.onDuel = resolve; });
         basePrompt();
         renderAll();
-        if (level === 1) tip("duel", tr("<b>Bataille galactique !</b> Choisis en secret une carte de ta main pour le duel : la plus forte rafle <b>toute la mise</b>. Une <b>surcharge</b> à 1 boost ⚡ lui ajoute +3. Gros coup ou carte sacrifiée ? Gaspard hésite aussi…"), $("#slot-0-van"));
+        if (level === 1) tip("duel", tr("<b>Bataille galactique !</b> Choisis en secret une carte de ta main pour le duel : la plus forte rafle <b>toute la mise</b>. Une <b>surcharge</b> à 1 boost ⚡ lui ajoute +3. Gros coup ou carte sacrifiée ? Gaspard hésite aussi…"), $("#slot-0-amb"));
         const mine = await choice;
         if (game !== gameId) return;
         const boost = [S.duelBoost, false];
         netSend("duel", { id: mine.card.id, boost: boost[0] });
-        await playCard(0, "van", mine.card, true, { ...mine.opts, stack: true });
+        await playCard(0, "amb", mine.card, true, { ...mine.opts, stack: true });
         if (game !== gameId) return;
         setPrompt(tr("<b>Gaspard</b> choisit sa carte de duel…"));
         let theirs;
@@ -2920,8 +2920,8 @@
         else { await sleep(700); theirs = aiDuel(level); }
         if (game !== gameId) return;
         boost[1] = theirs.boost && S.fuel[1] >= 1;
-        await playCard(1, "van", theirs.card, true, { stack: true });
-        for (const p of [0, 1]) if (boost[p]) { S.fuel[p] -= 1; renderFuel(p); floatText($(`#slot-${p}-van`), tr("Surcharge +3"), false, true); sfx.coin(); }
+        await playCard(1, "amb", theirs.card, true, { stack: true });
+        for (const p of [0, 1]) if (boost[p]) { S.fuel[p] -= 1; renderFuel(p); floatText($(`#slot-${p}-amb`), tr("Surcharge +3"), false, true); sfx.coin(); }
         setPrompt(`${tr("Mise")} : <b>${visibleStake()} pts</b>`);
         // Compte à rebours géant avant la révélation
         for (const n of [3, 2, 1]) {
@@ -2939,15 +2939,15 @@
         // Révélation simultanée : silence, flash blanc, onde de choc
         clearInterval(battleFx.beat);
         const cards = [mine.card, theirs.card];
-        for (const p of [0, 1]) $(`#slot-${p}-van .card:last-child`).classList.remove("facedown");
+        for (const p of [0, 1]) $(`#slot-${p}-amb .card:last-child`).classList.remove("facedown");
         sfx.flip();
         flash();
         await sleep(520);
         boom(null, true, $("#field"));
         S.war.val = cards.map((c, p) => c.value + (boost[p] ? 3 : 0));
         renderTotals();
-        for (const p of [0, 1]) impact($(`#slot-${p}-van`), cards[p], false, 1);
-        if (S.war.val[0] !== S.war.val[1]) burst($(`#slot-${S.war.val[0] > S.war.val[1] ? 0 : 1}-van`), [YE, "#fff", OR, "#ff5fa8"], 30, 2);
+        for (const p of [0, 1]) impact($(`#slot-${p}-amb`), cards[p], false, 1);
+        if (S.war.val[0] !== S.war.val[1]) burst($(`#slot-${S.war.val[0] > S.war.val[1] ? 0 : 1}-amb`), [YE, "#fff", OR, "#ff5fa8"], 30, 2);
         await sleep(900);
         if (game !== gameId) return;
         const [v0, v1] = S.war.val;
