@@ -42,7 +42,6 @@ BDAi18n.add("ja", {
   "<b>Le but du jeu :</b> amasser le plus de <b>points de butin</b>. Ils s'affichent ici.": "<b>ゲームの目的：</b><b>戦利品ポイント</b>をいちばん多く集めること。ここに表示されるよ。",
   "<b>Multijoueur :</b> des duels classés qui font monter ou descendre tes trophées ♛, ta ligue et ton rang.": "<b>マルチプレイ：</b>ランク戦でトロフィー♛、リーグ、順位が上下する。",
   "<b>Petites cartes (2 à 3) : 3 points.</b> Faibles au combat, mais de vrais trésors.": "<b>小さいカード（2〜3）：3ポイント。</b>戦闘は弱いけど、立派なお宝。",
-  "<b>Prime de butin :</b> 30 pts = +5 ◆, 40 pts = +10 ◆, 50 pts = +15 ◆, 60 pts = +20 ◆ (cumulables), même si tu perds.": "<b>戦利品ボーナス：</b>30 pts＝+5 ◆、40 pts＝+10 ◆、50 pts＝+15 ◆、60 pts＝+20 ◆（累積可）、負けてももらえる。",
   "<b>Riposte.</b> Si l'allié te passe devant, paie à ton tour <b>1 boost ⚡</b>, pose une carte et lance le dé pour reprendre l'avantage.": "<b>反撃。</b>援軍に追い抜かれたら、今度はキミが<b>ブースト⚡1</b>を払い、カードを出してダイスを振り、形勢逆転を狙おう。",
   "<b>Super coup : {move}</b><br>Toutes les {n} manches, {desc}. Sa jauge te prévient un tour avant.<br><br><b>Le conseil</b> : {hint}": "<b>必殺技：{move}</b><br>{n}ラウンドごとに{desc}。ゲージが1ターン前に教えてくれる。<br><br><b>アドバイス</b>：{hint}",
   "<b>Ta carte cachée</b> déclenche un pouvoir selon sa famille :": "<b>伏せカード</b>は一族に応じた能力を発動：",
@@ -358,7 +357,6 @@ BDAi18n.add("ja", {
   "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 7.": "1枚目に出そう：相手はキミが選ぶ前に伏せカードを見せなきゃいけない。値は7。",
   "Poser": "出す",
   "Poser cachée": "伏せて出す",
-  "Pot": "ポット",
   "Pr Cerveau": "ノーミソ教授",
   "Prime de butin ({pts} pts) : +{gems} ◆": "戦利品ボーナス（{pts} pts）：+{gems} ◆",
   "Primes et fin de partie": "ボーナスとゲーム終了",
@@ -459,7 +457,6 @@ BDAi18n.add("ja", {
   "Toucher pour passer": "タップでスキップ",
   "Tout débloquer (persos, atouts, dés, dos)": "全部解放（キャラ、切り札、ダイス、裏面）",
   "Tout l'art est là : risquer tes petites cartes pour un gros butin, ou sortir tes grosses cartes pour rafler celui d'en face.": "これぞ醍醐味：小さいカードで大きな戦利品を狙うか、大きいカードで相手の戦利品をかっさらうか。",
-  "Trois… deux… un…": "3… 2… 1…",
   "Trou noir": "ブラックホール",
   "Tu as battu {name} !": "{name}を倒した！",
   "Tu as battu {name} dans l'arène.": "アリーナで{name}を倒した！",
@@ -563,5 +560,8 @@ BDAi18n.add("ja", {
   "−2 au total adverse": "相手の合計−2",
   "−3 à ton total": "キミの合計−3",
   "⚡ BOOST": "⚡ ブースト",
-  "✂ déchire ici": "✂ ここを破る"
+  "✂ déchire ici": "✂ ここを破る",
+  "<b>Prime de butin :</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (cumulables), même si tu perds.": "<b>戦利品ボーナス：</b>25 pts＝+5 ◆、32 pts＝+10 ◆、40 pts＝+15 ◆、48 pts＝+20 ◆（累積可）、負けてももらえる。",
+  "Mise": "賭け",
+  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>これが勝負のカギ！</b>マークで能力が発動：♠ 相手の合計−2、♥ ダイス+1、♦ 勝てばブースト+1、♣ ダイス振り直し。<b>カードをスワイプせずにタップ</b>すると、出す前に効果を確認できるよ。"
 });

@@ -42,7 +42,6 @@ BDAi18n.add("es", {
   "<b>Le but du jeu :</b> amasser le plus de <b>points de butin</b>. Ils s'affichent ici.": "<b>El objetivo:</b> reunir el máximo de <b>puntos de botín</b>. Aparecen aquí.",
   "<b>Multijoueur :</b> des duels classés qui font monter ou descendre tes trophées ♛, ta ligue et ton rang.": "<b>Multijugador:</b> duelos clasificatorios que suben o bajan tus trofeos ♛, tu liga y tu rango.",
   "<b>Petites cartes (2 à 3) : 3 points.</b> Faibles au combat, mais de vrais trésors.": "<b>Cartas pequeñas (2 y 3): 3 puntos.</b> Débiles en combate, pero auténticos tesoros.",
-  "<b>Prime de butin :</b> 30 pts = +5 ◆, 40 pts = +10 ◆, 50 pts = +15 ◆, 60 pts = +20 ◆ (cumulables), même si tu perds.": "<b>Prima de botín:</b> 30 pts = +5 ◆, 40 pts = +10 ◆, 50 pts = +15 ◆, 60 pts = +20 ◆ (acumulables), aunque pierdas.",
   "<b>Riposte.</b> Si l'allié te passe devant, paie à ton tour <b>1 boost ⚡</b>, pose une carte et lance le dé pour reprendre l'avantage.": "<b>Contraataque.</b> Si el aliado te adelanta, paga tú <b>1 boost ⚡</b>, pon una carta y tira el dado para recuperar la ventaja.",
   "<b>Super coup : {move}</b><br>Toutes les {n} manches, {desc}. Sa jauge te prévient un tour avant.<br><br><b>Le conseil</b> : {hint}": "<b>Supergolpe: {move}</b><br>Cada {n} rondas, {desc}. Su barra te avisa un turno antes.<br><br><b>Consejo</b>: {hint}",
   "<b>Ta carte cachée</b> déclenche un pouvoir selon sa famille :": "<b>Tu carta oculta</b> activa un poder según su familia:",
@@ -357,7 +356,6 @@ BDAi18n.add("es", {
   "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 7.": "Ponla como 1.ª carta: el rival tendrá que mostrar su carta oculta antes de que elijas la tuya. Vale 7.",
   "Poser": "Jugar",
   "Poser cachée": "Jugar oculta",
-  "Pot": "Bote",
   "Pr Cerveau": "Prof. Cerebro",
   "Prime de butin ({pts} pts) : +{gems} ◆": "Prima de botín ({pts} pts): +{gems} ◆",
   "Primes et fin de partie": "Primas y final de partida",
@@ -458,7 +456,6 @@ BDAi18n.add("es", {
   "Toucher pour passer": "Toca para saltar",
   "Tout débloquer (persos, atouts, dés, dos)": "Desbloquear todo (persos, comodines, dados, dorsos)",
   "Tout l'art est là : risquer tes petites cartes pour un gros butin, ou sortir tes grosses cartes pour rafler celui d'en face.": "Ahí está el arte: arriesgar tus cartitas por un gran botín, o sacar tus cartas gordas para llevarte el del rival.",
-  "Trois… deux… un…": "Tres… dos… uno…",
   "Trou noir": "Agujero negro",
   "Tu as battu {name} !": "¡Has vencido a {name}!",
   "Tu as battu {name} dans l'arène.": "Has vencido a {name} en la arena.",
@@ -563,5 +560,8 @@ BDAi18n.add("es", {
   "−3 à ton total": "−3 a tu total",
   "⚡ BOOST": "⚡ BOOST",
   "✂ déchire ici": "✂ rasga aquí",
-  "Langue": "Idioma"
+  "Langue": "Idioma",
+  "<b>Prime de butin :</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (cumulables), même si tu perds.": "<b>Prima de botín:</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (acumulables), aunque pierdas.",
+  "Mise": "Apuesta",
+  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>¡Es la carta clave!</b> Su símbolo activa un poder: ♠ −2 al total rival, ♥ +1 al dado, ♦ +1 boost si ganas, ♣ repetir el dado. <b>Toca una carta sin arrastrarla</b> para leer su efecto antes de jugarla."
 });

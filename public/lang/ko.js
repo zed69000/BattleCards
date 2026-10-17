@@ -42,7 +42,6 @@ BDAi18n.add("ko", {
   "<b>Le but du jeu :</b> amasser le plus de <b>points de butin</b>. Ils s'affichent ici.": "<b>게임 목표:</b> <b>전리품 점수</b>를 가장 많이 모으기. 여기에 표시돼요.",
   "<b>Multijoueur :</b> des duels classés qui font monter ou descendre tes trophées ♛, ta ligue et ton rang.": "<b>멀티플레이:</b> 랭크 결투로 트로피 ♛, 리그, 순위가 오르내려요.",
   "<b>Petites cartes (2 à 3) : 3 points.</b> Faibles au combat, mais de vrais trésors.": "<b>작은 카드 (2~3): 3점.</b> 전투엔 약해도 진짜 보물이에요.",
-  "<b>Prime de butin :</b> 30 pts = +5 ◆, 40 pts = +10 ◆, 50 pts = +15 ◆, 60 pts = +20 ◆ (cumulables), même si tu perds.": "<b>전리품 보너스:</b> 30점 = +5 ◆, 40점 = +10 ◆, 50점 = +15 ◆, 60점 = +20 ◆ (누적), 져도 받아요.",
   "<b>Riposte.</b> Si l'allié te passe devant, paie à ton tour <b>1 boost ⚡</b>, pose une carte et lance le dé pour reprendre l'avantage.": "<b>반격.</b> 상대 지원군에게 역전당하면, 이번엔 내가 <b>부스트 1개 ⚡</b>를 내고 카드를 놓아 주사위를 굴려 다시 앞설 수 있어요.",
   "<b>Super coup : {move}</b><br>Toutes les {n} manches, {desc}. Sa jauge te prévient un tour avant.<br><br><b>Le conseil</b> : {hint}": "<b>필살기: {move}</b><br>{n}라운드마다 {desc}. 게이지가 한 턴 전에 알려 줘요.<br><br><b>팁</b>: {hint}",
   "<b>Ta carte cachée</b> déclenche un pouvoir selon sa famille :": "<b>내 숨긴 카드</b>는 무늬에 따라 능력이 발동해요:",
@@ -357,7 +356,6 @@ BDAi18n.add("ko", {
   "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 7.": "첫 카드로 놓으면, 상대는 내가 고르기 전에 숨긴 카드를 보여 줘야 해요. 값 7.",
   "Poser": "놓기",
   "Poser cachée": "숨겨 놓기",
-  "Pot": "팟",
   "Pr Cerveau": "골통 교수",
   "Prime de butin ({pts} pts) : +{gems} ◆": "전리품 보너스 ({pts}점): +{gems} ◆",
   "Primes et fin de partie": "보너스와 게임 종료",
@@ -458,7 +456,6 @@ BDAi18n.add("ko", {
   "Toucher pour passer": "터치해서 넘기기",
   "Tout débloquer (persos, atouts, dés, dos)": "전부 해금 (캐릭터, 비장패, 주사위, 뒷면)",
   "Tout l'art est là : risquer tes petites cartes pour un gros butin, ou sortir tes grosses cartes pour rafler celui d'en face.": "이게 핵심이에요: 큰 전리품을 노리고 작은 카드를 걸까, 센 카드를 꺼내 상대 전리품을 쓸어 올까.",
-  "Trois… deux… un…": "셋… 둘… 하나…",
   "Trou noir": "블랙홀",
   "Tu as battu {name} !": "{name} 격파!",
   "Tu as battu {name} dans l'arène.": "아레나에서 {name} 격파.",
@@ -563,5 +560,8 @@ BDAi18n.add("ko", {
   "−3 à ton total": "내 합계 −3",
   "⚡ BOOST": "⚡ 부스트",
   "✂ déchire ici": "✂ 여기를 찢어요",
-  "Langue": "언어"
+  "Langue": "언어",
+  "<b>Prime de butin :</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (cumulables), même si tu perds.": "<b>전리품 보너스:</b> 30점 = +5 ◆, 40점 = +10 ◆, 50점 = +15 ◆, 60점 = +20 ◆ (누적), 져도 받아요.",
+  "Mise": "판돈",
+  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>이게 핵심 카드예요!</b> 문양이 능력을 발동해요: ♠ 상대 합계 −2, ♥ 주사위 +1, ♦ 이기면 부스트 +1, ♣ 주사위 다시 굴리기. <b>카드를 끌지 말고 탭</b>하면 내기 전에 효과를 볼 수 있어요."
 });

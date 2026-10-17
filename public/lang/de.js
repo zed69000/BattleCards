@@ -42,7 +42,6 @@ BDAi18n.add("de", {
   "<b>Le but du jeu :</b> amasser le plus de <b>points de butin</b>. Ils s'affichent ici.": "<b>Spielziel:</b> Sammle die meisten <b>Beutepunkte</b>. Sie werden hier angezeigt.",
   "<b>Multijoueur :</b> des duels classés qui font monter ou descendre tes trophées ♛, ta ligue et ton rang.": "<b>Mehrspieler:</b> Ranglisten-Duelle, die deine Trophäen ♛, deine Liga und deinen Rang steigen oder fallen lassen.",
   "<b>Petites cartes (2 à 3) : 3 points.</b> Faibles au combat, mais de vrais trésors.": "<b>Kleine Karten (2 bis 3): 3 Punkte.</b> Schwach im Kampf, aber echte Schätze.",
-  "<b>Prime de butin :</b> 30 pts = +5 ◆, 40 pts = +10 ◆, 50 pts = +15 ◆, 60 pts = +20 ◆ (cumulables), même si tu perds.": "<b>Beuteprämie:</b> 30 Pkt = +5 ◆, 40 Pkt = +10 ◆, 50 Pkt = +15 ◆, 60 Pkt = +20 ◆ (kumulierbar), auch wenn du verlierst.",
   "<b>Riposte.</b> Si l'allié te passe devant, paie à ton tour <b>1 boost ⚡</b>, pose une carte et lance le dé pour reprendre l'avantage.": "<b>Konter.</b> Zieht der Verbündete an dir vorbei, zahl selbst <b>1 Boost ⚡</b>, leg eine Karte und würfle, um wieder vorn zu liegen.",
   "<b>Super coup : {move}</b><br>Toutes les {n} manches, {desc}. Sa jauge te prévient un tour avant.<br><br><b>Le conseil</b> : {hint}": "<b>Superschlag: {move}</b><br>Alle {n} Runden: {desc}. Seine Leiste warnt dich einen Zug vorher.<br><br><b>Der Tipp</b>: {hint}",
   "<b>Ta carte cachée</b> déclenche un pouvoir selon sa famille :": "<b>Deine verdeckte Karte</b> löst je nach Familie eine Kraft aus:",
@@ -357,7 +356,6 @@ BDAi18n.add("de", {
   "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 7.": "Leg sie als 1. Karte: Der Gegner muss seine verdeckte Karte zeigen, bevor du deine wählst. Wert 7.",
   "Poser": "Legen",
   "Poser cachée": "Verdeckt legen",
-  "Pot": "Pott",
   "Pr Cerveau": "Prof. Hirni",
   "Prime de butin ({pts} pts) : +{gems} ◆": "Beuteprämie ({pts} Pkt): +{gems} ◆",
   "Primes et fin de partie": "Prämien und Spielende",
@@ -458,7 +456,6 @@ BDAi18n.add("de", {
   "Toucher pour passer": "Tippen zum Überspringen",
   "Tout débloquer (persos, atouts, dés, dos)": "Alles freischalten (Figuren, Trümpfe, Würfel, Rücken)",
   "Tout l'art est là : risquer tes petites cartes pour un gros butin, ou sortir tes grosses cartes pour rafler celui d'en face.": "Darin liegt die ganze Kunst: deine kleinen Karten für große Beute riskieren oder deine großen Karten zücken, um die gegnerische abzuräumen.",
-  "Trois… deux… un…": "Drei… zwei… eins…",
   "Trou noir": "Schwarzes Loch",
   "Tu as battu {name} !": "Du hast {name} besiegt!",
   "Tu as battu {name} dans l'arène.": "Du hast {name} in der Arena besiegt.",
@@ -563,5 +560,8 @@ BDAi18n.add("de", {
   "−3 à ton total": "−3 auf deine Summe",
   "⚡ BOOST": "⚡ BOOST",
   "✂ déchire ici": "✂ hier aufreißen",
-  "Langue": "Sprache"
+  "Langue": "Sprache",
+  "<b>Prime de butin :</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (cumulables), même si tu perds.": "<b>Beuteprämie:</b> 25 Pkt = +5 ◆, 32 Pkt = +10 ◆, 40 Pkt = +15 ◆, 48 Pkt = +20 ◆ (kumulierbar), auch wenn du verlierst.",
+  "Mise": "Einsatz",
+  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>Das ist die Schlüsselkarte!</b> Ihr Symbol löst eine Kraft aus: ♠ −2 für den Gegner, ♥ +1 auf den Würfel, ♦ +1 Boost bei Sieg, ♣ Würfel neu werfen. <b>Tippe eine Karte an, ohne sie zu ziehen</b>, um ihren Effekt zu lesen."
 });

@@ -42,7 +42,6 @@ BDAi18n.add("pt", {
   "<b>Le but du jeu :</b> amasser le plus de <b>points de butin</b>. Ils s'affichent ici.": "<b>O objetivo:</b> juntar o máximo de <b>pontos de saque</b>. Eles aparecem aqui.",
   "<b>Multijoueur :</b> des duels classés qui font monter ou descendre tes trophées ♛, ta ligue et ton rang.": "<b>Multijogador:</b> duelos ranqueados que sobem ou descem seus troféus ♛, sua liga e sua posição.",
   "<b>Petites cartes (2 à 3) : 3 points.</b> Faibles au combat, mais de vrais trésors.": "<b>Cartas pequenas (2 a 3): 3 pontos.</b> Fracas no combate, mas verdadeiros tesouros.",
-  "<b>Prime de butin :</b> 30 pts = +5 ◆, 40 pts = +10 ◆, 50 pts = +15 ◆, 60 pts = +20 ◆ (cumulables), même si tu perds.": "<b>Bônus de saque:</b> 30 pts = +5 ◆, 40 pts = +10 ◆, 50 pts = +15 ◆, 60 pts = +20 ◆ (acumuláveis), mesmo se você perder.",
   "<b>Riposte.</b> Si l'allié te passe devant, paie à ton tour <b>1 boost ⚡</b>, pose une carte et lance le dé pour reprendre l'avantage.": "<b>Contra-ataque.</b> Se o aliado passar à sua frente, pague <b>1 boost ⚡</b>, jogue uma carta e role o dado para retomar a vantagem.",
   "<b>Super coup : {move}</b><br>Toutes les {n} manches, {desc}. Sa jauge te prévient un tour avant.<br><br><b>Le conseil</b> : {hint}": "<b>Supergolpe: {move}</b><br>A cada {n} rodadas, {desc}. A barra avisa uma rodada antes.<br><br><b>Dica</b>: {hint}",
   "<b>Ta carte cachée</b> déclenche un pouvoir selon sa famille :": "<b>Sua carta oculta</b> ativa um poder conforme a família:",
@@ -358,7 +357,6 @@ BDAi18n.add("pt", {
   "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 7.": "Jogue-a como 1ª carta: o adversário terá que mostrar a carta oculta antes de você escolher a sua. Vale 7.",
   "Poser": "Jogar",
   "Poser cachée": "Jogar oculta",
-  "Pot": "Pote",
   "Pr Cerveau": "Prof. Cérebro",
   "Prime de butin ({pts} pts) : +{gems} ◆": "Bônus de saque ({pts} pts): +{gems} ◆",
   "Primes et fin de partie": "Bônus e fim de partida",
@@ -459,7 +457,6 @@ BDAi18n.add("pt", {
   "Toucher pour passer": "Toque para pular",
   "Tout débloquer (persos, atouts, dés, dos)": "Desbloquear tudo (persos, trunfos, dados, versos)",
   "Tout l'art est là : risquer tes petites cartes pour un gros butin, ou sortir tes grosses cartes pour rafler celui d'en face.": "A arte está aí: arriscar suas cartas pequenas por um grande saque, ou usar as grandes para levar o do rival.",
-  "Trois… deux… un…": "Três… dois… um…",
   "Trou noir": "Buraco negro",
   "Tu as battu {name} !": "Você venceu {name}!",
   "Tu as battu {name} dans l'arène.": "Você venceu {name} na arena.",
@@ -563,5 +560,8 @@ BDAi18n.add("pt", {
   "−2 au total adverse": "−2 no total rival",
   "−3 à ton total": "−3 no seu total",
   "⚡ BOOST": "⚡ BOOST",
-  "✂ déchire ici": "✂ rasgue aqui"
+  "✂ déchire ici": "✂ rasgue aqui",
+  "<b>Prime de butin :</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (cumulables), même si tu perds.": "<b>Bônus de saque:</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (acumuláveis), mesmo se você perder.",
+  "Mise": "Aposta",
+  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>Esta é a carta-chave!</b> O símbolo dela ativa um poder: ♠ −2 no total rival, ♥ +1 no dado, ♦ +1 boost se você vencer, ♣ rolar o dado de novo. <b>Toque numa carta sem arrastar</b> para ler o efeito antes de jogar."
 });

@@ -39,7 +39,7 @@ window.BalanceSim = (function () {
     const Ls = cfg.lv, cast = cfg.cast || ["none", "none"], boss = cfg.boss || [null, null], every = cfg.every || [3, 3];
     const st = { first: R(2), round: 0 };
     const d = makeDeck();
-    st.decks = [inject(d.slice(0, 26), cfg.atouts[0]), inject(d.slice(26), cfg.atouts[1])];
+    st.decks = [inject(d.slice(0, OPT.deck), cfg.atouts[0]), inject(d.slice(26, 26 + OPT.deck), cfg.atouts[1])];
     st.hands = [[], []]; st.loot = [0, 0]; st.pot = [];
     st.fuel = [0, 1].map(p => (cast[p] === "mars" ? 2 : 1) + (Ls[p].bonusFuel || 0));
     const stats = { ally: 0, allyOk: 0, riposte: 0, riposteOk: 0, reversal: 0, war: 0, super: 0, superWon: 0, wasted: 0, swap: 0 };
@@ -55,7 +55,7 @@ window.BalanceSim = (function () {
       let t = vv + va;
       if (van && amb) for (const x of formation(van, amb)) t += x;
       const shield = onBoard(p, "shield"), impact = B.amb[o] && B.amb[o].house === "S", hole = onBoard(o, "hole"), met = onBoard(o, "meteor");
-      if (!shield) { if (impact) t -= 2; if (hole && van && amb) t -= Math.min(vv, va); if (met) t -= 3; }
+      if (!shield) { if (impact) t -= OPT.impact; if (hole && van && amb) t -= Math.min(vv, va); if (met) t -= 3; }
       if (B.allyOk[p]) { const c = B.ally[p]; t += c.special === "clone" ? Math.min(Math.max(vv, va), CLONE_CAP) : c.special === "turbo" ? c.value * 2 : c.value; }
       if (sup(p, "crush")) t += vv;
       if (sup(p, "tide")) t += 4;
@@ -76,7 +76,7 @@ window.BalanceSim = (function () {
         let t = vv + va;
         for (const x of formation(v, a)) t += x;
         const shield = [v, a].some(c => c.special === "shield"), hole = [ov, oa].some(c => c.special === "hole"), met = [ov, oa].some(c => c.special === "meteor"), impact = oa.house === "S";
-        if (!shield) { if (impact) t -= 2; if (hole) t -= Math.min(vv, va); if (met) t -= 3; }
+        if (!shield) { if (impact) t -= OPT.impact; if (hole) t -= Math.min(vv, va); if (met) t -= 3; }
         return t;
       };
       return [side(av, aa, bv, ba), side(bv, ba, av, aa)];
@@ -181,6 +181,7 @@ window.BalanceSim = (function () {
       const cards = onTable().concat(st.pot);
       if (w === null) { st.pot = cards; st.first = 1 - st.first; return; }
       const l = 1 - w, pts = lootSum(cards);
+      if (!war && B.amb[0] && B.amb[1]) for (const p of [0, 1]) { const h = B.amb[p].house; stats["n" + h] = (stats["n" + h] || 0) + 1; if (p === w) stats["w" + h] = (stats["w" + h] || 0) + 1; }
       let steal = !war && onBoard(w, "tractor") ? Math.min(3, st.loot[l]) : 0;
       if (sup(w, "siphon")) steal += Math.min(SIPHON, st.loot[l] - steal);
       if (charged[w]) stats.superWon += 1;
@@ -308,7 +309,7 @@ window.BalanceSim = (function () {
     });
   }
   /* Options de règles à tester, par camp : swap = "never" | "full" | "any", overflow = "none" | "loot" | "surge". */
-  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "pick" };
+  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "pick", deck: 20, impact: 2 };
   const set = o => Object.assign(OPT, o);
   return { game, run, campaign, set, OPT };
 })();

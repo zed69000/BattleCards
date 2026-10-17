@@ -42,7 +42,6 @@ BDAi18n.add("zh", {
   "<b>Le but du jeu :</b> amasser le plus de <b>points de butin</b>. Ils s'affichent ici.": "<b>游戏目标：</b>收集最多的<b>战利品点数</b>。点数显示在这里。",
   "<b>Multijoueur :</b> des duels classés qui font monter ou descendre tes trophées ♛, ta ligue et ton rang.": "<b>多人：</b>排位决斗，让你的奖杯 ♛、联赛和排名升升降降。",
   "<b>Petites cartes (2 à 3) : 3 points.</b> Faibles au combat, mais de vrais trésors.": "<b>小牌（2 到 3）：3 点。</b>打架很弱，却是真宝贝。",
-  "<b>Prime de butin :</b> 30 pts = +5 ◆, 40 pts = +10 ◆, 50 pts = +15 ◆, 60 pts = +20 ◆ (cumulables), même si tu perds.": "<b>战利品奖励：</b>30 点 = +5 ◆，40 点 = +10 ◆，50 点 = +15 ◆，60 点 = +20 ◆（可叠加），输了也有。",
   "<b>Riposte.</b> Si l'allié te passe devant, paie à ton tour <b>1 boost ⚡</b>, pose une carte et lance le dé pour reprendre l'avantage.": "<b>反击。</b>如果对方的援军超过了你，你也可以支付 <b>1 能量 ⚡</b>，出一张牌并掷骰，夺回优势。",
   "<b>Super coup : {move}</b><br>Toutes les {n} manches, {desc}. Sa jauge te prévient un tour avant.<br><br><b>Le conseil</b> : {hint}": "<b>必杀技：{move}</b><br>每 {n} 回合，{desc}。能量槽会提前一回合提醒你。<br><br><b>小建议</b>：{hint}",
   "<b>Ta carte cachée</b> déclenche un pouvoir selon sa famille :": "<b>你的暗牌</b>会按家族触发一种能力：",
@@ -357,7 +356,6 @@ BDAi18n.add("zh", {
   "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 7.": "作为第 1 张牌打出：对手必须先亮出暗牌，你再选你的。点数 7。",
   "Poser": "出牌",
   "Poser cachée": "背面出牌",
-  "Pot": "奖池",
   "Pr Cerveau": "大脑教授",
   "Prime de butin ({pts} pts) : +{gems} ◆": "战利品奖励（{pts} 点）：+{gems} ◆",
   "Primes et fin de partie": "奖励与对局结束",
@@ -458,7 +456,6 @@ BDAi18n.add("zh", {
   "Toucher pour passer": "点击跳过",
   "Tout débloquer (persos, atouts, dés, dos)": "全部解锁（角色、王牌、骰子、卡背）",
   "Tout l'art est là : risquer tes petites cartes pour un gros butin, ou sortir tes grosses cartes pour rafler celui d'en face.": "精髓就在这里：拿小牌冒险换大笔战利品，还是祭出大牌抢走对面的。",
-  "Trois… deux… un…": "三……二……一……",
   "Trou noir": "黑洞",
   "Tu as battu {name} !": "你打败了 {name}！",
   "Tu as battu {name} dans l'arène.": "你在竞技场打败了 {name}。",
@@ -563,5 +560,8 @@ BDAi18n.add("zh", {
   "−3 à ton total": "你的总点数 −3",
   "⚡ BOOST": "⚡ 能量",
   "✂ déchire ici": "✂ 从这里撕开",
-  "Langue": "语言"
+  "Langue": "语言",
+  "<b>Prime de butin :</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (cumulables), même si tu perds.": "<b>战利品奖励：</b>25 点 = +5 ◆，32 点 = +10 ◆，40 点 = +15 ◆，48 点 = +20 ◆（可叠加），输了也有。",
+  "Mise": "赌注",
+  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>这是关键牌！</b>它的花色会触发能力：♠ 对手总分 −2，♥ 骰子 +1，♦ 获胜时 +1 能量，♣ 重掷骰子。<b>轻点一张牌（不要拖动）</b>，出牌前先看它的效果。"
 });

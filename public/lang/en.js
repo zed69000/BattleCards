@@ -42,7 +42,6 @@ BDAi18n.add("en", {
   "<b>Le but du jeu :</b> amasser le plus de <b>points de butin</b>. Ils s'affichent ici.": "<b>The goal:</b> grab the most <b>loot points</b>. They show up here.",
   "<b>Multijoueur :</b> des duels classés qui font monter ou descendre tes trophées ♛, ta ligue et ton rang.": "<b>Multiplayer:</b> ranked duels that raise or lower your trophies ♛, league and rank.",
   "<b>Petites cartes (2 à 3) : 3 points.</b> Faibles au combat, mais de vrais trésors.": "<b>Small cards (2 to 3): 3 points.</b> Weak in a fight, but real treasures.",
-  "<b>Prime de butin :</b> 30 pts = +5 ◆, 40 pts = +10 ◆, 50 pts = +15 ◆, 60 pts = +20 ◆ (cumulables), même si tu perds.": "<b>Loot bonus:</b> 30 pts = +5 ◆, 40 pts = +10 ◆, 50 pts = +15 ◆, 60 pts = +20 ◆ (they stack), even if you lose.",
   "<b>Riposte.</b> Si l'allié te passe devant, paie à ton tour <b>1 boost ⚡</b>, pose une carte et lance le dé pour reprendre l'avantage.": "<b>Riposte.</b> If the ally puts them ahead, pay <b>1 boost ⚡</b> in turn, play a card and roll the die to take the lead back.",
   "<b>Super coup : {move}</b><br>Toutes les {n} manches, {desc}. Sa jauge te prévient un tour avant.<br><br><b>Le conseil</b> : {hint}": "<b>Super move: {move}</b><br>Every {n} rounds, {desc}. Its gauge warns you a turn ahead.<br><br><b>Tip</b>: {hint}",
   "<b>Ta carte cachée</b> déclenche un pouvoir selon sa famille :": "<b>Your hidden card</b> triggers a power based on its family:",
@@ -358,7 +357,6 @@ BDAi18n.add("en", {
   "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 7.": "Play it as your 1st card: the opponent must show their hidden card before you pick yours. Worth 7.",
   "Poser": "Play",
   "Poser cachée": "Play hidden",
-  "Pot": "Pot",
   "Pr Cerveau": "Prof Brain",
   "Prime de butin ({pts} pts) : +{gems} ◆": "Loot bonus ({pts} pts): +{gems} ◆",
   "Primes et fin de partie": "Bonuses and end of game",
@@ -459,7 +457,6 @@ BDAi18n.add("en", {
   "Toucher pour passer": "Tap to skip",
   "Tout débloquer (persos, atouts, dés, dos)": "Unlock everything (characters, power cards, dice, backs)",
   "Tout l'art est là : risquer tes petites cartes pour un gros butin, ou sortir tes grosses cartes pour rafler celui d'en face.": "That’s the whole art: risk your small cards for big loot, or bring out your big cards to grab theirs.",
-  "Trois… deux… un…": "Three… two… one…",
   "Trou noir": "Black Hole",
   "Tu as battu {name} !": "You beat {name}!",
   "Tu as battu {name} dans l'arène.": "You beat {name} in the arena.",
@@ -563,5 +560,8 @@ BDAi18n.add("en", {
   "−2 au total adverse": "−2 to opponent’s total",
   "−3 à ton total": "−3 to your total",
   "⚡ BOOST": "⚡ BOOST",
-  "✂ déchire ici": "✂ tear here"
+  "✂ déchire ici": "✂ tear here",
+  "<b>Prime de butin :</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (cumulables), même si tu perds.": "<b>Loot bonus:</b> 25 pts = +5 ◆, 32 pts = +10 ◆, 40 pts = +15 ◆, 48 pts = +20 ◆ (they stack), even if you lose.",
+  "Mise": "Stake",
+  "<b>C'est la carte clé !</b> Son symbole déclenche un pouvoir : ♠ −2 au total adverse, ♥ +1 au dé, ♦ +1 boost si tu gagnes, ♣ relance du dé. <b>Touche une carte sans la glisser</b> pour lire son effet avant de la poser.": "<b>This is the key card!</b> Its symbol triggers a power: ♠ −2 to the enemy total, ♥ +1 to the die, ♦ +1 boost if you win, ♣ die reroll. <b>Tap a card without dragging it</b> to read its effect before playing it."
 });
