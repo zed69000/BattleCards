@@ -14,8 +14,8 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.41";</script>
-  <script src="i18n.js?v=0.41"></script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.42";</script>
+  <script src="i18n.js?v=0.42"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
   <style>
@@ -479,7 +479,6 @@
     .card.rar-1 .front::after { background-image: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.8) 45%, rgba(120, 255, 225, 0.7) 53%, transparent 68%); animation-duration: 2.8s; }
     .card.rar-2 .front::after { background-image: linear-gradient(115deg, transparent 18%, rgba(255, 90, 160, 0.7) 34%, rgba(255, 235, 110, 0.8) 44%, rgba(90, 255, 200, 0.7) 54%, rgba(120, 160, 255, 0.7) 64%, transparent 80%); animation-duration: 2s; }
     .card.struck { animation: hit 420ms ease; }
-    .shard { position: absolute; z-index: 61; border-radius: 2px; pointer-events: none; box-shadow: 0 0 6px rgba(255, 215, 106, 0.85); }
     /* Pièce de butin : ce que la carte rapporte si on la gagne. Les petites cartes sont des trésors. */
     /* Pièces de butin : or = 3 pts, argent = 2 pts, bronze = 1 pt. Tranche crantée, face bombée, reflet. */
     .coin, .mcoin { --c1: #fff6c9; --c2: #f5c445; --c3: #a8730a; --ink: #5a3d00; display: grid; place-items: center; border-radius: 50%; line-height: 1; color: var(--ink); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6); background: radial-gradient(circle at 50% 50%, transparent 52%, rgba(0, 0, 0, 0.22) 55%, transparent 60%), radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.95) 0 9%, transparent 26%), radial-gradient(circle at 50% 40%, var(--c1), var(--c2) 55%, var(--c3)); border: 2px solid var(--c3); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25), 0 0 0 1.5px var(--navy), 0 2px 0 #0a0f1e; }
@@ -1591,55 +1590,22 @@
       };
       requestAnimationFrame(frame);
     }
-    /* Fin de manche : la VRAIE carte se consume. Un bord déchiqueté avance d'un côté à l'autre et la ronge
-       (découpe recalculée à chaque image), pendant que des éclats et des étincelles dorées s'échappent du bord
-       et filent vers le butin du gagnant. Aucune 3D ni filtre : compatible Safari. */
+    /* Fin de manche : les cartes s'effacent simplement. Chacune s'éclaire, rétrécit en montant un peu vers le butin
+       du gagnant et disparaît, avec quelques étincelles. Juste transparence et déplacement : fiable partout. */
     async function dissolveBoard(target) {
       const els = [...document.querySelectorAll(".slot .card")];
-      const DUR = 620, STEP = 80, fx = $("#fx"), tg = center(target);
-      const houseColor = { S: "#5b5fc7", H: "#f26a3d", D: "#e0a91f", C: "#2fa394", X: "#d0508f" };
-      const N = 9;
+      const DUR = 420, STEP = 50, tg = center(target);
       els.forEach((el, i) => {
-        const h = (el.className.match(/\bh-([SHDCX])\b/) || [0, "X"])[1];
-        const colors = ["#ffd76a", "#fff3c4", "#f5e9cf", houseColor[h]];
-        const jag = Array.from({ length: N }, () => (Math.random() - 0.5) * 16);
-        const dir = i % 2 ? -1 : 1;   // une carte sur deux se consume de droite à gauche
-        setTimeout(() => {
-          const t0 = performance.now();
-          let lastSpark = 0;
-          const frame = now => {
-            const k = Math.min(1, (now - t0) / DUR), p = -12 + k * 124;
-            // bord déchiqueté : N points sur la hauteur, chacun décalé de son « grain »
-            const edge = jag.map((j, n) => [Math.max(-5, Math.min(105, p + j + Math.sin(now / 60 + n) * 2)), (n / (N - 1)) * 100]);
-            const pts = dir > 0
-              ? [...edge.map(([x, y]) => `${x}% ${y}%`), "105% 100%", "105% 0%"]
-              : [...edge.map(([x, y]) => `${100 - x}% ${y}%`), "-5% 100%", "-5% 0%"];
-            el.style.clipPath = el.style.webkitClipPath = `polygon(${pts.join(",")})`;
-            // éclats et étincelles le long du bord
-            if (now - lastSpark > 22 && k < 0.98) {
-              lastSpark = now;
-              const r = el.getBoundingClientRect();
-              for (let n = 0; n < 3; n += 1) {
-                const [ex, ey] = edge[rand(N)];
-                const x = r.left + ((dir > 0 ? ex : 100 - ex) / 100) * r.width, y = r.top + (ey / 100) * r.height;
-                const d = document.createElement("span");
-                d.className = n === 1 ? "ctrail" : "shard";
-                if (n !== 1) Object.assign(d.style, { width: `${4 + rand(6)}px`, height: `${4 + rand(6)}px`, background: colors[rand(colors.length)] });
-                d.style.left = `${x}px`; d.style.top = `${y}px`;
-                fx.appendChild(d);
-                const dx = (tg.x - x) * 0.18 + (Math.random() - 0.5) * 40, dy = (tg.y - y) * 0.18 - 20 - Math.random() * 30;
-                d.animate([{ transform: "translate(0,0) scale(1)", opacity: 1 }, { transform: `translate(${dx}px, ${dy}px) rotate(${rand(360)}deg) scale(0.2)`, opacity: 0 }],
-                  { duration: 420 + rand(220), easing: "cubic-bezier(.2,.7,.4,1)", fill: "forwards" }).finished.then(() => d.remove()).catch(() => d.remove());
-              }
-            }
-            if (k < 1) requestAnimationFrame(frame);
-            else el.style.opacity = "0";
-          };
-          requestAnimationFrame(frame);
-        }, i * STEP);
+        const c = center(el), dx = (tg.x - c.x) * 0.12, dy = (tg.y - c.y) * 0.12 - 14;
+        el.animate([
+          { opacity: 1, transform: "none" },
+          { opacity: 1, transform: "scale(1.08)", offset: 0.25 },
+          { opacity: 0, transform: `translate(${dx}px, ${dy}px) scale(0.55)` }
+        ], { duration: reduced ? 1 : DUR, delay: reduced ? 0 : i * STEP, easing: "ease-in", fill: "forwards" });
+        setTimeout(() => burst(el, [YE, "#fff", OR], 8), reduced ? 0 : i * STEP + 60);
       });
-      if (els.length) { sfx.rare(); tone(180, 0.5, "sawtooth", 0.03, 0, 900); }
-      await hold(DUR + els.length * STEP + 160);
+      if (els.length) sfx.rare();
+      await hold(DUR + els.length * STEP + 60);
       labelSlots();
       bump(target);
     }
