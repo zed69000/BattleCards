@@ -14,8 +14,8 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.26";</script>
-  <script src="i18n.js?v=0.26"></script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.27";</script>
+  <script src="i18n.js?v=0.27"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
   <style>
@@ -368,6 +368,8 @@
     .pot { position: relative; transition: transform 300ms cubic-bezier(.2, 1.4, .4, 1); }
     .pot.jackpot b { color: #fff; text-shadow: 0 0 10px var(--yellow), 0 2px 0 var(--orange); animation: pulse 0.8s ease-in-out infinite; }
     /* Bataille galactique : le pot devient un vortex au centre de la table. */
+    .slot .card.stacked { position: absolute; z-index: calc(2 + var(--n)); top: calc(4px - var(--n) * 7px); left: calc(4px + var(--n) * 2px); rotate: var(--r); }
+    .slot.pile::after { content: "×" attr(data-pile); position: absolute; right: -8px; bottom: -8px; z-index: 30; padding: 0 6px; border-radius: 99px; background: var(--orange); color: var(--cream); border: 2px solid var(--navy); font-size: 0.7rem; letter-spacing: 0; }
     .pot.war { z-index: 6; transform: translateX(8px) scale(1.4); transform-origin: 0 50%; }
     .pot.war::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; width: 80px; height: 80px; translate: -50% -50%; border-radius: 50%; background: conic-gradient(from 0deg, transparent, rgba(245, 196, 69, 0.85), transparent 30%, rgba(208, 80, 143, 0.8), transparent 60%, rgba(143, 147, 240, 0.85), transparent); -webkit-mask: radial-gradient(circle, transparent 30%, #000 34%, #000 62%, transparent 66%); mask: radial-gradient(circle, transparent 30%, #000 34%, #000 62%, transparent 66%); animation: spin 1.4s linear infinite; }
     .pot.war b { color: #fff; text-shadow: 0 0 12px var(--yellow), 0 2px 0 var(--orange); }
@@ -1691,7 +1693,13 @@
       const w = weight(card, hidden);
       const slot = $(`#slot-${p}-${slotName}`);
       const el = cardEl(card, p, hidden);
-      slot.innerHTML = "";
+      if (opts.stack) {
+        // Bataille : la carte se pose PAR-DESSUS la pile, un peu décalée, comme au vrai jeu de bataille.
+        const n = slot.querySelectorAll(".card").length;
+        el.classList.add("stacked");
+        el.style.setProperty("--n", n);
+        el.style.setProperty("--r", `${(n % 2 ? 1 : -1) * (2 + rand(5))}deg`);
+      } else slot.innerHTML = "";
       slot.appendChild(el);
       const to = el.getBoundingClientRect();
       const dx = from.left + from.width / 2 - (to.left + to.width / 2);
@@ -2675,9 +2683,8 @@
         holdWarp(level);
         setPrompt(level === 1 ? tr("<b>Égalité !</b> Tout reste en jeu.") : tr("<b>Encore égalité !</b> La mise grimpe."));
         await sleep(1700);
-        const staked = boardCards();
-        await sweepBoard($("#pot"));
-        S.pot.push(...staked);
+        // Comme au vrai jeu : les cartes restent sur la table, la bataille s'empile par-dessus.
+        S.pot.push(...boardCards());
         S.board = emptyBoard();
         S.revealed = false;
         renderAll();
@@ -2686,12 +2693,20 @@
           if (!stock(0) && !stock(1)) return finishRound(null, tr("Égalité"));
           return finishRound(stock(0) ? 0 : 1);
         }
-        // Les otages, pris sur le dessus de la pioche, gonflent la mise.
+        // Une carte face cachée, tirée de la pioche, sur chaque pile : la mise grossit, la tension aussi.
         for (const p of [1, 0]) {
-          if (!S.decks[p].length || stock(p) < 2) continue;
-          await playCard(p, "amb", S.decks[p].shift(), true, { from: deckRect(p) });
+          if (stock(p) < 2) continue;
+          const hidden = await drawBlind(p);
+          if (!hidden) continue;
+          S.pot.push(hidden);
+          await playCard(p, "van", hidden, true, { from: deckRect(p), stack: true });
+          S.board.van[p] = null;
+          tone(110 + level * 30, 0.18, "sawtooth", 0.07);
+          shake(3 + level * 2);
           if (game !== gameId) return;
         }
+        for (const p of [0, 1]) { const slot = $(`#slot-${p}-van`), n = slot.querySelectorAll(".card").length; slot.classList.toggle("pile", n > 1); slot.dataset.pile = n + 1; }
+        renderHud();
         for (const p of [0, 1]) if (!S.hands[p].length && S.decks[p].length) S.hands[p].push(S.decks[p].shift());
         if (!S.hands[0].length || !S.hands[1].length) return finishRound(S.hands[0].length ? 0 : S.hands[1].length ? 1 : null);
         // Le duel : chacun choisit sa carte en secret.
@@ -2706,7 +2721,7 @@
         if (game !== gameId) return;
         const boost = [S.duelBoost, false];
         netSend("duel", { id: mine.card.id, boost: boost[0] });
-        await playCard(0, "van", mine.card, true, mine.opts);
+        await playCard(0, "van", mine.card, true, { ...mine.opts, stack: true });
         if (game !== gameId) return;
         setPrompt(tr("<b>Gaspard</b> choisit sa carte de duel…"));
         let theirs;
@@ -2714,7 +2729,7 @@
         else { await sleep(700); theirs = aiDuel(level); }
         if (game !== gameId) return;
         boost[1] = theirs.boost && S.fuel[1] >= 1;
-        await playCard(1, "van", theirs.card, true);
+        await playCard(1, "van", theirs.card, true, { stack: true });
         for (const p of [0, 1]) if (boost[p]) { S.fuel[p] -= 1; renderFuel(p); floatText($(`#slot-${p}-van`), tr("Surcharge +3"), false, true); sfx.coin(); }
         setPrompt(`${tr("Mise")} : <b>${visibleStake()} pts</b>`);
         // Compte à rebours géant avant la révélation
@@ -2732,7 +2747,7 @@
         }
         // Révélation simultanée
         const cards = [mine.card, theirs.card];
-        for (const p of [0, 1]) $(`#slot-${p}-van .card`).classList.remove("facedown");
+        for (const p of [0, 1]) $(`#slot-${p}-van .card:last-child`).classList.remove("facedown");
         sfx.flip();
         await sleep(520);
         S.war.val = cards.map((c, p) => c.value + (boost[p] ? 3 : 0));
@@ -2763,6 +2778,7 @@
         await sleep(900);
         await sweepBoard($("#pot"));
         $("#pot").classList.remove("war");
+        for (const sl of document.querySelectorAll(".slot.pile")) sl.classList.remove("pile");
         S.pot = cards;
         S.first = 1 - S.first;
       } else {
@@ -2795,6 +2811,7 @@
         if (potPts) coinRain($("#pot"), $(`#lootBox${winner}`), Math.min(24, potPts * 2));
         await sweepBoard($(`#lootBox${winner}`));
         $("#pot").classList.remove("war");
+        for (const sl of document.querySelectorAll(".slot.pile")) sl.classList.remove("pile");
         S.loot[winner] += pts + steal;
         S.loot[loser] -= steal;
         S.pot = [];
