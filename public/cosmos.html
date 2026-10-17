@@ -14,8 +14,8 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.27";</script>
-  <script src="i18n.js?v=0.27"></script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.28";</script>
+  <script src="i18n.js?v=0.28"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
   <style>
@@ -321,8 +321,13 @@
     .pips i.pop { animation: pop 500ms ease; }
     .stat { text-align: center; font-size: 0.6rem; line-height: 1.1; text-transform: uppercase; letter-spacing: 0.05em; min-width: 38px; }
     .stat b { display: block; font-weight: 400; font-size: 1.2rem; letter-spacing: 0; }
-    .stat.loot b { color: var(--yellow); }
-    .stat.loot b::before { content: ""; display: inline-block; width: 0.62em; height: 0.62em; margin-right: 3px; border-radius: 50%; vertical-align: 0.05em; background: radial-gradient(circle at 35% 30%, #fff6c9, var(--yellow) 55%, #b8800e); border: 1.5px solid var(--navy); }
+    .stat.loot { display: grid; grid-template-columns: auto auto; grid-template-areas: "c lbl" "c num" "tier tier"; align-items: center; column-gap: 5px; padding: 3px 9px 3px 4px; border-radius: 14px; background: linear-gradient(160deg, rgba(245, 196, 69, 0.28), rgba(16, 22, 43, 0.6)); border: 2px solid var(--yellow); text-align: left; }
+    .stat.loot .mcoin { grid-area: c; width: 28px; height: 28px; font-size: 0.8rem; }
+    .stat.loot b { grid-area: num; color: var(--yellow); font-size: 1.45rem; line-height: 1; text-shadow: 0 2px 0 #0a0f1e, 0 0 10px rgba(245, 196, 69, 0.5); }
+    .stat.loot .tier { grid-area: tier; text-align: center; }
+    .stat.loot { font-size: 0.55rem; }
+    .stat.deck { opacity: 0.7; font-size: 0.5rem; min-width: 30px; }
+    .stat.deck b { font-size: 0.95rem; }
     .stat.bump { animation: bump 450ms ease; }
     .stat .tier { display: block; margin-top: 1px; font-size: 0.48rem; letter-spacing: 0; text-transform: none; color: var(--teal); white-space: nowrap; }
     .icon { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--cream); background: transparent; font-size: 0.8rem; }
@@ -462,9 +467,17 @@
     .card.rar-2 .front::after { background-image: linear-gradient(115deg, transparent 18%, rgba(255, 90, 160, 0.7) 34%, rgba(255, 235, 110, 0.8) 44%, rgba(90, 255, 200, 0.7) 54%, rgba(120, 160, 255, 0.7) 64%, transparent 80%); animation-duration: 2s; }
     .card.struck { animation: hit 420ms ease; }
     /* Pièce de butin : ce que la carte rapporte si on la gagne. Les petites cartes sont des trésors. */
-    .coin { position: absolute; z-index: 4; left: calc(var(--cw) * -0.07); bottom: calc(var(--cw) * 0.12); display: grid; place-items: center; width: calc(var(--cw) * 0.3); height: calc(var(--cw) * 0.3); border-radius: 50%; font-size: calc(var(--cw) * 0.19); line-height: 1; color: var(--navy); background: radial-gradient(circle at 35% 30%, #fff6c9, var(--yellow) 55%, #b8800e); border: 2px solid var(--navy); box-shadow: 0 2px 0 #0a0f1e; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-    .coin.c1 { width: calc(var(--cw) * 0.24); height: calc(var(--cw) * 0.24); font-size: calc(var(--cw) * 0.15); filter: saturate(0.35) brightness(0.92); }
-    .coin.c3 { width: calc(var(--cw) * 0.36); height: calc(var(--cw) * 0.36); font-size: calc(var(--cw) * 0.23); box-shadow: 0 0 0 2px var(--yellow), 0 0 12px var(--yellow); animation: beat 1.7s ease-in-out infinite; }
+    /* Pièces de butin : or = 3 pts, argent = 2 pts, bronze = 1 pt. Tranche crantée, face bombée, reflet. */
+    .coin, .mcoin { --c1: #fff6c9; --c2: #f5c445; --c3: #a8730a; --ink: #5a3d00; display: grid; place-items: center; border-radius: 50%; line-height: 1; color: var(--ink); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6); background: radial-gradient(circle at 50% 50%, transparent 52%, rgba(0, 0, 0, 0.22) 55%, transparent 60%), radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.95) 0 9%, transparent 26%), radial-gradient(circle at 50% 40%, var(--c1), var(--c2) 55%, var(--c3)); border: 2px solid var(--c3); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25), 0 0 0 1.5px var(--navy), 0 2px 0 #0a0f1e; }
+    .coin::before, .mcoin::before { content: ""; position: absolute; inset: -1px; border-radius: 50%; background: repeating-conic-gradient(rgba(0, 0, 0, 0.28) 0 7deg, rgba(255, 255, 255, 0.25) 7deg 14deg); -webkit-mask: radial-gradient(circle, transparent 64%, #000 67%); mask: radial-gradient(circle, transparent 64%, #000 67%); pointer-events: none; }
+    .coin.c2, .mcoin.c2 { --c1: #ffffff; --c2: #c9d2dc; --c3: #6f7b8a; --ink: #2b3442; }
+    .coin.c1, .mcoin.c1 { --c1: #ffe0bf; --c2: #d08a4e; --c3: #7a4519; --ink: #3d1f05; }
+    .coin { position: absolute; z-index: 4; left: calc(var(--cw) * -0.07); bottom: calc(var(--cw) * 0.12); width: calc(var(--cw) * 0.32); height: calc(var(--cw) * 0.32); font-size: calc(var(--cw) * 0.19); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .coin.c1 { width: calc(var(--cw) * 0.27); height: calc(var(--cw) * 0.27); font-size: calc(var(--cw) * 0.16); }
+    .coin.c3 { width: calc(var(--cw) * 0.38); height: calc(var(--cw) * 0.38); font-size: calc(var(--cw) * 0.23); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25), 0 0 0 1.5px var(--navy), 0 0 12px var(--yellow); animation: beat 1.7s ease-in-out infinite; }
+    .mcoin { position: relative; flex: none; }
+    .flycoin.mcoin { position: absolute; width: 18px; height: 18px; box-shadow: 0 0 10px var(--yellow); }
+    .pot .mcoin { display: inline-grid; width: 15px; height: 15px; margin-right: 3px; vertical-align: -2px; font-size: 0; }
     .card.facedown .coin, .hero-fan .flipper .coin { display: none; }
     .card.treasure .front { background: linear-gradient(170deg, var(--cream) 62%, #ffe7a3); }
     .card.treasure .n { color: #9c6a08; }
@@ -704,8 +717,8 @@
       <div class="hud" id="hud1">
         <div class="ava" id="ava1"></div>
         <div class="nm"><span id="name1">Gaspard</span><small id="perk1">Talent</small><div class="bossbar" id="bossBar" hidden></div><div class="pips" id="valor1" title="Boosts ⚡ : 1 boost pour appeler un allié ou riposter"></div></div>
-        <div class="stat">Pioche<b id="deck1">0</b></div>
-        <div class="stat loot" id="lootBox1">Butin<b id="loot1">0</b></div>
+        <div class="stat deck">Pioche<b id="deck1">0</b></div>
+        <div class="stat loot" id="lootBox1"><span class="mcoin">★</span>Butin<b id="loot1">0</b></div>
         <button class="icon" id="pauseBtn" aria-label="Pause">II</button>
       </div>
       <div class="opp-hand" id="oppHand" aria-label="Main de l'adversaire"></div>
@@ -717,7 +730,7 @@
           <div class="tally" id="tally1"><div class="num" id="total1">0</div><div class="chips" id="chips1"></div></div>
         </div>
         <div class="mid">
-          <div class="pot" id="pot"><span>Mise</span><br><b id="potNo">0</b> pts</div>
+          <div class="pot" id="pot"><span>Mise</span><br><span class="mcoin"></span><b id="potNo">0</b> pts</div>
           <div class="vs" id="roundChip">Manche 1</div>
           <div class="tray" id="tray">
             <div class="tray-info"><span id="trayNeed"></span><b id="trayRes"></b></div>
@@ -736,8 +749,8 @@
       <div class="hud" id="hud0">
         <div class="ava" id="ava0"></div>
         <div class="nm"><span>Toi</span><small id="perk0">Talent</small><div class="pips" id="valor0" title="Boosts ⚡ : 1 boost pour appeler un allié ou riposter"></div></div>
-        <div class="stat">Pioche<b id="deck0">0</b></div>
-        <div class="stat loot" id="lootBox0">Butin<b id="loot0">0</b><small class="tier" id="nextTier"></small></div>
+        <div class="stat deck">Pioche<b id="deck0">0</b></div>
+        <div class="stat loot" id="lootBox0"><span class="mcoin">★</span>Butin<b id="loot0">0</b><small class="tier" id="nextTier"></small></div>
       </div>
     </div>
   </main>
@@ -1468,7 +1481,7 @@
       const a = center(fromEl), b = center(toEl);
       for (let i = 0; i < count; i += 1) {
         const c = document.createElement("span");
-        c.className = "flycoin";
+        c.className = "flycoin mcoin";
         c.style.left = `${a.x}px`; c.style.top = `${a.y}px`;
         $("#fx").appendChild(c);
         const mx = (a.x + b.x) / 2 + (rand(160) - 80), my = Math.min(a.y, b.y) - 60 - rand(80);
