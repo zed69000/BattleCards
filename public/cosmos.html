@@ -14,8 +14,8 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.42";</script>
-  <script src="i18n.js?v=0.42"></script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.43";</script>
+  <script src="i18n.js?v=0.43"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
   <style>
@@ -41,7 +41,7 @@
 
     .view { position: fixed; inset: 0; z-index: 2; display: none; justify-content: center; transition: transform 320ms cubic-bezier(.2, .8, .2, 1), filter 320ms; }
     .view.on { display: flex; }
-    body.warp .view.on { transform: scale(1.045); filter: saturate(1.25) brightness(1.08); }
+    body.warp .view.on { transform: scale(1.045); }
     .col { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom)); }
 
     .btn { border: 2px solid var(--navy); border-radius: 999px; padding: 0.62rem 1.15rem; background: var(--yellow); color: var(--navy); box-shadow: 0 4px 0 #0a0f1e; letter-spacing: 0.04em; transition: transform 100ms; }
@@ -470,11 +470,11 @@
     .card .art { position: relative; }
     .card .art svg { position: relative; z-index: 1; display: block; width: 100%; height: 100%; }
     /* Fonds animés : étoiles qui défilent pour les figures, rayons qui tournent pour les atouts. */
-    .card.fig .art::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 1.1px, transparent 1.6px) 0 0 / 22px 22px, radial-gradient(circle, rgba(255, 255, 255, 0.45) 0 0.9px, transparent 1.4px) 11px 9px / 35px 37px; animation: drift 5s linear infinite; }
+    .card.fig .art::before { content: ""; position: absolute; left: -44px; top: -44px; right: 0; bottom: 0; background: radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 1.1px, transparent 1.6px) 0 0 / 22px 22px, radial-gradient(circle, rgba(255, 255, 255, 0.45) 0 0.9px, transparent 1.4px) 11px 9px / 44px 44px; animation: driftT 5s linear infinite; will-change: transform; }
     .card.atout .art::before { content: ""; position: absolute; inset: -60%; background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.3) 0 9deg, transparent 9deg 18deg); animation: spin 9s linear infinite; }
     .card.rar-2 .art::before { animation-duration: 4s; background: repeating-conic-gradient(from 0deg, rgba(255, 240, 150, 0.6) 0 9deg, transparent 9deg 18deg); }
     /* Reflet holographique des cartes rares et légendaires. */
-    .card.fig .front::after, .card.rar-1 .front::after, .card.rar-2 .front::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background-size: 260% 100%; background-repeat: no-repeat; mix-blend-mode: screen; animation: sheen 4.5s ease-in-out infinite; }
+    .card.fig .front::after, .card.rar-1 .front::after, .card.rar-2 .front::after { content: ""; position: absolute; top: 0; bottom: 0; left: -100%; width: 100%; z-index: 2; pointer-events: none; mix-blend-mode: screen; animation: sheenT 4.5s ease-in-out infinite; will-change: transform; }
     .card.fig .front::after { background-image: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.45) 50%, transparent 62%); animation-duration: 6s; }
     .card.rar-1 .front::after { background-image: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.8) 45%, rgba(120, 255, 225, 0.7) 53%, transparent 68%); animation-duration: 2.8s; }
     .card.rar-2 .front::after { background-image: linear-gradient(115deg, transparent 18%, rgba(255, 90, 160, 0.7) 34%, rgba(255, 235, 110, 0.8) 44%, rgba(90, 255, 200, 0.7) 54%, rgba(120, 160, 255, 0.7) 64%, transparent 80%); animation-duration: 2s; }
@@ -647,10 +647,13 @@
     @keyframes ring { from { opacity: 1; transform: scale(0.9); } to { opacity: 0; transform: scale(var(--pow, 1.4)); } }
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes dieThrow { 0% { transform: none; } 14% { transform: translate(var(--dx), calc(var(--dy) - 70px)) scale(2.8) rotate(-22deg); } 30% { transform: translate(var(--dx), var(--dy)) scale(2.5) rotate(9deg); } 42% { transform: translate(var(--dx), calc(var(--dy) - 28px)) scale(2.65) rotate(-4deg); } 54% { transform: translate(var(--dx), var(--dy)) scale(2.5); } 61% { transform: translate(var(--dx), calc(var(--dy) - 9px)) scale(2.55); } 67%, 86% { transform: translate(var(--dx), var(--dy)) scale(2.5); } 100% { transform: none; } }
-    @keyframes beat { 0%, 100% { scale: 0.82; box-shadow: 0 0 0 rgba(245, 196, 69, 0); } 50% { scale: 1.12; box-shadow: 0 0 14px rgba(245, 196, 69, 0.9); } }
+    /* Pulsation en échelle seulement (animer l'ombre forçait un redessin à chaque image sur chaque pièce et chaque dos de carte) */
+    @keyframes beat { 0%, 100% { scale: 0.86; } 50% { scale: 1.1; } }
     @keyframes bob { 0%, 100% { transform: translateY(3%) rotate(-3deg); } 50% { transform: translateY(-4%) rotate(3deg) scale(1.05); } }
     @keyframes drift { to { background-position: 44px 66px, 79px 111px; } }
     @keyframes sheen { 0%, 35% { background-position: 130% 0; } 75%, 100% { background-position: -130% 0; } }
+    @keyframes sheenT { 0%, 35% { transform: translateX(0); } 75%, 100% { transform: translateX(200%); } }
+    @keyframes driftT { to { transform: translate(44px, 44px); } }
     @keyframes foil { to { background-position: 220% 0; } }
     @keyframes hue { to { filter: hue-rotate(360deg); } }
     @keyframes rise { from { opacity: 0; transform: translateY(110px) scale(0.5) rotate(-8deg); } }
@@ -984,7 +987,7 @@
       s.tw = Math.random() * 6.28;
     }
     function sizeSpace() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       space.w = window.innerWidth; space.h = window.innerHeight;
       space.canvas.width = space.w * dpr; space.canvas.height = space.h * dpr;
       space.ctx = space.canvas.getContext("2d");
@@ -993,6 +996,8 @@
       space.ctx.fillRect(0, 0, space.w, space.h);
     }
     function drawSpace(now) {
+      // calme : une image sur deux suffit ; onglet caché : on ne dessine rien
+      if (document.hidden || (space.speed < 0.25 && space.target < 0.25 && now - space.last < 30)) { requestAnimationFrame(drawSpace); return; }
       const dt = Math.min(0.05, (now - space.last) / 1000 || 0.016);
       space.last = now;
       space.speed += (space.target - space.speed) * Math.min(1, dt * 4.5);
@@ -1538,7 +1543,7 @@
     }
     /* Pluie de pièces : la mise s'envole vers le butin du gagnant. */
     function coinRain(fromEl, toEl, count) {
-      if (reduced) count = Math.min(count, 4);
+      count = Math.min(count, reduced ? 4 : 14);
       const A = center(fromEl), B = center(toEl), fx = $("#fx");
       // Arc doux : courbe de Bézier dont le point de contrôle est décalé perpendiculairement au trajet, toujours du même côté.
       const dx = B.x - A.x, dy = B.y - A.y, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len, side = ny > 0 ? -1 : 1;
@@ -1567,7 +1572,7 @@
           k.c.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${sc.toFixed(3)}) rotateY(${Math.round(t * 540)}deg)`;
           k.c.style.opacity = t < 0.1 ? (t / 0.1).toFixed(2) : "1";
           // Traînée : de petites étincelles dorées qui s'éteignent derrière la pièce
-          if (!reduced && now - k.last > 34 && t > 0.05 && t < 0.97) {
+          if (!reduced && now - k.last > 70 && t > 0.08 && t < 0.92) {
             k.last = now;
             const d = document.createElement("span");
             d.className = "ctrail";
