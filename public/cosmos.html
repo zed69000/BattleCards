@@ -14,8 +14,8 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.36";</script>
-  <script src="i18n.js?v=0.36"></script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.37";</script>
+  <script src="i18n.js?v=0.37"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
   <style>
@@ -1587,64 +1587,42 @@
       };
       requestAnimationFrame(frame);
     }
-    /* Fin de manche : chaque carte se DÉSAGRÈGE. Un filtre SVG de bruit découpe la carte en lambeaux qui
-       disparaissent, avec un liseré doré qui brûle au bord de la découpe (comme une feuille qui se consume).
-       Un filtre par carte, pour pouvoir décaler les départs. */
-    function dissolveFilter(i) {
-      let defs = $("#dissolveDefs");
-      if (!defs) {
-        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.setAttribute("width", "0"); svg.setAttribute("height", "0");
-        svg.style.position = "absolute";
-        svg.innerHTML = '<defs id="dissolveDefs"></defs>';
-        document.body.appendChild(svg);
-        defs = $("#dissolveDefs");
-      }
-      const id = `ds${i}`;
-      if (!document.getElementById(id)) {
-        defs.insertAdjacentHTML("beforeend", `<filter id="${id}" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
-          <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="${3 + i * 7}" result="noise"/>
-          <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.6 0 0 0 -0.3" result="n"/>
-          <feComponentTransfer in="n" result="keep"><feFuncA class="cut" type="linear" slope="9" intercept="1"/></feComponentTransfer>
-          <feComponentTransfer in="n" result="halo"><feFuncA class="rim" type="linear" slope="9" intercept="1.8"/></feComponentTransfer>
-          <feComposite in="SourceGraphic" in2="keep" operator="in" result="card"/>
-          <feFlood flood-color="#ffd76a" result="gold"/>
-          <feComposite in="gold" in2="halo" operator="in" result="goldHalo"/>
-          <feComposite in="goldHalo" in2="keep" operator="out" result="edge"/>
-          <feGaussianBlur in="edge" stdDeviation="0.6" result="edgeSoft"/>
-          <feMerge><feMergeNode in="edgeSoft"/><feMergeNode in="card"/></feMerge>
-        </filter>`);
-      }
-      return document.getElementById(id);
-    }
+    /* Fin de manche : chaque carte se DÉSAGRÈGE en fragments qui s'éparpillent et s'éteignent en lumière dorée,
+       d'un bord à l'autre. Technique compatible avec tous les navigateurs (Safari compris) : la carte est copiée
+       en petits carreaux découpés (clip-path), chacun s'envole avec un léger décalage. */
     async function dissolveBoard(target) {
       const els = [...document.querySelectorAll(".slot .card")];
-      const DUR = reduced ? 1 : 580, STEP = reduced ? 0 : 70;
+      const COLS = 4, ROWS = 5, DUR = reduced ? 1 : 520, fx = $("#fx");
+      const tg = center(target);
+      let longest = 0;
       els.forEach((el, i) => {
-        const coin = el.querySelector(".coin"), n = coin ? (coin.classList.contains("c3") ? 3 : coin.classList.contains("c2") ? 2 : 1) : 0;
-        const f = dissolveFilter(i), cut = f.querySelector(".cut"), rim = f.querySelector(".rim");
-        cut.setAttribute("intercept", "1"); rim.setAttribute("intercept", "1.8");
-        el.style.zIndex = 30;
-        if (coin) coin.style.visibility = "hidden";
-        setTimeout(() => {
-          el.style.filter = `url(#ds${i}) drop-shadow(0 0 6px rgba(255, 200, 80, 0.8))`;
-          burst(el, [YE, "#fff", OR], 6 + n * 3);
-          el.animate([{ transform: "none" }, { transform: "translateY(-14px) scale(1.06) rotate(-2deg)" }], { duration: DUR, easing: "ease-out", fill: "forwards" });
-          const t0 = performance.now();
-          const frame = now => {
-            const k = Math.min(1, (now - t0) / DUR);
-            // l'interception descend : la découpe progresse dans le bruit, le liseré la précède
-            const v = 1 - k * 9.5;
-            cut.setAttribute("intercept", v.toFixed(3));
-            rim.setAttribute("intercept", (v + 0.6).toFixed(3));
-            if (k < 1) requestAnimationFrame(frame);
-            else el.style.opacity = "0";
-          };
-          requestAnimationFrame(frame);
-        }, i * STEP);
+        const r = el.getBoundingClientRect();
+        if (!r.width) return;
+        const coin = el.querySelector(".coin");
+        if (coin) coin.remove();
+        const base = el.cloneNode(true);
+        base.classList.remove("stacked", "sel", "pending", "joined", "broken", "drawn");
+        Object.assign(base.style, { position: "absolute", left: `${r.left}px`, top: `${r.top}px`, margin: "0", rotate: "0deg", zIndex: "1", animation: "none", transition: "none", transform: "none", opacity: "1", filter: "none" });
+        base.style.setProperty("--cw", `${r.width}px`);
+        el.style.visibility = "hidden";
+        const pushX = (tg.x - (r.left + r.width / 2)) * 0.25, pushY = (tg.y - (r.top + r.height / 2)) * 0.25;
+        for (let row = 0; row < ROWS; row += 1) for (let col = 0; col < COLS; col += 1) {
+          const f = base.cloneNode(true);
+          f.style.clipPath = f.style.webkitClipPath = `inset(${(row / ROWS) * 100}% ${100 - ((col + 1) / COLS) * 100}% ${100 - ((row + 1) / ROWS) * 100}% ${(col / COLS) * 100}%)`;
+          fx.appendChild(f);
+          const delay = reduced ? 0 : i * 60 + (col + row * 0.35) * 45 + Math.random() * 60;
+          const dx = (col - 1.5) * 10 + (Math.random() - 0.5) * 26 + pushX, dy = -18 - Math.random() * 34 + pushY;
+          longest = Math.max(longest, delay + DUR);
+          f.animate([
+            { transform: "none", opacity: 1, filter: "brightness(1)" },
+            { transform: `translate(${dx * 0.3}px, ${dy * 0.3}px)`, opacity: 1, filter: "brightness(1.9) drop-shadow(0 0 4px #ffd76a)", offset: 0.3 },
+            { transform: `translate(${dx}px, ${dy}px) rotate(${(Math.random() - 0.5) * 70}deg) scale(0.5)`, opacity: 0, filter: "brightness(2.6) drop-shadow(0 0 6px #ffd76a)" }
+          ], { duration: DUR, delay, easing: "cubic-bezier(.3,.6,.5,1)", fill: "forwards" }).finished.then(() => f.remove()).catch(() => f.remove());
+        }
+        setTimeout(() => burst(el, [YE, "#fff", OR], 10), reduced ? 0 : i * 60 + 80);
       });
-      if (els.length) { sfx.rare(); tone(180, 0.6, "sawtooth", 0.03, 0, 900); }
-      await hold(DUR + els.length * STEP + 150);
+      if (els.length) { sfx.rare(); tone(180, 0.5, "sawtooth", 0.03, 0, 900); }
+      await hold(Math.min(longest, 1100) + 120);
       labelSlots();
       bump(target);
     }
