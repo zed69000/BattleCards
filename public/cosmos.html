@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.52";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.53";</script>
   <script src="i18n.js?v=0.43"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
@@ -504,7 +504,8 @@
     .coin.c1 { width: calc(var(--cw) * 0.27); height: calc(var(--cw) * 0.27); font-size: calc(var(--cw) * 0.16); }
     .coin.c3 { width: calc(var(--cw) * 0.38); height: calc(var(--cw) * 0.38); font-size: calc(var(--cw) * 0.23); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25), 0 0 0 1.5px var(--navy), 0 0 12px var(--yellow); animation: beat 1.7s ease-in-out infinite; }
     .mcoin { position: relative; flex: none; }
-    .flycoin.mcoin { position: absolute; width: 22px; height: 22px; box-shadow: 0 0 12px var(--yellow); will-change: transform; }
+    .flycoin.mcoin { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; font-size: 0.72rem; box-shadow: 0 0 12px var(--yellow); will-change: transform; }
+    .card-flash { position: absolute; inset: 0; z-index: 8; border-radius: calc(var(--cw) * 0.15); background: #fff; pointer-events: none; opacity: 0; }
     .ctrail { position: absolute; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; pointer-events: none; background: radial-gradient(circle, #fff9dc 0 22%, rgba(245, 196, 69, 0.85) 45%, transparent 70%); animation: ctrail 460ms ease-out forwards; }
     @keyframes ctrail { from { opacity: 0.85; transform: scale(1); } to { opacity: 0; transform: scale(0.15); } }
     .cpop { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; pointer-events: none; border: 2px solid #ffe08a; box-shadow: 0 0 10px var(--yellow); animation: cpop 400ms ease-out forwards; }
@@ -1607,77 +1608,57 @@
       if (to - from >= 2) sfx.coin();
     }
     /* Pluie de pièces : la mise s'envole vers le butin du gagnant. */
-    function coinRain(fromEl, toEl, count) {
-      count = Math.min(count, reduced ? 4 : 14);
-      const A = center(fromEl), B = center(toEl), fx = $("#fx");
-      // Arc doux : courbe de Bézier dont le point de contrôle est décalé perpendiculairement au trajet, toujours du même côté.
-      const dx = B.x - A.x, dy = B.y - A.y, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len, side = ny > 0 ? -1 : 1;
-      const coins = [];
-      for (let i = 0; i < count; i += 1) {
-        const c = document.createElement("span");
-        c.className = "flycoin mcoin";
-        c.style.left = "0px"; c.style.top = "0px"; c.style.opacity = "0";
-        fx.appendChild(c);
-        const spread = 14, sx = A.x + (Math.random() - 0.5) * spread * 2, sy = A.y + (Math.random() - 0.5) * spread;
-        const bend = len * (0.28 + Math.random() * 0.12) * side;
-        coins.push({ c, sx, sy, mx: (sx + B.x) / 2 + nx * bend, my: (sy + B.y) / 2 + ny * bend, start: i * (reduced ? 0 : 60), dur: reduced ? 250 : 900 + Math.random() * 180, last: 0, done: false });
-      }
-      const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-      const t0 = performance.now();
-      const frame = now => {
-        let alive = false;
-        for (const k of coins) {
-          if (k.done) continue;
-          alive = true;
-          const local = (now - t0 - k.start) / k.dur;
-          if (local < 0) continue;
-          const t = Math.min(1, local), e = ease(t), u = 1 - e;
-          const x = u * u * k.sx + 2 * u * e * k.mx + e * e * B.x, y = u * u * k.sy + 2 * u * e * k.my + e * e * B.y;
-          const sc = t < 0.15 ? 0.5 + (t / 0.15) * 0.6 : 1.1 - (t - 0.15) * 0.55;
-          k.c.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${sc.toFixed(3)}) rotateY(${Math.round(t * 540)}deg)`;
-          k.c.style.opacity = t < 0.1 ? (t / 0.1).toFixed(2) : "1";
-          // Traînée : de petites étincelles dorées qui s'éteignent derrière la pièce
-          if (!reduced && now - k.last > 70 && t > 0.08 && t < 0.92) {
-            k.last = now;
-            const d = document.createElement("span");
-            d.className = "ctrail";
-            d.style.left = `${x}px`; d.style.top = `${y}px`;
-            fx.appendChild(d);
-            setTimeout(() => d.remove(), 480);
-          }
-          if (t >= 1) {
-            k.done = true;
-            k.c.remove();
-            const p = document.createElement("span");
-            p.className = "cpop";
-            p.style.left = `${B.x}px`; p.style.top = `${B.y}px`;
-            fx.appendChild(p);
-            setTimeout(() => p.remove(), 420);
-            if (Math.random() < 0.4) tone(1500 + rand(600), 0.05, "triangle", 0.03);
-          }
-        }
-        if (alive) requestAnimationFrame(frame);
-      };
-      requestAnimationFrame(frame);
-    }
-    /* Fin de manche : les cartes s'effacent simplement. Chacune s'éclaire, rétrécit en montant un peu vers le butin
-       du gagnant et disparaît, avec quelques étincelles. Juste transparence et déplacement : fiable partout. */
-    async function dissolveBoard(target) {
-      const els = [...document.querySelectorAll(".slot .card")];
-      const DUR = 420, STEP = 50, tg = center(target);
-      els.forEach((el, i) => {
-        const c = center(el), dx = (tg.x - c.x) * 0.12, dy = (tg.y - c.y) * 0.12 - 14;
-        el.animate([
-          { opacity: 1, transform: "none" },
-          { opacity: 1, transform: "scale(1.08)", offset: 0.25 },
-          { opacity: 0, transform: `translate(${dx}px, ${dy}px) scale(0.55)` }
-        ], { duration: reduced ? 1 : DUR, delay: reduced ? 0 : i * STEP, easing: "ease-in", fill: "forwards" });
-        setTimeout(() => burst(el, [YE, "#fff", OR], 8), reduced ? 0 : i * STEP + 60);
+    /* Une pièce de butin file en arc vers une cible, en tournoyant, et grossit selon sa valeur. */
+    function flyCoin(from, toEl, value, delay = 0) {
+      const B = center(toEl), c = document.createElement("span");
+      c.className = `flycoin mcoin c${Math.min(3, value)}`;
+      c.textContent = value;
+      c.style.left = `${from.x}px`; c.style.top = `${from.y}px`;
+      $("#fx").appendChild(c);
+      const dx = B.x - from.x, dy = B.y - from.y, big = 1.3 + Math.min(3, value) * 0.25;
+      return c.animate([
+        { transform: "translate(0, 0) scale(1)" },
+        { transform: `translate(${dx * 0.15}px, -40px) scale(${big}) rotateY(180deg)`, offset: 0.3 },
+        { transform: `translate(${dx * 0.6}px, ${dy * 0.4 - 50}px) scale(${big * 0.9}) rotateY(540deg)`, offset: 0.65 },
+        { transform: `translate(${dx}px, ${dy}px) scale(0.6) rotateY(900deg)`, opacity: 1, offset: 0.97 },
+        { transform: `translate(${dx}px, ${dy}px) scale(0)`, opacity: 0 }
+      ], { duration: reduced ? 1 : 820, delay: reduced ? 0 : delay, easing: "cubic-bezier(.4, 0, .6, 1)", fill: "forwards" }).finished.catch(() => {}).then(() => {
+        c.remove();
+        const pop = document.createElement("span");
+        pop.className = "cpop";
+        pop.style.left = `${B.x}px`; pop.style.top = `${B.y}px`;
+        $("#fx").appendChild(pop);
+        setTimeout(() => pop.remove(), 420);
+        tone(1300 + Math.min(3, value) * 250, 0.06, "triangle", 0.04);
       });
-      if (els.length) sfx.rare();
-      await hold(DUR + els.length * STEP + 60);
+    }
+    /* Fin de manche : chaque carte flashe en blanc et s'écrase en un trait, pendant que sa pièce de butin jaillit
+       et file vers le butin du gagnant. onCoin(points) est appelé à chaque arrivée. */
+    async function collectBoard(target, cards, onCoin) {
+      const els = [...document.querySelectorAll(".slot .card")];
+      const byId = new Map(cards.map(c => [String(c.id), c]));
+      const step = Math.min(90, 900 / Math.max(1, els.length));
+      let flown = 0;
+      const flights = els.map((el, i) => new Promise(resolve => setTimeout(() => {
+        const card = byId.get(el.dataset.id), value = card ? lootCard(card) : 0;
+        const flash = document.createElement("span");
+        flash.className = "card-flash";
+        el.appendChild(flash);
+        flash.animate([{ opacity: 0 }, { opacity: 1 }], { duration: reduced ? 1 : 120, fill: "forwards" });
+        el.animate([{ transform: "none" }, { transform: "scaleY(1.08)", offset: 0.3 }, { transform: "scale(1.3, 0.04)", opacity: 1, offset: 0.85 }, { transform: "scale(1.6, 0)", opacity: 0 }],
+          { duration: reduced ? 1 : 340, easing: "ease-in", fill: "forwards" });
+        setTimeout(() => burst(el, ["#fff", "#8fd8cc"], 6), reduced ? 0 : 300);
+        if (!value) return resolve();
+        const badge = el.querySelector(".coin"), shown = badge && getComputedStyle(badge).display !== "none";
+        if (shown) badge.style.visibility = "hidden";
+        flown += value;
+        flyCoin(center(shown ? badge : el), target, value, 90).then(() => { onCoin(value); resolve(); });
+      }, reduced ? 0 : i * step)));
+      await Promise.all(flights);
+      // Butin de cartes qui n'étaient pas sur la table : il arrive d'un coup.
+      const rest = lootSum(cards) - flown;
+      if (rest > 0) onCoin(rest);
       labelSlots();
-      bump(target);
     }
     function renderTotals() {
       const res = [breakdown(0), breakdown(1)];
@@ -3073,28 +3054,30 @@
         }
         if (!epic) shake();
         await sleep(epic ? 1500 : 600);
-        await dissolveBoard($(`#lootBox${winner}`));
+        // Chaque carte envoie sa propre pièce au butin : le butin monte et la mise se vide à chaque arrivée.
+        const gainPts = pts + steal, lootEl = $(`#loot${winner}`), potEl = $("#potNo"), from = S.loot[winner];
+        const stake = Number(potEl.textContent) || pts;
+        let got = 0, drained = 0;
+        const tally = (value, fromPot = true) => {
+          got += value;
+          if (fromPot) { drained += value; potEl.textContent = Math.max(0, stake - drained); }
+          lootEl.textContent = from + got;
+          bump($(`#lootBox${winner}`));
+        };
+        clearInterval(showStake.timer);
+        $("#pot").classList.add("drain");
+        await collectBoard($(`#lootBox${winner}`), cards, tally);
+        if (steal) {
+          // Les points volés partent du butin du perdant.
+          $(`#loot${loser}`).textContent = S.loot[loser] - steal;
+          await flyCoin(center($(`#lootBox${loser}`)), $(`#lootBox${winner}`), steal);
+          tally(steal, false);
+        }
         $("#pot").classList.remove("war");
         for (const sl of document.querySelectorAll(".slot.pile")) sl.classList.remove("pile");
-        // La mise s'envole vers le butin : une pièce par point, la mise se vide pendant que le butin monte.
-        const gainPts = pts + steal, lootEl = $(`#loot${winner}`), potEl = $("#potNo"), from = S.loot[winner];
-        $("#pot").classList.add("drain");
-        coinRain($("#pot"), $(`#lootBox${winner}`), Math.min(30, Math.max(gainPts, 1) * (war ? 2 : 1)));
         S.loot[winner] += gainPts;
         S.loot[loser] -= steal;
         S.pot = [];
-        await new Promise(resolve => {
-          const steps = Math.max(1, Math.min(gainPts, 24)), start = Number(potEl.textContent) || gainPts;
-          let k = 0;
-          clearInterval(showStake.timer);
-          const tick = setInterval(() => {
-            k += 1;
-            lootEl.textContent = Math.round(from + (gainPts * k) / steps);
-            potEl.textContent = Math.max(0, Math.round(start - (start * k) / steps));
-            bump($(`#lootBox${winner}`));
-            if (k >= steps) { clearInterval(tick); resolve(); }
-          }, reduced ? 10 : Math.max(30, 650 / steps));
-        });
         $("#pot").classList.remove("drain");
         floatText($(`#lootBox${winner}`), tr("+{n} pts", { n: pts + steal }), false, pts + steal >= 6);
         const tierHit = winner === 0 ? LOOT_TIERS.find(([min]) => S.loot[0] >= min && S.loot[0] - pts - steal < min) : null;
