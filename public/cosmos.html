@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.46";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.47";</script>
   <script src="i18n.js?v=0.43"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
@@ -994,7 +994,7 @@
       s.tw = Math.random() * 6.28;
     }
     function sizeSpace() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      const dpr = Math.min(window.devicePixelRatio || 1, space.low ? 1 : 1.5);
       space.w = window.innerWidth; space.h = window.innerHeight;
       space.canvas.width = space.w * dpr; space.canvas.height = space.h * dpr;
       space.ctx = space.canvas.getContext("2d");
@@ -1004,7 +1004,28 @@
     }
     const streaks = new Map();
     const STREAK_ALPHA = [0.55, 0.9, 1], STREAK_WIDTH = [1.2, 2.1, 3];
+    /* Qualité automatique : si l'affichage reste sous ~40 images/s sur deux fenêtres de 2 s d'affilée, le fond étoilé
+       s'allège pour la session (définition 1x, 40 % d'étoiles en moins). Forçable avec ?lite dans l'adresse. */
+    const fps = { prev: 0, sum: 0, n: 0, slow: 0 };
+    function lowQuality() {
+      if (space.low) return;
+      space.low = true;
+      sizeSpace();
+      space.stars.length = Math.round(space.stars.length * 0.6);
+    }
+    function watchFps(now) {
+      if (space.low) return;
+      const dt = now - (fps.prev || now);
+      fps.prev = now;
+      if (document.hidden || !dt || dt > 120) return;
+      fps.sum += dt; fps.n += 1;
+      if (fps.sum < 2000) return;
+      fps.slow = fps.sum / fps.n > 25 ? fps.slow + 1 : 0;
+      fps.sum = fps.n = 0;
+      if (fps.slow >= 2) lowQuality();
+    }
     function drawSpace(now) {
+      watchFps(now);
       // calme : une image sur deux suffit ; onglet caché : on ne dessine rien
       if (document.hidden || (space.speed < 0.25 && space.target < 0.25 && now - space.last < 30)) { requestAnimationFrame(drawSpace); return; }
       const dt = Math.min(0.05, (now - space.last) / 1000 || 0.016);
@@ -1068,6 +1089,7 @@
       const count = Math.round(Math.min(340, (space.w * space.h) / 2600));
       space.stars = Array.from({ length: count }, () => { const s = {}; resetStar(s, false); return s; });
       window.addEventListener("resize", sizeSpace);
+      if (/[?&]lite(&|=|$)/.test(location.search)) lowQuality();
       requestAnimationFrame(drawSpace);
     }
     let warpTimer = 0;
