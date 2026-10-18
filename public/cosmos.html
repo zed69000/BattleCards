@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.43";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.44";</script>
   <script src="i18n.js?v=0.43"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
@@ -914,7 +914,6 @@
         <h3>Les boosts ⚡</h3>
         <ul>
           <li data-i18n>1 boost = <b>appeler un allié</b> ou <b>riposter</b>. Sans boost, impossible.</li>
-          <li>En bataille galactique, 1 boost te fait piocher 2 cartes et garder la meilleure.</li>
           <li data-i18n><b>Échanger une carte :</b> une fois par manche, avant de poser, 1 boost envoie une carte de ta main sous ta pioche contre celle du dessus.</li>
           <li data-i18n>Tu en regagnes <b>1 à chaque manche perdue</b> (3 au maximum). Au-delà, chaque boost en trop devient <b>1 point de butin</b>.</li>
         </ul>
@@ -1143,7 +1142,7 @@
     /* Taille de la pioche de chaque camp (sur 26 possibles) : 20 donne des parties d'environ 7 manches. */
     const DECK_SIZE = 20;
     /* Butin : les petites cartes perdent les combats mais rapportent gros. La Supernova se consume. */
-    const ATOUT_LOOT = 2, TRACTOR_STEAL = 3, CLONE_CAP = 7, SIPHON = 3;
+    const ATOUT_LOOT = 2, TRACTOR_STEAL = 3, CLONE_CAP = 5, SIPHON = 3;
     /* Partie jouée : l'écart dépasse tout le butin encore en jeu, plus une marge pour les vols (Rayon tracteur, Siphon). */
     const LOCK_MARGIN = 6;
     /* Prime de butin : des cristaux à chaque palier atteint, même en cas de défaite. Paliers calés sur les simulations
@@ -1189,10 +1188,10 @@
     /* Campagne : 5 chapitres de 3 soldats et un boss. tiers = niveau d'IA de chaque étape. */
     const CHAPTERS = [
       { planet: "Lune", color: "#d9d2c0", cast: "mars", soldiers: ["Caporal Blip", "Sergent Glurp", "Lieutenant Zob"], boss: "gloubi", tiers: [0, 0, 1, 2], foeAtouts: [0, 0, 1, 1] },
-      { planet: "Mars", color: "#f26a3d", cast: "cranes", soldiers: ["Cadet Neurone", "Major Méninge", "Colonel Lobe"], boss: "krakmar", tiers: [2, 3, 4, 3] },
-      { planet: "Jupiter", color: "#e0a07a", cast: "poulpes", soldiers: ["Mousse Ventouse", "Bosco Calmar", "Capitaine Encre"], boss: "tempete", tiers: [4, 5, 6, 4] },
+      { planet: "Mars", color: "#f26a3d", cast: "cranes", soldiers: ["Cadet Neurone", "Major Méninge", "Colonel Lobe"], boss: "krakmar", tiers: [2, 3, 4, 4] },
+      { planet: "Jupiter", color: "#e0a07a", cast: "poulpes", soldiers: ["Mousse Ventouse", "Bosco Calmar", "Capitaine Encre"], boss: "tempete", tiers: [4, 5, 6, 5] },
       { planet: "Saturne", color: "#f5c445", ring: true, cast: "incognito", soldiers: ["Agent 004", "Agent Trench", "Agent Fantôme"], boss: "zygo", tiers: [6, 7, 8, 7] },
-      { planet: "Neptune", color: "#5b8fd8", cast: "cranes", soldiers: ["Garde Zorg", "Champion Zorg", "Prince Zorgy"], boss: "zorglax", tiers: [8, 9, 10, 8] }
+      { planet: "Neptune", color: "#5b8fd8", cast: "cranes", soldiers: ["Garde Zorg", "Champion Zorg", "Prince Zorgy"], boss: "zorglax", tiers: [8, 9, 9, 7] }
     ];
     const START_ATOUTS = ["tank", "shield"];
     const GIFTS = [["spy", "dice"], ["tractor", "tresor"], ["cryo", "clone"], ["meteor", "hole"], ["turbo", "nova"]];
@@ -1211,7 +1210,7 @@
       dice: { name: "Dé pipé", value: 5, thr: 1, rarity: 0, desc: "Joue-la en allié ou en riposte : le dé réussit toujours. Vaut 5." },
       tank: { name: "Citerne", value: 5, rarity: 0, desc: "Dès qu'elle est visible sur la table, son propriétaire gagne 2 boosts ⚡. Vaut 5." },
       shield: { name: "Bouclier", value: 6, rarity: 0, desc: "Tant qu'elle est sur la table, les malus adverses (Impact −2, Trou noir) ne touchent pas son propriétaire. Vaut 6." },
-      clone: { name: "Clone", value: 0, label: "?", thr: 3, rarity: 1, desc: "Copie la valeur de l'autre carte posée à côté (7 au maximum) : ensemble elles forment des Jumeaux, +5." },
+      clone: { name: "Clone", value: 0, label: "?", thr: 3, rarity: 1, desc: "Copie la valeur de l'autre carte posée à côté (5 au maximum) : ensemble elles forment des Jumeaux, +5." },
       hole: { name: "Trou noir", value: 2, thr: 5, rarity: 1, desc: "Ne vaut que 2, mais aspire la plus faible des deux cartes d'en face : elle compte 0." },
       tractor: { name: "Rayon tracteur", value: 6, rarity: 1, desc: "Si son propriétaire gagne la manche, il vole en plus 3 points dans le butin d'en face. Vaut 6." },
       nova: { name: "Supernova", value: 9, thr: 6, loot: 0, rarity: 2, desc: "Vaut 9 et explose en arrivant. Mais elle se consume : elle ne rapporte aucun butin." },

@@ -12,10 +12,9 @@ window.BalanceSim = (function () {
   const R = n => Math.floor(Math.random() * n);
   const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i -= 1) { const j = R(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const thrOf = c => c.thr || threshold(c.value);
-  const CLONE_CAP = 7;
-  const SIPHON = 3;  // points volés par le Siphon d'un boss
-  const LOCK_MARGIN = 6;  // marge de sécurité (vols du Rayon tracteur, Siphon) avant de déclarer une partie jouée
-  const ev = (c, o) => (c.special === "clone" ? (o && o.special !== "clone" ? Math.min(o.value, CLONE_CAP) : 0) : c.value);
+  /* CLONE_CAP, SIPHON et LOCK_MARGIN viennent de la page ; OPT.clone permet d'essayer un autre plafond. */
+  const cloneCap = () => OPT.clone ?? CLONE_CAP;
+  const ev = (c, o) => (c.special === "clone" ? (o && o.special !== "clone" ? Math.min(o.value, cloneCap()) : 0) : c.value);
   function formation(a, b) {
     const out = [], va = ev(a, b), vb = ev(b, a);
     if (va === vb) out.push(5); else if (Math.abs(va - vb) === 1) out.push(2);
@@ -56,7 +55,7 @@ window.BalanceSim = (function () {
       if (van && amb) for (const x of formation(van, amb)) t += x;
       const shield = onBoard(p, "shield"), impact = B.amb[o] && B.amb[o].house === "S", hole = onBoard(o, "hole"), met = onBoard(o, "meteor");
       if (!shield) { if (impact) t -= OPT.impact; if (hole && van && amb) t -= Math.min(vv, va); if (met) t -= 3; }
-      if (B.allyOk[p]) { const c = B.ally[p]; t += c.special === "clone" ? Math.min(Math.max(vv, va), CLONE_CAP) : c.special === "turbo" ? c.value * 2 : c.value; }
+      if (B.allyOk[p]) { const c = B.ally[p]; t += c.special === "clone" ? Math.min(Math.max(vv, va), cloneCap()) : c.special === "turbo" ? c.value * 2 : c.value; }
       if (sup(p, "crush")) t += vv;
       if (sup(p, "tide")) t += 4;
       if (sup(o, "bomb")) t -= 3;
@@ -191,9 +190,15 @@ window.BalanceSim = (function () {
       if (refuel) gain(w, 1);
       st.first = w;
     }
-    function war() {
+    function war(level = 1) {
       stats.war += 1;
-      for (let level = 1; ; level += 1) {
+      if (OPT.war === "round") {
+        // Même règle que le jeu : les cartes restent en jeu et une manche complète se rejoue par-dessus.
+        st.pot.push(...onTable()); B = empty(); revealed = false;
+        if (stock(0) < 2 || stock(1) < 2) return finish(stock(0) < 2 && stock(1) < 2 ? null : stock(0) >= 2 ? 0 : 1, true);
+        return round(level);
+      }
+      for (; ; level += 1) {
         st.pot.push(...onTable()); B = empty(); revealed = false;
         if (!stock(0) || !stock(1)) return finish(!stock(0) && !stock(1) ? null : stock(0) ? 0 : 1, true);
         for (const p of [1, 0]) if (stock(p) >= 2) B.amb[p] = blind(p);
@@ -222,13 +227,13 @@ window.BalanceSim = (function () {
         if (val[0] !== val[1]) return finish(val[0] > val[1] ? 0 : 1, true);
       }
     }
-    function round() {
-      st.round += 1;
+    function round(battle = 0) {
+      if (!battle) st.round += 1;
       B = empty(); revealed = false; hidden = [false, false]; used[0] = used[1] = false;
-      charged = [0, 1].map(p => Boolean(boss[p]) && st.round % every[p] === 0);
+      charged = [0, 1].map(p => !battle && Boolean(boss[p]) && st.round % every[p] === 0);
       if (charged[0] || charged[1]) stats.super += 1;
       for (const p of [0, 1]) while (st.hands[p].length < hs(p) && st.decks[p].length) st.hands[p].push(st.decks[p].shift());
-      swap(0); swap(1);
+      if (!battle) { swap(0); swap(1); }
       const f = st.first, s = 1 - f;
       hidden[f] = cast[f] === "incognito";
       B.van[f] = take(f, plan(f, null).van);
@@ -247,14 +252,14 @@ window.BalanceSim = (function () {
       revealed = true;
       tank(0, B.amb[0]); tank(1, B.amb[1]);
       let t = totals();
-      if (t[0] === t[1]) return war();
+      if (t[0] === t[1]) return war(battle + 1);
       const l = t[0] < t[1] ? 0 : 1, w = 1 - l;
       const pick = pickThird(l, "ally");
-      if (!pick) return finish(w, false);
+      if (!pick) return finish(w, battle > 0);
       stats.ally += 1;
       st.fuel[l] -= 1;
       B.role[l] = "ally"; take(l, pick); B.ally[l] = pick; tank(l, pick);
-      if (!roll(l, pick, "ally")) return finish(w, false);
+      if (!roll(l, pick, "ally")) return finish(w, battle > 0);
       B.allyOk[l] = true; stats.allyOk += 1;
       t = totals();
       if (t[l] >= t[w]) {
@@ -266,9 +271,9 @@ window.BalanceSim = (function () {
           if (roll(w, rip, "riposte")) { B.allyOk[w] = true; stats.riposteOk += 1; t = totals(); }
         }
       }
-      if (t[l] > t[w]) { stats.reversal += 1; return finish(l, false); }
-      if (t[l] === t[w]) return war();
-      return finish(w, false);
+      if (t[l] > t[w]) { stats.reversal += 1; return finish(l, battle > 0); }
+      if (t[l] === t[w]) return war(battle + 1);
+      return finish(w, battle > 0);
     }
 
     // decided = manche à partir de laquelle l'écart de butin ne peut plus être comblé (même règle que le jeu)
@@ -308,8 +313,10 @@ window.BalanceSim = (function () {
       return { stage: i + 1, name: sg.name, boss: Boolean(sg.boss), win: res.win };
     });
   }
-  /* Options de règles à tester, par camp : swap = "never" | "full" | "any", overflow = "none" | "loot" | "surge". */
-  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "pick", deck: 20, impact: 2 };
+  /* Options de règles à tester, par camp : swap = "never" | "full" | "any", overflow = "none" | "loot" | "surge".
+     war = "round" (règle du jeu : manche rejouée par-dessus) | "pick" (duel choisi) | "blind" (cartes du dessus),
+     clone = plafond du Clone à essayer (null = valeur du jeu). */
+  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "round", clone: null, deck: 20, impact: 2 };
   const set = o => Object.assign(OPT, o);
   return { game, run, campaign, set, OPT };
 })();
