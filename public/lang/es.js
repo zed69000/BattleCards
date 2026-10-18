@@ -558,5 +558,15 @@ BDAi18n.add("es", {
   "Trophées": "Trofeos",
   "Étoiles": "Estrellas",
   "Rien n'est ramassé : les cartes restent sur la table et on rejoue une manche complète <b>par-dessus</b> (avant-garde, embuscade, allié et riposte au dé). Le gagnant rafle <b>toutes les piles</b>. Encore égalité ? On empile encore.": "Nadie recoge nada: las cartas se quedan en la mesa y se juega otra ronda completa <b>encima</b> (vanguardia, emboscada, aliado y contraataque con el dado). El ganador se lleva <b>todas las pilas</b>. ¿Otro empate? Se apila otra vez.",
-  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>¡Batalla galáctica!</b> Las cartas se quedan en la mesa: se juega otra ronda completa <b>encima</b>, vanguardia, emboscada, y luego aliado y contraataque con el dado. El ganador se lleva <b>todas las pilas</b>."
+  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>¡Batalla galáctica!</b> Las cartas se quedan en la mesa: se juega otra ronda completa <b>encima</b>, vanguardia, emboscada, y luego aliado y contraataque con el dado. El ganador se lleva <b>todas las pilas</b>.",
+  "3 cartes au maximum": "3 cartas como máximo",
+  "<b>Échange de départ !</b> Touche jusqu'à <b>3 cartes</b> que tu ne veux pas : elles repartent sous ta pioche et tu prends celles du dessus. C'est gratuit, une seule fois.": "<b>¡Cambio inicial!</b> Toca hasta <b>3 cartas</b> que no quieras: vuelven bajo tu mazo y tomas las de arriba. Es gratis, solo una vez.",
+  "<b>Échange de départ :</b> avant la 1<sup>re</sup> manche, touche jusqu'à 3 cartes de ta main pour les renvoyer sous ta pioche. C'est gratuit, une seule fois par partie.": "<b>Cambio inicial:</b> antes de la 1<sup>a</sup> ronda, toca hasta 3 cartas de tu mano para mandarlas bajo tu mazo. Gratis, una vez por partida.",
+  "<b>Échange de départ :</b> touche jusqu'à <b>3 cartes</b> à renvoyer sous ta pioche. C'est gratuit.": "<b>Cambio inicial:</b> toca hasta <b>3 cartas</b> para mandarlas bajo tu mazo. Es gratis.",
+  "Garder": "Quedármela",
+  "Garder ma main": "Quedarme mi mano",
+  "Gaspard choisit les cartes à échanger…": "Gaspard elige qué cartas cambiar…",
+  "Gaspard échange <b>1</b> carte.": "Gaspard cambia <b>1</b> carta.",
+  "Gaspard échange <b>{n}</b> cartes.": "Gaspard cambia <b>{n}</b> cartas.",
+  "Échanger {n} · gratuit": "Cambiar {n} · gratis"
 });

@@ -558,5 +558,15 @@ BDAi18n.add("pt", {
   "Trophées": "Troféus",
   "Étoiles": "Estrelas",
   "Rien n'est ramassé : les cartes restent sur la table et on rejoue une manche complète <b>par-dessus</b> (avant-garde, embuscade, allié et riposte au dé). Le gagnant rafle <b>toutes les piles</b>. Encore égalité ? On empile encore.": "Ninguém recolhe nada: as cartas ficam na mesa e joga-se outra rodada completa <b>por cima</b> (vanguarda, emboscada, aliado e contra-ataque com o dado). Quem vencer leva <b>todas as pilhas</b>. Empatou de novo? Empilha de novo.",
-  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>Batalha galáctica!</b> As cartas ficam na mesa: joga-se outra rodada completa <b>por cima</b>, vanguarda, emboscada, depois aliado e contra-ataque com o dado. Quem vencer leva <b>todas as pilhas</b>."
+  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>Batalha galáctica!</b> As cartas ficam na mesa: joga-se outra rodada completa <b>por cima</b>, vanguarda, emboscada, depois aliado e contra-ataque com o dado. Quem vencer leva <b>todas as pilhas</b>.",
+  "3 cartes au maximum": "3 cartas no máximo",
+  "<b>Échange de départ !</b> Touche jusqu'à <b>3 cartes</b> que tu ne veux pas : elles repartent sous ta pioche et tu prends celles du dessus. C'est gratuit, une seule fois.": "<b>Troca inicial!</b> Toque em até <b>3 cartas</b> que você não quer: elas voltam para baixo do baralho e você pega as de cima. É grátis, só uma vez.",
+  "<b>Échange de départ :</b> avant la 1<sup>re</sup> manche, touche jusqu'à 3 cartes de ta main pour les renvoyer sous ta pioche. C'est gratuit, une seule fois par partie.": "<b>Troca inicial:</b> antes da 1<sup>a</sup> rodada, toque em até 3 cartas da mão para mandá-las para baixo do baralho. Grátis, uma vez por partida.",
+  "<b>Échange de départ :</b> touche jusqu'à <b>3 cartes</b> à renvoyer sous ta pioche. C'est gratuit.": "<b>Troca inicial:</b> toque em até <b>3 cartas</b> para mandar para baixo do baralho. É grátis.",
+  "Garder": "Manter",
+  "Garder ma main": "Manter minha mão",
+  "Gaspard choisit les cartes à échanger…": "Gaspard está escolhendo cartas para trocar…",
+  "Gaspard échange <b>1</b> carte.": "Gaspard troca <b>1</b> carta.",
+  "Gaspard échange <b>{n}</b> cartes.": "Gaspard troca <b>{n}</b> cartas.",
+  "Échanger {n} · gratuit": "Trocar {n} · grátis"
 });

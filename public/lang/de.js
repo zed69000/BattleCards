@@ -558,5 +558,15 @@ BDAi18n.add("de", {
   "Trophées": "Trophäen",
   "Étoiles": "Sterne",
   "Rien n'est ramassé : les cartes restent sur la table et on rejoue une manche complète <b>par-dessus</b> (avant-garde, embuscade, allié et riposte au dé). Le gagnant rafle <b>toutes les piles</b>. Encore égalité ? On empile encore.": "Nichts wird eingesammelt: Die Karten bleiben liegen, und es wird eine komplette Runde <b>obendrauf</b> gespielt (Vorhut, Hinterhalt, Verbündeter und Konter mit dem Würfel). Der Sieger räumt <b>alle Stapel</b> ab. Wieder Gleichstand? Weiter stapeln.",
-  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>Galaktische Schlacht!</b> Die Karten bleiben liegen: Es wird eine komplette Runde <b>obendrauf</b> gespielt, Vorhut, Hinterhalt, dann Verbündeter und Konter mit dem Würfel. Der Sieger räumt <b>alle Stapel</b> ab."
+  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>Galaktische Schlacht!</b> Die Karten bleiben liegen: Es wird eine komplette Runde <b>obendrauf</b> gespielt, Vorhut, Hinterhalt, dann Verbündeter und Konter mit dem Würfel. Der Sieger räumt <b>alle Stapel</b> ab.",
+  "3 cartes au maximum": "Höchstens 3 Karten",
+  "<b>Échange de départ !</b> Touche jusqu'à <b>3 cartes</b> que tu ne veux pas : elles repartent sous ta pioche et tu prends celles du dessus. C'est gratuit, une seule fois.": "<b>Starttausch!</b> Tippe bis zu <b>3 Karten</b> an, die du nicht willst: Sie wandern unter deinen Stapel und du nimmst die obersten. Kostenlos, nur einmal.",
+  "<b>Échange de départ :</b> avant la 1<sup>re</sup> manche, touche jusqu'à 3 cartes de ta main pour les renvoyer sous ta pioche. C'est gratuit, une seule fois par partie.": "<b>Starttausch:</b> Vor der 1<sup>.</sup> Runde tippst du bis zu 3 Handkarten an, um sie unter deinen Stapel zu schicken. Kostenlos, einmal pro Partie.",
+  "<b>Échange de départ :</b> touche jusqu'à <b>3 cartes</b> à renvoyer sous ta pioche. C'est gratuit.": "<b>Starttausch:</b> Tippe bis zu <b>3 Karten</b> an, die unter deinen Stapel sollen. Kostenlos.",
+  "Garder": "Behalten",
+  "Garder ma main": "Hand behalten",
+  "Gaspard choisit les cartes à échanger…": "Gaspard wählt Karten zum Tauschen…",
+  "Gaspard échange <b>1</b> carte.": "Gaspard tauscht <b>1</b> Karte.",
+  "Gaspard échange <b>{n}</b> cartes.": "Gaspard tauscht <b>{n}</b> Karten.",
+  "Échanger {n} · gratuit": "{n} tauschen · gratis"
 });

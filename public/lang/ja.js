@@ -558,5 +558,15 @@ BDAi18n.add("ja", {
   "Trophées": "トロフィー",
   "Étoiles": "スター",
   "Rien n'est ramassé : les cartes restent sur la table et on rejoue une manche complète <b>par-dessus</b> (avant-garde, embuscade, allié et riposte au dé). Le gagnant rafle <b>toutes les piles</b>. Encore égalité ? On empile encore.": "誰も回収しない：カードは場に残り、その<b>上に</b>もう1ラウンド丸ごと勝負（先鋒、伏兵、援軍とダイスの反撃）。勝者は<b>全部の山</b>を総取り。また引き分け？さらに積み重ねる。",
-  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>銀河大決戦！</b>カードは場に残ったまま、その<b>上に</b>もう1ラウンド丸ごと勝負：先鋒、伏兵、そして援軍とダイスの反撃。勝者は<b>全部の山</b>を総取り！"
+  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>銀河大決戦！</b>カードは場に残ったまま、その<b>上に</b>もう1ラウンド丸ごと勝負：先鋒、伏兵、そして援軍とダイスの反撃。勝者は<b>全部の山</b>を総取り！",
+  "3 cartes au maximum": "最大3枚まで",
+  "<b>Échange de départ !</b> Touche jusqu'à <b>3 cartes</b> que tu ne veux pas : elles repartent sous ta pioche et tu prends celles du dessus. C'est gratuit, une seule fois.": "<b>最初の交換！</b>いらないカードを<b>3枚まで</b>タップしよう。山札の下に戻り、上から同じ枚数を引くよ。無料、1回だけ。",
+  "<b>Échange de départ :</b> avant la 1<sup>re</sup> manche, touche jusqu'à 3 cartes de ta main pour les renvoyer sous ta pioche. C'est gratuit, une seule fois par partie.": "<b>最初の交換：</b>1<sup>回戦</sup>の前に、手札を3枚までタップして山札の下へ戻せる。無料、1試合に1回。",
+  "<b>Échange de départ :</b> touche jusqu'à <b>3 cartes</b> à renvoyer sous ta pioche. C'est gratuit.": "<b>最初の交換：</b>山札の下に戻すカードを<b>3枚まで</b>タップ。無料だよ。",
+  "Garder": "このまま",
+  "Garder ma main": "手札をキープ",
+  "Gaspard choisit les cartes à échanger…": "Gaspardが交換するカードを選んでいる…",
+  "Gaspard échange <b>1</b> carte.": "Gaspardはカードを<b>1</b>枚交換した。",
+  "Gaspard échange <b>{n}</b> cartes.": "Gaspardはカードを<b>{n}</b>枚交換した。",
+  "Échanger {n} · gratuit": "{n}枚交換・無料"
 });

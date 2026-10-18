@@ -558,5 +558,15 @@ BDAi18n.add("zh", {
   "Trophées": "奖杯",
   "Étoiles": "星星",
   "Rien n'est ramassé : les cartes restent sur la table et on rejoue une manche complète <b>par-dessus</b> (avant-garde, embuscade, allié et riposte au dé). Le gagnant rafle <b>toutes les piles</b>. Encore égalité ? On empile encore.": "谁也不收牌：牌留在桌上，在上面<b>再打一整回合</b>（先锋、伏兵、援军和掷骰反击）。赢家拿走<b>所有牌堆</b>。又平局？继续往上叠。",
-  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>银河大战！</b>牌留在桌上：在上面<b>再打一整回合</b>——先锋、伏兵，然后是援军和掷骰反击。赢家拿走<b>所有牌堆</b>。"
+  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>银河大战！</b>牌留在桌上：在上面<b>再打一整回合</b>——先锋、伏兵，然后是援军和掷骰反击。赢家拿走<b>所有牌堆</b>。",
+  "3 cartes au maximum": "最多 3 张",
+  "<b>Échange de départ !</b> Touche jusqu'à <b>3 cartes</b> que tu ne veux pas : elles repartent sous ta pioche et tu prends celles du dessus. C'est gratuit, une seule fois.": "<b>开局换牌！</b>点选最多 <b>3 张</b>不想要的牌：它们回到牌堆底部，你从顶部摸同样数量。免费，仅一次。",
+  "<b>Échange de départ :</b> avant la 1<sup>re</sup> manche, touche jusqu'à 3 cartes de ta main pour les renvoyer sous ta pioche. C'est gratuit, une seule fois par partie.": "<b>开局换牌：</b>第 1<sup>回合</sup>前，点选最多 3 张手牌放回牌堆底部。免费，每局一次。",
+  "<b>Échange de départ :</b> touche jusqu'à <b>3 cartes</b> à renvoyer sous ta pioche. C'est gratuit.": "<b>开局换牌：</b>点选最多 <b>3 张</b>牌放回牌堆底部。免费。",
+  "Garder": "保留",
+  "Garder ma main": "保留手牌",
+  "Gaspard choisit les cartes à échanger…": "Gaspard 正在挑选要换的牌……",
+  "Gaspard échange <b>1</b> carte.": "Gaspard 换了 <b>1</b> 张牌。",
+  "Gaspard échange <b>{n}</b> cartes.": "Gaspard 换了 <b>{n}</b> 张牌。",
+  "Échanger {n} · gratuit": "换 {n} 张 · 免费"
 });

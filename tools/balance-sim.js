@@ -172,6 +172,14 @@ window.BalanceSim = (function () {
       st.fuel[p] -= 1; stats.swap += 1;
       take(p, out); st.decks[p].push(out); hand.push(st.decks[p].shift());
     }
+    /* Échange de départ, même règle que l'IA du jeu : jusqu'à 3 cartes moyennes (6 à 9), sauf pour les IA les plus tendres. */
+    function mulligan(p) {
+      if ((Ls[p].noise || 0) > 5) return;
+      const out = st.hands[p].filter(c => !c.special && c.value >= 6 && c.value <= 9).sort((a, b) => a.value - b.value).slice(0, 3);
+      st.hands[p] = st.hands[p].filter(c => !out.includes(c));
+      st.decks[p].push(...out);
+      st.hands[p].push(...st.decks[p].splice(0, out.length));
+    }
     const stock = p => st.decks[p].length + st.hands[p].length;
     const blind = p => (st.decks[p].length ? st.decks[p].shift() : st.hands[p].length ? st.hands[p].splice(R(st.hands[p].length), 1)[0] : null);
     const onTable = () => [...B.van, ...B.amb, ...B.ally].filter(Boolean);
@@ -233,6 +241,7 @@ window.BalanceSim = (function () {
       charged = [0, 1].map(p => !battle && Boolean(boss[p]) && st.round % every[p] === 0);
       if (charged[0] || charged[1]) stats.super += 1;
       for (const p of [0, 1]) while (st.hands[p].length < hs(p) && st.decks[p].length) st.hands[p].push(st.decks[p].shift());
+      if (st.round === 1 && !battle && OPT.mulligan) for (const p of [0, 1]) mulligan(p);
       if (!battle) { swap(0); swap(1); }
       const f = st.first, s = 1 - f;
       hidden[f] = cast[f] === "incognito";
@@ -315,8 +324,8 @@ window.BalanceSim = (function () {
   }
   /* Options de règles à tester, par camp : swap = "never" | "full" | "any", overflow = "none" | "loot" | "surge".
      war = "round" (règle du jeu : manche rejouée par-dessus) | "pick" (duel choisi) | "blind" (cartes du dessus),
-     clone = plafond du Clone à essayer (null = valeur du jeu). */
-  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "round", clone: null, deck: 20, impact: 2 };
+     mulligan = échange de départ, clone = plafond du Clone à essayer (null = valeur du jeu). */
+  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "round", mulligan: true, clone: null, deck: 20, impact: 2 };
   const set = o => Object.assign(OPT, o);
   return { game, run, campaign, set, OPT };
 })();

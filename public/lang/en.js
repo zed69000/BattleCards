@@ -558,5 +558,15 @@ BDAi18n.add("en", {
   "Trophées": "Trophies",
   "Étoiles": "Stars",
   "Rien n'est ramassé : les cartes restent sur la table et on rejoue une manche complète <b>par-dessus</b> (avant-garde, embuscade, allié et riposte au dé). Le gagnant rafle <b>toutes les piles</b>. Encore égalité ? On empile encore.": "Nothing is collected: the cards stay on the table and you replay a full round <b>on top</b> (vanguard, ambush, ally and riposte with the die). The winner takes <b>every pile</b>. Tied again? Stack again.",
-  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>Galactic battle!</b> The cards stay on the table: you replay a full round <b>on top</b> — vanguard, ambush, then ally and riposte with the die. The winner takes <b>every pile</b>."
+  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>Galactic battle!</b> The cards stay on the table: you replay a full round <b>on top</b> — vanguard, ambush, then ally and riposte with the die. The winner takes <b>every pile</b>.",
+  "3 cartes au maximum": "3 cards max",
+  "<b>Échange de départ !</b> Touche jusqu'à <b>3 cartes</b> que tu ne veux pas : elles repartent sous ta pioche et tu prends celles du dessus. C'est gratuit, une seule fois.": "<b>Opening swap!</b> Tap up to <b>3 cards</b> you don't want: they go back under your deck and you take the ones on top. It's free, once only.",
+  "<b>Échange de départ :</b> avant la 1<sup>re</sup> manche, touche jusqu'à 3 cartes de ta main pour les renvoyer sous ta pioche. C'est gratuit, une seule fois par partie.": "<b>Opening swap:</b> before the 1<sup>st</sup> round, tap up to 3 cards in your hand to send them under your deck. Free, once per game.",
+  "<b>Échange de départ :</b> touche jusqu'à <b>3 cartes</b> à renvoyer sous ta pioche. C'est gratuit.": "<b>Opening swap:</b> tap up to <b>3 cards</b> to send under your deck. It's free.",
+  "Garder": "Keep",
+  "Garder ma main": "Keep my hand",
+  "Gaspard choisit les cartes à échanger…": "Gaspard is choosing cards to swap…",
+  "Gaspard échange <b>1</b> carte.": "Gaspard swaps <b>1</b> card.",
+  "Gaspard échange <b>{n}</b> cartes.": "Gaspard swaps <b>{n}</b> cards.",
+  "Échanger {n} · gratuit": "Swap {n} · free"
 });

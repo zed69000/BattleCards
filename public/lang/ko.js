@@ -558,5 +558,15 @@ BDAi18n.add("ko", {
   "Trophées": "트로피",
   "Étoiles": "별",
   "Rien n'est ramassé : les cartes restent sur la table et on rejoue une manche complète <b>par-dessus</b> (avant-garde, embuscade, allié et riposte au dé). Le gagnant rafle <b>toutes les piles</b>. Encore égalité ? On empile encore.": "아무도 가져가지 않아요: 카드는 테이블에 그대로 두고, 그 <b>위에</b> 라운드를 통째로 다시 해요(선봉, 매복, 지원군과 주사위 반격). 이긴 쪽이 <b>모든 더미</b>를 가져가요. 또 무승부? 계속 쌓아요.",
-  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>은하 대전!</b> 카드는 테이블에 그대로 두고, 그 <b>위에</b> 라운드를 통째로 다시 해요: 선봉, 매복, 그다음 지원군과 주사위 반격. 이긴 쪽이 <b>모든 더미</b>를 가져가요."
+  "<b>Bataille galactique !</b> Les cartes restent sur la table : on rejoue une manche complète <b>par-dessus</b>, avant-garde, embuscade, puis allié et riposte au dé. Le gagnant rafle <b>toutes les piles</b>.": "<b>은하 대전!</b> 카드는 테이블에 그대로 두고, 그 <b>위에</b> 라운드를 통째로 다시 해요: 선봉, 매복, 그다음 지원군과 주사위 반격. 이긴 쪽이 <b>모든 더미</b>를 가져가요.",
+  "3 cartes au maximum": "최대 3장까지",
+  "<b>Échange de départ !</b> Touche jusqu'à <b>3 cartes</b> que tu ne veux pas : elles repartent sous ta pioche et tu prends celles du dessus. C'est gratuit, une seule fois.": "<b>시작 교환!</b> 원하지 않는 카드를 <b>3장까지</b> 터치하세요. 덱 아래로 돌아가고 위에서 같은 수만큼 가져와요. 무료, 한 번만.",
+  "<b>Échange de départ :</b> avant la 1<sup>re</sup> manche, touche jusqu'à 3 cartes de ta main pour les renvoyer sous ta pioche. C'est gratuit, une seule fois par partie.": "<b>시작 교환:</b> 1<sup>라운드</sup> 전에 손패를 3장까지 터치해 덱 아래로 보낼 수 있어요. 무료, 게임당 한 번.",
+  "<b>Échange de départ :</b> touche jusqu'à <b>3 cartes</b> à renvoyer sous ta pioche. C'est gratuit.": "<b>시작 교환:</b> 덱 아래로 보낼 카드를 <b>3장까지</b> 터치하세요. 무료예요.",
+  "Garder": "유지",
+  "Garder ma main": "손패 유지",
+  "Gaspard choisit les cartes à échanger…": "Gaspard가 교환할 카드를 고르는 중…",
+  "Gaspard échange <b>1</b> carte.": "Gaspard가 카드 <b>1</b>장을 교환해요.",
+  "Gaspard échange <b>{n}</b> cartes.": "Gaspard가 카드 <b>{n}</b>장을 교환해요.",
+  "Échanger {n} · gratuit": "{n}장 교환 · 무료"
 });

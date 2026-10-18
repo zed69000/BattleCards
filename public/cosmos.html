@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.44";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.45";</script>
   <script src="i18n.js?v=0.43"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
@@ -446,6 +446,9 @@
     .hand .card.dragging .front { box-shadow: 0 0 0 3px var(--yellow), 0 18px 26px rgba(0, 0, 0, 0.55); }
     .hand .card.sel { z-index: 5; transform: translateY(-22px) scale(1.1); }
     .hand .card.sel .front { box-shadow: 0 0 0 3px var(--yellow), 0 8px 0 #0a0f1e; }
+    .hand .card.mull { z-index: 5; transform: translateY(-26px) rotate(calc(var(--k) * 4deg)); }
+    .hand .card.mull .front { box-shadow: 0 0 0 3px var(--teal), 0 8px 0 #0a0f1e; filter: brightness(0.7) saturate(0.6); }
+    .hand .card.mull .hint { background: var(--teal); color: var(--cream); font-size: 0.75rem; }
     .hand .card.drawn { animation: draw 460ms cubic-bezier(.2, .8, .2, 1) backwards; }
     .hint { position: absolute; left: 50%; top: -19px; transform: translateX(-50%); z-index: 6; padding: 1px 7px; border-radius: 99px; white-space: nowrap; font-size: 0.6rem; background: var(--ok); color: var(--navy); border: 2px solid var(--navy); }
     .hint.warn { background: var(--yellow); }
@@ -914,6 +917,7 @@
         <h3>Les boosts ⚡</h3>
         <ul>
           <li data-i18n>1 boost = <b>appeler un allié</b> ou <b>riposter</b>. Sans boost, impossible.</li>
+          <li data-i18n><b>Échange de départ :</b> avant la 1<sup>re</sup> manche, touche jusqu'à 3 cartes de ta main pour les renvoyer sous ta pioche. C'est gratuit, une seule fois par partie.</li>
           <li data-i18n><b>Échanger une carte :</b> une fois par manche, avant de poser, 1 boost envoie une carte de ta main sous ta pioche contre celle du dessus.</li>
           <li data-i18n>Tu en regagnes <b>1 à chaque manche perdue</b> (3 au maximum). Au-delà, chaque boost en trop devient <b>1 point de butin</b>.</li>
         </ul>
@@ -1653,7 +1657,7 @@
     }
     function selectable(card) {
       if (S.busy) return false;
-      if (S.phase === "van" || S.phase === "amb") return true;
+      if (S.phase === "mull" || S.phase === "van" || S.phase === "amb") return true;
       if (third()) { const t = afterAlly(0, card); return t[0] >= t[1]; }
       return false;
     }
@@ -1674,6 +1678,7 @@
           if (combo.length) hint = { text: combo.map(partText).join(" · ") };
           else if (!card.special) hint = { text: `${SYM[card.house]} ${tr(HOUSES[card.house].power)}`, warn: true };
         }
+        if (S.phase === "mull" && S.mull.has(card.id)) { el.classList.add("mull"); hint = { text: "↻" }; }
         if (third()) {
           if (can) { const { pct } = allyInfo(card); hint = { text: `${pct} %`, warn: pct < 50 }; }
           else el.classList.add("dim");
@@ -1693,7 +1698,7 @@
       renderHud();
       renderTotals();
       renderHand(drawnIds);
-      const mine = !S.busy && ["van", "amb", "ally", "riposte"].includes(S.phase);
+      const mine = !S.busy && ["mull", "van", "amb", "ally", "riposte"].includes(S.phase);
       $("#hud0").classList.toggle("active", mine);
       $("#hud1").classList.toggle("active", S.busy && !["next", "over", "resolve"].includes(S.phase));
       for (const slot of ["van", "amb", "ally"]) $(`#slot-0-${slot}`).classList.toggle("want", !S.busy && (S.phase === slot || (slot === "ally" && S.phase === "riposte")));
@@ -2365,6 +2370,10 @@
         ], $("#hud0"));
         if (S.boss) { const b = BOSSES[S.boss]; await tip("bossbar", tr("Voici la jauge de <b>super coup</b> de {boss}. Quand elle est pleine (toutes les {n} manches), elle déclenche <b>{move}</b> : {desc}. Tu la vois venir : prépare ta main !", { boss: tr(b.name), n: b.every, move: tr(b.move), desc: tr(b.desc) }), $("#bossBar")); }
       }
+      if (S.round === 1 && !battle) {
+        await mulligan(game);
+        if (game !== gameId) return;
+      }
       for (const card of S.hands[0].filter(c => c.special)) {
         await tip(`atout-${card.special}`, tr("Tu as pioché un <b>atout ★ {title}</b>, une carte spéciale. {desc}", { title: tr(card.title), desc: tr(ATOUTS[card.special].desc) }), $(`#hand .card[data-id="${card.id}"]`));
         if (game !== gameId) return;
@@ -2453,7 +2462,7 @@
         try { el.setPointerCapture(e.pointerId); } catch (err) { /* pointeur synthétique */ }
       });
       el.addEventListener("pointermove", e => {
-        if (!start) return;
+        if (!start || S.phase === "mull") return;
         const dx = e.clientX - start.x;
         dy = e.clientY - start.y;
         if (!dragging && Math.hypot(dx, dy) > 6) { dragging = true; el.classList.add("dragging"); describe(card); }
@@ -2471,7 +2480,7 @@
         const wasDrag = dragging, play = wasDrag && willPlay();
         const opts = { from: el.getBoundingClientRect(), spin: Math.max(-40, Math.min(40, vel.x * 30)), force: Math.min(1, -peak / 2) };
         release();
-        if (!wasDrag || S.swapMode) return onHandCard(card);
+        if (!wasDrag || S.swapMode || S.phase === "mull") return onHandCard(card);
         if (play) return confirmCard(card, opts);
         S.sel = null;
         renderHand();
@@ -2532,9 +2541,81 @@
       await applySwap(1, plain.reduce((a, c) => (c.value < a.value ? c : a)));
       await sleep(350);
     }
+    /* Échange de départ : avant la 1ʳᵉ manche, chacun peut renvoyer jusqu'à 3 cartes sous sa pioche, gratuitement. */
+    const MULLIGAN_MAX = 3;
+    async function mulligan(game) {
+      await tip("mull", tr("<b>Échange de départ !</b> Touche jusqu'à <b>3 cartes</b> que tu ne veux pas : elles repartent sous ta pioche et tu prends celles du dessus. C'est gratuit, une seule fois."), $("#hand"));
+      if (game !== gameId) return;
+      const mine = await new Promise(resolve => {
+        Object.assign(S, { phase: "mull", mull: new Set(), onMull: resolve, busy: false, sel: null });
+        mullPrompt();
+        renderAll();
+      });
+      if (game !== gameId) return;
+      Object.assign(S, { phase: "van", onMull: null, busy: true });
+      netSend("mull", mine);
+      setPrompt("");
+      renderAll();
+      await applyMulligan(0, mine);
+      if (game !== gameId) return;
+      if (duel()) setPrompt(tr("Gaspard choisit les cartes à échanger…"));
+      const theirs = duel() ? await netNext("mull") : aiMulligan();
+      if (game !== gameId) return;
+      const n = await applyMulligan(1, theirs || []);
+      if (n) { setPrompt(n === 1 ? tr("Gaspard échange <b>1</b> carte.") : tr("Gaspard échange <b>{n}</b> cartes.", { n })); await sleep(900); }
+      setPrompt("");
+    }
+    function mullPrompt() {
+      const n = S.mull.size;
+      setPrompt(tr("<b>Échange de départ :</b> touche jusqu'à <b>3 cartes</b> à renvoyer sous ta pioche. C'est gratuit."),
+        n ? [{ label: tr("Échanger {n} · gratuit", { n }), cls: "teal", fn: () => endMull(true) }, { label: tr("Garder"), cls: "ghost", fn: () => endMull(false) }]
+          : [{ label: tr("Garder ma main"), fn: () => endMull(false) }]);
+    }
+    function toggleMull(card) {
+      if (S.mull.has(card.id)) S.mull.delete(card.id);
+      else if (S.mull.size >= MULLIGAN_MAX) { floatText($("#hand"), tr("3 cartes au maximum"), true); return; }
+      else S.mull.add(card.id);
+      sfx.tap();
+      mullPrompt();
+      renderHand();
+    }
+    function endMull(swap) {
+      if (!S.onMull) return;
+      sfx.tap();
+      S.onMull(swap ? [...S.mull] : []);
+    }
+    /* Les cartes échangées filent sous la pioche, autant de cartes sont tirées du dessus. Renvoie leur nombre. */
+    async function applyMulligan(p, ids) {
+      const out = S.hands[p].filter(c => ids.includes(c.id));
+      if (!out.length) return 0;
+      sfx.whoosh();
+      if (!reduced) {
+        const b = center($(`#deck${p}`));
+        const els = p === 0 ? out.map(c => $(`#hand .card[data-id="${c.id}"]`)) : [...document.querySelectorAll("#oppHand i")].slice(-out.length);
+        await Promise.all(els.filter(Boolean).map((el, i) => {
+          const a = center(el);
+          return el.animate([{ transform: getComputedStyle(el).transform, opacity: 1 }, { transform: `translate(${b.x - a.x}px, ${b.y - a.y}px) rotate(160deg) scale(0.3)`, opacity: 0 }], { duration: 420, delay: i * 90, easing: "cubic-bezier(.5,0,.6,1)", fill: "forwards" }).finished.catch(() => {});
+        }));
+      }
+      S.hands[p] = S.hands[p].filter(c => !ids.includes(c.id));
+      S.decks[p].push(...out);
+      const drawn = S.decks[p].splice(0, out.length);
+      S.hands[p].push(...drawn);
+      floatText($(`#deck${p}`), `↻ ×${out.length}`);
+      sfx.flip();
+      renderHud();
+      if (p === 0) renderHand(drawn.map(c => c.id));
+      return out.length;
+    }
+    /* L'IA renvoie ses cartes moyennes (6 à 9) : elles gagnent rarement et rapportent peu. Les plus tendres gardent leur main. */
+    function aiMulligan() {
+      if ((S.aiL.noise || 0) > 5) return [];
+      return S.hands[1].filter(c => !c.special && c.value >= 6 && c.value <= 9).sort((a, b) => a.value - b.value).slice(0, MULLIGAN_MAX).map(c => c.id);
+    }
     function onHandCard(card) {
       if (S.swapMode) return swapCard(card);
       if (S.busy) return;
+      if (S.phase === "mull") return toggleMull(card);
       if (S.sel === card.id) return confirmCard(card);
       S.sel = card.id;
       sfx.tap();
