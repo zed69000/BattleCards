@@ -37,11 +37,11 @@
     #flash { position: fixed; inset: 0; z-index: 40; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 45%, #fff 0, var(--yellow) 30%, transparent 70%); }
     #flash.go { animation: flash 700ms ease-out; }
     #flash.alert { background: radial-gradient(circle at 50% 45%, transparent 30%, var(--orange) 110%); }
-    body::after { content: ""; position: fixed; inset: 0; z-index: 45; pointer-events: none; background: var(--grain); opacity: 0.32; mix-blend-mode: multiply; }
+    body::after { content: ""; position: fixed; inset: 0; z-index: 45; pointer-events: none; background: var(--grain); opacity: 0.32; }
 
     .view { position: fixed; inset: 0; z-index: 2; display: none; justify-content: center; transition: transform 320ms cubic-bezier(.2, .8, .2, 1), filter 320ms; }
     .view.on { display: flex; }
-    body.warp .view.on { transform: scale(1.045); }
+    body.warp .view.on { transform: scale(1.045); will-change: transform; }
     .col { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom)); }
 
     .btn { border: 2px solid var(--navy); border-radius: 999px; padding: 0.62rem 1.15rem; background: var(--yellow); color: var(--navy); box-shadow: 0 4px 0 #0a0f1e; letter-spacing: 0.04em; transition: transform 100ms; }
@@ -383,7 +383,9 @@
     body.battle #battleFx { opacity: 1; animation: vign var(--beat, 900ms) ease-in-out infinite; }
     #battleFx.zap { background: radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.55), rgba(143, 147, 240, 0.4) 40%, rgba(12, 4, 24, 0.85)); }
     @keyframes vign { 0%, 100% { opacity: 0.8; } 18% { opacity: 1; } 32% { opacity: 0.86; } 46% { opacity: 1; } }
-    body.battle #field { animation: breathe var(--beat, 900ms) ease-in-out infinite; }
+    body.battle #field { animation: breathe var(--beat, 900ms) ease-in-out infinite; will-change: transform; }
+    .slot .card.stacked:not(:last-child) .art::before, .slot .card.stacked:not(:last-child) .front::after, .slot .card.stacked:not(:last-child) .back::before, .slot .card.stacked:not(:last-child) .emblem { animation: none; }
+    .slot .card.stacked:not(:last-child) .front::after { display: none; }
     @keyframes breathe { 0%, 100% { transform: scale(1); } 20% { transform: scale(1.025); } 45% { transform: scale(1.012); } }
     body.battle .slot .card.stacked:last-child { filter: drop-shadow(0 0 10px rgba(245, 196, 69, 0.8)); }
     .pot.war { z-index: 6; transform: translateX(8px) scale(1.4); transform-origin: 0 50%; }
@@ -470,11 +472,11 @@
     .card .art { position: relative; }
     .card .art svg { position: relative; z-index: 1; display: block; width: 100%; height: 100%; }
     /* Fonds animés : étoiles qui défilent pour les figures, rayons qui tournent pour les atouts. */
-    .card.fig .art::before { content: ""; position: absolute; left: -44px; top: -44px; right: 0; bottom: 0; background: radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 1.1px, transparent 1.6px) 0 0 / 22px 22px, radial-gradient(circle, rgba(255, 255, 255, 0.45) 0 0.9px, transparent 1.4px) 11px 9px / 44px 44px; animation: driftT 5s linear infinite; will-change: transform; }
+    .card.fig .art::before { content: ""; position: absolute; left: -44px; top: -44px; right: 0; bottom: 0; background: radial-gradient(circle, rgba(255, 255, 255, 0.75) 0 1.1px, transparent 1.6px) 0 0 / 22px 22px, radial-gradient(circle, rgba(255, 255, 255, 0.45) 0 0.9px, transparent 1.4px) 11px 9px / 44px 44px; animation: driftT 5s linear infinite; }
     .card.atout .art::before { content: ""; position: absolute; inset: -60%; background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.3) 0 9deg, transparent 9deg 18deg); animation: spin 9s linear infinite; }
     .card.rar-2 .art::before { animation-duration: 4s; background: repeating-conic-gradient(from 0deg, rgba(255, 240, 150, 0.6) 0 9deg, transparent 9deg 18deg); }
     /* Reflet holographique des cartes rares et légendaires. */
-    .card.fig .front::after, .card.rar-1 .front::after, .card.rar-2 .front::after { content: ""; position: absolute; top: 0; bottom: 0; left: -100%; width: 100%; z-index: 2; pointer-events: none; mix-blend-mode: screen; animation: sheenT 4.5s ease-in-out infinite; will-change: transform; }
+    .card.fig .front::after, .card.rar-1 .front::after, .card.rar-2 .front::after { content: ""; position: absolute; top: 0; bottom: 0; left: -100%; width: 100%; z-index: 2; pointer-events: none; mix-blend-mode: screen; animation: sheenT 4.5s ease-in-out infinite; }
     .card.fig .front::after { background-image: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.45) 50%, transparent 62%); animation-duration: 6s; }
     .card.rar-1 .front::after { background-image: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.8) 45%, rgba(120, 255, 225, 0.7) 53%, transparent 68%); animation-duration: 2.8s; }
     .card.rar-2 .front::after { background-image: linear-gradient(115deg, transparent 18%, rgba(255, 90, 160, 0.7) 34%, rgba(255, 235, 110, 0.8) 44%, rgba(90, 255, 200, 0.7) 54%, rgba(120, 160, 255, 0.7) 64%, transparent 80%); animation-duration: 2s; }
@@ -995,6 +997,8 @@
       space.ctx.fillStyle = "#10162b";
       space.ctx.fillRect(0, 0, space.w, space.h);
     }
+    const streaks = new Map();
+    const STREAK_ALPHA = [0.55, 0.9, 1], STREAK_WIDTH = [1.2, 2.1, 3];
     function drawSpace(now) {
       // calme : une image sur deux suffit ; onglet caché : on ne dessine rien
       if (document.hidden || (space.speed < 0.25 && space.target < 0.25 && now - space.last < 30)) { requestAnimationFrame(drawSpace); return; }
@@ -1014,16 +1018,12 @@
         if (x < -40 || x > w + 40 || y < -40 || y > h + 40) { resetStar(s, true); continue; }
         const depth = 1 - s.z;
         if (fast) {
-          const px = cx + (s.x / pz) * scale, py = cy + (s.y / pz) * scale;
-          const stretch = Math.min(9, space.speed * 3.2);
-          ctx.strokeStyle = s.c;
-          ctx.globalAlpha = Math.min(1, 0.35 + depth);
-          ctx.lineWidth = 0.8 + depth * 2.6;
-          ctx.lineCap = "round";
-          ctx.beginPath();
-          ctx.moveTo(x + (px - x) * stretch, y + (py - y) * stretch);
-          ctx.lineTo(x, y);
-          ctx.stroke();
+          // tail length relative to the distance to the vanishing point, capped so near stars never cross the screen
+          const k = Math.min(0.85, Math.min(9, space.speed * 3.2) * (1 - s.z / pz));
+          const band = depth < 0.4 ? 0 : depth < 0.75 ? 1 : 2;
+          let b = streaks.get(s.c);
+          if (!b) { b = [[], [], []]; streaks.set(s.c, b); }
+          b[band].push(x + (cx - x) * k, y + (cy - y) * k, x, y);
         } else {
           const r = 0.5 + depth * 1.7;
           ctx.globalAlpha = 0.45 + 0.55 * Math.abs(Math.sin(now / 900 + s.tw)) * (0.4 + depth);
@@ -1036,6 +1036,22 @@
             ctx.fill();
           } else {
             ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();
+          }
+        }
+      }
+      if (fast) {
+        ctx.lineCap = "round";
+        for (const [color, bands] of streaks) {
+          ctx.strokeStyle = color;
+          for (let i = 0; i < 3; i++) {
+            const seg = bands[i];
+            if (!seg.length) continue;
+            ctx.globalAlpha = STREAK_ALPHA[i];
+            ctx.lineWidth = STREAK_WIDTH[i];
+            ctx.beginPath();
+            for (let j = 0; j < seg.length; j += 4) { ctx.moveTo(seg[j], seg[j + 1]); ctx.lineTo(seg[j + 2], seg[j + 3]); }
+            ctx.stroke();
+            seg.length = 0;
           }
         }
       }
