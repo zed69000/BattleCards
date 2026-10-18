@@ -332,7 +332,7 @@ BDAi18n.add("en", {
   "Partie jouée": "Game played",
   "Patrouille": "Patrol",
   "Pause": "Pause",
-  "Perso": "Character",
+  "Perso": "Hero",
   "Personnage débloqué : {name}": "Character unlocked: {name}",
   "Personnages, dés, atouts rares…": "Characters, dice, rare power cards…",
   "Personne ne prend l'avantage.": "Nobody takes the lead.",

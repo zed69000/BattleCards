@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.50";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.51";</script>
   <script src="i18n.js?v=0.43"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
@@ -274,6 +274,8 @@
     .die-prev i { border-radius: 50%; }
     .back-prev { aspect-ratio: 1 / 1.3; border-radius: 12%; border: 2px solid var(--navy); background: var(--back); }
     .item-art { display: grid; place-items: center; background: var(--navy) !important; }
+    .card.item .top { font-size: calc(var(--cw) * 0.17); }
+    .card.item .top span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .item-art .die-prev { width: 66%; }
     .item-art .back-prev { width: 58%; }
     .pane .stack { display: grid; gap: 10px; width: 100%; max-width: 300px; }
@@ -467,7 +469,7 @@
     .card-inner { transform-style: flat; }
     .card.mid .face { filter: brightness(1.6); box-shadow: 0 0 0 2px #fff, 0 0 14px rgba(255, 255, 255, 0.8); }
     .face { position: absolute; inset: 0; border-radius: calc(var(--cw) * 0.15); border: 2px solid var(--navy); overflow: hidden; box-shadow: 0 4px 0 #0a0f1e; contain: paint; }
-    .front { display: grid; grid-template-rows: auto 1fr auto; gap: 1px; padding: 2px 3px; background: var(--cream); color: var(--navy); }
+    .front { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr auto; gap: 1px; padding: 2px 3px; background: var(--cream); color: var(--navy); }
     .back { background: var(--back, repeating-radial-gradient(circle at 50% 50%, var(--orange) 0 5px, var(--navy) 5px 10px)); }
     .h-S { --hc: var(--violet); } .h-H { --hc: var(--orange); } .h-D { --hc: #e0a91f; } .h-C { --hc: var(--teal); } .h-X { --hc: var(--pink); }
     .card .top { display: flex; justify-content: space-between; align-items: center; padding: 0 2px; font-size: calc(var(--cw) * 0.24); line-height: 1.05; }
@@ -3425,7 +3427,7 @@
     function itemEl(item, faceDown) {
       if (item.kind === "atout") return cardEl(makeAtout(item.id, "pack"), 0, faceDown);
       const def = itemDef(item), el = document.createElement("div");
-      el.className = `card h-X atout rar-${def.rarity}${faceDown ? " facedown" : ""}`;
+      el.className = `card item h-X atout rar-${def.rarity}${faceDown ? " facedown" : ""}`;
       el.innerHTML = `<div class="card-inner"><div class="face front">
         <div class="top"><span>${{ dice: tr("Dé"), back: tr("Dos"), char: tr("Perso") }[item.kind]}</span><span>★</span></div>
         <div class="art${item.kind === "char" ? "" : " item-art"}">${item.kind === "dice" ? diePrev(item.id) : item.kind === "char" ? charArt(item.id) : backPrev(item.id)}</div>
