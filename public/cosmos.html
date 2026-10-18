@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.49";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.50";</script>
   <script src="i18n.js?v=0.43"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
@@ -674,7 +674,7 @@
     #love { position: fixed; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; }
     #love i { position: absolute; bottom: -60px; font-style: normal; font-size: var(--s); opacity: 0; animation: loveUp var(--d) ease-in var(--dl) forwards; }
     @keyframes loveUp { 0% { opacity: 0; transform: translateY(0) scale(0.6); } 10% { opacity: 1; } 100% { opacity: 0.9; transform: translate(var(--x), -115vh) rotate(var(--r)) scale(1.1); } }
-    #love .love-msg { position: absolute; left: 50%; top: 42%; translate: -50% -50%; padding: 12px 26px; border-radius: 999px; background: var(--pink); color: #fff; border: 3px solid var(--cream); box-shadow: 0 6px 0 #0a0f1e, 0 0 40px rgba(208, 80, 143, 0.8); font-family: "Bowlby One", "Righteous", sans-serif; font-size: clamp(1.6rem, 9vw, 2.8rem); white-space: nowrap; text-shadow: 0 3px 0 #8a2457; animation: loveMsg 4.2s cubic-bezier(.2, 1.4, .4, 1) both; }
+    #love .love-msg { position: absolute; left: 50%; top: 42%; translate: -50% -50%; width: max-content; max-width: calc(100vw - 32px); padding: 14px 28px; border-radius: 32px; background: var(--pink); color: #fff; border: 3px solid var(--cream); box-shadow: 0 6px 0 #0a0f1e, 0 0 40px rgba(208, 80, 143, 0.8); font-family: "Bowlby One", "Righteous", sans-serif; font-size: clamp(1.8rem, 10vw, 3rem); line-height: 1.08; text-align: center; text-shadow: 0 3px 0 #8a2457; animation: loveMsg 4.2s cubic-bezier(.2, 1.4, .4, 1) both; }
     @keyframes loveMsg { 0% { opacity: 0; scale: 0.3; rotate: -10deg; } 15% { opacity: 1; scale: 1.1; rotate: 3deg; } 25% { scale: 1; rotate: 0deg; } 85% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1.3; } }
     @keyframes coachIn { from { opacity: 0; scale: 0.85; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } }
@@ -881,6 +881,13 @@
       </div>
       <p id="lobbyMsg"></p>
       <button class="btn ghost" id="lobbyClose">Fermer</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="welcome">
+    <div class="sheet"><h2>Bienvenue, terrien !</h2>
+      <label class="lobby-field">Comment tu t'appelles ?<input id="welcomeName" maxlength="14" autocomplete="off" autocapitalize="words"></label>
+      <button class="btn hot" id="welcomeGo">C'est parti !</button>
     </div>
   </div>
 
@@ -2137,6 +2144,22 @@
     function saveName() { save.name = $("#pseudo").value.trim().slice(0, 14) || tr("Ami"); persist(); loveRain(); }
     /* Surprise : un joueur qui s'appelle Jeanne est accueilli par une pluie de cœurs et un « Je t'aime ». */
     const isJeanne = () => (save.name || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() === "jeanne";
+    /* Première ouverture : on demande le prénom, qui sert aussi de pseudo en duel. */
+    function askName() {
+      if (save.name) return false;
+      $("#welcomeName").placeholder = tr("Ton prénom");
+      $("#welcome").classList.add("on");
+      return true;
+    }
+    function welcomeDone() {
+      save.name = $("#welcomeName").value.trim().slice(0, 14) || tr("Ami");
+      persist();
+      sfx.tap();
+      $("#welcomeName").blur();
+      $("#welcome").classList.remove("on");
+      loveRain();
+      setTimeout(offerInstall, 1200);
+    }
     function loveRain() {
       if (!isJeanne() || $("#love")) return;
       const box = document.createElement("div");
@@ -2151,7 +2174,7 @@
       }
       const msg = document.createElement("div");
       msg.className = "love-msg";
-      msg.textContent = "Je t'aime Jeanne ❤️";
+      msg.innerHTML = "Je t'aime<br>Jeanne ❤️";
       box.appendChild(msg);
       document.body.appendChild(box);
       sfx.rare();
@@ -3553,7 +3576,7 @@
     function offerInstall() {
       let dismissed = false;
       try { dismissed = Boolean(localStorage.getItem("bda_a2hs")); } catch (e) { /* stockage indisponible */ }
-      if (standalone || dismissed || !$("#menu").classList.contains("on") || !(isIOS || installEvent)) return;
+      if (standalone || dismissed || !$("#menu").classList.contains("on") || $("#welcome").classList.contains("on") || !(isIOS || installEvent)) return;
       const box = $("#a2hs");
       box.classList.toggle("ios", isIOS);
       const share = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="${tr("Partager")}"><path d="M12 15V3M8 7l4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>`;
@@ -3684,9 +3707,12 @@
     renderMenu();
     initSpace();
     setTimeout(offerInstall, document.documentElement.classList.contains("splash") ? 3600 : 1200);
-    setTimeout(loveRain, document.documentElement.classList.contains("splash") ? 3700 : 600);
     // Lien d'invitation : ...?duel=CODE ouvre directement le salon avec le code rempli.
     const invite = new URLSearchParams(location.search).get("duel");
+    $("#welcomeGo").addEventListener("click", welcomeDone);
+    $("#welcomeName").addEventListener("keydown", e => { if (e.key === "Enter") welcomeDone(); });
+    // Le salon d'un lien d'invitation demande déjà un pseudo : pas de bienvenue en plus.
+    setTimeout(() => { if (invite || !askName()) loveRain(); }, document.documentElement.classList.contains("splash") ? 3700 : 600);
     if (invite) {
       showTab("arena");
       openLobby(save.name ? "" : tr("Choisis un pseudo, puis touche Rejoindre."));

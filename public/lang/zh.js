@@ -568,5 +568,9 @@ BDAi18n.add("zh", {
   "Gaspard choisit les cartes à échanger…": "Gaspard 正在挑选要换的牌……",
   "Gaspard échange <b>1</b> carte.": "Gaspard 换了 <b>1</b> 张牌。",
   "Gaspard échange <b>{n}</b> cartes.": "Gaspard 换了 <b>{n}</b> 张牌。",
-  "Échanger {n} · gratuit": "换 {n} 张 · 免费"
+  "Échanger {n} · gratuit": "换 {n} 张 · 免费",
+  "Bienvenue, terrien !": "欢迎你，地球人！",
+  "C'est parti !": "出发！",
+  "Comment tu t'appelles ?": "你叫什么名字？",
+  "Ton prénom": "你的名字"
 });

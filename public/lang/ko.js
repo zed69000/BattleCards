@@ -568,5 +568,9 @@ BDAi18n.add("ko", {
   "Gaspard choisit les cartes à échanger…": "Gaspard가 교환할 카드를 고르는 중…",
   "Gaspard échange <b>1</b> carte.": "Gaspard가 카드 <b>1</b>장을 교환해요.",
   "Gaspard échange <b>{n}</b> cartes.": "Gaspard가 카드 <b>{n}</b>장을 교환해요.",
-  "Échanger {n} · gratuit": "{n}장 교환 · 무료"
+  "Échanger {n} · gratuit": "{n}장 교환 · 무료",
+  "Bienvenue, terrien !": "환영해요, 지구인!",
+  "C'est parti !": "시작!",
+  "Comment tu t'appelles ?": "이름이 뭐예요?",
+  "Ton prénom": "이름"
 });

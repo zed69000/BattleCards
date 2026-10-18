@@ -568,5 +568,9 @@ BDAi18n.add("en", {
   "Gaspard choisit les cartes à échanger…": "Gaspard is choosing cards to swap…",
   "Gaspard échange <b>1</b> carte.": "Gaspard swaps <b>1</b> card.",
   "Gaspard échange <b>{n}</b> cartes.": "Gaspard swaps <b>{n}</b> cards.",
-  "Échanger {n} · gratuit": "Swap {n} · free"
+  "Échanger {n} · gratuit": "Swap {n} · free",
+  "Bienvenue, terrien !": "Welcome, earthling!",
+  "C'est parti !": "Let's go!",
+  "Comment tu t'appelles ?": "What's your name?",
+  "Ton prénom": "Your first name"
 });

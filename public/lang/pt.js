@@ -568,5 +568,9 @@ BDAi18n.add("pt", {
   "Gaspard choisit les cartes à échanger…": "Gaspard está escolhendo cartas para trocar…",
   "Gaspard échange <b>1</b> carte.": "Gaspard troca <b>1</b> carta.",
   "Gaspard échange <b>{n}</b> cartes.": "Gaspard troca <b>{n}</b> cartas.",
-  "Échanger {n} · gratuit": "Trocar {n} · grátis"
+  "Échanger {n} · gratuit": "Trocar {n} · grátis",
+  "Bienvenue, terrien !": "Bem-vindo, terráqueo!",
+  "C'est parti !": "Vamos lá!",
+  "Comment tu t'appelles ?": "Qual é o seu nome?",
+  "Ton prénom": "Seu nome"
 });

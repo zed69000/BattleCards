@@ -568,5 +568,9 @@ BDAi18n.add("ja", {
   "Gaspard choisit les cartes à échanger…": "Gaspardが交換するカードを選んでいる…",
   "Gaspard échange <b>1</b> carte.": "Gaspardはカードを<b>1</b>枚交換した。",
   "Gaspard échange <b>{n}</b> cartes.": "Gaspardはカードを<b>{n}</b>枚交換した。",
-  "Échanger {n} · gratuit": "{n}枚交換・無料"
+  "Échanger {n} · gratuit": "{n}枚交換・無料",
+  "Bienvenue, terrien !": "ようこそ、地球人！",
+  "C'est parti !": "さあ行こう！",
+  "Comment tu t'appelles ?": "名前は？",
+  "Ton prénom": "きみの名前"
 });
