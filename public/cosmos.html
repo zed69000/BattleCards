@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.47";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.48";</script>
   <script src="i18n.js?v=0.43"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
@@ -670,6 +670,12 @@
     @keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, 6px) scale(0.7); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1.1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -36px); } }
     @keyframes draw { from { opacity: 0; transform: translate(160px, 30px) rotate(25deg) scale(0.6); } }
     @keyframes dieHop { 0% { transform: translateY(0); } 25% { transform: translateY(-30px); } 50% { transform: translateY(0); } 68% { transform: translateY(-11px); } 84% { transform: translateY(0); } 92% { transform: translateY(-3px); } 100% { transform: translateY(0); } }
+    /* Surprise pour Jeanne : pluie de cœurs et bandeau. */
+    #love { position: fixed; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; }
+    #love i { position: absolute; bottom: -60px; font-style: normal; font-size: var(--s); opacity: 0; animation: loveUp var(--d) ease-in var(--dl) forwards; }
+    @keyframes loveUp { 0% { opacity: 0; transform: translateY(0) scale(0.6); } 10% { opacity: 1; } 100% { opacity: 0.9; transform: translate(var(--x), -115vh) rotate(var(--r)) scale(1.1); } }
+    #love .love-msg { position: absolute; left: 50%; top: 42%; translate: -50% -50%; padding: 12px 26px; border-radius: 999px; background: var(--pink); color: #fff; border: 3px solid var(--cream); box-shadow: 0 6px 0 #0a0f1e, 0 0 40px rgba(208, 80, 143, 0.8); font-family: "Bowlby One", "Righteous", sans-serif; font-size: clamp(1.6rem, 9vw, 2.8rem); white-space: nowrap; text-shadow: 0 3px 0 #8a2457; animation: loveMsg 4.2s cubic-bezier(.2, 1.4, .4, 1) both; }
+    @keyframes loveMsg { 0% { opacity: 0; scale: 0.3; rotate: -10deg; } 15% { opacity: 1; scale: 1.1; rotate: 3deg; } 25% { scale: 1; rotate: 0deg; } 85% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1.3; } }
     @keyframes coachIn { from { opacity: 0; scale: 0.85; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } }
     @media (max-height: 800px) { .prompt { height: 72px; padding: 5px 8px; } .hud { padding: 3px 8px; } .ava { width: 30px; height: 30px; } .mid { min-height: 44px; } .hand { padding-top: 22px; } }
@@ -2127,7 +2133,29 @@
     const roomId = code => `bataille-des-allies-${code}`;
     const lobbyMsg = text => { $("#lobbyMsg").textContent = text; };
     const myHello = () => ({ name: save.name || tr("Ami"), cast: CHARS[save.char].tribe, char: save.char, loadout: save.loadout.slice(0, MAX_ATOUTS), dice: save.equip.dice, back: save.equip.back });
-    function saveName() { save.name = $("#pseudo").value.trim().slice(0, 14) || tr("Ami"); persist(); }
+    function saveName() { save.name = $("#pseudo").value.trim().slice(0, 14) || tr("Ami"); persist(); loveRain(); }
+    /* Surprise : un joueur qui s'appelle Jeanne est accueilli par une pluie de cœurs et un « Je t'aime ». */
+    const isJeanne = () => (save.name || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() === "jeanne";
+    function loveRain() {
+      if (!isJeanne() || $("#love")) return;
+      const box = document.createElement("div");
+      box.id = "love";
+      box.setAttribute("aria-hidden", "true");
+      const hearts = ["❤️", "💖", "💕", "💗", "💘"];
+      for (let i = 0; i < (reduced ? 0 : 36); i += 1) {
+        const h = document.createElement("i");
+        h.textContent = hearts[rand(hearts.length)];
+        h.style.cssText = `left:${rand(100)}%;--s:${18 + rand(26)}px;--d:${(2.6 + Math.random() * 1.6).toFixed(2)}s;--dl:${(Math.random() * 1.4).toFixed(2)}s;--x:${rand(80) - 40}px;--r:${rand(60) - 30}deg`;
+        box.appendChild(h);
+      }
+      const msg = document.createElement("div");
+      msg.className = "love-msg";
+      msg.textContent = "Je t'aime Jeanne ❤️";
+      box.appendChild(msg);
+      document.body.appendChild(box);
+      sfx.rare();
+      setTimeout(() => box.remove(), 4600);
+    }
     function wire(conn) {
       net.conn = conn;
       conn.on("open", () => { lobbyMsg(tr("Connecté ! La partie se prépare…")); rawSend("hello", myHello()); });
@@ -3655,6 +3683,7 @@
     renderMenu();
     initSpace();
     setTimeout(offerInstall, document.documentElement.classList.contains("splash") ? 3600 : 1200);
+    setTimeout(loveRain, document.documentElement.classList.contains("splash") ? 3700 : 600);
     // Lien d'invitation : ...?duel=CODE ouvre directement le salon avec le code rempli.
     const invite = new URLSearchParams(location.search).get("duel");
     if (invite) {
