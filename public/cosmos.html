@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.45";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.46";</script>
   <script src="i18n.js?v=0.43"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
@@ -293,7 +293,7 @@
     .crew .pic { aspect-ratio: 1 / 0.92; border-radius: 7px; border: 2px solid var(--navy); overflow: hidden; margin-bottom: 3px; }
     .crew .pic { position: relative; }
     .crew .pic::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0 1.1px, transparent 1.6px) 0 0 / 22px 22px, radial-gradient(circle, rgba(255, 255, 255, 0.5) 0 0.9px, transparent 1.4px) 11px 9px / 35px 37px; animation: drift 4s linear infinite; }
-    .crew .pic::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(115deg, transparent 36%, rgba(255, 255, 255, 0.6) 50%, transparent 64%) no-repeat; background-size: 260% 100%; mix-blend-mode: screen; animation: sheen 3.6s ease-in-out infinite; }
+    .crew .pic::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(115deg, transparent 36%, rgba(255, 255, 255, 0.6) 50%, transparent 64%) no-repeat; background-size: 260% 100%; animation: sheen 3.6s ease-in-out infinite; }
     .crew .pic svg { position: relative; z-index: 1; display: block; width: 100%; height: 100%; transform-origin: 50% 90%; animation: bob 2.6s ease-in-out infinite; }
     .crew:nth-child(2) .pic svg { animation-delay: -0.7s; animation-duration: 2.2s; }
     .crew:nth-child(3) .pic svg { animation-delay: -1.3s; animation-duration: 3s; }
@@ -348,6 +348,7 @@
        (Safari laisse voir à travers les éléments animés malgré backface-visibility). Bascule à mi-retournement. */
     /* Une seule face visible à la fois ; le retournement est joué par flipCard() (écrasement 2D sur la tranche). */
     .card.facedown .front, .card:not(.facedown) .back { visibility: hidden; }
+    .card.facedown .front .art::before, .card.facedown .front::after, .card:not(.facedown):not(.flipper) .back::before, .card:not(.facedown):not(.flipper) .back .emblem { animation: none; }
     .opp-hand i:nth-child(2n)::after { animation-delay: -0.5s; }
     .opp-hand i:nth-child(3n)::after { animation-delay: -1s; }
 
@@ -465,7 +466,7 @@
     .card-inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 420ms cubic-bezier(.3, 1.3, .5, 1); }
     .card-inner { transform-style: flat; }
     .card.mid .face { filter: brightness(1.6); box-shadow: 0 0 0 2px #fff, 0 0 14px rgba(255, 255, 255, 0.8); }
-    .face { position: absolute; inset: 0; border-radius: calc(var(--cw) * 0.15); border: 2px solid var(--navy); overflow: hidden; box-shadow: 0 4px 0 #0a0f1e; }
+    .face { position: absolute; inset: 0; border-radius: calc(var(--cw) * 0.15); border: 2px solid var(--navy); overflow: hidden; box-shadow: 0 4px 0 #0a0f1e; contain: paint; }
     .front { display: grid; grid-template-rows: auto 1fr auto; gap: 1px; padding: 2px 3px; background: var(--cream); color: var(--navy); }
     .back { background: var(--back, repeating-radial-gradient(circle at 50% 50%, var(--orange) 0 5px, var(--navy) 5px 10px)); }
     .h-S { --hc: var(--violet); } .h-H { --hc: var(--orange); } .h-D { --hc: #e0a91f; } .h-C { --hc: var(--teal); } .h-X { --hc: var(--pink); }
@@ -481,6 +482,7 @@
     /* Reflet holographique des cartes rares et légendaires. */
     .card.fig .front::after, .card.rar-1 .front::after, .card.rar-2 .front::after { content: ""; position: absolute; top: 0; bottom: 0; left: -100%; width: 100%; z-index: 2; pointer-events: none; mix-blend-mode: screen; animation: sheenT 4.5s ease-in-out infinite; }
     .card.fig .front::after { background-image: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.45) 50%, transparent 62%); animation-duration: 6s; }
+    .card.fig:not(.rar-1):not(.rar-2) .front::after { mix-blend-mode: normal; }
     .card.rar-1 .front::after { background-image: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.8) 45%, rgba(120, 255, 225, 0.7) 53%, transparent 68%); animation-duration: 2.8s; }
     .card.rar-2 .front::after { background-image: linear-gradient(115deg, transparent 18%, rgba(255, 90, 160, 0.7) 34%, rgba(255, 235, 110, 0.8) 44%, rgba(90, 255, 200, 0.7) 54%, rgba(120, 160, 255, 0.7) 64%, transparent 80%); animation-duration: 2s; }
     .card.struck { animation: hit 420ms ease; }
