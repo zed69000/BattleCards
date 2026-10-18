@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.51";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.52";</script>
   <script src="i18n.js?v=0.43"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
@@ -432,10 +432,16 @@
     .float { position: absolute; padding: 2px 9px; border-radius: 99px; white-space: nowrap; font-size: 0.85rem; background: var(--ok); color: var(--navy); border: 2px solid var(--navy); animation: floatUp 1400ms ease-out forwards; }
     .float.neg { background: var(--bad); }
     .float.big { font-size: 1.25rem; padding: 3px 14px; background: var(--yellow); }
-    .shock { position: absolute; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; border: 7px solid var(--yellow); box-shadow: 0 0 30px var(--yellow), inset 0 0 22px var(--orange); animation: shock 950ms cubic-bezier(.1, .7, .3, 1) both; }
-    .shock.bad { border-color: var(--orange); box-shadow: 0 0 30px var(--orange), inset 0 0 22px var(--pink); }
+    /* Onde de choc : seule la transformation est animée. Une bordure ou une ombre floue qui change à chaque image
+       obligeait à redessiner un disque de plusieurs centaines de pixels (8 i/s sur Android). Les lueurs sont des dégradés. */
+    .shock { position: absolute; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; border: 6px solid var(--yellow); animation: shock 950ms cubic-bezier(.1, .7, .3, 1) both; }
+    .shock::before { content: ""; position: absolute; inset: -20px; border-radius: 50%; background: radial-gradient(circle closest-side, transparent 62%, rgba(245, 196, 69, 0.7) 70%, rgba(245, 196, 69, 0.25) 84%, transparent 100%); }
+    .shock::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle closest-side, transparent 20%, rgba(242, 106, 61, 0.35) 70%, rgba(242, 106, 61, 0.8) 100%); }
+    .shock.bad { border-color: var(--orange); }
+    .shock.bad::before { background: radial-gradient(circle closest-side, transparent 62%, rgba(242, 106, 61, 0.7) 70%, rgba(242, 106, 61, 0.25) 84%, transparent 100%); }
+    .shock.bad::after { background: radial-gradient(circle closest-side, transparent 20%, rgba(255, 95, 168, 0.35) 70%, rgba(255, 95, 168, 0.8) 100%); }
     .spark.fat { width: 9px; height: 30px; }
-    @keyframes shock { from { opacity: 1; transform: scale(0.2); } to { opacity: 0; transform: scale(15); border-width: 1px; } }
+    @keyframes shock { from { opacity: 1; transform: scale(0.2); } to { opacity: 0; transform: scale(15); } }
     .banner.mega { width: min(94vw, 460px); white-space: normal; text-align: center; line-height: 1.02; font-size: clamp(2rem, 11vw, 3.6rem); color: #fff; text-shadow: 0 0 6px #fff, 0 3px 0 var(--orange), 0 6px 0 var(--pink), 0 9px 0 #0a0f1e, 0 0 40px var(--yellow); }
     .banner.mega.show { animation: mega 1700ms cubic-bezier(.2, 1.5, .4, 1) both; }
     .banner.mega.bad { color: var(--cream); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e, 0 0 30px var(--orange); }
