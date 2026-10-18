@@ -53,7 +53,8 @@ window.BalanceSim = (function () {
       const vv = van ? ev(van, amb) : 0, va = amb ? ev(amb, van) : 0;
       let t = vv + va;
       if (van && amb) for (const x of formation(van, amb)) t += x;
-      const shield = onBoard(p, "shield"), impact = B.amb[o] && B.amb[o].house === "S", hole = onBoard(o, "hole"), met = onBoard(o, "meteor");
+      if (van && van.special === "satellite") t += 3;
+      const shield = onBoard(p, "shield"), impact = B.amb[o] && B.amb[o].house === "S" && !onBoard(p, "eclipse"), hole = onBoard(o, "hole"), met = onBoard(o, "meteor");
       if (!shield) { if (impact) t -= OPT.impact; if (hole && van && amb) t -= Math.min(vv, va); if (met) t -= 3; }
       if (B.allyOk[p]) { const c = B.ally[p]; t += c.special === "clone" ? Math.min(Math.max(vv, va), cloneCap()) : c.special === "turbo" ? c.value * 2 : c.value; }
       if (sup(p, "crush")) t += vv;
@@ -74,7 +75,8 @@ window.BalanceSim = (function () {
         const vv = ev(v, a), va = ev(a, v);
         let t = vv + va;
         for (const x of formation(v, a)) t += x;
-        const shield = [v, a].some(c => c.special === "shield"), hole = [ov, oa].some(c => c.special === "hole"), met = [ov, oa].some(c => c.special === "meteor"), impact = oa.house === "S";
+        if (v.special === "satellite") t += 3;
+        const shield = [v, a].some(c => c.special === "shield"), hole = [ov, oa].some(c => c.special === "hole"), met = [ov, oa].some(c => c.special === "meteor"), impact = oa.house === "S" && ![v, a].some(c => c.special === "eclipse");
         if (!shield) { if (impact) t -= OPT.impact; if (hole) t -= Math.min(vv, va); if (met) t -= 3; }
         return t;
       };
@@ -113,12 +115,15 @@ window.BalanceSim = (function () {
           if (amb.house === "S") power += 2;
           if (van.special === "hole" || amb.special === "hole") power += Math.min(oppBest, 6);
           if (van.special === "meteor" || amb.special === "meteor") power += 3;
+          if (van.special === "satellite") power += 3;
           const edge = bossEdge(p, van);
           let pWin = 1 / (1 + Math.exp(-(power + edge - expected) / slope));
           if (L.exact) { const [w2, t2] = exactOdds(p, van, amb, seen, knownAmb, edge); pWin = w2 + t2 * 0.5; }
           const stake = van.loot + amb.loot + theirLoot + lootSum(st.pot) + (sup(p, "siphon") ? SIPHON : 0);
           let u = (2 * pWin - 1) * stake * L.greed - (van.value + amb.value) * L.cost + Math.random() * L.noise;
           if (amb.house === "D") u += 0.3 * pWin;
+          if (van.special === "comete" || amb.special === "comete") u += 0.15 * stake * pWin;
+          if (van.special === "aimant" || amb.special === "aimant") u += 0.3 * (1 - pWin);
           if (amb.house === "H" || amb.house === "C") u += 0.3 * (1 - pWin);
           if (!fixedVan && van.value < amb.value) u += 0.2;
           if (!fixedVan && van.special === "spy") u += 0.7;
@@ -134,17 +139,19 @@ window.BalanceSim = (function () {
     function pickThird(p, role) {
       const o = 1 - p, L = Ls[p];
       if (Math.random() < (L.skip || 0) || st.fuel[p] < 1) return null;
-      const amb = B.amb[p], bonus = (amb.house === "H" ? 1 : 0) + (role === "riposte" && cast[p] === "cranes" ? 1 : 0);
+      const amb = B.amb[p], bonus = dieBonus(p, role);
       const opts = st.hands[p].map(c => ({ c, t: afterAlly(p, c) })).filter(x => x.t[p] >= x.t[o]).map(({ c, t }) => ({
-        c, score: chance(thirdThr(p, c), bonus, amb.house === "C" && !used[p]) * (t[p] > t[o] ? 1 : 0.45) - c.value * 0.004 - c.loot * 0.03
+        c, score: chance(thirdThr(p, c), bonus, radarOn(p)) * (t[p] > t[o] ? 1 : 0.45) - c.value * 0.004 - c.loot * 0.03
       })).sort((a, b) => b.score - a.score);
       return opts.length && (opts[0].score >= 0.2 || lootSum(st.pot) >= 6) ? opts[0].c : null;
     }
+    const dieBonus = (p, role) => (B.amb[p].house === "H" && !onBoard(1 - p, "eclipse") ? 1 : 0) + (role === "riposte" && cast[p] === "cranes" ? 1 : 0);
+    const radarOn = p => B.amb[p].house === "C" && !used[p] && !onBoard(1 - p, "eclipse");
     function roll(p, card, role) {
-      const thr = thirdThr(p, card), bonus = (B.amb[p].house === "H" ? 1 : 0) + (role === "riposte" && cast[p] === "cranes" ? 1 : 0);
+      const thr = thirdThr(p, card), bonus = dieBonus(p, role);
       let r = 1 + R(6) + (surge[p] ? 1 : 0);
       surge[p] = false;
-      if (r + bonus < thr && B.amb[p].house === "C" && !used[p]) { used[p] = true; r = 1 + R(6); }
+      if (r + bonus < thr && radarOn(p)) { used[p] = true; r = 1 + R(6); }
       return r + bonus >= thr;
     }
     const take = (p, c) => { st.hands[p].splice(st.hands[p].indexOf(c), 1); return c; };
@@ -158,7 +165,11 @@ window.BalanceSim = (function () {
         else if (OPT.overflow[p] === "surge") surge[p] = true;
       }
     };
-    const tank = (p, c) => { if (c && c.special === "tank" && !c.done) { c.done = true; gain(p, 2); } };
+    const tank = (p, c) => {
+      if (!c || c.done) return;
+      if (c.special === "tank") { c.done = true; gain(p, 2); }
+      if (c.special === "pirate") { c.done = true; if (st.fuel[1 - p] > 0) { st.fuel[1 - p] -= 1; gain(p, 1); } }
+    };
     /* Échange : 1 boost = 1 carte de la main glissée sous la pioche contre celle du dessus, une fois par manche. */
     function swap(p) {
       const mode = OPT.swap[p], hand = st.hands[p];
@@ -192,8 +203,9 @@ window.BalanceSim = (function () {
       let steal = !war && onBoard(w, "tractor") ? Math.min(3, st.loot[l]) : 0;
       if (sup(w, "siphon")) steal += Math.min(SIPHON, st.loot[l] - steal);
       if (charged[w]) stats.superWon += 1;
-      const refuel = !war && B.amb[w] && B.amb[w].house === "D";
-      st.loot[w] += pts + steal; st.loot[l] -= steal; st.pot = [];
+      const refuel = !war && B.amb[w] && B.amb[w].house === "D" && !onBoard(l, "eclipse");
+      const magnet = onBoard(l, "aimant") ? Math.min(2, pts) : 0, comet = onBoard(w, "comete") ? Math.min(6, pts - magnet) : 0;
+      st.loot[w] += pts - magnet + comet + steal; st.loot[l] += magnet - steal; st.pot = [];
       gain(l, 1);
       if (refuel) gain(w, 1);
       st.first = w;
@@ -317,15 +329,16 @@ window.BalanceSim = (function () {
   function campaign(me, n) {
     return STAGES.map((sg, i) => {
       const owned = [...START_ATOUTS, ...STAGES.slice(0, i).map(x => x.gift).filter(Boolean)];
-      const mine = owned.length ? Array.from({ length: 12 }, () => shuffle(owned).slice(0, Math.min(MAX_ATOUTS, owned.length))) : [[]];
+      const mine = owned.length ? Array.from({ length: 12 }, () => shuffle(owned).slice(0, Math.min(OPT.slots, owned.length))) : [[]];
       const res = run({ lv: [me, sg.ai], cast: ["mars", sg.cast], boss: [null, sg.boss ? BOSSES[sg.boss].super : null], every: [3, sg.boss ? BOSSES[sg.boss].every : 3], foeMax: sg.foeAtouts, atouts: [mine, "same"] }, n);
       return { stage: i + 1, name: sg.name, boss: Boolean(sg.boss), win: res.win };
     });
   }
   /* Options de règles à tester, par camp : swap = "never" | "full" | "any", overflow = "none" | "loot" | "surge".
      war = "round" (règle du jeu : manche rejouée par-dessus) | "pick" (duel choisi) | "blind" (cartes du dessus),
-     mulligan = échange de départ, clone = plafond du Clone à essayer (null = valeur du jeu). */
-  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "round", mulligan: true, clone: null, deck: 20, impact: 2 };
+     mulligan = échange de départ, clone = plafond du Clone à essayer (null = valeur du jeu),
+     slots = nombre d'atouts du joueur type en campagne (3, 4 ou 5 selon son niveau). */
+  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "round", mulligan: true, clone: null, slots: 3, deck: 20, impact: 2 };
   const set = o => Object.assign(OPT, o);
   return { game, run, campaign, set, OPT };
 })();

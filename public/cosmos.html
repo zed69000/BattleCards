@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.54";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.55";</script>
   <script src="i18n.js?v=0.43"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
@@ -1189,7 +1189,11 @@
     ];
     /* Numéro de version : défini en tête de page (window.BDA_V). */
     const VERSION = window.BDA_V;
-    const HAND_SIZE = 5, MAX_FUEL = 3, MAX_ATOUTS = 3, CAPSULE_COST = 60;
+    const HAND_SIZE = 5, MAX_FUEL = 3, MAX_ATOUTS = 5, CAPSULE_COST = 60;
+    /* Emplacements d'atouts selon le niveau d'expérience : l'adversaire en reçoit autant, l'équilibre tient.
+       Les atouts communs Satellite et Pirate se gagnent en montant de niveau. */
+    const SLOT_LEVELS = [[1, 3], [5, 4], [10, 5]];
+    const LEVEL_ATOUTS = { 3: "satellite", 6: "pirate" };
     /* Taille de la pioche de chaque camp (sur 26 possibles) : 20 donne des parties d'environ 7 manches. */
     const DECK_SIZE = 20;
     /* Butin : les petites cartes perdent les combats mais rapportent gros. La Supernova se consume. */
@@ -1268,6 +1272,11 @@
       tresor: { name: "Coffre", value: 8, loot: 4, rarity: 0, desc: "Vaut 8 et renferme 4 points de butin : un trésor pour celui qui le gagne… même ton adversaire." },
       meteor: { name: "Météore", value: 5, rarity: 1, desc: "Tant qu'elle est sur la table, le total adverse perd 3 (le Bouclier protège). Vaut 5." },
       turbo: { name: "Turbo", value: 3, thr: 3, rarity: 1, desc: "Jouée en allié ou en riposte, elle compte double : +6, avec un dé de 3+. Vaut 3." },
+      satellite: { name: "Satellite", value: 4, rarity: 0, desc: "Posé en carte visible, il vaut 3 de plus. Vaut 4." },
+      pirate: { name: "Pirate", value: 5, rarity: 0, desc: "Dès qu'il est visible sur la table, il vole 1 boost ⚡ à l'adversaire. Vaut 5." },
+      aimant: { name: "Aimant", value: 5, rarity: 1, desc: "Si son propriétaire perd la manche, il garde quand même 2 points du butin. Vaut 5." },
+      eclipse: { name: "Éclipse", value: 6, rarity: 1, desc: "Annule le pouvoir de famille de la carte cachée adverse (Impact, Propulsion, Ravitaillement, Radar). Vaut 6." },
+      comete: { name: "Comète d'or", value: 7, rarity: 2, desc: "Si son propriétaire gagne la manche, le butin compte double (6 points de plus au maximum). Vaut 7." },
       cryo: { name: "Cryo", value: 7, rarity: 0, desc: "Tant qu'elle est sur la table, les dés d'allié et de riposte adverses demandent 1 de plus. Vaut 7." }
     };
     const ATOUT_IDS = Object.keys(ATOUTS);
@@ -1349,6 +1358,8 @@
       ["Pieuvre Qui Rit", "poulpes", 80], ["Gérard Mars", "mars", 50], ["Agent Trèfle", "incognito", 25], ["Bébé Soucoupe", "mars", 10]
     ];
     function leagueOf(trophies) { let i = 0; LEAGUES.forEach((L, k) => { if (trophies >= L.min) i = k; }); return i; }
+    const atoutSlots = () => SLOT_LEVELS.reduce((n, [lvl, slots]) => (levelInfo(save.xp).lvl >= lvl ? slots : n), 3);
+    function levelAtouts() { const lvl = levelInfo(save.xp).lvl; return grantAtouts(Object.entries(LEVEL_ATOUTS).filter(([at]) => lvl >= Number(at)).map(([, id]) => id)); }
     function levelInfo(xp) {
       let lvl = 1, need = 80;
       while (xp >= need) { xp -= need; lvl += 1; need = 80 + 40 * (lvl - 1); }
@@ -1375,6 +1386,19 @@
       return `${d}z`;
     }
     const SPECIAL_ART = {
+      satellite: () => `<rect x="8" y="46" width="26" height="18" rx="2" fill="#5b8fd8" ${ST}/><rect x="66" y="46" width="26" height="18" rx="2" fill="#5b8fd8" ${ST}/><path d="M17 46 V64 M25 46 V64 M75 46 V64 M83 46 V64" ${LN} stroke-width="1.6"/>
+        <path d="M34 55 H66" ${LN} stroke-width="4"/><rect x="38" y="38" width="24" height="34" rx="5" fill="${K}" ${ST}/><circle cx="50" cy="52" r="6" fill="${YE}" ${ST} stroke-width="2"/><path d="M50 38 V24" ${LN} stroke-width="3"/><circle cx="50" cy="20" r="5" fill="${OR}" ${ST} stroke-width="2"/>
+        <path d="M30 92 Q50 80 70 92 M36 100 Q50 92 64 100" fill="none" stroke="${YE}" stroke-width="3" stroke-linecap="round"/>`,
+      pirate: () => `<circle cx="50" cy="56" r="28" fill="#c9d2dc" ${ST}/><path d="M22 46 Q50 14 78 46z" fill="${N}" ${ST}/><path d="M24 44 H76" ${LN} stroke-width="3"/><path d="${starPath(50, 32, 6, 2.5, 5)}" fill="${YE}"/>
+        <ellipse cx="40" cy="58" rx="8" ry="7" fill="${N}"/><path d="M30 52 L70 66" ${LN} stroke-width="2.4"/><circle cx="60" cy="58" r="5" fill="#fff" ${ST} stroke-width="2"/><circle cx="60" cy="59" r="2" fill="${N}"/>
+        <path d="M40 74 Q50 80 60 74" ${LN} stroke-width="3"/><path d="M78 84 L90 70 L86 82 L96 82 L82 98 L86 86z" fill="${YE}" ${ST} stroke-width="1.8"/>`,
+      aimant: () => `<path d="M24 22 V58 A26 26 0 0 0 76 58 V22 H58 V58 A8 8 0 0 1 42 58 V22z" fill="#e2493f" ${ST}/><rect x="24" y="14" width="18" height="14" fill="#c9d2dc" ${ST}/><rect x="58" y="14" width="18" height="14" fill="#c9d2dc" ${ST}/>
+        <path d="M14 96 Q24 88 30 96 M70 96 Q76 88 86 96" fill="none" stroke="${YE}" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="98" r="9" fill="${YE}" ${ST} stroke-width="2"/><text x="50" y="102" text-anchor="middle" font-size="11" font-family="Righteous, sans-serif" fill="${N}">2</text>`,
+      eclipse: () => `${[0, 45, 90, 135, 180, 225, 270, 315].map(a => `<path d="M50 14 L54 26 H46z" transform="rotate(${a} 50 56)" fill="${YE}"/>`).join("")}<circle cx="50" cy="56" r="28" fill="${YE}" ${ST}/><circle cx="60" cy="50" r="27" fill="${N}" ${ST}/>
+        <circle cx="70" cy="44" r="3" fill="${K}" opacity=".7"/><circle cx="58" cy="64" r="2" fill="${K}" opacity=".6"/>`,
+      comete: () => `<path d="M8 16 L62 54 L54 64z" fill="${YE}" opacity=".55"/><path d="M4 34 L58 60 L52 68z M24 6 L66 50 L58 56z" fill="${OR}" opacity=".5"/>
+        <circle cx="64" cy="64" r="22" fill="${YE}" ${ST}/><circle cx="64" cy="64" r="15" fill="#fff6c9" ${ST} stroke-width="2"/><path d="${starPath(64, 64, 10, 4, 5)}" fill="${YE}" ${ST} stroke-width="1.6"/>
+        <text x="30" y="102" text-anchor="middle" font-size="16" font-family="Righteous, sans-serif" fill="${K}" stroke="${N}" stroke-width="1">×2</text>`,
       spy: () => `<ellipse cx="50" cy="84" rx="28" ry="17" fill="#fff" ${ST}/><path d="M34 76 q8 4 4 12 q-10 2 -10 -6z M60 82 q10 -2 10 8 q-8 4 -12 0z" fill="${N}"/>
         <path d="M30 34 L22 24 M70 34 L78 24" ${LN} stroke-width="4"/><circle cx="50" cy="48" r="21" fill="#fff" ${ST}/><ellipse cx="50" cy="59" rx="12" ry="7.5" fill="#f39a84" ${ST}/><circle cx="46" cy="59" r="1.6" fill="${N}"/><circle cx="54" cy="59" r="1.6" fill="${N}"/>
         <rect x="31" y="40" width="16" height="10" rx="4" fill="${N}"/><rect x="53" y="40" width="16" height="10" rx="4" fill="${N}"/><path d="M47 44 H53" ${LN} stroke-width="3"/>
@@ -1416,7 +1440,7 @@
     /* Les atouts se gagnent en campagne (et les plus rares dans les boosters) ; un atout gagné s'équipe tout seul s'il reste une place. */
     function grantAtouts(ids) {
       const fresh = ids.filter(id => !save.owned[id]);
-      for (const id of fresh) { save.owned[id] = 1; if (save.loadout.length < MAX_ATOUTS) save.loadout.push(id); }
+      for (const id of fresh) { save.owned[id] = 1; if (save.loadout.length < atoutSlots()) save.loadout.push(id); }
       return fresh;
     }
     grantAtouts(START_ATOUTS);
@@ -1439,7 +1463,9 @@
     const thirdThr = (p, card) => thrOf(card) + (onBoard(1 - p, "cryo") ? 1 : 0) + (p === 0 && superOn() === "storm" ? 1 : 0);
     const handSize = q => (S.cast[q] === "poulpes" ? 6 : HAND_SIZE) + aiBonus(q, "bonusHand");
     /* Bonus au dé d'une 3ᵉ carte : Propulsion, et Désintégrateur pour une riposte. */
-    const dieBonus = (p, role) => (S.board.amb[p].house === "H" ? 1 : 0) + (role === "riposte" && S.cast[p] === "cranes" ? 1 : 0);
+    const dieBonus = (p, role) => (S.board.amb[p].house === "H" && !onBoard(1 - p, "eclipse") ? 1 : 0) + (role === "riposte" && S.cast[p] === "cranes" ? 1 : 0);
+    /* Radar : un dé raté relancé une fois par manche, sauf face à une Éclipse. */
+    const radarOn = p => S.board.amb[p].house === "C" && !S.radar[p] && !onBoard(1 - p, "eclipse");
     function chance(thr, bonus, reroll) {
       const p = Math.max(0, Math.min(1, (7 - (thr - bonus)) / 6));
       return reroll ? 1 - (1 - p) * (1 - p) : p;
@@ -1468,8 +1494,10 @@
       const vv = van ? ev(van, amb) : 0, va = amb ? ev(amb, van) : 0;
       let total = vv + va;
       if (van && amb) parts.push(...formation(van, amb));
-      const shield = onBoard(p, "shield");
-      const impact = b.amb[o] && b.amb[o].house === "S", hole = onBoard(o, "hole"), meteor = onBoard(o, "meteor");
+      if (van && van.special === "satellite") parts.push(["Satellite", 3]);
+      const shield = onBoard(p, "shield"), eclipse = onBoard(p, "eclipse");
+      const impact = b.amb[o] && b.amb[o].house === "S" && !eclipse, hole = onBoard(o, "hole"), meteor = onBoard(o, "meteor");
+      if (eclipse && b.amb[o] && b.amb[o].house === "S") parts.push(["Éclipse", 0]);
       if (shield && (impact || hole || meteor)) parts.push(["Bouclier", 0]);
       else {
         if (impact) parts.push(["Impact", -2]);
@@ -1682,7 +1710,7 @@
     }
     const third = () => S.phase === "ally" || S.phase === "riposte";
     function allyInfo(card) {
-      const thr = thirdThr(0, card), bonus = dieBonus(0, S.phase), reroll = S.board.amb[0].house === "C" && !S.radar[0];
+      const thr = thirdThr(0, card), bonus = dieBonus(0, S.phase), reroll = radarOn(0);
       return { thr, pct: Math.round(chance(thr, bonus, reroll) * 100) };
     }
     function selectable(card) {
@@ -1863,6 +1891,14 @@
         sfx.coin();
       }
       if (card.special === "nova") boom(null, p === 0, el);
+      if (card.special === "pirate" && S.fuel[1 - p] > 0) {
+        S.fuel[1 - p] -= 1;
+        renderFuel(1 - p);
+        floatText($(`#valor${1 - p}`), "−1 ⚡", true);
+        gainFuel(p, 1);
+        floatText(el, tr("Pirate : +1 ⚡"));
+        sfx.coin();
+      }
     }
 
     async function playCard(p, slotName, card, faceDown, opts = {}) {
@@ -2132,7 +2168,7 @@
     }
     const roomId = code => `bataille-des-allies-${code}`;
     const lobbyMsg = text => { $("#lobbyMsg").textContent = text; };
-    const myHello = () => ({ name: save.name || tr("Ami"), cast: CHARS[save.char].tribe, char: save.char, loadout: save.loadout.slice(0, MAX_ATOUTS), dice: save.equip.dice, back: save.equip.back });
+    const myHello = () => ({ name: save.name || tr("Ami"), cast: CHARS[save.char].tribe, char: save.char, loadout: save.loadout.slice(0, atoutSlots()), dice: save.equip.dice, back: save.equip.back });
     function saveName() { save.name = $("#pseudo").value.trim().slice(0, 14) || tr("Ami"); persist(); renderMenu(); loveRain(); }
     /* Surprise : un joueur qui s'appelle Jeanne est accueilli par une pluie de cœurs et un « Je t'aime ». */
     const isJeanne = () => (save.name || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() === "jeanne";
@@ -2248,7 +2284,8 @@
         const vv = ev(v, a), va = ev(a, v);
         let t = vv + va;
         for (const [, x] of formation(v, a)) t += x;
-        const shield = [v, a].some(c => c.special === "shield"), hole = [ov, oa].some(c => c.special === "hole"), met = [ov, oa].some(c => c.special === "meteor"), impact = oa.house === "S";
+        if (v.special === "satellite") t += 3;
+        const shield = [v, a].some(c => c.special === "shield"), hole = [ov, oa].some(c => c.special === "hole"), met = [ov, oa].some(c => c.special === "meteor"), impact = oa.house === "S" && ![v, a].some(c => c.special === "eclipse");
         if (!shield) { if (impact) t -= 2; if (hole) t -= Math.min(vv, va); if (met) t -= 3; }
         return t;
       };
@@ -2288,6 +2325,7 @@
           let power = ev(van, amb) + ev(amb, van);
           for (const [, v] of formation(van, amb)) power += v;
           if (amb.house === "S") power += 2;
+          if (van.special === "satellite") power += 3;
           if (van.special === "hole" || amb.special === "hole") power += Math.min(oppBest, 6);
           if (van.special === "meteor" || amb.special === "meteor") power += 3;
           // Pendant son super coup, le boss sait qu'il frappe plus fort.
@@ -2297,6 +2335,8 @@
           const stake = lootCard(van) + lootCard(amb) + theirLoot + lootSum(S.pot) + (sup === "siphon" ? SIPHON : 0);
           let u = (2 * pWin - 1) * stake * L.greed - (van.value + amb.value) * L.cost + Math.random() * L.noise;
           if (amb.house === "D") u += 0.3 * pWin;
+          if (van.special === "comete" || amb.special === "comete") u += 0.15 * stake * pWin;
+          if (van.special === "aimant" || amb.special === "aimant") u += 0.3 * (1 - pWin);
           if (amb.house === "H" || amb.house === "C") u += 0.3 * (1 - pWin);
           if (!fixedVan && van.value < amb.value) u += 0.2;
           if (!fixedVan && van.special === "spy") u += 0.7;
@@ -2310,7 +2350,7 @@
     function aiThird(role) {
       const L = S.aiL;
       if (Math.random() < (L.skip || 0) || S.fuel[1] < 1) return null;
-      const amb = S.board.amb[1], bonus = dieBonus(1, role), reroll = amb.house === "C" && !S.radar[1];
+      const amb = S.board.amb[1], bonus = dieBonus(1, role), reroll = radarOn(1);
       const options = S.hands[1].map(c => ({ c, t: afterAlly(1, c) })).filter(o => o.t[1] >= o.t[0]).map(({ c, t }) => ({
         c, score: chance(thirdThr(1, c), bonus, reroll) * (t[1] > t[0] ? 1 : 0.45) - c.value * 0.004 - lootCard(c) * 0.03
       })).sort((a, b) => b.score - a.score);
@@ -2361,7 +2401,7 @@
       // Contre l'IA, l'adversaire arbore des objets au hasard : ça montre ce qu'on peut trouver.
       if (mode !== "p2p") S.foeSkin = { dice: Object.keys(DICE)[rand(6)], back: Object.keys(BACKS)[rand(6)] };
       const deck = makeDeck();
-      const mine = save.loadout.slice(0, MAX_ATOUTS);
+      const mine = save.loadout.slice(0, atoutSlots());
       // Au début de la campagne, l'adversaire a moins d'atouts que toi (voire aucun).
       const theirs = shuffle(ATOUT_IDS).slice(0, mode === "adv" ? Math.min(mine.length, STAGES[S.stage].foeAtouts) : mine.length);
       Object.assign(S, {
@@ -2865,7 +2905,7 @@
         : (role === "riposte" ? tr("<b>Gaspard riposte avec</b> {card} — il faut <b>{thr}+</b> au dé.", v) : tr("<b>Gaspard engage</b> {card} — il faut <b>{thr}+</b> au dé.", v)));
       const el = await playCard(p, "ally", card, false, opts);
       el.classList.add("pending");
-      const radar = S.board.amb[p].house === "C" && !S.radar[p];
+      const radar = radarOn(p);
       $("#trayNeed").textContent = `${role === "riposte" ? tr("Riposte") : tr("Allié")} · ${thr}+${bonus ? ` · +${bonus}` : ""}${radar ? ` · ${tr("radar")}` : ""}`;
       $("#trayRes").textContent = "";
       $("#tray").classList.add("on");
@@ -3040,7 +3080,11 @@
         let steal = !war && onBoard(winner, "tractor") ? Math.min(TRACTOR_STEAL, S.loot[loser]) : 0;
         const siphon = winner === 1 && superOn() === "siphon" ? Math.min(SIPHON, S.loot[0] - steal) : 0;
         steal += siphon;
-        const refuel = !war && S.board.amb[winner] && S.board.amb[winner].house === "D";
+        const refuel = !war && S.board.amb[winner] && S.board.amb[winner].house === "D" && !onBoard(loser, "eclipse");
+        // Aimant : le perdant garde 2 points du butin. Comète d'or : le butin du gagnant compte double (6 de plus au plus).
+        const magnet = onBoard(loser, "aimant") ? Math.min(2, pts) : 0;
+        const comet = onBoard(winner, "comete") ? Math.min(6, pts - magnet) : 0;
+        const won = pts - magnet + comet;
         const bigHaul = pts + steal >= 10;
         const epic = war || comeback || bigHaul;
         if (winner === 0) {
@@ -3060,7 +3104,7 @@
         if (!epic) shake();
         await sleep(epic ? 1500 : 600);
         // Chaque carte envoie sa propre pièce au butin : le butin monte et la mise se vide à chaque arrivée.
-        const gainPts = pts + steal, lootEl = $(`#loot${winner}`), potEl = $("#potNo"), from = S.loot[winner];
+        const gainPts = won + steal, lootEl = $(`#loot${winner}`), potEl = $("#potNo"), from = S.loot[winner];
         const stake = Number(potEl.textContent) || pts;
         let got = 0, drained = 0;
         const tally = (value, fromPot = true) => {
@@ -3078,14 +3122,26 @@
           await flyCoin(center($(`#lootBox${loser}`)), $(`#lootBox${winner}`), steal);
           tally(steal, false);
         }
+        if (magnet) {
+          await flyCoin(center($(`#lootBox${winner}`)), $(`#lootBox${loser}`), magnet);
+          tally(-magnet, false);
+          $(`#loot${loser}`).textContent = S.loot[loser] - steal + magnet;
+          floatText($(`#lootBox${loser}`), tr("Aimant : +{n}", { n: magnet }));
+        }
+        if (comet) {
+          floatText($(`#lootBox${winner}`), tr("Comète d'or : butin ×2"), false, true);
+          burst($(`#lootBox${winner}`), [YE, "#fff", OR], 18);
+          await flyCoin(center($("#pot")), $(`#lootBox${winner}`), comet);
+          tally(comet, false);
+        }
         $("#pot").classList.remove("war");
         for (const sl of document.querySelectorAll(".slot.pile")) sl.classList.remove("pile");
         S.loot[winner] += gainPts;
-        S.loot[loser] -= steal;
+        S.loot[loser] += magnet - steal;
         S.pot = [];
         $("#pot").classList.remove("drain");
-        floatText($(`#lootBox${winner}`), tr("+{n} pts", { n: pts + steal }), false, pts + steal >= 6);
-        const tierHit = winner === 0 ? LOOT_TIERS.find(([min]) => S.loot[0] >= min && S.loot[0] - pts - steal < min) : null;
+        floatText($(`#lootBox${winner}`), tr("+{n} pts", { n: won + steal }), false, won + steal >= 6);
+        const tierHit = winner === 0 ? LOOT_TIERS.find(([min]) => S.loot[0] >= min && S.loot[0] - won - steal < min) : null;
         if (tierHit) setTimeout(() => { floatText($("#lootBox0"), tr("Palier {min} : +{gems} ◆", { min: tierHit[0], gems: tierHit[1] }), false, true); burst($("#lootBox0"), [YE, "#fff", "#8fd8cc"], 22, 1.6); sfx.rare(); buzz(40); }, 650);
         if (steal) { floatText($(`#lootBox${loser}`), `−${steal}`, true); bump($(`#lootBox${loser}`)); }
         gainFuel(loser, 1);
@@ -3093,8 +3149,8 @@
         sfx.coin();
         const extra = `${steal - siphon ? ` ${tr("Rayon tracteur : {n} pts volés.", { n: steal - siphon })}` : ""}${siphon ? ` ${tr("Siphon : {n} pts volés !", { n: siphon })}` : ""}${nova ? ` ${tr("La Supernova s'est consumée.")}` : ""}`;
         setPrompt(winner === 0
-          ? `${tr("Tu ramasses <b>{n} cartes</b> : <b>+{pts} pts</b> de butin.", { n: cards.length, pts })}${refuel ? ` ${tr("Ravitaillement : +1 ⚡.")}` : ""}${extra}`
-          : `${tr("« Ack ! Ack ! » Gaspard ramasse <b>+{pts} pts</b> de butin.", { pts })}${extra} ${tr("Tu gagnes <b>1 boost ⚡</b>.")}`);
+          ? `${tr("Tu ramasses <b>{n} cartes</b> : <b>+{pts} pts</b> de butin.", { n: cards.length, pts: won })}${refuel ? ` ${tr("Ravitaillement : +1 ⚡.")}` : ""}${extra}`
+          : `${tr("« Ack ! Ack ! » Gaspard ramasse <b>+{pts} pts</b> de butin.", { pts: won })}${extra} ${tr("Tu gagnes <b>1 boost ⚡</b>.")}`);
         S.first = winner;
       }
       if (game !== gameId) return;
@@ -3206,7 +3262,13 @@
       const prime = lootBonus(a);
       if (prime) { gain += prime; notes.push({ v: '<span class="mcoin">★</span>', t: tr("Prime de butin ({pts} pts) : +{gems} ◆", { pts: a, gems: prime }), hot: true }); }
       const lvlAfter = levelInfo(save.xp).lvl;
-      if (lvlAfter > lvlBefore) { gain += 30 * (lvlAfter - lvlBefore); notes.unshift({ v: `<b style="font-size:1.3rem;color:var(--yellow)">${lvlAfter}</b>`, t: tr("Niveau {n} ! (+30 ◆)", { n: lvlAfter }), hot: true, wide: true }); }
+      if (lvlAfter > lvlBefore) {
+        gain += 30 * (lvlAfter - lvlBefore);
+        notes.unshift({ v: `<b style="font-size:1.3rem;color:var(--yellow)">${lvlAfter}</b>`, t: tr("Niveau {n} ! (+30 ◆)", { n: lvlAfter }), hot: true, wide: true });
+        for (const id of levelAtouts()) notes.push({ v: "★", t: tr("Nouvel atout : {name}", { name: tr(ATOUTS[id].name) }), hot: true });
+        const slots = SLOT_LEVELS.find(([lvl]) => lvl > lvlBefore && lvl <= lvlAfter);
+        if (slots) notes.push({ v: "★", t: tr("{n} emplacements d'atouts !", { n: slots[1] }), hot: true });
+      }
       save.crystals += gain;
       persist();
       // Les tuiles de récompense : étoiles, cristaux, XP (ou trophées), puis chaque nouveauté
@@ -3257,7 +3319,7 @@
       $("#menuXp").style.width = `${Math.round((lv.into / lv.need) * 100)}%`;
       $("#trophies").textContent = save.trophies;
       $("#crystals").textContent = save.crystals;
-      $("#quickAtouts").textContent = tr("Atouts {n}/{max}", { n: save.loadout.length, max: MAX_ATOUTS });
+      $("#quickAtouts").textContent = tr("Atouts {n}/{max}", { n: save.loadout.length, max: atoutSlots() });
       $("#capsuleBtn").textContent = tr("Booster · {cost} ◆", { cost: CAPSULE_COST });
       const ready = save.crystals >= CAPSULE_COST;
       $("#quickBooster").classList.toggle("ready", ready);
@@ -3374,7 +3436,7 @@
       const kinds = { chars: "char", atouts: "atout", dice: "dice", back: "back" };
       const count = sub => `${lists[sub].filter(id => owns(kinds[sub], id)).length}/${lists[sub].length}`;
       $("#cntChars").textContent = count("chars");
-      $("#cntAtouts").textContent = tr("{n}/{max} équipés", { n: save.loadout.length, max: MAX_ATOUTS });
+      $("#cntAtouts").textContent = tr("{n}/{max} équipés", { n: save.loadout.length, max: atoutSlots() });
       $("#cntDice").textContent = count("dice");
       $("#cntBack").textContent = count("back");
       for (const btn of document.querySelectorAll("#subtabs button")) btn.classList.toggle("on", btn.dataset.sub === colSub);
@@ -3393,7 +3455,7 @@
       else if (kind === "atout") text = tr(ATOUTS[id].desc);
       else text = kind === "dice" ? tr("Ton dé, lancé sous les yeux de ton adversaire.") : tr("Le dos de tes cartes, vu par ton adversaire.");
       if (!own) text += `<br><i>${howToGet(kind, id)}</i>`;
-      else if (kind === "atout") action = equipped(kind, id) ? { label: tr("Retirer"), cls: "ghost" } : save.loadout.length < MAX_ATOUTS ? { label: tr("Équiper") } : { label: tr("3 atouts déjà équipés"), cls: "ghost", off: true };
+      else if (kind === "atout") action = equipped(kind, id) ? { label: tr("Retirer"), cls: "ghost" } : save.loadout.length < atoutSlots() ? { label: tr("Équiper") } : { label: tr("{n} atouts déjà équipés", { n: atoutSlots() }), cls: "ghost", off: true };
       else action = equipped(kind, id) ? { label: tr("Équipé ✓"), cls: "ghost", off: true } : { label: tr("Équiper") };
       $("#showcase").innerHTML = `<div class="big">${own ? visual(id, true) : `<div class="locked-big" style="filter:grayscale(1) brightness(.3)">${visual(id, true)}</div>`}</div>
         <div><h3>${own ? tr(def.name) : "???"}</h3><span class="rar r${def.rarity}">${tr(RARITY[def.rarity].name)}</span><p>${text}</p>${action ? `<button class="btn ${action.cls || ""}" id="equipBtn" ${action.off ? "disabled" : ""}>${action.label}</button>` : ""}</div>`;
@@ -3701,6 +3763,7 @@
     document.title = tr(document.title);
     BDAi18n.apply();
     $("#pseudo").placeholder = tr("Ton nom de martien");
+    levelAtouts();
     renderMenu();
     initSpace();
     setTimeout(offerInstall, document.documentElement.classList.contains("splash") ? 3600 : 1200);
