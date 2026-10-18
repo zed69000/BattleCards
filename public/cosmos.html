@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.53";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.54";</script>
   <script src="i18n.js?v=0.43"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
@@ -701,7 +701,7 @@
     <div class="col">
       <div class="mtop">
         <div class="ava" id="menuAva"></div>
-        <div class="who">Toi <small id="menuLvl">· Niv. 1</small><div class="xp"><i id="menuXp"></i></div></div>
+        <div class="who"><span id="menuName">Toi</span> <small id="menuLvl">· Niv. 1</small><div class="xp"><i id="menuXp"></i></div></div>
         <div class="pill tr"><span id="trophies">0</span> ♛</div>
         <button class="pill" id="crystalsBtn" aria-label="Ouvrir un booster">◆ <span id="crystals">0</span></button>
       </div>
@@ -829,7 +829,7 @@
 
       <div class="hud" id="hud0">
         <div class="ava" id="ava0"></div>
-        <div class="nm"><span>Toi</span><small id="perk0">Talent</small><div class="pips" id="valor0" title="Boosts ⚡ : 1 boost pour appeler un allié ou riposter"></div></div>
+        <div class="nm"><span id="me0">Toi</span><small id="perk0">Talent</small><div class="pips" id="valor0" title="Boosts ⚡ : 1 boost pour appeler un allié ou riposter"></div></div>
         <div class="stat deck">Pioche<b id="deck0">0</b></div>
         <div class="stat loot" id="lootBox0"><span class="mcoin">★</span>Butin<b id="loot0">0</b><small class="tier" id="nextTier"></small></div>
       </div>
@@ -1354,9 +1354,12 @@
       while (xp >= need) { xp -= need; lvl += 1; need = 80 + 40 * (lvl - 1); }
       return { lvl, into: xp, need };
     }
+    /* Le prénom donné à la première ouverture remplace « Toi » partout où le joueur est nommé. */
+    const myName = () => (save.name && save.name !== tr("Ami") ? save.name : tr("Toi"));
+    const escHtml = text => String(text).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
     function ranking() {
       const list = RIVALS.map(([name, cast, t]) => ({ name, cast, t }));
-      list.push({ name: "Toi", cast: CHARS[save.char].tribe, t: save.trophies, me: true });
+      list.push({ name: myName(), cast: CHARS[save.char].tribe, t: save.trophies, me: true });
       return list.sort((a, b) => b.t - a.t || (a.me ? -1 : 1));
     }
     const myRank = () => ranking().findIndex(r => r.me) + 1;
@@ -2130,7 +2133,7 @@
     const roomId = code => `bataille-des-allies-${code}`;
     const lobbyMsg = text => { $("#lobbyMsg").textContent = text; };
     const myHello = () => ({ name: save.name || tr("Ami"), cast: CHARS[save.char].tribe, char: save.char, loadout: save.loadout.slice(0, MAX_ATOUTS), dice: save.equip.dice, back: save.equip.back });
-    function saveName() { save.name = $("#pseudo").value.trim().slice(0, 14) || tr("Ami"); persist(); loveRain(); }
+    function saveName() { save.name = $("#pseudo").value.trim().slice(0, 14) || tr("Ami"); persist(); renderMenu(); loveRain(); }
     /* Surprise : un joueur qui s'appelle Jeanne est accueilli par une pluie de cœurs et un « Je t'aime ». */
     const isJeanne = () => (save.name || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() === "jeanne";
     /* Première ouverture : on demande le prénom, qui sert aussi de pseudo en duel. */
@@ -2146,6 +2149,7 @@
       sfx.tap();
       $("#welcomeName").blur();
       $("#welcome").classList.remove("on");
+      renderMenu();
       loveRain();
       setTimeout(offerInstall, 1200);
     }
@@ -2366,6 +2370,7 @@
         revealed: false, sel: null, board: emptyBoard(), war: null, spy: null, fx: new Set()
       });
       $("#ava0").innerHTML = charArt(save.char);
+      $("#me0").textContent = myName();
       $("#ava1").innerHTML = charArt(S.foeChar, 9);
       $("#ava1").style.background = S.boss ? "radial-gradient(circle, var(--pink), #4a1030)" : "var(--violet)";
       $("#name1").textContent = mode === "p2p" ? `${foe()} · ${tr("ami")}` : mode === "arena" ? `${foe()} · ${S.rival.t} ♛` : `${foe()} · ${tr(CHAPTERS[STAGES[S.stage].c].planet)}`;
@@ -3246,6 +3251,7 @@
     }
     function renderMenu() {
       const lv = levelInfo(save.xp);
+      $("#menuName").textContent = myName();
       $("#menuAva").innerHTML = charArt(save.char);
       $("#menuLvl").textContent = `· ${tr("Niv. {n}", { n: lv.lvl })}`;
       $("#menuXp").style.width = `${Math.round((lv.into / lv.need) * 100)}%`;
@@ -3278,7 +3284,7 @@
       const colors = { mars: "var(--orange)", cranes: "var(--violet)", poulpes: "#e0a91f", incognito: "var(--teal)" };
       $("#rankList").innerHTML = ranking().map((r, i) => `<div class="ln${r.me ? " me" : ""}"><b>${i + 1}</b>
         <div class="ava" style="background:${colors[r.cast]};color:${colors[r.cast]}">${r.me ? charArt(save.char) : art(r.cast, "H", "R", 5)}</div>
-        <div>${tr(r.name)}<small>${tr(CASTS[r.cast].label)} · ${tr("ligue {league}", { league: tr(LEAGUES[leagueOf(r.t)].name) })}</small></div><span>${r.t} ♛</span></div>`).join("");
+        <div>${r.me ? escHtml(r.name) : tr(r.name)}<small>${tr(CASTS[r.cast].label)} · ${tr("ligue {league}", { league: tr(LEAGUES[leagueOf(r.t)].name) })}</small></div><span>${r.t} ♛</span></div>`).join("");
 
       renderCollection();
       renderHero();
