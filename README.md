@@ -12,3 +12,5 @@ Aucune installation : ce sont des fichiers statiques. Pour tester en local, serv
 (`python -m http.server --directory public`) puis ouvrir `http://localhost:8000`.
 
 Le dépôt se déploie sans réglage sur Netlify (`netlify.toml`) ou sur Cloudflare (`wrangler.jsonc`).
+
+Les apps Android et iOS (Capacitor, builds Codemagic) : voir [STORES.md](STORES.md).

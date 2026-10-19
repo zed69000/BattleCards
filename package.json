@@ -1,0 +1,18 @@
+{
+  "name": "battlecards",
+  "private": true,
+  "description": "Bataille des Alliés : le jeu web de public/, emballé en apps Android et iOS avec Capacitor.",
+  "scripts": {
+    "android": "cap add android && npx @capacitor/assets@3.0.5 generate --android --iconBackgroundColor \"#10162b\" --splashBackgroundColor \"#10162b\" && cap sync android",
+    "ios": "cap add ios && npx @capacitor/assets@3.0.5 generate --ios --iconBackgroundColor \"#10162b\" --splashBackgroundColor \"#10162b\" && cap sync ios",
+    "sync": "cap sync"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/ios": "8.5.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3"
+  }
+}

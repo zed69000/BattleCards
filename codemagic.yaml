@@ -1,0 +1,123 @@
+# Builds Codemagic des apps Android et iOS de Bataille des Alliés.
+# Le jeu web (public/) est emballé par Capacitor ; les projets natifs android/ et ios/ sont régénérés
+# à chaque build, ils ne sont pas dans le dépôt. Les builds se lancent à la main depuis Codemagic.
+# Mode d'emploi et réglages à faire dans Codemagic : voir STORES.md.
+
+definitions:
+  versions: &versions
+    name: Version de l'app
+    script: |
+      # Numéro affiché : celui du jeu (window.BDA_V) ; numéro de build : celui de Codemagic, toujours croissant.
+      VERSION=$(grep -o 'BDA_V = "[^"]*"' public/cosmos.html | cut -d'"' -f2)
+      echo "APP_VERSION=$VERSION" >> $CM_ENV
+      echo "Version $VERSION, build $BUILD_NUMBER"
+  android_project: &android_project
+    name: Projet Android (Capacitor)
+    script: |
+      npm install
+      npm run android
+      # Jeu en portrait uniquement, version et numéro de build croissant pour Google Play.
+      sed -i 's/<activity/<activity android:screenOrientation="portrait"/' android/app/src/main/AndroidManifest.xml
+      sed -i -E "s/versionCode [0-9]+/versionCode $BUILD_NUMBER/; s/versionName \"[^\"]*\"/versionName \"$APP_VERSION\"/" android/app/build.gradle
+      grep -E "versionCode|versionName" android/app/build.gradle
+  ios_project: &ios_project
+    name: Projet iOS (Capacitor)
+    script: |
+      npm install
+      npm run ios
+      PLIST=ios/App/App/Info.plist
+      # Jeu en portrait uniquement, plein écran sur iPad, version et numéro de build croissant.
+      /usr/libexec/PlistBuddy -c "Delete :UISupportedInterfaceOrientations" $PLIST || true
+      /usr/libexec/PlistBuddy -c "Add :UISupportedInterfaceOrientations array" $PLIST
+      /usr/libexec/PlistBuddy -c "Add :UISupportedInterfaceOrientations:0 string UIInterfaceOrientationPortrait" $PLIST
+      /usr/libexec/PlistBuddy -c "Delete :UISupportedInterfaceOrientations~ipad" $PLIST || true
+      /usr/libexec/PlistBuddy -c "Add :UISupportedInterfaceOrientations~ipad array" $PLIST
+      /usr/libexec/PlistBuddy -c "Add :UISupportedInterfaceOrientations~ipad:0 string UIInterfaceOrientationPortrait" $PLIST
+      /usr/libexec/PlistBuddy -c "Delete :UIRequiresFullScreen" $PLIST || true
+      /usr/libexec/PlistBuddy -c "Add :UIRequiresFullScreen bool true" $PLIST
+      # Pas de chiffrement propre : évite la question de conformité à l'export à chaque envoi.
+      /usr/libexec/PlistBuddy -c "Delete :ITSAppUsesNonExemptEncryption" $PLIST || true
+      /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" $PLIST
+      /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $APP_VERSION" $PLIST
+      /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" $PLIST
+
+workflows:
+  # APK à installer directement sur un téléphone Android, sans compte Google Play ni signature.
+  android-test:
+    name: Android · APK de test
+    instance_type: linux_x2
+    max_build_duration: 45
+    environment:
+      node: 22
+      java: 21
+    scripts:
+      - *versions
+      - *android_project
+      - name: APK de test
+        script: cd android && ./gradlew assembleDebug
+    artifacts:
+      - android/app/build/outputs/apk/**/*.apk
+
+  # Bundle AAB signé pour Google Play. Demande la clé d'envoi « battlecards_upload_key » dans Codemagic.
+  android-play:
+    name: Android · Google Play (AAB signé)
+    instance_type: linux_x2
+    max_build_duration: 45
+    environment:
+      node: 22
+      java: 21
+      android_signing:
+        - battlecards_upload_key
+    scripts:
+      - *versions
+      - *android_project
+      - name: AAB signé
+        script: |
+          cd android && ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file="$CM_KEYSTORE_PATH" \
+            -Pandroid.injected.signing.store.password="$CM_KEYSTORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="$CM_KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$CM_KEY_PASSWORD"
+    artifacts:
+      - android/app/build/outputs/bundle/**/*.aab
+    # Envoi automatique sur Google Play, à activer une fois le compte de service créé (voir STORES.md).
+    # publishing:
+    #   google_play:
+    #     credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+    #     track: internal
+    #     submit_as_draft: true
+
+  # Build iOS signé, envoyé sur TestFlight. Demande la clé API App Store Connect « BattleCards ASC »
+  # et le certificat de distribution dans Codemagic.
+  ios-testflight:
+    name: iOS · TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: BattleCards ASC
+    environment:
+      node: 22
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.musclorduck.battlecards
+    scripts:
+      - *versions
+      - *ios_project
+      - name: Profils de signature
+        script: xcode-project use-profiles
+      - name: IPA signée
+        script: |
+          # Capacitor 8 peut créer un projet avec ou sans espace de travail CocoaPods.
+          if [ -d ios/App/App.xcworkspace ]; then
+            xcode-project build-ipa --workspace ios/App/App.xcworkspace --scheme App
+          else
+            xcode-project build-ipa --project ios/App/App.xcodeproj --scheme App
+          fi
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

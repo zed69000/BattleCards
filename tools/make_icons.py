@@ -12,6 +12,8 @@ NAVY, DEEP, CREAM = (31, 42, 68), (16, 22, 43), (245, 233, 207)
 ORANGE, YELLOW, GREEN, PINK = (242, 106, 61), (245, 196, 69), (168, 230, 161), (232, 69, 107)
 S = 2048  # dessin en grand, puis réduction pour un bord lisse
 OUT = Path(__file__).resolve().parent.parent / "public"
+# Sources des icônes et écrans de démarrage des apps Android et iOS (lues par @capacitor/assets).
+APP = Path(__file__).resolve().parent.parent / "assets"
 
 
 def draw_icon():
@@ -86,6 +88,17 @@ def main():
         name = "favicon.png" if size == 32 else f"icon-{size}.png"
         icon.resize((size, size), Image.LANCZOS).save(OUT / name, optimize=True)
         print("écrit", name)
+    APP.mkdir(exist_ok=True)
+    icon.resize((1024, 1024), Image.LANCZOS).save(APP / "icon-only.png", optimize=True)
+    # Écran de démarrage : fond de l'espace, icône arrondie au centre.
+    splash = Image.new("RGB", (2732, 2732), DEEP)
+    logo = icon.resize((820, 820), Image.LANCZOS)
+    mask = Image.new("L", logo.size, 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0, 0, *logo.size], radius=180, fill=255)
+    splash.paste(logo, ((2732 - 820) // 2, (2732 - 820) // 2), mask)
+    splash.save(APP / "splash.png", optimize=True)
+    splash.save(APP / "splash-dark.png", optimize=True)
+    print("écrit assets/icon-only.png, assets/splash.png, assets/splash-dark.png")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,13 @@
+{
+  "appId": "com.musclorduck.battlecards",
+  "appName": "Bataille des Alliés",
+  "webDir": "public",
+  "backgroundColor": "#10162b",
+  "android": {
+    "backgroundColor": "#10162b"
+  },
+  "ios": {
+    "backgroundColor": "#10162b",
+    "contentInset": "never"
+  }
+}

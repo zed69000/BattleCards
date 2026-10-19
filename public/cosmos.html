@@ -14,10 +14,9 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.55";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.56";</script>
   <script src="i18n.js?v=0.43"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Righteous&display=swap" rel="stylesheet">
+  <link href="fonts/fonts.css" rel="stylesheet">
   <style>
     :root {
       color-scheme: dark;
@@ -2160,7 +2159,7 @@
       if (window.Peer) return Promise.resolve();
       return new Promise((ok, ko) => {
         const el = document.createElement("script");
-        el.src = "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js";
+        el.src = "vendor/peerjs.min.js";
         el.onload = ok;
         el.onerror = () => ko(new Error("peerjs"));
         document.head.appendChild(el);
@@ -3612,7 +3611,9 @@
     $("#langBtn").addEventListener("click", () => { sfx.tap(); $("#langs").classList.add("on"); });
     $("#langClose").addEventListener("click", () => $("#langs").classList.remove("on"));
     // Plein écran : vraie API là où elle existe ; sur iPhone, on explique l'installation sur l'écran d'accueil.
-    const standalone = window.navigator.standalone || window.matchMedia("(display-mode: standalone), (display-mode: fullscreen)").matches;
+    // Dans l'app Android ou iOS (Capacitor), le jeu est déjà installé et plein écran : ni bouton ni invitation à l'installer.
+    const nativeApp = Boolean(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+    const standalone = nativeApp || window.navigator.standalone || window.matchMedia("(display-mode: standalone), (display-mode: fullscreen)").matches;
     if (standalone) $("#fsBtn").hidden = true;
     $("#fsBtn").addEventListener("click", () => {
       const root = document.documentElement;

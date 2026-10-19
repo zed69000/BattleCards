@@ -1,1 +1,5 @@
 .claude/
+# Capacitor : dépendances et projets natifs, régénérés par Codemagic à chaque build
+node_modules/
+android/
+ios/
