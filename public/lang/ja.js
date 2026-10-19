@@ -628,5 +628,6 @@ BDAi18n.add("ja", {
   "Vidéo de test": "テスト動画",
   "Vidéo · doubler les cristaux (+{n} ◆)": "動画・クリスタル2倍（+{n} ◆）",
   "Vidéo · ouvrir": "動画・開ける",
-  "{n} boosters offerts aujourd'hui": "今日の無料ブースター{n}個"
+  "{n} boosters offerts aujourd'hui": "今日の無料ブースター{n}個",
+  "Voir les offres (pubs et achats de test)": "オファーを見る（テスト広告と購入）"
 });

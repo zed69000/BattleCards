@@ -628,5 +628,6 @@ BDAi18n.add("es", {
   "Vidéo de test": "Vídeo de prueba",
   "Vidéo · doubler les cristaux (+{n} ◆)": "Vídeo · duplicar cristales (+{n} ◆)",
   "Vidéo · ouvrir": "Vídeo · abrir",
-  "{n} boosters offerts aujourd'hui": "{n} sobres gratis hoy"
+  "{n} boosters offerts aujourd'hui": "{n} sobres gratis hoy",
+  "Voir les offres (pubs et achats de test)": "Ver las ofertas (anuncios y compras de prueba)"
 });

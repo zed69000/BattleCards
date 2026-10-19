@@ -628,5 +628,6 @@ BDAi18n.add("zh", {
   "Vidéo de test": "测试视频",
   "Vidéo · doubler les cristaux (+{n} ◆)": "视频 · 水晶翻倍（+{n} ◆）",
   "Vidéo · ouvrir": "视频 · 打开",
-  "{n} boosters offerts aujourd'hui": "今天有 {n} 个免费补充包"
+  "{n} boosters offerts aujourd'hui": "今天有 {n} 个免费补充包",
+  "Voir les offres (pubs et achats de test)": "查看优惠（测试广告与购买）"
 });

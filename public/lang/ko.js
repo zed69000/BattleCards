@@ -628,5 +628,6 @@ BDAi18n.add("ko", {
   "Vidéo de test": "테스트 영상",
   "Vidéo · doubler les cristaux (+{n} ◆)": "영상 · 크리스탈 두 배 (+{n} ◆)",
   "Vidéo · ouvrir": "영상 · 열기",
-  "{n} boosters offerts aujourd'hui": "오늘 무료 부스터 {n}개"
+  "{n} boosters offerts aujourd'hui": "오늘 무료 부스터 {n}개",
+  "Voir les offres (pubs et achats de test)": "제안 보기 (테스트 광고와 구매)"
 });
