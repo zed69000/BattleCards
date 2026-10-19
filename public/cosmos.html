@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.60";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.61";</script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -54,7 +54,48 @@
     #menu .col { gap: 8px; text-align: center; overflow: hidden; padding-bottom: 0; }
     .mtop { display: flex; align-items: center; gap: 8px; text-align: left; }
     .mtop .ava { width: 38px; height: 38px; }
-    .who { flex: 1; min-width: 0; line-height: 1.1; }
+    .who { flex: 1; min-width: 0; line-height: 1.1; padding: 0; border: 0; background: none; text-align: left; color: inherit; font: inherit; }
+    .who-line { display: flex; align-items: baseline; gap: 4px; min-width: 0; white-space: nowrap; }
+    .who-line #menuName { overflow: hidden; text-overflow: ellipsis; }
+    .who-more { margin-left: auto; padding: 0 7px; border-radius: 99px; background: rgba(245, 196, 69, 0.18); color: var(--yellow); font-size: 0.9rem; line-height: 1.2; }
+    .who-more.new { background: var(--yellow); color: var(--navy); animation: pulse 1.3s ease-in-out infinite; }
+    /* Page « Ton aventure » : où l'on va, et comment marchent cristaux, boosters et atouts. */
+    .journey-sheet { text-align: left; }
+    .j-head { display: flex; align-items: center; gap: 12px; }
+    .j-head .portrait { width: 56px; height: 56px; }
+    .j-lvl { flex: 1; } .j-lvl b { font-weight: 400; font-size: 1.3rem; color: var(--yellow); } .j-lvl small { color: rgba(245, 233, 207, 0.7); font-size: 0.72rem; }
+    .j-title { margin: 14px 0 8px; font-weight: 400; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); }
+    .j-list { display: grid; gap: 8px; }
+    .j-row { display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: rgba(31, 42, 68, 0.95); border: 2px solid transparent; }
+    .j-row.next { border-color: var(--yellow); }
+    .j-row .portrait { width: 46px; height: 46px; }
+    .j-row > div { min-width: 0; text-align: left; }
+    .j-row b { display: block; font-weight: 400; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .j-row small { display: block; font-size: 0.7rem; color: rgba(245, 233, 207, 0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .j-badge { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; border: 3px solid var(--navy); background: var(--yellow); color: var(--navy); font-size: 1.2rem; box-shadow: 0 3px 0 #0a0f1e; }
+    .j-prize { display: grid; justify-items: center; gap: 2px; font-size: 0.62rem; text-align: center; max-width: 76px; color: var(--yellow); }
+    .j-prize .card { --cw: 34px; } .j-prize .portrait { width: 38px; height: 38px; }
+    .j-slots { display: flex; } .j-slots i { width: 16px; height: 23px; margin-left: -6px; border-radius: 4px; border: 2px solid var(--navy); background: var(--back, var(--orange)); transform: rotate(calc(var(--k) * 8deg)); }
+    .j-done { padding: 10px; border-radius: 14px; background: rgba(31, 42, 68, 0.95); font-size: 0.85rem; }
+    .j-flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .j-step { display: grid; justify-items: center; align-content: start; gap: 4px; padding: 8px 6px; border-radius: 14px; background: rgba(31, 42, 68, 0.95); text-align: center; }
+    .j-step b { font-weight: 400; font-size: 0.86rem; } .j-step small { font-size: 0.66rem; line-height: 1.3; color: rgba(245, 233, 207, 0.75); }
+    .j-coin { width: 34px; height: 34px; font-size: 1rem; }
+    .j-pack { display: grid; place-items: center; height: 52px; } .j-pack .pack.mini { zoom: 0.24; animation: none; filter: none; }
+    .j-step .portrait { width: 40px; height: 40px; margin: 6px 0 4px; }
+    .j-text { margin: 0 0 8px; font-size: 0.82rem; line-height: 1.4; color: rgba(245, 233, 207, 0.85); }
+    .j-atouts { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; } .j-atouts .card { --cw: 46px; }
+    .j-atouts .slot-free { width: 46px; height: 65px; border-radius: 8px; border: 2px dashed rgba(245, 233, 207, 0.35); display: grid; place-items: center; color: rgba(245, 233, 207, 0.4); }
+    /* Écran « Débloqué ! » : chaque nouvel atout ou personnage, expliqué au moment où on le gagne. */
+    #unlock { z-index: 55; }
+    .unlock-sheet { text-align: center; }
+    .u-kicker { display: block; letter-spacing: 0.14em; color: var(--teal); font-size: 0.75rem; text-transform: uppercase; }
+    .unlock-sheet h2 { margin: 2px 0 10px; font-size: 1.7rem; }
+    .u-visual { display: grid; place-items: center; min-height: 170px; margin-bottom: 8px; }
+    .u-visual .card { --cw: 118px; animation: rise 620ms cubic-bezier(.2, 1.3, .4, 1) backwards; }
+    .u-visual .portrait { width: 140px; height: 140px; animation: rise 620ms cubic-bezier(.2, 1.3, .4, 1) backwards; }
+    .unlock-sheet p { margin: 0 0 8px; line-height: 1.4; }
+    .u-help { font-size: 0.8rem; color: rgba(245, 233, 207, 0.75); }
     .who small { color: var(--yellow); }
     .xp { height: 6px; margin-top: 4px; border-radius: 99px; background: rgba(245, 233, 207, 0.2); overflow: hidden; }
     .xp i { display: block; height: 100%; background: var(--yellow); transition: width 600ms ease; }
@@ -769,7 +810,7 @@
     <div class="col">
       <div class="mtop">
         <div class="ava" id="menuAva"></div>
-        <div class="who"><span id="menuName">Toi</span> <small id="menuLvl">· Niv. 1</small><div class="xp"><i id="menuXp"></i></div></div>
+        <button class="who" id="journeyBtn" aria-label="Ton aventure : prochaines récompenses"><span class="who-line"><span id="menuName">Toi</span> <small id="menuLvl">· Niv. 1</small><span class="who-more" id="journeyMore">›</span></span><div class="xp"><i id="menuXp"></i></div></button>
         <div class="pill tr"><span id="trophies">0</span> ♛</div>
         <button class="pill" id="crystalsBtn" aria-label="Ouvrir un booster">◆ <span id="crystals">0</span></button>
       </div>
@@ -968,6 +1009,35 @@
       </div>
       <p id="lobbyMsg"></p>
       <button class="btn ghost" id="lobbyClose">Fermer</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="journey">
+    <div class="sheet journey-sheet">
+      <div class="j-head"><div id="jAva"></div><div class="j-lvl"><b id="jLvl"></b><div class="xp"><i id="jXp"></i></div><small id="jXpText"></small></div></div>
+      <h3 class="j-title">Tes prochaines récompenses</h3>
+      <div class="j-list" id="jList"></div>
+      <h3 class="j-title">Comment ça marche</h3>
+      <div class="j-flow">
+        <div class="j-step"><span class="mcoin j-coin">◆</span><b>Cristaux</b><small>Chaque partie t'en donne, même perdue.</small></div>
+        <div class="j-step"><span class="j-pack" id="jPack"></span><b>Booster</b><small>60 cristaux : 3 objets au hasard.</small></div>
+        <div class="j-step"><span id="jCol"></span><b>Collection</b><small>Persos, dés et dos de cartes, dans l'onglet Cartes.</small></div>
+      </div>
+      <h3 class="j-title">Tes atouts</h3>
+      <p class="j-text" id="jAtoutText"></p>
+      <div class="j-atouts" id="jAtouts"></div>
+      <div class="stack"><button class="btn teal" id="jManage">Gérer mes atouts</button><button class="btn ghost" id="jClose">Fermer</button></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="unlock">
+    <div class="sheet unlock-sheet">
+      <small class="u-kicker" id="uKicker"></small>
+      <h2 id="uName"></h2>
+      <div class="u-visual" id="uVisual"></div>
+      <p id="uDesc"></p>
+      <p class="u-help" id="uHelp"></p>
+      <div class="stack" id="uActions"></div>
     </div>
   </div>
 
@@ -3320,6 +3390,7 @@
       const dXp = won ? 50 : lost ? 20 : 30;
       save.xp += dXp;
       let gain, head, trip = null;
+      const unlocked = [];
       if (S.mode === "p2p") {
         gain = won ? 20 : 10;
         $("#endText").textContent = won ? tr("Tu as battu {name} !", { name: foe() }) : lost ? tr("{name} remporte ce duel.", { name: foe() }) : tr("Égalité parfaite entre amis.");
@@ -3351,8 +3422,8 @@
           if (stars > (save.camp.stars[S.stage] || 0)) { if (!first) notes.push({ v: "★", t: tr("Nouveau record : {stars}", { stars: "★".repeat(stars) }), hot: true }); save.camp.stars[S.stage] = stars; }
           if (first) {
             save.camp.cleared += 1;
-            if (sg.gift && grantAtouts([sg.gift]).length) notes.push({ v: cardEl(makeAtout(sg.gift, "end"), 0).outerHTML, t: tr("Atout gagné : {name}", { name: tr(ATOUTS[sg.gift].name) }), hot: true, wide: true });
-            for (const id of sg.unlocks) if (!save.chars[id]) { save.chars[id] = 1; notes.push({ v: portrait(id), t: tr("Personnage débloqué : {name}", { name: tr(CHARS[id].name) }), hot: true, wide: true }); }
+            if (sg.gift && grantAtouts([sg.gift]).length && unlocked.push({ kind: "atout", id: sg.gift })) notes.push({ v: cardEl(makeAtout(sg.gift, "end"), 0).outerHTML, t: tr("Atout gagné : {name}", { name: tr(ATOUTS[sg.gift].name) }), hot: true, wide: true });
+            for (const id of sg.unlocks) if (!save.chars[id]) { save.chars[id] = 1; unlocked.push({ kind: "char", id }); notes.push({ v: portrait(id), t: tr("Personnage débloqué : {name}", { name: tr(CHARS[id].name) }), hot: true, wide: true }); }
             if (sg.boss) { trip = [ch, CHAPTERS[sg.c + 1] || null]; if (CHAPTERS[sg.c + 1]) notes.push({ v: `<i class="pdot" style="display:block;width:30px;height:30px;border-radius:50%;border:2px solid var(--navy);background:${CHAPTERS[sg.c + 1].color}"></i>`, t: tr("Nouveau chapitre : {planet}", { planet: tr(CHAPTERS[sg.c + 1].planet) }), wide: true }); }
             if (save.camp.cleared < STAGES.length) { S.stage = save.stage = save.camp.cleared; chapterView = STAGES[S.stage].c; }
           }
@@ -3365,7 +3436,7 @@
       if (lvlAfter > lvlBefore) {
         gain += 30 * (lvlAfter - lvlBefore);
         notes.unshift({ v: `<b style="font-size:1.3rem;color:var(--yellow)">${lvlAfter}</b>`, t: tr("Niveau {n} ! (+30 ◆)", { n: lvlAfter }), hot: true, wide: true });
-        for (const id of levelAtouts()) notes.push({ v: "★", t: tr("Nouvel atout : {name}", { name: tr(ATOUTS[id].name) }), hot: true });
+        for (const id of levelAtouts()) unlocked.push({ kind: "atout", id }) && notes.push({ v: "★", t: tr("Nouvel atout : {name}", { name: tr(ATOUTS[id].name) }), hot: true });
         const slots = SLOT_LEVELS.find(([lvl]) => lvl > lvlBefore && lvl <= lvlAfter);
         if (slots) notes.push({ v: "★", t: tr("{n} emplacements d'atouts !", { n: slots[1] }), hot: true });
       }
@@ -3400,6 +3471,7 @@
       else if (won) { warp(2200); sfx.win(); }
       else sfx.lose();
       $("#endScreen").classList.add("on");
+      if (unlocked.length) setTimeout(() => { if (game === gameId) revealUnlocks(unlocked); }, reduced ? 200 : 2200);
       if (won) { boom(null, true, $("#endDuel")); buzz([40, 30, 80]); }
     }
 
@@ -3534,6 +3606,87 @@
       });
     }
 
+    /* ═════ Progression : page « Ton aventure » et écran « Débloqué ! » ═════ */
+    /* Les 4 prochaines récompenses au plus : la prochaine étape qui donne quelque chose, le prochain niveau
+       qui apporte un atout ou une place, puis la suivante de chaque. Jamais toute la liste d'un coup. */
+    function upcomingRewards() {
+      const lvl = levelInfo(save.xp).lvl, camp = [], levels = [];
+      for (let i = save.camp.cleared; i < STAGES.length && camp.length < 2; i += 1) {
+        const sg = STAGES[i], gift = sg.gift && !save.owned[sg.gift] ? sg.gift : null, chars = sg.unlocks.filter(id => !save.chars[id]);
+        if (gift || chars.length) camp.push({ kind: "stage", sg, gift, chars });
+      }
+      for (const [at, id] of Object.entries(LEVEL_ATOUTS)) if (Number(at) > lvl && !save.owned[id]) levels.push({ kind: "level", lvl: Number(at), atout: id });
+      for (const [at, slots] of SLOT_LEVELS) if (at > lvl) levels.push({ kind: "level", lvl: at, slots });
+      levels.sort((a, b) => a.lvl - b.lvl);
+      return [camp[0], levels[0], camp[1], levels[1]].filter(Boolean);
+    }
+    function rewardRow(r, next) {
+      if (r.kind === "stage") {
+        const sg = r.sg, prize = r.gift ? `${cardEl(makeAtout(r.gift, "j"), 0).outerHTML}<span>${tr(ATOUTS[r.gift].name)}</span>`
+          : `${portrait(r.chars[0])}<span>${tr(CHARS[r.chars[0]].name)}</span>`;
+        const more = r.gift && r.chars.length ? ` · ${tr("+ un personnage")}` : "";
+        return `<div class="j-row${next ? " next" : ""}">${portrait(sg.char)}<div><b>${sg.boss ? tr("Vaincre {name}", { name: tr(sg.name) }) : tr("Battre {name}", { name: tr(sg.name) })}</b><small>${tr(CHAPTERS[sg.c].planet)} · ${tr("étape {n}", { n: (STAGES.indexOf(sg) % 4) + 1 })}${more}</small></div><div class="j-prize">${prize}</div></div>`;
+      }
+      const prize = r.atout ? `${cardEl(makeAtout(r.atout, "j"), 0).outerHTML}<span>${tr(ATOUTS[r.atout].name)}</span>`
+        : `<span class="j-slots">${Array.from({ length: r.slots }, (_, k) => `<i style="--k:${k - (r.slots - 1) / 2};--back:${BACKS[save.equip.back].css}"></i>`).join("")}</span><span>${tr("{n} atouts équipés", { n: r.slots })}</span>`;
+      return `<div class="j-row${next ? " next" : ""}"><span class="j-badge">${r.lvl}</span><div><b>${tr("Atteindre le niveau {n}", { n: r.lvl })}</b><small>${tr("En jouant, même en perdant")}</small></div><div class="j-prize">${prize}</div></div>`;
+    }
+    function openJourney() {
+      const lv = levelInfo(save.xp), list = upcomingRewards();
+      $("#jAva").innerHTML = portrait(save.char);
+      $("#jLvl").textContent = tr("Niveau {n}", { n: lv.lvl });
+      $("#jXp").style.width = `${Math.round((lv.into / lv.need) * 100)}%`;
+      $("#jXpText").textContent = tr("{n} / {max} XP jusqu'au niveau suivant", { n: lv.into, max: lv.need });
+      $("#jList").innerHTML = list.length ? list.map((r, i) => rewardRow(r, i === 0)).join("") : `<div class="j-done">${tr("Tu as tout débloqué en campagne. Bravo, commandant !")}</div>`;
+      $("#jPack").innerHTML = packHTML(true).replace(' id="pack"', "").replace("pack dull", "pack mini");
+      $("#jCol").innerHTML = portrait(save.char);
+      const slots = atoutSlots();
+      $("#jAtoutText").textContent = tr("Les atouts sont des cartes spéciales mélangées à ta pioche. Tu en équipes {n} : choisis ceux qui te plaisent dans l'onglet Cartes.", { n: slots });
+      $("#jAtouts").innerHTML = save.loadout.map(id => cardEl(makeAtout(id, "jl"), 0).outerHTML).join("") + Array.from({ length: Math.max(0, slots - save.loadout.length) }, () => '<span class="slot-free">+</span>').join("");
+      save.seen.journey = 1;
+      persist();
+      renderJourneyHint();
+      sfx.tap();
+      $("#journey").classList.add("on");
+    }
+    const closeJourney = () => $("#journey").classList.remove("on");
+    /* Pastille sur le niveau : une seule fois après la première partie, pour faire découvrir la page sans l'imposer. */
+    function renderJourneyHint() { $("#journeyMore").classList.toggle("new", !save.seen.journey && (save.games || 0) >= 1); }
+    /* Après une partie : chaque nouvel atout ou personnage a son moment, avec ce qu'il fait et quoi en faire. */
+    function revealUnlocks(queue) {
+      const item = queue.shift();
+      if (!item) return $("#unlock").classList.remove("on");
+      const next = () => revealUnlocks(queue);
+      if (item.kind === "atout") {
+        const a = ATOUTS[item.id], equipped = save.loadout.includes(item.id);
+        $("#uKicker").textContent = tr("Nouvel atout");
+        $("#uName").textContent = tr(a.name);
+        $("#uVisual").innerHTML = cardEl(makeAtout(item.id, "u"), 0).outerHTML;
+        $("#uDesc").textContent = tr(a.desc);
+        const status = equipped ? tr("Il est déjà dans ta pioche pour la prochaine partie.") : tr("Tes {n} places d'atouts sont prises : choisis lesquels garder.", { n: atoutSlots() });
+        $("#uHelp").textContent = save.seen.unlockAtout ? status : `${tr("Un atout est une carte spéciale mélangée à ta pioche. Il ne sert que s'il est équipé.")} ${status}`;
+        save.seen.unlockAtout = 1;
+        fillButtons($("#uActions"), equipped
+          ? [{ label: queue.length ? tr("Suivant") : tr("Super !"), cls: "hot", fn: next }]
+          : [{ label: tr("Choisir mes atouts"), cls: "hot", fn: () => { $("#unlock").classList.remove("on"); $("#endScreen").classList.remove("on"); goMenu(); openAtouts(); } }, { label: queue.length ? tr("Suivant") : tr("Plus tard"), cls: "ghost", fn: next }]);
+      } else {
+        const c = CHARS[item.id];
+        $("#uKicker").textContent = tr("Nouveau personnage");
+        $("#uName").textContent = tr(c.name);
+        $("#uVisual").innerHTML = portrait(item.id);
+        $("#uDesc").innerHTML = tr("{tribe} · talent <b>{perk}</b> : {desc}", { tribe: tr(CASTS[c.tribe].label), perk: tr(PERKS[c.tribe].name), desc: tr(PERKS[c.tribe].desc) });
+        $("#uHelp").textContent = !save.seen.unlockChar ? tr("Ton personnage donne le talent de sa tribu à toute ta partie. Tu peux en changer à tout moment dans Cartes.") : "";
+        save.seen.unlockChar = 1;
+        fillButtons($("#uActions"), [
+          { label: tr("Jouer avec {name}", { name: tr(c.name) }), cls: "hot", fn: () => { save.char = item.id; S.cast[0] = c.tribe; persist(); renderMenu(); sfx.rare(); next(); } },
+          { label: queue.length ? tr("Suivant") : tr("Plus tard"), cls: "ghost", fn: next }
+        ]);
+      }
+      persist();
+      sfx.rare();
+      $("#unlock").classList.add("on");
+    }
+
     /* ═════ Menu, atouts, capsules ═════ */
     function leagueHTML() {
       const t = save.trophies, i = leagueOf(t), L = LEAGUES[i], next = LEAGUES[i + 1];
@@ -3547,6 +3700,7 @@
     function renderMenu() {
       const lv = levelInfo(save.xp);
       $("#menuName").textContent = myName();
+      renderJourneyHint();
       renderOffers();
       $("#menuAva").innerHTML = charArt(save.char);
       $("#menuLvl").textContent = `· ${tr("Niv. {n}", { n: lv.lvl })}`;
@@ -3844,6 +3998,9 @@
     for (const id of ["capsuleBtn", "quickBooster", "crystalsBtn"]) $(`#${id}`).addEventListener("click", openCapsuleShop);
     $("#quickAtouts").addEventListener("click", openAtouts);
     $("#dailyBox").addEventListener("click", openDaily);
+    $("#journeyBtn").addEventListener("click", openJourney);
+    $("#jClose").addEventListener("click", () => { sfx.tap(); closeJourney(); });
+    $("#jManage").addEventListener("click", () => { sfx.tap(); closeJourney(); openAtouts(); });
     $("#premiumBtn").addEventListener("click", () => { sfx.tap(); openPremium(); });
     $("#menuHelp").addEventListener("click", () => openHelp(null));
     $("#pauseHelp").addEventListener("click", () => openHelp("pause"));
