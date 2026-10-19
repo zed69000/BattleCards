@@ -56,7 +56,10 @@ workflows:
       - *versions
       - *android_project
       - name: APK de test
-        script: cd android && ./gradlew assembleDebug
+        script: |
+          # Clé de debug fixe (non secrète) : chaque APK de test s'installe par-dessus le précédent sans perdre la partie.
+          mkdir -p ~/.android && cp android-debug.keystore ~/.android/debug.keystore
+          cd android && ./gradlew assembleDebug
     artifacts:
       - android/app/build/outputs/apk/**/*.apk
 
