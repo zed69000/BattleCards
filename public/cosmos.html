@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.58";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.59";</script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -76,6 +76,42 @@
     .vsBurst { z-index: 2; margin: 0 -16px; padding: 12px 11px; font-size: 1.5rem; color: var(--orange); background: var(--cream); clip-path: polygon(0 20%, 14% 0, 32% 14%, 50% 0, 68% 16%, 86% 0, 100% 26%, 92% 52%, 100% 80%, 84% 100%, 62% 84%, 46% 100%, 28% 82%, 10% 100%, 0 70%, 8% 46%); animation: beat 1.8s ease-in-out infinite; }
     .stake { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.78rem; color: rgba(245, 233, 207, 0.85); }
     .stake b { font-family: "Righteous", sans-serif; font-weight: 400; color: var(--yellow); }
+    /* Gain de la prochaine victoire, en pastilles sur une seule ligne (rien ne bouge quand on change d'adversaire). */
+    #stake { display: flex; justify-content: center; align-items: center; gap: 6px; width: 100%; max-width: 380px; min-width: 0; flex-wrap: nowrap; overflow: hidden; margin-top: -2px; }
+    #stake .chip { min-width: 0; padding: 3px 10px; border-radius: 99px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: "Righteous", sans-serif; font-size: 0.8rem; line-height: 1.3; }
+    #stake .chip.tier { flex: 0 1 auto; background: rgba(245, 233, 207, 0.12); color: rgba(245, 233, 207, 0.85); }
+    #stake .chip.tier.boss { background: rgba(255, 95, 122, 0.22); color: #ffb3bf; }
+    #stake .chip.win { flex: none; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); box-shadow: 0 3px 0 #0a0f1e; font-size: 0.9rem; }
+    #stake .chip.win b { color: var(--navy); }
+    #stake .chip.bonus { flex: 0 1 auto; background: rgba(47, 163, 148, 0.25); color: #9fe6da; }
+    #stake .chip.bonus b { color: inherit; }
+    /* Boutons et titres sur une ligne : un nom long est coupé proprement au lieu de tout décaler. */
+    #playBtn { width: 100%; max-width: 380px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: clamp(1rem, 5.2vw, 1.25rem); }
+    .boost-txt b, .boost-txt small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rank .ln > div { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .showcase h3 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* Les deux boosters côte à côte, en tuiles. */
+    .offers { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 380px; }
+    .offers:has(#dailyBox[hidden]) { grid-template-columns: 1fr; }
+    .offers .boost { grid-template-columns: 44px minmax(0, 1fr); grid-template-rows: auto auto; gap: 4px 8px; padding: 8px; text-align: left; align-items: center; }
+    .offers .boost .boost-pack { height: 64px; grid-row: 1; }
+    .offers .boost .pack.mini { zoom: 0.29; }
+    .offers .boost-txt b { font-size: 0.98rem; }
+    .offers .boost-txt small { font-size: 0.66rem; }
+    .offers .boost-txt .xp { display: none; }
+    .offers .boost-cta { grid-column: 1 / -1; text-align: center; padding: 0.4rem 0.6rem; font-size: 0.8rem; }
+    .offers .boost.daily { margin-top: 0; }
+    .offers .daily-ic { display: grid; place-items: center; height: 64px; }
+    .offers .daily-ic svg { width: 42px; height: 42px; }
+    @media (max-height: 760px) {
+      .hero-fan { --hcw: clamp(36px, 11vw, 52px); }
+      .hero h1 { font-size: clamp(1.4rem, 7vw, 1.9rem); }
+      .node .pic { width: 46px; height: 46px; }
+      #menu .pane { gap: 8px; }
+    }
+    /* Collection : les onglets et la vitrine (avec Équiper) restent visibles quand la grille défile. */
+    .pane[data-pane="cards"] .subtabs { position: sticky; top: -6px; z-index: 5; background: #10162b; }
+    .pane[data-pane="cards"] .showcase { position: sticky; top: 50px; z-index: 4; background: #141b33; box-shadow: 0 10px 16px rgba(10, 15, 30, 0.85); }
     .league { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 380px; padding: 7px 10px; border-radius: 14px; background: rgba(16, 22, 43, 0.88); border: 2px solid rgba(245, 233, 207, 0.4); text-align: left; }
     .league .bar { flex: 1; min-width: 0; }
     .league small { display: block; font-size: 0.62rem; color: rgba(245, 233, 207, 0.7); }
@@ -752,6 +788,7 @@
           <div class="path" id="path"></div>
           <button class="btn big hot" id="playBtn">Décoller</button>
           <div class="stake" id="stake"></div>
+          <div class="offers">
           <button class="boost" id="quickBooster">
             <span class="boost-pack" id="boostPack"></span>
             <span class="boost-txt"><b>Booster</b><small id="boostSub">3 objets de collection</small><span class="xp"><i id="boostBar"></i></span></span>
@@ -759,9 +796,10 @@
           </button>
           <button class="boost daily" id="dailyBox" hidden>
             <span class="daily-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="8" y="20" width="32" height="22" rx="3" fill="#f5c445" stroke="#1f2a44" stroke-width="2.4"/><rect x="5" y="13" width="38" height="9" rx="2" fill="#f26a3d" stroke="#1f2a44" stroke-width="2.4"/><path d="M24 13 V42" stroke="#1f2a44" stroke-width="2.4"/><path d="M24 13 Q15 3 12 9 Q11 14 24 13 Q37 14 36 9 Q33 3 24 13z" fill="#d0508f" stroke="#1f2a44" stroke-width="2.2" stroke-linejoin="round"/></svg></span>
-            <span class="boost-txt"><b>Booster gratuit du jour</b><small id="dailySub">3 objets, offerts chaque jour</small></span>
+            <span class="boost-txt"><b>Gratuit</b><small id="dailySub">Booster du jour</small></span>
             <span class="boost-cta" id="dailyCta">Vidéo · ouvrir</span>
           </button>
+          </div>
           <div class="quick"><button class="btn" id="quickAtouts">Atouts 0/3</button></div>
         </section>
         <section class="pane" data-pane="arena">
@@ -824,8 +862,8 @@
       <div class="version" id="version"></div>
       <nav class="tabs" id="tabs">
         <button class="on" data-tab="adv"><b>☾</b>Aventure</button>
-        <button data-tab="arena"><b>♛</b>Multijoueur</button>
         <button data-tab="cards"><b>▣</b>Cartes</button>
+        <button data-tab="arena"><b>♛</b>Multijoueur</button>
         <button data-tab="more"><b>⚙</b>Options</button>
       </nav>
     </div>
@@ -3430,7 +3468,7 @@
       const box = $("#dailyBox"), left = dailyLeft();
       box.hidden = levelInfo(save.xp).lvl < MONET.dailyLevel;
       box.classList.toggle("used", left <= 0);
-      $("#dailySub").textContent = left > 0 ? (save.premium ? tr("{n} boosters offerts aujourd'hui", { n: left }) : tr("3 objets, offerts chaque jour")) : tr("Revient demain");
+      $("#dailySub").textContent = left > 0 ? (save.premium && left > 1 ? tr("{n} boosters offerts aujourd'hui", { n: left }) : tr("Booster du jour")) : tr("Revient demain");
       $("#dailyCta").textContent = left <= 0 ? tr("Pris ✓") : save.premium ? tr("Ouvrir !") : tr("Vidéo · ouvrir");
       $("#premiumBtn").textContent = save.premium ? tr("Pack Commandant ✓") : tr("Pack Commandant · {price}", { price: MONET.premiumPrice });
       $("#shopTab").hidden = save.camp.cleared < MONET.shopStage;
@@ -3518,7 +3556,7 @@
       const ready = save.crystals >= CAPSULE_COST;
       $("#quickBooster").classList.toggle("ready", ready);
       $("#boostPack").innerHTML = packHTML(true).replace(' id="pack"', "").replace("pack dull", "pack mini");
-      $("#boostSub").textContent = ready ? tr("Personnages, dés, atouts rares…") : tr("Encore {n} ◆ pour le prochain", { n: CAPSULE_COST - save.crystals });
+      $("#boostSub").textContent = ready ? tr("3 objets au hasard") : tr("Encore {n} ◆", { n: CAPSULE_COST - save.crystals });
       $("#boostBar").style.width = `${Math.min(100, Math.round((save.crystals / CAPSULE_COST) * 100))}%`;
       $("#boostCta").textContent = ready ? tr("Ouvrir !") : `${save.crystals} / ${CAPSULE_COST} ◆`;
       $('#tabs [data-tab="cards"]').classList.toggle("dot", ready);
@@ -3584,10 +3622,11 @@
       const sg = STAGES[S.stage], done = S.stage < cleared;
       $("#playBtn").textContent = sg.boss ? tr("Affronter {name}", { name: tr(sg.name) }) : tr("Combattre {name}", { name: tr(sg.name) });
       $("#playBtn").classList.toggle("boss", Boolean(sg.boss));
-      const prize = done ? `${Math.round(sg.reward / 2)} ◆` : `${sg.reward} ◆${sg.gift && !save.owned[sg.gift] ? ` ${tr("+ atout <b>{name}</b>", { name: tr(ATOUTS[sg.gift].name) })}` : ""}${sg.boss ? ` ${tr("+ un personnage")}` : ""}`;
-      $("#stake").innerHTML = sg.boss
-        ? tr("<b>Boss</b> · super coup <b>{move}</b> toutes les {n} manches. Victoire : <b>{prize}</b>", { move: tr(BOSSES[sg.boss].move), n: BOSSES[sg.boss].every, prize })
-        : tr("{name}, {tier}. Victoire : <b>{prize}</b>", { name: tr(sg.name), tier: tr(TIER_NAMES[sg.tier]), prize });
+      // Gain lisible d'un coup d'œil : niveau de l'adversaire, cristaux de la victoire, bonus éventuels.
+      const gems = done ? Math.round(sg.reward / 2) : sg.reward;
+      const extras = done ? [] : [sg.gift && !save.owned[sg.gift] ? tr("+ atout <b>{name}</b>", { name: tr(ATOUTS[sg.gift].name) }) : null, sg.boss ? tr("+ un personnage") : null].filter(Boolean);
+      $("#stake").innerHTML = `<span class="chip tier${sg.boss ? " boss" : ""}">${sg.boss ? `${tr("Boss")} · ${tr(BOSSES[sg.boss].move)}` : tr(TIER_NAMES[sg.tier])}</span>`
+        + `<span class="chip win">${tr("Victoire")} <b>+${gems} ◆</b></span>${extras.map(x => `<span class="chip bonus">${x}</span>`).join("")}`;
     }
     function openBossIntro() {
       const sg = STAGES[S.stage], b = BOSSES[sg.boss];
