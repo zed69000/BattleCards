@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.56";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.57";</script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -110,6 +110,37 @@
     .boost.ready { border-color: var(--yellow); background: linear-gradient(110deg, rgba(245, 196, 69, 0.42), rgba(16, 22, 43, 0.92) 70%); animation: glow 1.6s ease-in-out infinite; }
     .boost.ready::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.35) 50%, transparent 62%) no-repeat; background-size: 260% 100%; animation: sheen 2.6s ease-in-out infinite; }
     .boost-pack { display: grid; place-items: center; height: 106px; }
+    /* Booster gratuit du jour, juste sous le booster payant en cristaux. */
+    .boost.daily { margin-top: -2px; border-color: var(--yellow); background: linear-gradient(110deg, rgba(208, 80, 143, 0.4), rgba(16, 22, 43, 0.92) 70%); grid-template-columns: 56px 1fr auto; padding: 8px 12px 8px 8px; }
+    .boost.daily .boost-cta { background: var(--teal); border-color: var(--navy); box-shadow: 0 4px 0 #0a0f1e; }
+    .boost.daily.used { border-color: rgba(245, 233, 207, 0.25); background: rgba(16, 22, 43, 0.8); }
+    .boost.daily.used .boost-cta { background: transparent; border-color: rgba(245, 233, 207, 0.4); box-shadow: none; color: rgba(245, 233, 207, 0.7); }
+    .daily-ic svg { display: block; width: 48px; height: 48px; }
+    .premium-sheet { text-align: center; }
+    .premium-badge svg { width: 64px; height: 64px; }
+    .premium-sheet h2 { margin: 4px 0 0; }
+    .premium-sub { margin: 2px 0 12px; color: rgba(245, 233, 207, 0.75); font-size: 0.85rem; }
+    .premium-list { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 8px; text-align: left; }
+    .premium-list li { position: relative; padding-left: 28px; line-height: 1.3; }
+    .premium-list li::before { content: ""; position: absolute; left: 4px; top: 3px; width: 12px; height: 7px; border-left: 3px solid var(--ok); border-bottom: 3px solid var(--ok); transform: rotate(-45deg); }
+    .premium-fair { margin: 0 0 14px; font-size: 0.8rem; color: var(--ok); }
+    .store-sheet { text-align: center; }
+    .ad-screen { display: grid; place-items: center; gap: 8px; height: 170px; margin: 0 0 12px; border-radius: 14px; border: 2px dashed rgba(245, 233, 207, 0.4); background: #0a0f1e; color: rgba(245, 233, 207, 0.8); font-size: 0.85rem; padding: 12px; }
+    .ad-screen b { font-weight: 400; font-size: 2.2rem; color: var(--yellow); }
+    .ad-bar { width: 80%; height: 6px; border-radius: 99px; background: rgba(245, 233, 207, 0.2); overflow: hidden; }
+    .ad-bar i { display: block; height: 100%; width: 100%; background: var(--teal); transform-origin: 0 50%; }
+    .pane.shop-on .showcase { display: none; }
+    .colgrid .shopgrid, .colgrid .shop-note { grid-column: 1 / -1; }
+    .shopgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 380px; }
+    .shopitem { display: grid; justify-items: center; gap: 6px; padding: 8px 4px; border-radius: 14px; border: 2px solid var(--navy); background: rgba(31, 42, 68, 0.9); color: var(--cream); font-size: 0.7rem; }
+    .shopitem .portrait { width: 52px; height: 52px; }
+    .shopitem .die-prev { width: 44px; } .shopitem .back-prev { width: 38px; }
+    .shopitem .price, .shoplot .price { white-space: nowrap; padding: 2px 10px; border-radius: 99px; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); font-size: 0.75rem; }
+    .shopitem .owned, .shoplot .owned { white-space: nowrap; padding: 1px 10px; border-radius: 99px; border: 1px solid var(--ok); color: var(--ok); }
+    .shoplot { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 14px; border: 2px solid var(--yellow); background: rgba(31, 42, 68, 0.9); color: var(--cream); text-align: left; }
+    .shoplot .faces { display: flex; } .shoplot .faces .portrait { width: 34px; height: 34px; margin-right: -8px; }
+    .shoplot span.grow { flex: 1; font-size: 0.8rem; } .shoplot small { display: block; color: rgba(245, 233, 207, 0.7); }
+    .shop-note { margin: 8px 0 0; font-size: 0.72rem; color: rgba(245, 233, 207, 0.7); text-align: center; }
     .pack.mini { zoom: 0.46; animation: none; filter: grayscale(0.75) brightness(0.7); }
     .boost.ready .pack.mini { animation: wobble 1.4s ease-in-out infinite; filter: none; box-shadow: 0 0 22px rgba(245, 196, 69, 0.9); }
     .boost-txt { display: grid; gap: 2px; min-width: 0; }
@@ -168,7 +199,7 @@
     #playBtn.boss { background: linear-gradient(180deg, #ff5f7a, var(--orange)); }
     .tiny-tag { font-size: 0.6rem; letter-spacing: 0.14em; color: var(--teal); }
     /* Collection : onglets internes, grille sans barre de défilement */
-    .subtabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: 100%; max-width: 380px; padding: 4px; border-radius: 14px; background: rgba(16, 22, 43, 0.9); border: 2px solid rgba(245, 233, 207, 0.25); }
+    .subtabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; width: 100%; max-width: 380px; padding: 4px; border-radius: 14px; background: rgba(16, 22, 43, 0.9); border: 2px solid rgba(245, 233, 207, 0.25); }
     .subtabs button { min-height: 40px; padding: 4px 2px; border: 0; border-radius: 10px; background: none; font-size: 0.74rem; color: rgba(245, 233, 207, 0.7); line-height: 1.05; }
     .subtabs button small { display: block; font-size: 0.56rem; opacity: 0.8; }
     .subtabs button.on { background: var(--yellow); color: var(--navy); }
@@ -726,6 +757,11 @@
             <span class="boost-txt"><b>Booster</b><small id="boostSub">3 objets de collection</small><span class="xp"><i id="boostBar"></i></span></span>
             <span class="boost-cta" id="boostCta">Ouvrir</span>
           </button>
+          <button class="boost daily" id="dailyBox" hidden>
+            <span class="daily-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="8" y="20" width="32" height="22" rx="3" fill="#f5c445" stroke="#1f2a44" stroke-width="2.4"/><rect x="5" y="13" width="38" height="9" rx="2" fill="#f26a3d" stroke="#1f2a44" stroke-width="2.4"/><path d="M24 13 V42" stroke="#1f2a44" stroke-width="2.4"/><path d="M24 13 Q15 3 12 9 Q11 14 24 13 Q37 14 36 9 Q33 3 24 13z" fill="#d0508f" stroke="#1f2a44" stroke-width="2.2" stroke-linejoin="round"/></svg></span>
+            <span class="boost-txt"><b>Booster gratuit du jour</b><small id="dailySub">3 objets, offerts chaque jour</small></span>
+            <span class="boost-cta" id="dailyCta">Vidéo · ouvrir</span>
+          </button>
           <div class="quick"><button class="btn" id="quickAtouts">Atouts 0/3</button></div>
         </section>
         <section class="pane" data-pane="arena">
@@ -752,6 +788,7 @@
             <button data-sub="atouts">Atouts<small id="cntAtouts"></small></button>
             <button data-sub="dice">Dés<small id="cntDice"></small></button>
             <button data-sub="back">Dos<small id="cntBack"></small></button>
+            <button data-sub="shop" id="shopTab" hidden>Boutique<small>€</small></button>
           </div>
           <div class="showcase" id="showcase"></div>
           <div class="colgrid" id="colGrid"></div>
@@ -760,6 +797,7 @@
         <section class="pane" data-pane="more">
           <div class="section-title">Options</div>
           <div class="stack">
+            <button class="btn" id="premiumBtn">Pack Commandant</button>
             <button class="btn ghost" id="tutoBtn">Revoir toutes les explications</button>
             <button class="btn ghost" id="menuHelp">Règles</button>
             <button class="btn ghost" id="menuSound">Son : oui</button>
@@ -892,6 +930,26 @@
     </div>
   </div>
 
+  <div class="overlay" id="premium">
+    <div class="sheet premium-sheet">
+      <div class="premium-badge" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M32 4 L54 16 V36 Q54 52 32 60 Q10 52 10 36 V16z" fill="#1f2a44" stroke="#f5c445" stroke-width="3"/><path d="M20 30 L26 22 L32 30 L38 22 L44 30 L42 42 H22z" fill="#f5c445" stroke="#1f2a44" stroke-width="2" stroke-linejoin="round"/></svg></div>
+      <h2>Pack Commandant</h2>
+      <p class="premium-sub" id="premiumSub">Achat unique, à vie</p>
+      <ul class="premium-list">
+        <li data-i18n>Plus aucune pub imposée</li>
+        <li data-i18n>Les bonus des vidéos sans regarder de vidéo</li>
+        <li data-i18n>Un booster gratuit de plus chaque jour</li>
+        <li data-i18n>Le dé et le dos de cartes « Commandant », exclusifs et visibles en duel</li>
+      </ul>
+      <p class="premium-fair">Aucun avantage en partie : le jeu reste équitable.</p>
+      <div class="stack" id="premiumActions"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="store">
+    <div class="sheet store-sheet"><h2 id="storeTitle"></h2><div id="storeBody"></div><div class="stack" id="storeActions"></div></div>
+  </div>
+
   <div class="overlay" id="welcome">
     <div class="sheet"><h2>Bienvenue, terrien !</h2>
       <label class="lobby-field">Comment tu t'appelles ?<input id="welcomeName" maxlength="14" autocomplete="off" autocapitalize="words"></label>
@@ -985,7 +1043,7 @@
     <div class="end-rain" id="endRain" aria-hidden="true"></div>
     <div class="sheet end-sheet"><div class="duelists" id="endDuel"></div><h2 id="endTitle"></h2><div class="score" id="endScore"></div><p id="endText"></p>
       <div class="rewards" id="endReward"></div>
-      <div class="stack"><button class="btn teal" id="endBooster" hidden>Ouvrir un booster</button><button class="btn" id="endAgain">Rejouer</button><button class="btn ghost" id="endMenu">Menu</button></div>
+      <div class="stack"><button class="btn teal" id="endDouble" hidden></button><button class="btn teal" id="endBooster" hidden>Ouvrir un booster</button><button class="btn" id="endAgain">Rejouer</button><button class="btn ghost" id="endMenu">Menu</button></div>
     </div>
   </div>
 
@@ -1281,6 +1339,7 @@
     const ATOUT_IDS = Object.keys(ATOUTS);
     /* Objets de collection des boosters : purement décoratifs, visibles par l'adversaire. */
     const DICE = {
+      commandant: { name: "Dé du Commandant", rarity: 2, shape: "octo", pips: "star", face: "radial-gradient(circle at 30% 24%, #3a4a78, #1f2a44 55%, #0a0f1e)", pip: "#f5c445", edge: "#f5c445" },
       violet: { name: "Dé stellaire", rarity: 0, face: "radial-gradient(circle at 30% 24%, #8f93f0, #4a4fb8 55%, #262b78)", pip: "#f5c445", edge: "#f5e9cf" },
       lave: { name: "Galet de lave", rarity: 0, shape: "galet", face: "radial-gradient(circle at 30% 24%, #ffc08a, #f26a3d 52%, #7d2410)", pip: "#fff3c4", edge: "#3a120a" },
       glace: { name: "Cristal de glace", rarity: 0, shape: "hexa", pips: "star", face: "radial-gradient(circle at 30% 24%, #ffffff, #a8e9f2 52%, #3d8fb0)", pip: "#1f2a44", edge: "#ffffff" },
@@ -1297,6 +1356,7 @@
       neant: { name: "Dé du néant", rarity: 2, shape: "galet", pips: "star", face: "radial-gradient(circle at 30% 24%, #4a4f86, #10162b 58%, #000)", pip: "#ff5fa8", edge: "#d0508f", rainbow: true }
     };
     const BACKS = {
+      commandant: { name: "Dos Commandant", rarity: 2, css: "repeating-conic-gradient(from 45deg, #f5c445 0 25%, #1f2a44 0 50%) 0 0 / 18px 18px" },
       cible: { name: "Cible orange", rarity: 0, css: "repeating-radial-gradient(circle at 50% 50%, #f26a3d 0 5px, #1f2a44 5px 10px)" },
       damier: { name: "Damier lunaire", rarity: 0, css: "repeating-conic-gradient(#2fa394 0 25%, #f5e9cf 0 50%) 0 0 / 16px 16px" },
       rayures: { name: "Rayures bonbon", rarity: 0, css: "repeating-linear-gradient(45deg, #d0508f 0 8px, #5b5fc7 8px 16px)" },
@@ -1340,8 +1400,8 @@
     /* Contenu des boosters : personnages, dés, dos, et les atouts rares ou légendaires. */
     const ITEMS = [
       ...CHAR_IDS.filter(id => CHARS[id].rarity < 3 && !id.endsWith("0")).map(id => ({ kind: "char", id })),
-      ...Object.keys(DICE).filter(id => id !== "violet").map(id => ({ kind: "dice", id })),
-      ...Object.keys(BACKS).filter(id => id !== "cible").map(id => ({ kind: "back", id })),
+      ...Object.keys(DICE).filter(id => id !== "violet" && id !== "commandant").map(id => ({ kind: "dice", id })),
+      ...Object.keys(BACKS).filter(id => id !== "cible" && id !== "commandant").map(id => ({ kind: "back", id })),
       ...Object.keys(ATOUTS).filter(id => ATOUTS[id].rarity > 0).map(id => ({ kind: "atout", id }))
     ];
     const itemDef = it => ({ dice: DICE, back: BACKS, char: CHARS, atout: ATOUTS })[it.kind][it.id];
@@ -1423,7 +1483,7 @@
 
     /* ═════ Sauvegarde ═════ */
     const SAVE_KEY = "bda_save_v1";
-    const save = Object.assign({ crystals: CAPSULE_COST, owned: {}, loadout: [], unlocked: 0, level: 0, tribe: "mars", name: "", tuto: false, wins: [0, 0, 0], xp: 0, trophies: 0, stars: [0, 0, 0], seen: {}, mute: false, skins: { dice: { violet: 1 }, back: { cible: 1 } }, equip: { dice: "violet", back: "cible" }, camp: null, stage: null, chars: { mars0: 1 }, char: null }, (() => {
+    const save = Object.assign({ crystals: CAPSULE_COST, owned: {}, loadout: [], unlocked: 0, level: 0, tribe: "mars", name: "", games: 0, premium: false, premiumSeen: false, dailyDay: "", dailyUsed: 0, tuto: false, wins: [0, 0, 0], xp: 0, trophies: 0, stars: [0, 0, 0], seen: {}, mute: false, skins: { dice: { violet: 1 }, back: { cible: 1 } }, equip: { dice: "violet", back: "cible" }, camp: null, stage: null, chars: { mars0: 1 }, char: null }, (() => {
       try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch (e) { return {}; }
     })());
     save.loadout = save.loadout.filter(id => ATOUTS[id] && save.owned[id]);
@@ -3269,7 +3329,9 @@
         if (slots) notes.push({ v: "★", t: tr("{n} emplacements d'atouts !", { n: slots[1] }), hot: true });
       }
       save.crystals += gain;
+      save.games = (save.games || 0) + 1;
       persist();
+      offerDouble(gain);
       // Les tuiles de récompense : étoiles, cristaux, XP (ou trophées), puis chaque nouveauté
       const lv = levelInfo(save.xp), tiles = [];
       if (starsWon) tiles.push(`<div class="rw hot"><div class="ic">★</div><div><span class="stars">${"★".repeat(starsWon)}${"☆".repeat(3 - starsWon)}</span><small>${tr("Étoiles")}</small></div></div>`);
@@ -3300,6 +3362,137 @@
       if (won) { boom(null, true, $("#endDuel")); buzz([40, 30, 80]); }
     }
 
+    /* ═════ Monétisation (mode test) ═════
+       Pubs récompensées et achats simulés : un écran « Vidéo de test » et une confirmation « Achat de test »
+       remplacent AdMob et les stores tant que les comptes ne sont pas branchés. Tout reste au choix du joueur,
+       et rien de ce qui se vend ne donne d'avantage en partie. */
+    const MONET = { doubleFrom: 3, dailyLevel: 3, premiumStage: 4, shopStage: 8, adSeconds: 5, premiumPrice: "3,99 €" };
+    const SHOP = [
+      { kind: "char", id: "poulpes5", price: "1,99 €" }, { kind: "char", id: "incognito6", price: "1,99 €" }, { kind: "char", id: "cranes7", price: "2,99 €" },
+      { kind: "dice", id: "or", price: "0,99 €" }, { kind: "dice", id: "glace", price: "0,99 €" }, { kind: "back", id: "etoiles", price: "0,99 €" }
+    ];
+    const SHOP_LOT = { tribe: "poulpes", ids: ["poulpes4", "poulpes5", "poulpes6"], dice: "slime", price: "2,99 €" };
+    const today = () => new Date().toLocaleDateString("sv");
+    const dailyLeft = () => (save.premium ? 2 : 1) - (save.dailyDay === today() ? save.dailyUsed : 0);
+    function storeSheet(title, body, actions) {
+      $("#storeTitle").textContent = title;
+      $("#storeBody").innerHTML = body;
+      fillButtons($("#storeActions"), actions);
+      $("#store").classList.add("on");
+    }
+    const closeStore = () => $("#store").classList.remove("on");
+    /* Pub récompensée : le Pack Commandant donne la récompense sans vidéo. Renvoie true si la récompense est gagnée. */
+    function watchAd(reward) {
+      if (save.premium) return Promise.resolve(true);
+      return new Promise(resolve => {
+        let left = MONET.adSeconds, done = false;
+        const finish = ok => { if (done) return; done = true; clearInterval(tick); closeStore(); resolve(ok); };
+        storeSheet(tr("Vidéo de test"), `<div class="ad-screen"><b id="adLeft">${left}</b><div class="ad-bar"><i id="adBar"></i></div><span>${tr("Ici passera une vraie vidéo (AdMob). Mode test, aucune pub réelle.")}</span></div><p>${reward}</p>`,
+          [{ label: tr("Fermer sans récompense"), cls: "ghost", fn: () => finish(false) }]);
+        if (!reduced) $("#adBar").animate([{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }], { duration: MONET.adSeconds * 1000, fill: "forwards" });
+        const tick = setInterval(() => {
+          left -= 1;
+          const el = $("#adLeft");
+          if (el) el.textContent = Math.max(0, left);
+          if (left > 0) return;
+          clearInterval(tick);
+          fillButtons($("#storeActions"), [{ label: tr("Récupérer la récompense"), cls: "hot", fn: () => finish(true) }]);
+        }, 1000);
+      });
+    }
+    /* Achat : confirmation simulée. Renvoie true si le joueur confirme. */
+    function buyTest(name, price) {
+      return new Promise(resolve => storeSheet(tr("Achat de test"),
+        `<p><b>${name}</b> · ${price}</p><p class="premium-sub">${tr("Mode test : aucun paiement réel. Le vrai paiement passera par Google Play ou l'App Store.")}</p>`,
+        [{ label: tr("Confirmer l'achat (test)"), cls: "hot", fn: () => { closeStore(); resolve(true); } }, { label: tr("Annuler"), cls: "ghost", fn: () => { closeStore(); resolve(false); } }]));
+    }
+    /* Fin de partie : doubler les cristaux gagnés, à partir de la 3ᵉ partie. */
+    function offerDouble(gain) {
+      const btn = $("#endDouble");
+      btn.hidden = !(gain > 0 && S.mode !== "p2p" && save.games >= MONET.doubleFrom);
+      if (btn.hidden) return;
+      btn.textContent = save.premium ? tr("Doubler les cristaux (+{n} ◆) · Commandant", { n: gain }) : tr("Vidéo · doubler les cristaux (+{n} ◆)", { n: gain });
+      btn.onclick = async () => {
+        if (!(await watchAd(tr("Récompense : +{n} ◆", { n: gain })))) return;
+        save.crystals += gain;
+        persist();
+        btn.hidden = true;
+        const el = $("#gemCount");
+        if (el) { el.textContent = `+${gain * 2}`; bump(el); }
+        burst(el || $("#endReward"), [YE, "#fff", "#8fd8cc"], 18);
+        sfx.coin();
+        $("#endBooster").hidden = save.crystals < CAPSULE_COST;
+      };
+    }
+    /* Menu : booster gratuit du jour (dès le niveau 3), bouton Pack Commandant, offre Premium montrée une fois. */
+    function renderOffers() {
+      const box = $("#dailyBox"), left = dailyLeft();
+      box.hidden = levelInfo(save.xp).lvl < MONET.dailyLevel;
+      box.classList.toggle("used", left <= 0);
+      $("#dailySub").textContent = left > 0 ? (save.premium ? tr("{n} boosters offerts aujourd'hui", { n: left }) : tr("3 objets, offerts chaque jour")) : tr("Revient demain");
+      $("#dailyCta").textContent = left <= 0 ? tr("Pris ✓") : save.premium ? tr("Ouvrir !") : tr("Vidéo · ouvrir");
+      $("#premiumBtn").textContent = save.premium ? tr("Pack Commandant ✓") : tr("Pack Commandant · {price}", { price: MONET.premiumPrice });
+      $("#shopTab").hidden = save.camp.cleared < MONET.shopStage;
+      if (!save.premium && !save.premiumSeen && save.camp.cleared >= MONET.premiumStage && $("#menu").classList.contains("on")) {
+        save.premiumSeen = true;
+        persist();
+        setTimeout(openPremium, 900);
+      }
+    }
+    async function openDaily() {
+      if (dailyLeft() <= 0) { bump($("#dailyCta")); return; }
+      if (!(await watchAd(tr("Récompense : un booster de 3 objets")))) return;
+      save.dailyUsed = (save.dailyDay === today() ? save.dailyUsed : 0) + 1;
+      save.dailyDay = today();
+      persist();
+      renderOffers();
+      openCapsuleShop(true);
+    }
+    function openPremium() {
+      $("#premiumSub").textContent = save.premium ? tr("Actif sur cet appareil. Merci !") : tr("Achat unique, à vie");
+      fillButtons($("#premiumActions"), save.premium
+        ? [{ label: tr("Restaurer mes achats"), cls: "ghost", fn: restorePurchases }, { label: tr("Fermer"), cls: "ghost", fn: closePremium }]
+        : [{ label: tr("Débloquer · {price}", { price: MONET.premiumPrice }), cls: "hot", fn: buyPremium }, { label: tr("Plus tard"), cls: "ghost", fn: closePremium }, { label: tr("Restaurer mes achats"), cls: "ghost", fn: restorePurchases }]);
+      $("#premium").classList.add("on");
+    }
+    function closePremium() { $("#premium").classList.remove("on"); renderMenu(); }
+    async function buyPremium() {
+      if (!(await buyTest(tr("Pack Commandant"), MONET.premiumPrice))) return;
+      save.premium = true;
+      save.skins.dice.commandant = 1;
+      save.skins.back.commandant = 1;
+      persist();
+      sfx.rare();
+      closePremium();
+      boom(tr("Commandant !"), true, $("#menuAva"));
+    }
+    function restorePurchases() {
+      storeSheet(tr("Restaurer mes achats"), `<p>${save.premium ? tr("Pack Commandant déjà actif sur cet appareil.") : tr("Mode test : aucun achat à restaurer. Avec les stores, cette touche retrouve les achats faits avec ton compte.")}</p>`,
+        [{ label: tr("Fermer"), cls: "ghost", fn: closeStore }]);
+    }
+    /* Boutique à prix fixes : on sait ce qu'on achète, pas de hasard. */
+    function renderShop() {
+      const visual = it => it.kind === "char" ? portrait(it.id) : it.kind === "dice" ? diePrev(it.id) : backPrev(it.id);
+      const lotOwned = SHOP_LOT.ids.every(id => owns("char", id)) && owns("dice", SHOP_LOT.dice);
+      $("#showcase").innerHTML = "";
+      $("#colGrid").innerHTML = `<div class="shopgrid">${SHOP.map((it, i) => `<button class="shopitem" data-i="${i}">${visual(it)}<span>${tr(itemDef(it).name)}</span>${owns(it.kind, it.id) ? `<span class="owned">${tr("Possédé")}</span>` : `<span class="price">${it.price}</span>`}</button>`).join("")}
+        <button class="shoplot" data-lot="1"><span class="faces">${SHOP_LOT.ids.map(id => portrait(id)).join("")}</span><span class="grow">${tr("Lot tribu {tribe}", { tribe: tr(CASTS[SHOP_LOT.tribe].label) })}<small>${tr("3 persos et un dé assorti")}</small></span>${lotOwned ? `<span class="owned">${tr("Possédé")}</span>` : `<span class="price">${SHOP_LOT.price}</span>`}</button></div>
+        <p class="shop-note">${tr("Prix fixes, pas de hasard. Les boosters restent payés en cristaux gagnés en jouant.")}</p>`;
+      for (const btn of document.querySelectorAll("#colGrid .shopitem")) btn.addEventListener("click", async () => {
+        const it = SHOP[Number(btn.dataset.i)];
+        if (owns(it.kind, it.id)) return;
+        if (!(await buyTest(tr(itemDef(it).name), it.price))) return;
+        grantItem(it); persist(); sfx.rare(); renderCollection();
+      });
+      $("#colGrid .shoplot").addEventListener("click", async () => {
+        if (lotOwned) return;
+        if (!(await buyTest(tr("Lot tribu {tribe}", { tribe: tr(CASTS[SHOP_LOT.tribe].label) }), SHOP_LOT.price))) return;
+        for (const id of SHOP_LOT.ids) grantItem({ kind: "char", id });
+        grantItem({ kind: "dice", id: SHOP_LOT.dice });
+        persist(); sfx.rare(); renderCollection();
+      });
+    }
+
     /* ═════ Menu, atouts, capsules ═════ */
     function leagueHTML() {
       const t = save.trophies, i = leagueOf(t), L = LEAGUES[i], next = LEAGUES[i + 1];
@@ -3313,6 +3506,7 @@
     function renderMenu() {
       const lv = levelInfo(save.xp);
       $("#menuName").textContent = myName();
+      renderOffers();
       $("#menuAva").innerHTML = charArt(save.char);
       $("#menuLvl").textContent = `· ${tr("Niv. {n}", { n: lv.lvl })}`;
       $("#menuXp").style.width = `${Math.round((lv.into / lv.need) * 100)}%`;
@@ -3418,6 +3612,7 @@
       return save.equip[kind] === id;
     }
     function howToGet(kind, id) {
+      if (id === "commandant") return tr("Exclusif au Pack Commandant.");
       if (kind === "char") {
         const sg = STAGES.find(x => x.unlocks.includes(id));
         if (sg) return tr("À gagner en battant {name} ({planet}).", { name: tr(sg.name), planet: tr(CHAPTERS[sg.c].planet) });
@@ -3439,6 +3634,8 @@
       $("#cntDice").textContent = count("dice");
       $("#cntBack").textContent = count("back");
       for (const btn of document.querySelectorAll("#subtabs button")) btn.classList.toggle("on", btn.dataset.sub === colSub);
+      document.querySelector('[data-pane="cards"]').classList.toggle("shop-on", colSub === "shop");
+      if (colSub === "shop") return renderShop();
       const kind = kinds[colSub], ids = lists[colSub];
       if (!colPick || !ids.includes(colPick)) colPick = ids.find(id => equipped(kind, id)) || ids[0];
       const visual = (id, big) => kind === "char" ? portrait(id) : kind === "atout" ? cardEl(makeAtout(id, big ? "big" : "cell"), 0).outerHTML : kind === "dice" ? diePrev(id) : backPrev(id);
@@ -3503,12 +3700,14 @@
       </${dull ? "div" : "button"}>`;
     }
     function closeCapsule() { $("#capsule").classList.remove("on"); renderMenu(); }
-    function openCapsuleShop() {
+    function openCapsuleShop(free = false) {
+      // Appelée aussi comme gestionnaire de clic : seul un vrai booléen vaut « offert ».
+      freePack = free === true;
       $("#capsule").classList.add("on");
-      $("#capTitle").textContent = tr("Booster");
+      $("#capTitle").textContent = freePack ? tr("Booster offert") : tr("Booster");
       const stage = $("#capStage");
       const closeBtn = { label: tr("Fermer"), cls: "ghost", fn: closeCapsule };
-      if (save.crystals < CAPSULE_COST) {
+      if (!freePack && save.crystals < CAPSULE_COST) {
         stage.innerHTML = packHTML(true);
         $("#capText").innerHTML = tr("Il te manque <b>{n} ◆</b>. Chaque partie rapporte des cristaux, même perdue.", { n: CAPSULE_COST - save.crystals });
         return fillButtons($("#capActions"), [closeBtn]);
@@ -3527,9 +3726,11 @@
       });
       pack.addEventListener("click", breakCapsule, { once: true });
     }
+    let freePack = false;
     async function breakCapsule() {
       const stage = $("#capStage"), pack = $("#pack"), top = pack.querySelector(".pack-top");
-      save.crystals -= CAPSULE_COST;
+      if (!freePack) save.crystals -= CAPSULE_COST;
+      freePack = false;
       // trois objets différents dans un même sachet
       const pulls = [];
       for (let tries = 0; pulls.length < 3 && tries < 40; tries += 1) {
@@ -3600,6 +3801,8 @@
     $("#tutoBtn").addEventListener("click", () => { save.seen = {}; save.mute = false; S.stage = save.stage = 0; chapterView = 0; persist(); newGame("adv"); });
     for (const id of ["capsuleBtn", "quickBooster", "crystalsBtn"]) $(`#${id}`).addEventListener("click", openCapsuleShop);
     $("#quickAtouts").addEventListener("click", openAtouts);
+    $("#dailyBox").addEventListener("click", openDaily);
+    $("#premiumBtn").addEventListener("click", () => { sfx.tap(); openPremium(); });
     $("#menuHelp").addEventListener("click", () => openHelp(null));
     $("#pauseHelp").addEventListener("click", () => openHelp("pause"));
     $("#helpClose").addEventListener("click", () => { $("#help").classList.remove("on"); if (helpFrom) $(`#${helpFrom}`).classList.add("on"); });
