@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.59";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.60";</script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -110,8 +110,10 @@
       #menu .pane { gap: 8px; }
     }
     /* Collection : les onglets et la vitrine (avec Équiper) restent visibles quand la grille défile. */
-    .pane[data-pane="cards"] .subtabs { position: sticky; top: -6px; z-index: 5; background: #10162b; }
-    .pane[data-pane="cards"] .showcase { position: sticky; top: 50px; z-index: 4; background: #141b33; box-shadow: 0 10px 16px rgba(10, 15, 30, 0.85); }
+    .pane[data-pane="cards"] .subtabs { position: sticky; top: -6px; z-index: 7; background: #10162b; }
+    .pane[data-pane="cards"] .showcase { position: sticky; top: 50px; z-index: 6; background: #141b33; box-shadow: 0 10px 16px rgba(10, 15, 30, 0.85); }
+    /* La grille forme son propre empilement : ses badges et pièces restent sous la vitrine quand elle défile. */
+    .pane[data-pane="cards"] .colgrid { position: relative; z-index: 1; }
     .league { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 380px; padding: 7px 10px; border-radius: 14px; background: rgba(16, 22, 43, 0.88); border: 2px solid rgba(245, 233, 207, 0.4); text-align: left; }
     .league .bar { flex: 1; min-width: 0; }
     .league small { display: block; font-size: 0.62rem; color: rgba(245, 233, 207, 0.7); }
