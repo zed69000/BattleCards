@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.61";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.62";</script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -86,6 +86,47 @@
     .j-text { margin: 0 0 8px; font-size: 0.82rem; line-height: 1.4; color: rgba(245, 233, 207, 0.85); }
     .j-atouts { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; } .j-atouts .card { --cw: 46px; }
     .j-atouts .slot-free { width: 46px; height: 65px; border-radius: 8px; border: 2px dashed rgba(245, 233, 207, 0.35); display: grid; place-items: center; color: rgba(245, 233, 207, 0.4); }
+    /* Accueil : deux accès, les boosters et la progression. */
+    .journey-tile { border-color: var(--teal); }
+    .boost.free::before { content: ""; position: absolute; top: 6px; right: 6px; z-index: 2; width: 11px; height: 11px; border-radius: 50%; background: var(--pink); border: 2px solid var(--navy); }
+    .jt-ic { display: grid; place-items: center; height: 64px; }
+    .jt-ic .card { --cw: 40px; } .jt-ic .portrait { width: 44px; height: 44px; }
+    #stake { cursor: pointer; }
+    #stake .chip.more { flex: none; font-size: 0.72rem; background: rgba(245, 233, 207, 0.12); color: var(--cream); padding: 3px 9px; }
+    /* Page Boosters. */
+    .boosters-sheet { text-align: center; }
+    .bp-pack { display: grid; place-items: center; height: 150px; }
+    .bp-pack .pack { zoom: 0.62; }
+    .bp-balance { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 4px 0 6px; }
+    .bp-balance .mcoin { width: 28px; height: 28px; } .bp-balance b { font-weight: 400; font-size: 1.6rem; color: var(--yellow); }
+    .bp-balance small { color: rgba(245, 233, 207, 0.75); }
+    .bp-bar { max-width: 240px; margin: 0 auto 12px; }
+    .boosters-sheet .boost.daily { margin: 12px 0 0; width: 100%; max-width: none; text-align: left; }
+    .boosters-sheet .j-title, .boosters-sheet .j-text { text-align: left; }
+    .bp-kinds { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .bp-kind { display: grid; justify-items: center; align-content: start; gap: 4px; padding: 8px 4px; border-radius: 12px; background: rgba(31, 42, 68, 0.95); font-size: 0.68rem; }
+    .bp-kind .portrait { width: 40px; height: 40px; } .bp-kind .die-prev { width: 34px; } .bp-kind .back-prev { width: 30px; } .bp-kind .card { --cw: 32px; }
+    .bp-kind small { color: rgba(245, 233, 207, 0.65); font-size: 0.6rem; }
+    .bp-odds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
+    .bp-odd { padding: 8px 4px; border-radius: 12px; background: rgba(31, 42, 68, 0.95); border: 2px solid var(--rc); font-size: 0.72rem; }
+    .bp-odd b { display: block; font-weight: 400; font-size: 1.15rem; color: var(--rc); }
+    /* Fiche « Ce que tu peux gagner ». */
+    .prize-sheet { text-align: left; }
+    .prize-sheet .prz-row > div, .prize-sheet .j-lvl { min-width: 0; text-align: left; }
+    .prize-sheet .j-lvl b { display: block; font-size: 1.25rem; } .prize-sheet .j-lvl small { display: block; }
+    #bpOpen { white-space: nowrap; font-size: 1.05rem; }
+    .prz-list { display: grid; gap: 8px; margin-bottom: 12px; }
+    .prz-row { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: rgba(31, 42, 68, 0.95); }
+    .prz-row.done { opacity: 0.6; }
+    .prz-row .ic { display: grid; place-items: center; } .prz-row .ic .card { --cw: 36px; } .prz-row .ic .portrait { width: 40px; height: 40px; } .prz-row .ic .mcoin { width: 30px; height: 30px; }
+    .prz-row b { display: block; font-weight: 400; font-size: 0.92rem; } .prz-row small { display: block; font-size: 0.72rem; line-height: 1.35; color: rgba(245, 233, 207, 0.75); }
+    .prz-tag { display: inline-block; margin-left: 4px; padding: 0 7px; border-radius: 99px; font-size: 0.62rem; vertical-align: 2px; }
+    .prz-tag.sure { background: var(--ok); color: var(--navy); } .prz-tag.once { background: var(--yellow); color: var(--navy); } .prz-tag.got { border: 1px solid var(--ok); color: var(--ok); }
+    /* Détail des cristaux en fin de partie. */
+    .rw .gem-parts { display: block; margin-top: 2px; font-size: 0.6rem; color: rgba(245, 233, 207, 0.75); }
+    .welcome-gifts { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .welcome-gifts .card { --cw: 92px; }
+    .welcome-gifts .mcoin { width: 52px; height: 52px; font-size: 1rem; }
     /* Écran « Débloqué ! » : chaque nouvel atout ou personnage, expliqué au moment où on le gagne. */
     #unlock { z-index: 55; }
     .unlock-sheet { text-align: center; }
@@ -118,9 +159,9 @@
     .stake { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.78rem; color: rgba(245, 233, 207, 0.85); }
     .stake b { font-family: "Righteous", sans-serif; font-weight: 400; color: var(--yellow); }
     /* Gain de la prochaine victoire, en pastilles sur une seule ligne (rien ne bouge quand on change d'adversaire). */
-    #stake { display: flex; justify-content: center; align-items: center; gap: 6px; width: 100%; max-width: 380px; min-width: 0; flex-wrap: nowrap; overflow: hidden; margin-top: -2px; }
-    #stake .chip { min-width: 0; padding: 3px 10px; border-radius: 99px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: "Righteous", sans-serif; font-size: 0.8rem; line-height: 1.3; }
-    #stake .chip.tier { flex: 0 1 auto; background: rgba(245, 233, 207, 0.12); color: rgba(245, 233, 207, 0.85); }
+    #stake { display: flex; justify-content: center; align-items: center; gap: 4px; width: 100%; max-width: 380px; min-width: 0; flex-wrap: nowrap; overflow: hidden; margin-top: -2px; }
+    #stake .chip { min-width: 0; padding: 3px 8px; border-radius: 99px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: "Righteous", sans-serif; font-size: 0.8rem; line-height: 1.3; }
+    #stake .chip.tier { flex: 0 1 auto; font-size: 0.72rem; letter-spacing: -0.02em; background: rgba(245, 233, 207, 0.12); color: rgba(245, 233, 207, 0.85); }
     #stake .chip.tier.boss { background: rgba(255, 95, 122, 0.22); color: #ffb3bf; }
     #stake .chip.win { flex: none; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); box-shadow: 0 3px 0 #0a0f1e; font-size: 0.9rem; }
     #stake .chip.win b { color: var(--navy); }
@@ -811,7 +852,7 @@
       <div class="mtop">
         <div class="ava" id="menuAva"></div>
         <button class="who" id="journeyBtn" aria-label="Ton aventure : prochaines récompenses"><span class="who-line"><span id="menuName">Toi</span> <small id="menuLvl">· Niv. 1</small><span class="who-more" id="journeyMore">›</span></span><div class="xp"><i id="menuXp"></i></div></button>
-        <div class="pill tr"><span id="trophies">0</span> ♛</div>
+        <div class="pill tr" id="trophyPill"><span id="trophies">0</span> ♛</div>
         <button class="pill" id="crystalsBtn" aria-label="Ouvrir un booster">◆ <span id="crystals">0</span></button>
       </div>
       <div class="panes">
@@ -834,16 +875,15 @@
           <div class="offers">
           <button class="boost" id="quickBooster">
             <span class="boost-pack" id="boostPack"></span>
-            <span class="boost-txt"><b>Booster</b><small id="boostSub">3 objets de collection</small><span class="xp"><i id="boostBar"></i></span></span>
+            <span class="boost-txt"><b>Boosters</b><small id="boostSub">3 objets de collection</small><span class="xp"><i id="boostBar"></i></span></span>
             <span class="boost-cta" id="boostCta">Ouvrir</span>
           </button>
-          <button class="boost daily" id="dailyBox" hidden>
-            <span class="daily-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="8" y="20" width="32" height="22" rx="3" fill="#f5c445" stroke="#1f2a44" stroke-width="2.4"/><rect x="5" y="13" width="38" height="9" rx="2" fill="#f26a3d" stroke="#1f2a44" stroke-width="2.4"/><path d="M24 13 V42" stroke="#1f2a44" stroke-width="2.4"/><path d="M24 13 Q15 3 12 9 Q11 14 24 13 Q37 14 36 9 Q33 3 24 13z" fill="#d0508f" stroke="#1f2a44" stroke-width="2.2" stroke-linejoin="round"/></svg></span>
-            <span class="boost-txt"><b>Gratuit</b><small id="dailySub">Booster du jour</small></span>
-            <span class="boost-cta" id="dailyCta">Vidéo · ouvrir</span>
+          <button class="boost journey-tile" id="journeyTile">
+            <span class="jt-ic" id="jtIc"></span>
+            <span class="boost-txt"><b>Ton aventure</b><small id="jtSub"></small></span>
+            <span class="boost-cta">Voir</span>
           </button>
           </div>
-          <div class="quick"><button class="btn" id="quickAtouts">Atouts 0/3</button></div>
         </section>
         <section class="pane" data-pane="arena">
           <div class="logo">
@@ -1009,6 +1049,38 @@
       </div>
       <p id="lobbyMsg"></p>
       <button class="btn ghost" id="lobbyClose">Fermer</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="boosters">
+    <div class="sheet boosters-sheet">
+      <h2>Boosters</h2>
+      <div class="bp-pack" id="bpPack"></div>
+      <div class="bp-balance"><span class="mcoin">◆</span><b id="bpGems">0</b><small id="bpNeed"></small></div>
+      <div class="xp bp-bar"><i id="bpBar"></i></div>
+      <div class="stack"><button class="btn big hot" id="bpOpen"></button></div>
+      <button class="boost daily" id="dailyBox" hidden>
+            <span class="daily-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="8" y="20" width="32" height="22" rx="3" fill="#f5c445" stroke="#1f2a44" stroke-width="2.4"/><rect x="5" y="13" width="38" height="9" rx="2" fill="#f26a3d" stroke="#1f2a44" stroke-width="2.4"/><path d="M24 13 V42" stroke="#1f2a44" stroke-width="2.4"/><path d="M24 13 Q15 3 12 9 Q11 14 24 13 Q37 14 36 9 Q33 3 24 13z" fill="#d0508f" stroke="#1f2a44" stroke-width="2.2" stroke-linejoin="round"/></svg></span>
+            <span class="boost-txt"><b>Gratuit</b><small id="dailySub">Booster du jour</small></span>
+            <span class="boost-cta" id="dailyCta">Vidéo · ouvrir</span>
+          </button>
+      <h3 class="j-title">Dans chaque booster</h3>
+      <p class="j-text">3 objets au hasard, tous différents.</p>
+      <div class="bp-kinds" id="bpKinds"></div>
+      <h3 class="j-title">Chances par objet</h3>
+      <div class="bp-odds" id="bpOdds"></div>
+      <p class="j-text" id="bpDup"></p>
+      <p class="j-text">Les cristaux se gagnent à chaque partie, même perdue.</p>
+      <div class="stack"><button class="btn ghost" id="bpClose">Fermer</button></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="prize">
+    <div class="sheet prize-sheet">
+      <div class="j-head"><div id="przAva"></div><div class="j-lvl"><b id="przName"></b><small id="przSub"></small></div></div>
+      <h3 class="j-title">Ce que tu peux gagner</h3>
+      <div class="prz-list" id="przList"></div>
+      <div class="stack"><button class="btn big hot" id="przGo"></button><button class="btn ghost" id="przClose">Fermer</button></div>
     </div>
   </div>
 
@@ -2357,6 +2429,7 @@
       $("#welcome").classList.remove("on");
       renderMenu();
       loveRain();
+      if (!(save.games || 0) && !save.xp && !save.camp.cleared && !save.seen.welcomeGifts) setTimeout(showWelcomeGifts, 500);
       setTimeout(offerInstall, 1200);
     }
     function loveRain() {
@@ -2645,8 +2718,6 @@
         ], $("#field"));
         await explain([
           ["boost", tr("Tes <b>boosts ⚡</b>, ici : 1 boost pour <b>appeler un allié</b> quand tu es mené, ou pour <b>riposter</b> quand on te dépasse. Tu en regagnes 1 à chaque manche perdue (3 au maximum).")],
-          [`perk-${S.cast[0]}`, tr("Ta tribu, les <b>{tribe}</b>, a un talent. <b>{perk}</b> : {desc}", { tribe: tr(CASTS[S.cast[0]].label), perk: tr(PERKS[S.cast[0]].name), desc: tr(PERKS[S.cast[0]].desc) })],
-          [`foeperk-${S.cast[1]}`, tr("Gaspard joue les <b>{tribe}</b>. Leur talent, <b>{perk}</b> : {desc}", { tribe: tr(CASTS[S.cast[1]].label), perk: tr(PERKS[S.cast[1]].name), desc: tr(PERKS[S.cast[1]].desc) })]
         ], $("#hud0"));
         if (S.boss) { const b = BOSSES[S.boss]; await tip("bossbar", tr("Voici la jauge de <b>super coup</b> de {boss}. Quand elle est pleine (toutes les {n} manches), elle déclenche <b>{move}</b> : {desc}. Tu la vois venir : prépare ta main !", { boss: tr(b.name), n: b.every, move: tr(b.move), desc: tr(b.desc) }), $("#bossBar")); }
       }
@@ -2658,8 +2729,14 @@
         await tip(`atout-${card.special}`, tr("Tu as pioché un <b>atout ★ {title}</b>, une carte spéciale. {desc}", { title: tr(card.title), desc: tr(ATOUTS[card.special].desc) }), $(`#hand .card[data-id="${card.id}"]`));
         if (game !== gameId) return;
       }
+      // Les talents de tribu attendent la 3e manche : les bases d'abord.
+      if (S.round === 3 && !battle) await explain([
+          [`perk-${S.cast[0]}`, tr("Ta tribu, les <b>{tribe}</b>, a un talent. <b>{perk}</b> : {desc}", { tribe: tr(CASTS[S.cast[0]].label), perk: tr(PERKS[S.cast[0]].name), desc: tr(PERKS[S.cast[0]].desc) })],
+          [`foeperk-${S.cast[1]}`, tr("Gaspard joue les <b>{tribe}</b>. Leur talent, <b>{perk}</b> : {desc}", { tribe: tr(CASTS[S.cast[1]].label), perk: tr(PERKS[S.cast[1]].name), desc: tr(PERKS[S.cast[1]].desc) })]
+      ], $("#hud0"));
+      if (game !== gameId) return;
       if (S.round === 2) await tip("free", tr("Tu connais l'essentiel. Le vainqueur d'une manche pose en premier à la suivante. Les règles complètes sont dans le menu pause."), $("#pauseBtn"));
-      if (S.round === 2 && aiBonus(1, "bonusHand")) await tip("strat", tr("{name} est un <b>Stratège</b> : il calcule chaque coup, joue avec 6 cartes en main et part avec un boost d'avance. À toi de le surprendre !", { name: foe() }), $("#hud1"));
+      if (S.round === 2 && aiBonus(1, "bonusHand") > 0) await tip("strat", tr("{name} est un <b>Stratège</b> : il calcule chaque coup, joue avec 6 cartes en main et part avec un boost d'avance. À toi de le surprendre !", { name: foe() }), $("#hud1"));
       if (game !== gameId) return;
       if (S.first === 1) {
         setPrompt(tr("<b>Gaspard</b> a l'initiative et avance son avant-garde…"));
@@ -3390,7 +3467,7 @@
       const dXp = won ? 50 : lost ? 20 : 30;
       save.xp += dXp;
       let gain, head, trip = null;
-      const unlocked = [];
+      const unlocked = [], gemParts = [];
       if (S.mode === "p2p") {
         gain = won ? 20 : 10;
         $("#endText").textContent = won ? tr("Tu as battu {name} !", { name: foe() }) : lost ? tr("{name} remporte ce duel.", { name: foe() }) : tr("Égalité parfaite entre amis.");
@@ -3413,6 +3490,7 @@
       } else {
         const sg = STAGES[S.stage], ch = CHAPTERS[sg.c], first = S.stage === save.camp.cleared;
         gain = won ? (first ? sg.reward : Math.round(sg.reward / 2)) + Math.min(20, a - b) : lost ? 8 : 12;
+        if (won) gemParts.push([tr("victoire"), gain - Math.min(20, a - b)], [tr("écart"), Math.min(20, a - b)]);
         $("#endText").textContent = won ? (sg.boss ? tr("Victoire contre {name} : {planet} est libérée !", { name: tr(sg.name), planet: tr(ch.planet) }) : tr("{name} bat en retraite.", { name: tr(sg.name) }))
           : lost ? (S.ended === "flee" ? tr("Repli stratégique : {name} garde le terrain, mais ton butin compte. Change d'atouts et reviens !", { name: foe() }) : tr("{name} l'emporte cette fois. Change d'atouts et retente ta chance !", { name: foe() })) : tr("Aucun camp ne l'emporte.");
         let stars = 0;
@@ -3430,12 +3508,14 @@
         }
         head = `${stars ? `${"★".repeat(stars)}${"☆".repeat(3 - stars)} · ` : ""}+${dXp} XP`;
       }
+      if (!gemParts.length) gemParts.push([won ? tr("victoire") : lost ? tr("défaite") : tr("égalité"), gain]);
       const prime = lootBonus(a);
-      if (prime) { gain += prime; notes.push({ v: '<span class="mcoin">★</span>', t: tr("Prime de butin ({pts} pts) : +{gems} ◆", { pts: a, gems: prime }), hot: true }); }
+      if (prime) { gain += prime; gemParts.push([tr("prime de butin"), prime]); }
       const lvlAfter = levelInfo(save.xp).lvl;
       if (lvlAfter > lvlBefore) {
         gain += 30 * (lvlAfter - lvlBefore);
-        notes.unshift({ v: `<b style="font-size:1.3rem;color:var(--yellow)">${lvlAfter}</b>`, t: tr("Niveau {n} ! (+30 ◆)", { n: lvlAfter }), hot: true, wide: true });
+        gemParts.push([tr("niveau"), 30 * (lvlAfter - lvlBefore)]);
+        notes.unshift({ v: `<b style="font-size:1.3rem;color:var(--yellow)">${lvlAfter}</b>`, t: tr("Niveau {n} !", { n: lvlAfter }), hot: true, wide: true });
         for (const id of levelAtouts()) unlocked.push({ kind: "atout", id }) && notes.push({ v: "★", t: tr("Nouvel atout : {name}", { name: tr(ATOUTS[id].name) }), hot: true });
         const slots = SLOT_LEVELS.find(([lvl]) => lvl > lvlBefore && lvl <= lvlAfter);
         if (slots) notes.push({ v: "★", t: tr("{n} emplacements d'atouts !", { n: slots[1] }), hot: true });
@@ -3448,7 +3528,7 @@
       const lv = levelInfo(save.xp), tiles = [];
       if (starsWon) tiles.push(`<div class="rw hot"><div class="ic">★</div><div><span class="stars">${"★".repeat(starsWon)}${"☆".repeat(3 - starsWon)}</span><small>${tr("Étoiles")}</small></div></div>`);
       if (trophyDelta !== null) tiles.push(`<div class="rw${trophyDelta > 0 ? " hot" : ""}"><div class="ic">♛</div><div><b>${trophyDelta < 0 ? "−" : "+"}${Math.abs(trophyDelta)}</b><small>${tr("Trophées")}</small></div></div>`);
-      tiles.push(`<div class="rw hot"><div class="ic"><span class="mcoin">◆</span></div><div><b id="gemCount">+0</b><small>${tr("Cristaux")}</small></div></div>`);
+      tiles.push(`<div class="rw hot${gemParts.length > 1 ? " wide" : ""}"><div class="ic"><span class="mcoin">◆</span></div><div><b id="gemCount">+0</b><small>${tr("Cristaux")}</small>${gemParts.length > 1 ? `<small class="gem-parts">${gemParts.filter(([, v]) => v > 0).map(([k, v]) => `${k} +${v}`).join(" · ")}</small>` : ""}</div></div>`);
       tiles.push(`<div class="rw"><div class="ic">✦</div><div><b>+${dXp} XP</b><small>${tr("Niveau {n}", { n: lv.lvl })}</small><div class="bar"><i style="--w:${Math.round((lv.into / lv.need) * 100)}%"></i></div></div></div>`);
       for (const n of notes) tiles.push(`<div class="rw${n.hot ? " hot" : ""}${n.wide ? " wide" : ""}"><div class="ic">${n.v}</div><div><small>${n.t}</small></div></div>`);
       $("#endReward").innerHTML = tiles.join("");
@@ -3554,6 +3634,7 @@
     }
     async function openDaily() {
       if (dailyLeft() <= 0) { bump($("#dailyCta")); return; }
+      closeBoosters();
       if (!(await watchAd(tr("Récompense : un booster de 3 objets")))) return;
       save.dailyUsed = (save.dailyDay === today() ? save.dailyUsed : 0) + 1;
       save.dailyDay = today();
@@ -3604,6 +3685,78 @@
         grantItem({ kind: "dice", id: SHOP_LOT.dice });
         persist(); sfx.rare(); renderCollection();
       });
+    }
+
+    /* ═════ Page Boosters : solde, ouverture, booster du jour, contenu et chances réelles ═════ */
+    function openBoosters() {
+      const ready = save.crystals >= CAPSULE_COST;
+      $("#bpPack").innerHTML = packHTML(!ready).replace(' id="pack"', "");
+      $("#bpGems").textContent = save.crystals;
+      $("#bpNeed").textContent = ready ? tr("cristaux") : tr("cristaux · encore {n} pour un booster", { n: CAPSULE_COST - save.crystals });
+      $("#bpBar").style.width = `${Math.min(100, Math.round((save.crystals / CAPSULE_COST) * 100))}%`;
+      $("#bpOpen").textContent = ready ? tr("Ouvrir un booster · {cost} ◆", { cost: CAPSULE_COST }) : tr("Joue une partie pour gagner des cristaux");
+      $("#bpOpen").classList.toggle("hot", ready);
+      $("#bpOpen").classList.toggle("ghost", !ready);
+      const rareAtout = ATOUT_IDS.find(id => ATOUTS[id].rarity === 1);
+      $("#bpKinds").innerHTML = [
+        [portrait(CHAR_IDS.find(id => CHARS[id].rarity === 1) || save.char), tr("Personnages"), tr("ton héros et son talent")],
+        [diePrev("or"), tr("Dés"), tr("ton dé en partie")],
+        [backPrev("etoiles"), tr("Dos de cartes"), tr("vus par l'adversaire")],
+        [cardEl(makeAtout(rareAtout, "bp"), 0).outerHTML, tr("Atouts rares"), tr("parfois")]
+      ].map(([v, t, sub]) => `<div class="bp-kind">${v}<span>${t}</span><small>${sub}</small></div>`).join("");
+      const colors = ["#c9d2dc", "var(--teal)", "var(--yellow)"], total = RARITY.reduce((t, r) => t + r.weight, 0);
+      $("#bpOdds").innerHTML = RARITY.slice(0, 3).map((r, i) => `<div class="bp-odd" style="--rc:${colors[i]}"><b>${Math.round((r.weight / total) * 100)} %</b>${tr(r.name)}</div>`).join("");
+      $("#bpDup").textContent = tr("Déjà dans ta collection ? L'objet est changé en cristaux : +{a} ◆ (commune), +{b} ◆ (rare), +{c} ◆ (légendaire).", { a: RARITY[0].dup, b: RARITY[1].dup, c: RARITY[2].dup });
+      renderOffers();
+      sfx.tap();
+      $("#boosters").classList.add("on");
+    }
+    const closeBoosters = () => $("#boosters").classList.remove("on");
+
+    /* ═════ Fiche « Ce que tu peux gagner » contre l'adversaire choisi ═════ */
+    function openPrize() {
+      const sg = STAGES[S.stage], done = S.stage < save.camp.cleared, gems = done ? Math.round(sg.reward / 2) : sg.reward;
+      $("#przAva").innerHTML = portrait(sg.char);
+      $("#przName").textContent = tr(sg.name);
+      $("#przSub").textContent = `${tr(CHAPTERS[sg.c].planet)} · ${tr("étape {n}", { n: (S.stage % 4) + 1 })} · ${sg.boss ? tr("Boss") : tr(TIER_NAMES[sg.tier])}`;
+      const coin = '<span class="mcoin">◆</span>', rows = [];
+      rows.push(["", coin, `${tr("Victoire")} : ${gems} ◆ <span class="prz-tag sure">${tr("assuré")}</span>`, done ? tr("Adversaire déjà battu : la moitié des cristaux de la première fois.") : tr("Première victoire contre cet adversaire.")]);
+      rows.push(["", coin, `${tr("Écart de points")} : ${tr("jusqu'à +20 ◆")}`, tr("1 ◆ par point d'avance à la fin. Les étoiles aussi : 2 dès 10 points d'avance, 3 dès 20.")]);
+      if (sg.gift) rows.push([done || save.owned[sg.gift] ? "done" : "", cardEl(makeAtout(sg.gift, "pz"), 0).outerHTML, `${tr("Atout")} ${tr(ATOUTS[sg.gift].name)} ${done || save.owned[sg.gift] ? `<span class="prz-tag got">${tr("déjà obtenu")}</span>` : `<span class="prz-tag once">${tr("1re victoire")}</span>`}`, tr(ATOUTS[sg.gift].desc)]);
+      for (const id of sg.unlocks) rows.push([save.chars[id] ? "done" : "", portrait(id), `${tr(CHARS[id].name)} ${save.chars[id] ? `<span class="prz-tag got">${tr("déjà obtenu")}</span>` : `<span class="prz-tag once">${tr("1re victoire")}</span>`}`, tr("Nouveau personnage, à choisir dans Cartes.")]);
+      rows.push(["", coin, `${tr("Prime de butin")} : ${tr("jusqu'à +50 ◆")}`, tr("Victoire ou défaite : +5 ◆ dès 25 points de butin, +10 dès 32, +15 dès 40, +20 dès 48. Elles s'additionnent.")]);
+      rows.push(["", coin, `${tr("Défaite")} : 8 ◆`, tr("Et l'XP : 50 en cas de victoire, 20 en cas de défaite. Chaque niveau gagné donne +30 ◆.")]);
+      $("#przList").innerHTML = rows.map(([cls, ic, t, sub]) => `<div class="prz-row ${cls}"><div class="ic">${ic}</div><div><b>${t}</b><small>${sub}</small></div></div>`).join("");
+      $("#przGo").textContent = $("#playBtn").textContent;
+      sfx.tap();
+      $("#prize").classList.add("on");
+    }
+
+    /* Nouveau joueur : les deux atouts et les 60 cristaux de départ sont des cadeaux, on le dit une fois. */
+    function showWelcomeGifts() {
+      save.seen.welcomeGifts = 1;
+      persist();
+      $("#uKicker").textContent = tr("Cadeaux de bienvenue");
+      $("#uName").textContent = tr("Pour bien démarrer");
+      $("#uVisual").innerHTML = `<div class="welcome-gifts">${START_ATOUTS.map(id => cardEl(makeAtout(id, "w"), 0).outerHTML).join("")}<span class="mcoin">${CAPSULE_COST}</span></div>`;
+      $("#uDesc").textContent = tr("Deux atouts sont déjà dans ta pioche : la Citerne et le Bouclier. Tu les croiseras pendant tes parties.");
+      $("#uHelp").textContent = tr("Et {n} cristaux pour ouvrir ton premier booster. Tout le reste se gagne en jouant.", { n: CAPSULE_COST });
+      fillButtons($("#uActions"), [
+        { label: tr("Ouvrir mon booster"), cls: "hot", fn: () => { $("#unlock").classList.remove("on"); openBoosters(); } },
+        { label: tr("Plus tard"), cls: "ghost", fn: () => $("#unlock").classList.remove("on") }
+      ]);
+      $("#unlock").classList.add("on");
+    }
+    function renderJourneyTile() {
+      const next = upcomingRewards()[0];
+      if (!next) { $("#jtIc").innerHTML = portrait(save.char); $("#jtSub").textContent = tr("Tout est débloqué"); return; }
+      if (next.kind === "stage") {
+        $("#jtIc").innerHTML = next.gift ? cardEl(makeAtout(next.gift, "jt"), 0).outerHTML : portrait(next.chars[0]);
+        $("#jtSub").textContent = next.gift ? tr("Prochain : {name}", { name: tr(ATOUTS[next.gift].name) }) : tr("Prochain : {name}", { name: tr(CHARS[next.chars[0]].name) });
+      } else {
+        $("#jtIc").innerHTML = next.atout ? cardEl(makeAtout(next.atout, "jt"), 0).outerHTML : `<span class="j-badge">${next.lvl}</span>`;
+        $("#jtSub").textContent = tr("Niveau {n} : {what}", { n: next.lvl, what: next.atout ? tr(ATOUTS[next.atout].name) : tr("{n} atouts équipés", { n: next.slots }) });
+      }
     }
 
     /* ═════ Progression : page « Ton aventure » et écran « Débloqué ! » ═════ */
@@ -3668,7 +3821,7 @@
         save.seen.unlockAtout = 1;
         fillButtons($("#uActions"), equipped
           ? [{ label: queue.length ? tr("Suivant") : tr("Super !"), cls: "hot", fn: next }]
-          : [{ label: tr("Choisir mes atouts"), cls: "hot", fn: () => { $("#unlock").classList.remove("on"); $("#endScreen").classList.remove("on"); goMenu(); openAtouts(); } }, { label: queue.length ? tr("Suivant") : tr("Plus tard"), cls: "ghost", fn: next }]);
+          : [{ label: tr("Choisir mes atouts"), cls: "hot", fn: () => { $("#unlock").classList.remove("on"); $("#endScreen").classList.remove("on"); goMenu(); openAtouts(); colPick = item.id; renderCollection(); } }, { label: queue.length ? tr("Suivant") : tr("Plus tard"), cls: "ghost", fn: next }]);
       } else {
         const c = CHARS[item.id];
         $("#uKicker").textContent = tr("Nouveau personnage");
@@ -3707,7 +3860,8 @@
       $("#menuXp").style.width = `${Math.round((lv.into / lv.need) * 100)}%`;
       $("#trophies").textContent = save.trophies;
       $("#crystals").textContent = save.crystals;
-      $("#quickAtouts").textContent = tr("Atouts {n}/{max}", { n: save.loadout.length, max: atoutSlots() });
+      $("#trophyPill").hidden = !save.trophies;
+      renderJourneyTile();
       $("#capsuleBtn").textContent = tr("Booster · {cost} ◆", { cost: CAPSULE_COST });
       const ready = save.crystals >= CAPSULE_COST;
       $("#quickBooster").classList.toggle("ready", ready);
@@ -3715,6 +3869,7 @@
       $("#boostSub").textContent = ready ? tr("3 objets au hasard") : tr("Encore {n} ◆", { n: CAPSULE_COST - save.crystals });
       $("#boostBar").style.width = `${Math.min(100, Math.round((save.crystals / CAPSULE_COST) * 100))}%`;
       $("#boostCta").textContent = ready ? tr("Ouvrir !") : `${save.crystals} / ${CAPSULE_COST} ◆`;
+      $("#quickBooster").classList.toggle("free", dailyLeft() > 0 && levelInfo(save.xp).lvl >= MONET.dailyLevel);
       $('#tabs [data-tab="cards"]').classList.toggle("dot", ready);
 
       renderCampaign();
@@ -3781,8 +3936,10 @@
       // Gain lisible d'un coup d'œil : niveau de l'adversaire, cristaux de la victoire, bonus éventuels.
       const gems = done ? Math.round(sg.reward / 2) : sg.reward;
       const extras = done ? [] : [sg.gift && !save.owned[sg.gift] ? tr("+ atout <b>{name}</b>", { name: tr(ATOUTS[sg.gift].name) }) : null, sg.boss ? tr("+ un personnage") : null].filter(Boolean);
-      $("#stake").innerHTML = `<span class="chip tier${sg.boss ? " boss" : ""}">${sg.boss ? `${tr("Boss")} · ${tr(BOSSES[sg.boss].move)}` : tr(TIER_NAMES[sg.tier])}</span>`
-        + `<span class="chip win">${tr("Victoire")} <b>+${gems} ◆</b></span>${extras.map(x => `<span class="chip bonus">${x}</span>`).join("")}`;
+      // Difficulté en points plutôt qu'en surnom, et la fourchette réelle de cristaux (base + écart, 20 au plus).
+      const dots = Math.min(5, Math.floor(sg.tier / 3) + 1);
+      $("#stake").innerHTML = `<span class="chip tier${sg.boss ? " boss" : ""}">${sg.boss ? tr("Boss") : tr("Difficulté")} ${"●".repeat(dots)}${"○".repeat(5 - dots)}</span>`
+        + `<span class="chip win">${tr("Victoire")} <b>${gems}–${gems + 20} ◆</b></span>${extras.map(x => `<span class="chip bonus">${x}</span>`).join("")}<span class="chip more">${tr("Détails")} ›</span>`;
     }
     function openBossIntro() {
       const sg = STAGES[S.stage], b = BOSSES[sg.boss];
@@ -3847,7 +4004,7 @@
       else if (kind === "atout") text = tr(ATOUTS[id].desc);
       else text = kind === "dice" ? tr("Ton dé, lancé sous les yeux de ton adversaire.") : tr("Le dos de tes cartes, vu par ton adversaire.");
       if (!own) text += `<br><i>${howToGet(kind, id)}</i>`;
-      else if (kind === "atout") action = equipped(kind, id) ? { label: tr("Retirer"), cls: "ghost" } : save.loadout.length < atoutSlots() ? { label: tr("Équiper") } : { label: tr("{n} atouts déjà équipés", { n: atoutSlots() }), cls: "ghost", off: true };
+      else if (kind === "atout") action = equipped(kind, id) ? { label: tr("Retirer"), cls: "ghost" } : save.loadout.length < atoutSlots() ? { label: tr("Équiper") } : { label: tr("Retire d'abord un atout équipé"), cls: "ghost", off: true };
       else action = equipped(kind, id) ? { label: tr("Équipé ✓"), cls: "ghost", off: true } : { label: tr("Équiper") };
       $("#showcase").innerHTML = `<div class="big">${own ? visual(id, true) : `<div class="locked-big" style="filter:grayscale(1) brightness(.3)">${visual(id, true)}</div>`}</div>
         <div><h3>${own ? tr(def.name) : "???"}</h3><span class="rar r${def.rarity}">${tr(RARITY[def.rarity].name)}</span><p>${text}</p>${action ? `<button class="btn ${action.cls || ""}" id="equipBtn" ${action.off ? "disabled" : ""}>${action.label}</button>` : ""}</div>`;
@@ -3966,11 +4123,12 @@
         if (def.rarity > 0) { sfx.rare(); burst(slots[i], def.rarity === 2 ? [YE, "#fff", OR] : ["#2fa394", "#fff", K], def.rarity === 2 ? 28 : 16); if (def.rarity === 2) warp(900); }
         else sfx.flip();
         await sleep(450);
-        slots[i].querySelector("small").textContent = dup ? tr("Doublon +{n} ◆", { n: RARITY[def.rarity].dup }) : item.kind === "atout" ? tr("Atout ! {rarity}", { rarity: tr(RARITY[def.rarity].name) }) : item.kind === "char" ? `${tr(def.name)} · ${tr(RARITY[def.rarity].name)}` : tr("Nouveau · {rarity}", { rarity: tr(RARITY[def.rarity].name) });
+        slots[i].querySelector("small").textContent = dup ? tr("Doublon +{n} ◆", { n: RARITY[def.rarity].dup }) : item.kind === "atout" ? `${tr(def.name)} · ${tr(RARITY[def.rarity].name)}` : item.kind === "char" ? `${tr(def.name)} · ${tr(RARITY[def.rarity].name)}` : tr("Nouveau · {rarity}", { rarity: tr(RARITY[def.rarity].name) });
         await sleep(350);
       }
       $("#capTitle").textContent = results.some(r => !r.dup) ? tr("Nouveaux objets !") : tr("Que des doublons…");
-      $("#capText").innerHTML = tr("Il te reste <b>{n} ◆</b>.", { n: save.crystals });
+      $("#capText").innerHTML = tr("Il te reste <b>{n} ◆</b>.", { n: save.crystals }) + (results.some(r => !r.dup && r.item.kind === "char") ? ` ${tr("Un nouveau perso se choisit dans Cartes, onglet Persos.")}` : "")
+        + results.filter(r => !r.dup && r.item.kind === "atout").map(r => ` ${save.loadout.includes(r.item.id) ? tr("{name} est déjà dans ta pioche.", { name: tr(ATOUTS[r.item.id].name) }) : tr("Équipe {name} dans Cartes, onglet Atouts.", { name: tr(ATOUTS[r.item.id].name) })}`).join("");
       const buttons = [{ label: tr("Voir ma collection"), fn: () => { colSub = { char: "chars", atout: "atouts", dice: "dice", back: "back" }[results[0].item.kind]; colPick = results[0].item.id; closeCapsule(); showTab("cards"); renderMenu(); } }];
       if (save.crystals >= CAPSULE_COST) buttons.push({ label: tr("Encore un · {cost} ◆", { cost: CAPSULE_COST }), cls: "teal", fn: openCapsuleShop });
       buttons.push({ label: tr("Fermer"), cls: "ghost", fn: closeCapsule });
@@ -3995,8 +4153,13 @@
     $("#helpAtouts").innerHTML = ATOUT_IDS.map(id => `<li><b>${tr(ATOUTS[id].name)}</b> (${tr(RARITY[ATOUTS[id].rarity].name).toLowerCase()}) : ${tr(ATOUTS[id].desc)}</li>`).join("");
     for (const btn of document.querySelectorAll("#tabs button")) btn.addEventListener("click", () => { sfx.tap(); showTab(btn.dataset.tab); });
     $("#tutoBtn").addEventListener("click", () => { save.seen = {}; save.mute = false; S.stage = save.stage = 0; chapterView = 0; persist(); newGame("adv"); });
-    for (const id of ["capsuleBtn", "quickBooster", "crystalsBtn"]) $(`#${id}`).addEventListener("click", openCapsuleShop);
-    $("#quickAtouts").addEventListener("click", openAtouts);
+    for (const id of ["capsuleBtn", "quickBooster", "crystalsBtn"]) $(`#${id}`).addEventListener("click", openBoosters);
+    $("#bpOpen").addEventListener("click", () => { if (save.crystals < CAPSULE_COST) { closeBoosters(); showTab("adv"); return; } closeBoosters(); openCapsuleShop(); });
+    $("#bpClose").addEventListener("click", () => { sfx.tap(); closeBoosters(); });
+    $("#journeyTile").addEventListener("click", openJourney);
+    $("#stake").addEventListener("click", openPrize);
+    $("#przClose").addEventListener("click", () => { sfx.tap(); $("#prize").classList.remove("on"); });
+    $("#przGo").addEventListener("click", () => { $("#prize").classList.remove("on"); $("#playBtn").click(); });
     $("#dailyBox").addEventListener("click", openDaily);
     $("#journeyBtn").addEventListener("click", openJourney);
     $("#jClose").addEventListener("click", () => { sfx.tap(); closeJourney(); });
