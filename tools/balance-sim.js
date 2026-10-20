@@ -60,10 +60,10 @@ window.BalanceSim = (function () {
     const d = makeDeck();
     st.decks = [inject(d.slice(0, OPT.deck), cfg.atouts[0]), inject(d.slice(26, 26 + OPT.deck), cfg.atouts[1])];
     st.hands = [[], []]; st.loot = [0, 0]; st.pot = [];
-    st.fuel = [0, 1].map(p => (cast[p] === "mars" ? 2 : 1) + (Ls[p].bonusFuel || 0));
+    st.fuel = [0, 1].map(p => (cast[p] === "mars" ? OPT.talent.marsFuel : 1) + (Ls[p].bonusFuel || 0));
     const stats = { ally: 0, allyOk: 0, riposte: 0, riposteOk: 0, reversal: 0, war: 0, super: 0, superWon: 0, wasted: 0, swap: 0 };
-    const hs = p => (cast[p] === "poulpes" ? 6 : 5) + (Ls[p].bonusHand || 0);
-    let B = empty(), revealed = false, hidden = [false, false], charged = [false, false];
+    const hs = p => (cast[p] === "poulpes" ? OPT.talent.poulpesHand : 5) + (Ls[p].bonusHand || 0);
+    let B = empty(), revealed = false, hidden = [false, false], charged = [false, false], disguised = null;
     const sup = (p, k) => charged[p] && boss[p] === k;
 
     const onBoard = (p, sp) => [B.van[p], revealed ? B.amb[p] : null, B.allyOk[p] ? B.ally[p] : null].some(c => c && c.special === sp);
@@ -169,7 +169,7 @@ window.BalanceSim = (function () {
       })).sort((a, b) => b.score - a.score);
       return opts.length && (opts[0].score >= 0.2 || lootSum(st.pot) >= 6) ? opts[0].c : null;
     }
-    const dieBonus = (p, role) => (B.amb[p].house === "H" && !onBoard(1 - p, "eclipse") ? 1 : 0) + (role === "riposte" && cast[p] === "cranes" ? 1 : 0);
+    const dieBonus = (p, role) => (B.amb[p].house === "H" && !onBoard(1 - p, "eclipse") ? 1 : 0) + (cast[p] === "cranes" && (OPT.talent.cranes === "both" || role === OPT.talent.cranes) ? 1 : 0);
     const radarOn = p => B.amb[p].house === "C" && !used[p] && !onBoard(1 - p, "eclipse");
     function roll(p, card, role) {
       const thr = thirdThr(p, card), bonus = dieBonus(p, role);
@@ -192,7 +192,7 @@ window.BalanceSim = (function () {
     const tank = (p, c) => {
       if (!c || c.done) return;
       if (c.special === "tank") { c.done = true; gain(p, 2); }
-      if (c.special === "pirate") { c.done = true; if (st.fuel[1 - p] > 0) { st.fuel[1 - p] -= 1; gain(p, 1); } }
+      if (c.special === "pirate") { c.done = true; if (st.fuel[1 - p] > (OPT.pirate === "rich" ? 1 : 0)) { st.fuel[1 - p] -= 1; if (OPT.pirate !== "sink") gain(p, 1); } }
     };
     /* Échange : 1 boost = 1 carte de la main glissée sous la pioche contre celle du dessus, une fois par manche. */
     function swap(p) {
@@ -232,6 +232,7 @@ window.BalanceSim = (function () {
       st.loot[w] += pts - magnet + comet + steal; st.loot[l] += magnet - steal; st.pot = [];
       gain(l, 1);
       if (refuel) gain(w, 1);
+      if (OPT.talent.incognitoFuel && !war && disguised === w) gain(w, 1);
       st.first = w;
     }
     function war(level = 1) {
@@ -281,6 +282,7 @@ window.BalanceSim = (function () {
       if (!battle) { swap(0); swap(1); }
       const f = st.first, s = 1 - f;
       hidden[f] = cast[f] === "incognito";
+      disguised = hidden[f] ? f : null;
       B.van[f] = take(f, plan(f, null).van);
       B.van[s] = take(s, plan(s, null).van);
       hidden[f] = false;
@@ -364,7 +366,8 @@ window.BalanceSim = (function () {
      war = "round" (règle du jeu : manche rejouée par-dessus) | "pick" (duel choisi) | "blind" (cartes du dessus),
      mulligan = échange de départ, clone = plafond du Clone à essayer (null = valeur du jeu),
      slots = nombre d'atouts du joueur type en campagne (3, 4 ou 5 selon son niveau). */
-  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "round", mulligan: true, clone: null, slots: 3, deck: 20, impact: 2, allyCombo: "trio", trio: [5, 5, 4] };
+  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "round", mulligan: true, clone: null, slots: 3, deck: 20, impact: 2, allyCombo: "trio", trio: [5, 5, 4], pirate: "sink",
+    talent: { marsFuel: 3, poulpesHand: 6, cranes: "riposte", incognitoFuel: true } };
   const set = o => Object.assign(OPT, o);
   return { game, run, campaign, set, OPT };
 })();

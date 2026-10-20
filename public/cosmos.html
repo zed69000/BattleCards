@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.65";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.66";</script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -511,10 +511,15 @@
     /* ───── Jeu ───── */
     #game .col { gap: 6px; position: relative; z-index: 1; }
     .decor { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .decor-l { position: absolute; inset: 0; opacity: 0.62; }
+    .decor-l { position: absolute; inset: 0; opacity: 0.85; }
     .decor-l svg { display: block; width: 100%; height: 100%; }
+    /* Darker band behind the field so the arena and the cards stay readable on any scene. */
+    .decor::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 95% 40% at 50% 47%, rgba(10, 15, 30, 0.82), rgba(10, 15, 30, 0.35) 100%); }
     .decor-spin { animation: spin 60s linear infinite; }
-    .decor-ring { position: absolute; left: 50%; top: 55%; width: 220vmax; height: 220vmax; border-radius: 50%; border: 6px solid rgba(245, 196, 69, 0.8); }
+    .decor-front { position: absolute; left: 0; right: 0; top: -6px; z-index: 2; height: 12px; border-radius: 6px; box-shadow: 0 0 24px 8px currentColor; opacity: 0; }
+    .arena { position: absolute; left: 50%; top: 50%; z-index: -1; width: 128%; aspect-ratio: 400 / 260; transform: translate(-50%, -50%); pointer-events: none; }
+    .arena svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    .arena .ar-s { stroke: var(--arena); transition: stroke 600ms; } .arena .ar-f { fill: var(--arena); transition: fill 600ms; }
     .decor-prev { position: relative; width: 100%; aspect-ratio: 9 / 16; border-radius: 8px; overflow: hidden; border: 2px solid var(--navy); background: #10162b radial-gradient(circle, #f5e9cf 0 1px, transparent 1.6px) 0 0 / 13px 13px; }
     .decor-prev svg { display: block; width: 100%; height: 100%; }
     .cell .decor-prev { width: 36px; } .showcase .big .decor-prev { width: 66px; } .item-art .decor-prev { width: 52%; } .bp-kind .decor-prev { width: 24px; }
@@ -563,7 +568,7 @@
 
     .field { position: relative; display: grid; gap: 6px; margin: auto 0; }
     .lane { display: flex; align-items: center; justify-content: center; gap: 6px; }
-    .slot { position: relative; flex: none; width: calc(var(--cwb) + 8px); height: calc(var(--cwb) * 1.42 + 8px); display: grid; place-items: center; border-radius: 12px; border: 2px dashed rgba(245, 233, 207, 0.5); background: rgba(16, 22, 43, 0.5); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(245, 233, 207, 0.6); text-align: center; transition: transform 120ms, background 120ms; }
+    .slot { position: relative; flex: none; width: calc(var(--cwb) + 8px); height: calc(var(--cwb) * 1.42 + 8px); display: grid; place-items: center; border-radius: 12px; border: 2px dashed rgba(245, 233, 207, 0.5); background: rgba(16, 22, 43, 0.78); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(245, 233, 207, 0.6); text-align: center; transition: transform 120ms, background 120ms; }
     .slot .card { text-transform: none; letter-spacing: 0; }
     .slot.want { border-color: var(--yellow); color: var(--yellow); background: rgba(245, 196, 69, 0.16); animation: pulse 1.3s ease-in-out infinite; }
     .slot.hot { border-style: solid; border-color: #fff; background: rgba(245, 196, 69, 0.4); transform: scale(1.08); animation: none; }
@@ -1041,6 +1046,7 @@
       <div class="opp-hand" id="oppHand" aria-label="Main de l'adversaire"></div>
 
       <div class="field" id="field">
+        <div class="arena" id="arena" aria-hidden="true"></div>
         <div class="banner" id="banner" aria-hidden="true"></div>
         <div class="lane">
           <div class="slot" id="slot-1-van"></div><div class="slot" id="slot-1-amb"></div><div class="slot" id="slot-1-ally"></div>
@@ -1544,19 +1550,19 @@
     }));
     const RARITY = [{ name: "Commune", weight: 70, dup: 10 }, { name: "Rare", weight: 25, dup: 25 }, { name: "Légendaire", weight: 5, dup: 60 }, { name: "Boss", weight: 0, dup: 0 }];
     const ATOUTS = {
-      spy: { name: "Vache espionne", value: 7, rarity: 0, desc: "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 7." },
-      dice: { name: "Dé pipé", value: 5, thr: 1, rarity: 0, desc: "Joue-la en allié ou en riposte : le dé réussit toujours. Vaut 5." },
+      spy: { name: "Vache espionne", value: 9, rarity: 0, desc: "Pose-la en 1ʳᵉ carte : l'adversaire devra montrer sa carte cachée avant que tu choisisses la tienne. Vaut 9." },
+      dice: { name: "Dé pipé", value: 2, thr: 1, rarity: 0, desc: "Joue-la en allié ou en riposte : le dé réussit toujours. Vaut 2, idéal pour un combo." },
       tank: { name: "Citerne", value: 5, rarity: 0, desc: "Dès qu'elle est visible sur la table, son propriétaire gagne 2 boosts ⚡. Vaut 5." },
-      shield: { name: "Bouclier", value: 6, rarity: 0, desc: "Tant qu'elle est sur la table, les malus adverses (Impact −2, Trou noir) ne touchent pas son propriétaire. Vaut 6." },
+      shield: { name: "Bouclier", value: 7, rarity: 0, desc: "Tant qu'elle est sur la table, les malus adverses (Impact −2, Trou noir) ne touchent pas son propriétaire. Vaut 7." },
       clone: { name: "Clone", value: 0, label: "?", thr: 3, rarity: 1, desc: "Copie la valeur de l'autre carte posée à côté (5 au maximum) : ensemble elles forment des Jumeaux, +5." },
-      hole: { name: "Trou noir", value: 2, thr: 5, rarity: 1, desc: "Ne vaut que 2, mais aspire la plus faible des deux cartes d'en face : elle compte 0." },
+      hole: { name: "Trou noir", value: 3, thr: 5, rarity: 1, desc: "Ne vaut que 3, mais aspire la plus faible des deux cartes d'en face : elle compte 0." },
       tractor: { name: "Rayon tracteur", value: 6, rarity: 1, desc: "Si son propriétaire gagne la manche, il vole en plus 3 points dans le butin d'en face. Vaut 6." },
-      nova: { name: "Supernova", value: 9, thr: 6, loot: 0, rarity: 2, desc: "Vaut 9 et explose en arrivant. Mais elle se consume : elle ne rapporte aucun butin." },
-      tresor: { name: "Coffre", value: 8, loot: 4, rarity: 0, desc: "Vaut 8 et renferme 4 points de butin : un trésor pour celui qui le gagne… même ton adversaire." },
+      nova: { name: "Supernova", value: 10, thr: 5, loot: 0, rarity: 2, desc: "Vaut 10 et explose en arrivant. Mais elle se consume : elle ne rapporte aucun butin." },
+      tresor: { name: "Coffre", value: 10, loot: 3, rarity: 0, desc: "Vaut 10 et renferme 3 points de butin : un trésor pour celui qui le gagne… même ton adversaire." },
       meteor: { name: "Météore", value: 5, rarity: 1, desc: "Tant qu'elle est sur la table, le total adverse perd 3 (le Bouclier protège). Vaut 5." },
       turbo: { name: "Turbo", value: 3, thr: 3, rarity: 1, desc: "Jouée en allié ou en riposte, elle compte double : +6, avec un dé de 3+. Vaut 3." },
       satellite: { name: "Satellite", value: 4, rarity: 0, desc: "Posé en carte visible, il vaut 3 de plus. Vaut 4." },
-      pirate: { name: "Pirate", value: 5, rarity: 0, desc: "Dès qu'il est visible sur la table, il vole 1 boost ⚡ à l'adversaire. Vaut 5." },
+      pirate: { name: "Pirate", value: 5, rarity: 0, desc: "Dès qu'il est visible sur la table, il coule 1 boost ⚡ de l'adversaire. Vaut 5." },
       aimant: { name: "Aimant", value: 5, rarity: 1, desc: "Si son propriétaire perd la manche, il garde quand même 2 points du butin. Vaut 5." },
       eclipse: { name: "Éclipse", value: 6, rarity: 1, desc: "Annule le pouvoir de famille de la carte cachée adverse (Impact, Propulsion, Ravitaillement, Radar). Vaut 6." },
       comete: { name: "Comète d'or", value: 7, rarity: 2, desc: "Si son propriétaire gagne la manche, le butin compte double (6 points de plus au maximum). Vaut 7." },
@@ -1630,68 +1636,94 @@
       affiche: { name: "Avant-première", rarity: 1 },
       saturne: { name: "Anneaux de Saturne", rarity: 1 },
       neptune: { name: "Océan de Neptune", rarity: 1 },
+      jupiter: { name: "Tempête de Jupiter", rarity: 1 },
       bonbon: { name: "Planète Bonbon", rarity: 1 },
       nebuleuse: { name: "Nébuleuse rose", rarity: 2 },
       neon: { name: "Néo-Tokyo 3000", rarity: 2 }
     };
-    /* Scenes are drawn in a 400×860 box and cropped to the screen; the middle stays calm behind the cards. */
+    /* Scenes are drawn in a 400×860 box and cropped to the screen. The sky sits behind the opponent, the ground behind
+       the player's hand, and the middle stays dark so the arena floor and the cards read first. */
     function decorSVG(id) {
-      const N = "#10162b", st = (n, seed, c = "#f5e9cf", y1 = 560) => {
-        let out = "", k = seed;
-        for (let i = 0; i < n; i += 1) { k = (k * 9301 + 49297) % 233280; const x = (k / 233280) * 400; k = (k * 9301 + 49297) % 233280; const y = (k / 233280) * y1; out += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(1 + (i % 3) * 0.6).toFixed(1)}" fill="${c}" opacity="${0.4 + (i % 4) * 0.15}"/>`; }
-        return out;
-      };
+      const N = "#10162b";
+      let k = id.length * 977;
+      const rnd = () => { k = (k * 9301 + 49297) % 233280; return k / 233280; };
+      const stars = (n, c = "#f5e9cf", y1 = 520) => Array.from({ length: n }, (_, i) => `<circle cx="${(rnd() * 400).toFixed(0)}" cy="${(rnd() * y1).toFixed(0)}" r="${(0.8 + (i % 3) * 0.7).toFixed(1)}" fill="${c}" opacity="${(0.35 + rnd() * 0.6).toFixed(2)}"/>`).join("");
+      const spark = (x, y, r, c) => `<path d="M${x} ${y - r}L${x + r * 0.22} ${y - r * 0.22}L${x + r} ${y}L${x + r * 0.22} ${y + r * 0.22}L${x} ${y + r}L${x - r * 0.22} ${y + r * 0.22}L${x - r} ${y}L${x - r * 0.22} ${y - r * 0.22}Z" fill="${c}"/>`;
+      const sky = (a, b, c) => `<defs><linearGradient id="sk-${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset=".55" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></linearGradient>
+        <pattern id="ht-${id}" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="1.3" fill="#000" opacity=".22"/></pattern></defs><rect width="400" height="860" fill="url(#sk-${id})"/>`;
+      const dots = (y, h) => `<rect y="${y}" width="400" height="${h}" fill="url(#ht-${id})"/>`;
       const scenes = {
-        espace: "",
-        lune: `${st(26, 3)}<circle cx="318" cy="120" r="52" fill="#5b8fd8" stroke="${N}" stroke-width="5"/><path d="M282 104q20-18 38 0t36-4M290 140q22 10 46-6" fill="none" stroke="#7be0a4" stroke-width="10" stroke-linecap="round"/>
-          <path d="M0 640 Q90 600 190 628 T400 612 V860 H0Z" fill="#c9c4b8" stroke="${N}" stroke-width="5"/><path d="M0 700 Q120 680 230 706 T400 694 V860 H0Z" fill="#a9a395"/>
-          <ellipse cx="80" cy="760" rx="46" ry="12" fill="#8c8678"/><ellipse cx="300" cy="790" rx="60" ry="14" fill="#8c8678"/><ellipse cx="210" cy="664" rx="26" ry="7" fill="#a9a395"/>
-          <path d="M330 650 v-56" stroke="${N}" stroke-width="4"/><path d="M332 596 h40 v24 h-40" fill="#f26a3d" stroke="${N}" stroke-width="4"/>`,
-        mars: `${st(18, 7, "#ffd9b8", 420)}<circle cx="70" cy="110" r="22" fill="#d9a07a" stroke="${N}" stroke-width="4"/><circle cx="330" cy="70" r="12" fill="#c98a62" stroke="${N}" stroke-width="3"/>
-          <path d="M0 610 Q70 560 150 600 Q240 650 300 590 Q350 548 400 580 V860 H0Z" fill="#c0532e" stroke="${N}" stroke-width="5"/>
-          <path d="M0 690 Q110 650 210 690 T400 670 V860 H0Z" fill="#f26a3d"/><path d="M0 770 Q150 740 260 780 T400 760 V860 H0Z" fill="#d95a30"/>
-          <path d="M40 700 q20-8 40 0M250 730 q24-10 48 0M150 800 q20-8 40 0" fill="none" stroke="#ffb08a" stroke-width="4" stroke-linecap="round"/>`,
-        hangar: `<rect width="400" height="860" fill="#3a4360"/><path d="M0 0 H400 V90 H0Z" fill="#2b3350"/>
-          ${[0, 1, 2, 3, 4].map(i => `<path d="M${i * 100} 0 V860" stroke="#2b3350" stroke-width="10"/>`).join("")}
-          <circle cx="300" cy="170" r="66" fill="#10162b" stroke="#8fd8cc" stroke-width="10"/><circle cx="286" cy="160" r="28" fill="#f26a3d"/><path d="M256 178 Q300 158 346 182" fill="none" stroke="#f5c445" stroke-width="4"/>
-          ${[[30, 130], [130, 130], [30, 230], [130, 230]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="5" fill="#2b3350"/>`).join("")}
-          <rect y="680" width="400" height="180" fill="#4a5470"/><rect y="680" width="400" height="20" fill="#f5c445"/>
-          ${Array.from({ length: 21 }, (_, i) => `<path d="M${i * 20 - 6} 680 l14 20" stroke="${N}" stroke-width="7"/>`).join("")}<path d="M0 700 H400" stroke="${N}" stroke-width="4"/>`,
-        affiche: `<rect width="400" height="860" fill="#3a2a68"/><g class="decor-spin" style="transform-origin:200px 430px">${Array.from({ length: 18 }, (_, i) => `<path d="M200 430 L${(200 + Math.cos((i * 20) * Math.PI / 180) * 700).toFixed(0)} ${(430 + Math.sin((i * 20) * Math.PI / 180) * 700).toFixed(0)} L${(200 + Math.cos((i * 20 + 10) * Math.PI / 180) * 700).toFixed(0)} ${(430 + Math.sin((i * 20 + 10) * Math.PI / 180) * 700).toFixed(0)}Z" fill="#f5c445" opacity="0.2"/>`).join("")}</g>
-          <g transform="rotate(-10 80 90)"><rect x="24" y="64" width="116" height="48" rx="6" fill="#f5c445" stroke="${N}" stroke-width="4"/><text x="82" y="98" text-anchor="middle" font-size="28" font-family="Righteous, sans-serif" fill="${N}">POW !</text></g>
-          <ellipse cx="200" cy="790" rx="190" ry="44" fill="#5b5fc7" stroke="${N}" stroke-width="5"/><ellipse cx="200" cy="790" rx="168" ry="32" fill="none" stroke="#f5c445" stroke-width="5" stroke-dasharray="2 14" stroke-linecap="round"/>`,
-        saturne: `${st(40, 11)}<g transform="rotate(-16 220 170)"><ellipse cx="220" cy="170" rx="170" ry="34" fill="none" stroke="#e0b46a" stroke-width="16"/><circle cx="220" cy="170" r="82" fill="#f5c445" stroke="${N}" stroke-width="5"/>
-          <path d="M146 150 H294 M140 182 H300" stroke="#e09a3a" stroke-width="10"/><path d="M50 170 A170 34 0 0 0 390 170" fill="none" stroke="#e0b46a" stroke-width="16"/><path d="M50 170 A170 34 0 0 0 390 170" fill="none" stroke="${N}" stroke-width="3" opacity=".5"/></g>
-          ${st(30, 5, "#f5c445", 860)}`,
-        neptune: `${st(24, 13, "#bfe3ff", 420)}<circle cx="96" cy="130" r="58" fill="#3d6fd0" stroke="${N}" stroke-width="5"/><path d="M48 118 Q96 104 144 122 M52 148 Q96 160 140 146" fill="none" stroke="#7fb0f5" stroke-width="8"/>
-          <path d="M0 620 q25-18 50 0t50 0t50 0t50 0t50 0t50 0t50 0t50 0 V860 H0Z" fill="#2a5cb8" stroke="${N}" stroke-width="5"/>
-          <path d="M0 690 q25-16 50 0t50 0t50 0t50 0t50 0t50 0t50 0t50 0 V860 H0Z" fill="#3d7ae0"/><path d="M0 770 q25-14 50 0t50 0t50 0t50 0t50 0t50 0t50 0t50 0 V860 H0Z" fill="#5b8fd8"/>
-          ${[[60, 560, 8], [90, 520, 5], [330, 580, 10], [350, 530, 6], [300, 500, 4]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#bfe3ff" stroke-width="3"/>`).join("")}`,
-        bonbon: `<rect width="400" height="860" fill="#4a2a5a"/>${st(20, 17, "#ffd1e8", 500)}
-          <path d="M0 640 Q60 580 130 620 Q200 660 260 600 Q330 540 400 610 V860 H0Z" fill="#ff8fc4" stroke="${N}" stroke-width="5"/><path d="M0 720 Q120 680 220 720 T400 700 V860 H0Z" fill="#f5e9cf"/>
-          ${[[70, 600, "#7be0a4"], [330, 590, "#f5c445"]].map(([x, y, c]) => `<path d="M${x} ${y} V${y - 90}" stroke="${N}" stroke-width="6"/><circle cx="${x}" cy="${y - 110}" r="30" fill="${c}" stroke="${N}" stroke-width="5"/><path d="M${x - 18} ${y - 110} a18 18 0 0 1 36 0 a12 12 0 0 1 -24 0" fill="none" stroke="#fff" stroke-width="5"/>`).join("")}
-          <path d="M0 720 Q120 680 220 720 T400 700" fill="none" stroke="#d0508f" stroke-width="8" stroke-dasharray="20 16"/>`,
-        nebuleuse: `<rect width="400" height="860" fill="#1a1440"/><ellipse cx="120" cy="180" rx="200" ry="120" fill="#d0508f" opacity=".35"/><ellipse cx="300" cy="300" rx="180" ry="110" fill="#5b5fc7" opacity=".45"/>
-          <ellipse cx="200" cy="700" rx="240" ry="130" fill="#d0508f" opacity=".3"/><ellipse cx="80" cy="760" rx="150" ry="90" fill="#2fa394" opacity=".3"/>${st(60, 23, "#fff", 860)}
-          ${[[90, 120], [320, 220], [60, 640], [340, 720]].map(([x, y]) => `<path d="M${x} ${y - 12} L${x + 3} ${y - 3} L${x + 12} ${y} L${x + 3} ${y + 3} L${x} ${y + 12} L${x - 3} ${y + 3} L${x - 12} ${y} L${x - 3} ${y - 3}Z" fill="#f5c445"/>`).join("")}`,
-        neon: `<rect width="400" height="860" fill="#140c2e"/>${st(20, 29, "#8fd8cc", 360)}<circle cx="200" cy="300" r="90" fill="#d0508f" opacity=".85"/>${[0, 1, 2, 3].map(i => `<rect x="100" y="${310 + i * 18}" width="200" height="${6 + i * 2}" fill="#140c2e"/>`).join("")}
-          ${[[0, 420, 60], [52, 470, 48], [96, 380, 70], [160, 450, 50], [214, 400, 64], [272, 460, 46], [312, 390, 88]].map(([x, y, w]) => `<rect x="${x}" y="${y}" width="${w}" height="${640 - y}" fill="#221a4a" stroke="#5b5fc7" stroke-width="3"/>${Array.from({ length: 6 }, (_, j) => `<rect x="${x + 8 + (j % 2) * (w / 2 - 4)}" y="${y + 14 + Math.floor(j / 2) * 26}" width="${w / 2 - 16}" height="8" fill="${j % 3 ? "#2fa394" : "#f5c445"}" opacity=".85"/>`).join("")}`).join("")}
-          <rect y="640" width="400" height="220" fill="#1a0f3a"/>${Array.from({ length: 9 }, (_, i) => `<path d="M${i * 50} 640 L${(i * 50 - 200) * 3 + 200} 860" stroke="#d0508f" stroke-width="2" opacity=".7"/>`).join("")}
-          ${[660, 690, 730, 790].map(y => `<path d="M0 ${y} H400" stroke="#2fa394" stroke-width="2" opacity=".7"/>`).join("")}`
+        espace: `${sky("#0d1230", "#141a3f", "#1d1446")}${stars(70, "#f5e9cf", 860)}
+          <g transform="translate(300 150) rotate(-18)"><ellipse rx="120" ry="34" fill="#5b5fc7" opacity=".35"/><ellipse rx="80" ry="22" fill="#d0508f" opacity=".45"/><ellipse rx="34" ry="12" fill="#f5e9cf" opacity=".85"/></g>
+          <circle cx="70" cy="700" r="120" fill="#2b3370" stroke="${N}" stroke-width="6"/><path d="M-20 660 Q70 620 170 680" fill="none" stroke="#3c4590" stroke-width="18" stroke-linecap="round"/><path d="M0 740 Q80 712 180 748" fill="none" stroke="#3c4590" stroke-width="12" stroke-linecap="round"/>
+          ${spark(330, 620, 14, "#f5c445")}${spark(250, 90, 9, "#f5e9cf")}${spark(40, 230, 7, "#8fd8cc")}`,
+        lune: `${sky("#0e1430", "#1a2146", "#2a2c4a")}${stars(50)}
+          <circle cx="306" cy="128" r="62" fill="#4f86d6" stroke="${N}" stroke-width="6"/><path d="M262 110q24-22 48 0t44-6M270 152q28 12 58-8" fill="none" stroke="#7be0a4" stroke-width="12" stroke-linecap="round"/><circle cx="306" cy="128" r="62" fill="url(#ht-lune)"/>
+          <path d="M0 610 Q100 570 210 600 T400 586 V860 H0Z" fill="#cfc9bb" stroke="${N}" stroke-width="6"/><path d="M0 680 Q130 650 250 684 T400 670 V860 H0Z" fill="#b2ab9a"/>${dots(600, 260)}
+          <ellipse cx="86" cy="740" rx="58" ry="15" fill="#958e7c" stroke="${N}" stroke-width="3"/><ellipse cx="300" cy="790" rx="74" ry="18" fill="#958e7c" stroke="${N}" stroke-width="3"/><ellipse cx="220" cy="640" rx="30" ry="8" fill="#a39c8a"/>
+          <path d="M338 612 v-70" stroke="${N}" stroke-width="5"/><path d="M340 544 h46 v28 h-46" fill="#f26a3d" stroke="${N}" stroke-width="5"/>`,
+        mars: `${sky("#2a1030", "#5a1f2a", "#8a3a22")}${stars(22, "#ffd9b8", 300)}
+          <circle cx="86" cy="118" r="30" fill="#d9a07a" stroke="${N}" stroke-width="5"/><circle cx="78" cy="110" r="7" fill="#b07a58"/><circle cx="324" cy="76" r="15" fill="#c98a62" stroke="${N}" stroke-width="4"/>
+          <path d="M0 590 Q70 520 150 570 Q240 628 300 556 Q350 504 400 540 V860 H0Z" fill="#a8402a" stroke="${N}" stroke-width="6"/>
+          <path d="M0 670 Q110 620 210 668 T400 646 V860 H0Z" fill="#d9572f"/><path d="M0 760 Q150 726 260 768 T400 748 V860 H0Z" fill="#f26a3d"/>${dots(560, 300)}
+          <path d="M40 690 q24-10 48 0M250 712 q28-12 56 0M150 800 q24-10 48 0" fill="none" stroke="#ffb08a" stroke-width="5" stroke-linecap="round"/>`,
+        jupiter: `${sky("#1d1230", "#3a2440", "#5a3328")}${stars(30, "#ffe9d0", 360)}
+          <g><circle cx="200" cy="40" r="210" fill="#e0a07a" stroke="${N}" stroke-width="6"/>
+          ${[[-90, "#c8784e", 22], [-40, "#f2c79a", 16], [10, "#b8653f", 26], [60, "#f2c79a", 14], [110, "#c8784e", 20]].map(([y, c, w]) => `<path d="M-10 ${40 + y} Q200 ${70 + y} 410 ${40 + y}" stroke="${c}" stroke-width="${w}" fill="none"/>`).join("")}
+          <ellipse cx="270" cy="150" rx="40" ry="20" fill="#d0503a" stroke="${N}" stroke-width="4"/></g>
+          <path d="M0 640 Q120 600 220 636 T400 620 V860 H0Z" fill="#4a2a3a" stroke="${N}" stroke-width="6"/><path d="M0 720 Q140 690 260 724 T400 708 V860 H0Z" fill="#5f3646"/>${dots(620, 240)}
+          ${spark(60, 300, 10, "#f5c445")}${spark(350, 330, 7, "#f5e9cf")}`,
+        saturne: `${sky("#0e1230", "#1c1a3e", "#2a2040")}${stars(60, "#f5e9cf", 860)}
+          <g transform="rotate(-14 210 190)"><path d="M40 190 A170 38 0 0 1 380 190" fill="none" stroke="#c99a4a" stroke-width="20"/>
+          <circle cx="210" cy="190" r="96" fill="#f5c445" stroke="${N}" stroke-width="6"/><path d="M124 168 H296 M118 204 H302 M140 236 H280" stroke="#e09a3a" stroke-width="12"/><circle cx="210" cy="190" r="96" fill="url(#ht-saturne)"/>
+          <path d="M40 190 A170 38 0 0 0 380 190" fill="none" stroke="#e0b46a" stroke-width="20"/><path d="M40 190 A170 38 0 0 0 380 190" fill="none" stroke="${N}" stroke-width="3" opacity=".6"/></g>
+          ${[[60, 700, 18], [150, 780, 10], [320, 720, 22], [260, 820, 12]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#8a7a6a" stroke="${N}" stroke-width="4"/><circle cx="${x - r * 0.3}" cy="${y - r * 0.3}" r="${r * 0.3}" fill="#a8988a"/>`).join("")}`,
+        neptune: `${sky("#0a1838", "#123060", "#1a4a8a")}${stars(28, "#bfe3ff", 380)}
+          <circle cx="96" cy="130" r="66" fill="#3d6fd0" stroke="${N}" stroke-width="6"/><path d="M40 118 Q96 100 152 122 M46 152 Q96 168 146 148" fill="none" stroke="#7fb0f5" stroke-width="10"/><circle cx="96" cy="130" r="66" fill="url(#ht-neptune)"/>
+          ${[600, 670, 750].map((y, i) => `<path d="M0 ${y} ${Array.from({ length: 9 }, () => "q25 -18 50 0").join(" ")} V860 H0Z" fill="${["#1f4fa8", "#2a64c8", "#3d7ae0"][i]}" ${i ? "" : `stroke="${N}" stroke-width="6"`}/>`).join("")}${dots(600, 260)}
+          ${[[60, 540, 9], [90, 500, 5], [330, 560, 12], [352, 506, 6], [300, 480, 4]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#bfe3ff" stroke-width="3"/>`).join("")}`,
+        hangar: `${sky("#1e2440", "#2b3352", "#3a4360")}
+          ${[0, 1, 2, 3, 4].map(i => `<rect x="${i * 100 - 6}" width="12" height="860" fill="#232a48"/>`).join("")}<rect width="400" height="70" fill="#232a48"/>
+          ${[40, 360].map(x => `<rect x="${x - 26}" y="110" width="52" height="380" rx="8" fill="#323a5a" stroke="${N}" stroke-width="4"/>${[150, 230, 310, 390].map(y => `<circle cx="${x}" cy="${y}" r="5" fill="${N}"/>`).join("")}`).join("")}
+          <circle cx="200" cy="170" r="78" fill="${N}" stroke="#8fd8cc" stroke-width="12"/><circle cx="184" cy="158" r="34" fill="#f26a3d"/><path d="M146 184 Q200 160 254 188" fill="none" stroke="#f5c445" stroke-width="5"/>${stars(8, "#f5e9cf", 230).replace(/cy="(\d+)"/g, (m, y) => `cy="${110 + (y % 120)}"`)}
+          <rect y="660" width="400" height="200" fill="#4a5470"/><rect y="660" width="400" height="24" fill="#f5c445"/>
+          ${Array.from({ length: 21 }, (_, i) => `<path d="M${i * 20 - 6} 660 l16 24" stroke="${N}" stroke-width="8"/>`).join("")}<path d="M0 684 H400" stroke="${N}" stroke-width="5"/>${dots(684, 176)}`,
+        affiche: `<rect width="400" height="860" fill="#33205e"/><g class="decor-spin" style="transform-origin:200px 430px">${Array.from({ length: 18 }, (_, i) => { const a = i * 20 * Math.PI / 180, b = (i * 20 + 10) * Math.PI / 180; return `<path d="M200 430 L${(200 + Math.cos(a) * 760).toFixed(0)} ${(430 + Math.sin(a) * 760).toFixed(0)} L${(200 + Math.cos(b) * 760).toFixed(0)} ${(430 + Math.sin(b) * 760).toFixed(0)}Z" fill="#f5c445" opacity=".22"/>`; }).join("")}</g>
+          <defs><pattern id="ht-affiche" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="1.3" fill="#000" opacity=".22"/></pattern></defs>${dots(0, 860)}
+          <g transform="rotate(-10 86 96)"><rect x="22" y="66" width="128" height="54" rx="8" fill="#f5c445" stroke="${N}" stroke-width="5"/><text x="86" y="104" text-anchor="middle" font-size="30" font-family="Righteous, sans-serif" fill="${N}">POW !</text></g>
+          <g transform="rotate(8 320 760)"><rect x="262" y="734" width="118" height="50" rx="8" fill="#2fa394" stroke="${N}" stroke-width="5"/><text x="321" y="769" text-anchor="middle" font-size="26" font-family="Righteous, sans-serif" fill="#f5e9cf">WOW !</text></g>`,
+        bonbon: `${sky("#3a1d4a", "#5a2a5e", "#7a3a6a")}${stars(24, "#ffd1e8", 420)}
+          <circle cx="320" cy="120" r="54" fill="#ff8fc4" stroke="${N}" stroke-width="6"/><path d="M280 108 q40-24 80 4" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".7"/>
+          <path d="M0 620 Q60 560 130 600 Q200 640 260 580 Q330 520 400 590 V860 H0Z" fill="#ff8fc4" stroke="${N}" stroke-width="6"/><path d="M0 700 Q120 660 220 700 T400 680 V860 H0Z" fill="#f5e9cf"/>
+          <path d="M0 700 Q120 660 220 700 T400 680" fill="none" stroke="#d0508f" stroke-width="10" stroke-dasharray="22 16"/>${dots(620, 240)}
+          ${[[70, 600, "#7be0a4"], [340, 590, "#f5c445"]].map(([x, y, c]) => `<path d="M${x} ${y} V${y - 100}" stroke="${N}" stroke-width="7"/><circle cx="${x}" cy="${y - 124}" r="34" fill="${c}" stroke="${N}" stroke-width="6"/><path d="M${x - 20} ${y - 124} a20 20 0 0 1 40 0 a13 13 0 0 1 -26 0" fill="none" stroke="#fff" stroke-width="6"/>`).join("")}`,
+        nebuleuse: `${sky("#140c34", "#1f1240", "#2a1238")}<ellipse cx="110" cy="170" rx="220" ry="130" fill="#d0508f" opacity=".32"/><ellipse cx="310" cy="280" rx="190" ry="120" fill="#5b5fc7" opacity=".42"/>
+          <ellipse cx="200" cy="720" rx="260" ry="140" fill="#d0508f" opacity=".26"/><ellipse cx="70" cy="780" rx="160" ry="96" fill="#2fa394" opacity=".28"/>${stars(80, "#fff", 860)}
+          ${[[90, 120, 14], [320, 230, 10], [60, 650, 12], [340, 730, 16], [210, 600, 8]].map(([x, y, r]) => spark(x, y, r, "#f5c445")).join("")}`,
+        neon: `${sky("#100a26", "#1c0f3a", "#2a0f40")}${stars(26, "#8fd8cc", 320)}<circle cx="200" cy="260" r="96" fill="#d0508f"/>${[0, 1, 2, 3, 4].map(i => `<rect x="96" y="${272 + i * 16}" width="208" height="${5 + i * 2}" fill="#1c0f3a"/>`).join("")}
+          ${[[0, 420, 62], [54, 470, 50], [98, 380, 72], [164, 450, 52], [218, 400, 66], [278, 460, 48], [318, 380, 90]].map(([x, y, w]) => `<rect x="${x}" y="${y}" width="${w}" height="${640 - y}" fill="#221a4a" stroke="#5b5fc7" stroke-width="3"/>${Array.from({ length: 6 }, (_, j) => `<rect x="${x + 8 + (j % 2) * (w / 2 - 4)}" y="${y + 14 + Math.floor(j / 2) * 26}" width="${w / 2 - 16}" height="8" fill="${j % 3 ? "#2fa394" : "#f5c445"}"/>`).join("")}`).join("")}
+          <rect y="640" width="400" height="220" fill="#160c30"/>${Array.from({ length: 11 }, (_, i) => `<path d="M${i * 40} 640 L${(i * 40 - 200) * 3 + 200} 860" stroke="#d0508f" stroke-width="2.5" opacity=".8"/>`).join("")}
+          ${[662, 694, 736, 796].map(y => `<path d="M0 ${y} H400" stroke="#2fa394" stroke-width="2.5" opacity=".8"/>`).join("")}`
       };
       return `<svg viewBox="0 0 400 860" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${scenes[id] || ""}</svg>`;
     }
     const decorPrev = id => `<div class="decor-prev">${decorSVG(id)}</div>`;
+    /* The arena floor under the field: rings, spokes and bulbs drawn in the colour of whoever holds the arena. */
+    const ARENA_SVG = `<svg viewBox="0 0 400 260" aria-hidden="true"><ellipse cx="200" cy="130" rx="196" ry="126" fill="rgba(10, 15, 30, 0.72)" class="ar-s" stroke-width="5"/>
+      <ellipse cx="200" cy="130" rx="160" ry="100" fill="none" class="ar-s" stroke-width="2" opacity=".55"/><ellipse cx="200" cy="130" rx="110" ry="68" fill="none" class="ar-s" stroke-width="2" opacity=".4"/>
+      ${Array.from({ length: 12 }, (_, i) => { const a = i * 30 * Math.PI / 180; return `<path d="M${(200 + Math.cos(a) * 110).toFixed(0)} ${(130 + Math.sin(a) * 68).toFixed(0)} L${(200 + Math.cos(a) * 190).toFixed(0)} ${(130 + Math.sin(a) * 120).toFixed(0)}" class="ar-s" stroke-width="2" opacity=".35"/>`; }).join("")}
+      <path d="M8 130 H392" class="ar-s" stroke-width="3" stroke-dasharray="10 8" opacity=".7"/>
+      ${Array.from({ length: 20 }, (_, i) => { const a = i * 18 * Math.PI / 180; return `<circle cx="${(200 + Math.cos(a) * 196).toFixed(1)}" cy="${(130 + Math.sin(a) * 126).toFixed(1)}" r="4" class="ar-f" stroke="#10162b" stroke-width="1.5"/>`; }).join("")}</svg>`;
     const dieVars = id => `--die-face:${DICE[id].face};--die-pip:${DICE[id].pip};--die-edge:${DICE[id].edge};--die-ring:${DICE[id].ring || "rgba(16, 22, 43, 0.85)"}`;
     const dieCls = id => `s-${DICE[id].shape || "cube"} p-${DICE[id].pips || "dot"}${DICE[id].rainbow ? " rainbow" : ""}`;
     const diePrev = id => `<div class="die-prev ${dieCls(id)}" style="${dieVars(id)}">${[1, 0, 1, 0, 1, 0, 1, 0, 1].map(on => `<i${on ? ' class="p"' : ""}></i>`).join("")}</div>`;
     const backPrev = id => `<div class="back-prev" style="--back:${BACKS[id].css}"><i class="bp-em"></i></div>`;
     /* Chaque tribu a un talent, valable pour le joueur comme pour Gaspard. */
     const PERKS = {
-      mars: { name: "Ravitaillés", desc: "démarre avec 2 boosts ⚡ au lieu de 1." },
+      mars: { name: "Ravitaillés", desc: "démarre avec 3 boosts ⚡ au lieu de 1." },
       cranes: { name: "Désintégrateur", desc: "+1 au dé de ses ripostes." },
       poulpes: { name: "Huit bras", desc: "main de 6 cartes au lieu de 5." },
-      incognito: { name: "Déguisement", desc: "quand elle pose en premier, son avant-garde reste cachée jusqu'à la réponse adverse." }
+      incognito: { name: "Déguisement", desc: "quand elle pose en premier, son avant-garde reste cachée jusqu'à la réponse adverse, et gagner la manche ainsi rapporte 1 boost ⚡." }
     };
     const TRIBES = Object.keys(CASTS);
     /* 32 personnages (8 par tribu) + les 5 boss, jouables une fois vaincus. Un personnage fixe ta tribu (et son talent)
@@ -1810,6 +1842,7 @@
     if (save.premium) { save.starter = true; delete save.premium; }
     save.fresh = save.fresh || {};
     save.skins.decor = Object.assign({ espace: 1 }, save.skins.decor);
+    if (!save.equip.decor || !save.skins.decor[save.equip.decor]) save.equip.decor = "espace";
     /* Campagne : `cleared` = nombre d'étapes gagnées dans l'ordre. Une ancienne sauvegarde (3 planètes) devient des chapitres finis. */
     if (!save.camp) save.camp = { cleared: 4 * (save.wins || []).filter(w => w > 0).length, stars: [] };
     save.stage = Math.min(save.stage ?? save.camp.cleared, save.camp.cleared, STAGES.length - 1);
@@ -2310,12 +2343,11 @@
         sfx.coin();
       }
       if (card.special === "nova") boom(null, p === 0, el);
+      // The pirate sinks one of the opponent's boosts; it no longer keeps it (it was the strongest common power card).
       if (card.special === "pirate" && S.fuel[1 - p] > 0) {
         S.fuel[1 - p] -= 1;
         renderFuel(1 - p);
         floatText($(`#valor${1 - p}`), "−1 ⚡", true);
-        gainFuel(p, 1);
-        floatText(el, tr("Pirate : +1 ⚡"));
         sfx.coin();
       }
     }
@@ -2522,6 +2554,23 @@
       return bubble(html, target);
     }
     /* Plusieurs nouveautés au même moment : une seule bulle les regroupe. */
+    /* First games: when combinations decided the round, say so plainly, for the player as for Gaspard. */
+    const COMBO_NAMES = ["Jumeaux", "Sillage", "Escadron", "Flotte", "Triplés", "Grand sillage"];
+    function explainCombos(winner) {
+      if (save.mute || duel() || (save.games || 0) >= 4 || !S.revealed) return Promise.resolve();
+      const loser = 1 - winner, res = [breakdown(0), breakdown(1)];
+      const combos = q => res[q].parts.filter(([n]) => COMBO_NAMES.includes(n));
+      const sum = list => list.reduce((t, [, v]) => t + v, 0);
+      const cw = combos(winner);
+      if (!cw.length || res[winner].total - sum(cw) > res[loser].total - sum(combos(loser))) return Promise.resolve();
+      // Same formation twice (vanguard pair and ally pair) reads as one line: "Escadron +6".
+      const merged = [];
+      for (const [n, v] of cw) { const m = merged.find(x => x[0] === n); if (m) m[1] += v; else merged.push([n, v]); }
+      const list = `<b>${merged.map(partText).join(", ")}</b>`;
+      return bubble(winner === 0
+        ? tr("Manche gagnée grâce à tes combinaisons : {list}. Sans elles, {name} l'emportait.", { list, name: foe() })
+        : tr("{name} gagne grâce à ses combinaisons : {list}. Sans elles, la manche était pour toi.", { list, name: foe() }), $("#field"));
+    }
     function explain(facts, target) {
       const fresh = [];
       for (const [key, html] of facts) if (!save.seen[key]) { save.seen[key] = true; fresh.push(html); }
@@ -2587,7 +2636,7 @@
     }
     const roomId = code => `bataille-des-allies-${code}`;
     const lobbyMsg = text => { $("#lobbyMsg").textContent = text; };
-    const myHello = () => ({ name: save.name || tr("Ami"), cast: CHARS[save.char].tribe, char: save.char, loadout: save.loadout.slice(0, atoutSlots()), dice: save.equip.dice, back: save.equip.back });
+    const myHello = () => ({ name: save.name || tr("Ami"), cast: CHARS[save.char].tribe, char: save.char, loadout: save.loadout.slice(0, atoutSlots()), dice: save.equip.dice, back: save.equip.back, decor: save.equip.decor });
     function saveName() { save.name = $("#pseudo").value.trim().slice(0, 14) || tr("Ami"); persist(); renderMenu(); loveRain(); }
     /* Surprise : un joueur qui s'appelle Jeanne est accueilli par une pluie de cœurs et un « Je t'aime ». */
     const isJeanne = () => (save.name || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() === "jeanne";
@@ -2790,29 +2839,47 @@
       return near[rand(near.length)];
     }
     /* mode « adv » : la planète choisie en aventure. mode « arena » : un duel classé contre un rival proche au classement. */
-    /* Décor of the game: starts in deep space, then each round the player wins swaps to another one they own. */
-    let decorNow = "espace";
-    function setDecor(id, animate) {
-      const box = $("#decor"), layer = document.createElement("div");
-      decorNow = id;
-      layer.className = "decor-l";
-      layer.innerHTML = decorSVG(id);
-      box.appendChild(layer);
-      const old = [...box.children].slice(0, -1);
-      if (!animate || reduced) { old.forEach(e => e.remove()); return; }
-      const ring = document.createElement("span");
-      ring.className = "decor-ring";
-      box.appendChild(ring);
-      ring.animate([{ transform: "translate(-50%, -50%) scale(0.05)", opacity: 1 }, { transform: "translate(-50%, -50%) scale(1)", opacity: 0 }], { duration: 900, easing: "cubic-bezier(.5, 0, .3, 1)" }).onfinish = () => ring.remove();
-      layer.animate([{ clipPath: "circle(0% at 50% 55%)" }, { clipPath: "circle(80% at 50% 55%)" }], { duration: 900, easing: "cubic-bezier(.5, 0, .3, 1)" }).onfinish = () => old.forEach(e => e.remove());
+    /* Arena: like a stadium that takes the colours of the side that scores, it belongs to whoever won the last round.
+       The player's side shows their equipped décor, the opponent's side the décor of their planet. */
+    const PLANET_DECOR = { Lune: "lune", Mars: "mars", Jupiter: "jupiter", Saturne: "saturne", Neptune: "neptune" };
+    const ARENA_COLORS = ["#3cf0d0", "#ff7a4a"];
+    function sideDecor(p) {
+      if (p === 0) return save.skins.decor[save.equip.decor] ? save.equip.decor : "espace";
+      return S.foeDecor || "espace";
     }
-    function nextDecor() {
-      const mine = Object.keys(DECORS).filter(id => save.skins.decor[id] && id !== decorNow);
-      if (mine.length) setDecor(mine[rand(mine.length)], true);
+    function setArena(owner, animate) {
+      const box = $("#decor"), arena = $("#arena");
+      S.arena = owner;
+      $("#game").style.setProperty("--arena", owner === null ? "rgba(245, 233, 207, 0.55)" : ARENA_COLORS[owner]);
+      arena.classList.toggle("owned", owner !== null);
+      const layer = document.createElement("div");
+      layer.className = "decor-l";
+      layer.innerHTML = owner === null ? "" : decorSVG(sideDecor(owner));
+      box.appendChild(layer);
+      const old = [...box.querySelectorAll(".decor-l")].slice(0, -1);
+      if (!animate || reduced) { old.forEach(e => e.remove()); return; }
+      // The new scene sweeps in from the winner's side, led by a bright front line in their colour.
+      const fromBottom = owner === 0, dur = 1100;
+      layer.animate([{ clipPath: fromBottom ? "inset(100% 0 0 0)" : "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0 0)" }], { duration: dur, easing: "cubic-bezier(.6, 0, .3, 1)" }).onfinish = () => old.forEach(e => e.remove());
+      const front = document.createElement("span");
+      front.className = "decor-front";
+      front.style.background = front.style.color = ARENA_COLORS[owner];
+      box.appendChild(front);
+      front.animate([{ transform: `translateY(${fromBottom ? "100vh" : "0"})`, opacity: 1 }, { transform: `translateY(${fromBottom ? "0" : "100vh"})`, opacity: 1, offset: 0.92 }, { transform: `translateY(${fromBottom ? "0" : "100vh"})`, opacity: 0 }], { duration: dur, easing: "cubic-bezier(.6, 0, .3, 1)" }).onfinish = () => front.remove();
+      arena.animate([{ transform: "translate(-50%, -50%) scale(1)" }, { transform: "translate(-50%, -50%) scale(1.06)", offset: 0.5 }, { transform: "translate(-50%, -50%) scale(1)" }], { duration: 700, delay: dur * 0.6, easing: "ease-out" });
+      buzz(25);
+    }
+    /* Round over: the arena changes hands, or the holder's floor flashes once. */
+    function claimArena(winner) {
+      if (winner === S.arena) {
+        if (!reduced) $("#arena").animate([{ opacity: 1 }, { opacity: 0.4 }, { opacity: 1 }], { duration: 500 });
+        return;
+      }
+      setArena(winner, true);
+      if (winner === 0) boom(tr("Arène conquise !"), true, $("#field"));
     }
     function newGame(mode = "adv", pre = null) {
       gameId += 1;
-      setDecor("espace", false);
       closeCoach();
       S.mode = mode;
       S.cast[0] = CHARS[save.char].tribe;
@@ -2841,13 +2908,15 @@
       }
       // Contre l'IA, l'adversaire arbore des objets au hasard : ça montre ce qu'on peut trouver.
       if (mode !== "p2p") S.foeSkin = { dice: Object.keys(DICE)[rand(6)], back: Object.keys(BACKS)[rand(6)] };
+      S.foeDecor = mode === "adv" ? PLANET_DECOR[CHAPTERS[STAGES[S.stage].c].planet] : mode === "p2p" ? (DECORS[(net.them || {}).decor] ? net.them.decor : "espace") : Object.keys(PLANET_DECOR).map(k => PLANET_DECOR[k])[rand(5)];
+      setArena(null, false);
       const deck = makeDeck();
       const mine = save.loadout.slice(0, atoutSlots());
       // Au début de la campagne, l'adversaire a moins d'atouts que toi (voire aucun).
       const theirs = shuffle(ATOUT_IDS).slice(0, mode === "adv" ? Math.min(mine.length, STAGES[S.stage].foeAtouts) : mine.length);
       Object.assign(S, {
         decks: pre ? pre.decks : [inject(deck.slice(0, DECK_SIZE), mine, "a"), inject(deck.slice(26, 26 + DECK_SIZE), theirs, "b")],
-        hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 2 : 1) + aiBonus(q, "bonusFuel")), radar: [false, false], battle: 0, lockAsked: false, ended: null, vanHidden: [false, false], pot: [], round: 0, first: pre ? pre.first : rand(2), phase: "idle", busy: true,
+        hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 3 : 1) + aiBonus(q, "bonusFuel")), radar: [false, false], battle: 0, lockAsked: false, ended: null, vanHidden: [false, false], pot: [], round: 0, first: pre ? pre.first : rand(2), phase: "idle", busy: true,
         revealed: false, sel: null, board: emptyBoard(), war: null, spy: null, fx: new Set()
       });
       $("#ava0").innerHTML = charArt(save.char);
@@ -2876,6 +2945,7 @@
       S.sel = null;
       S.spy = null;
       S.vanHidden = [false, false];
+      S.disguised = null;
       S.radar = [false, false];
       S.swapped = battle ? [true, true] : [false, false];
       S.swapMode = false;
@@ -2941,6 +3011,7 @@
         await sleep(500);
         if (game !== gameId) return;
         S.vanHidden[1] = S.cast[1] === "incognito";
+        if (S.vanHidden[1]) S.disguised = 1;
         const foeVan = await foeCard("van");
         if (game !== gameId) return;
         await playCard(1, "van", foeVan, S.vanHidden[1]);
@@ -3201,6 +3272,7 @@
         S.busy = true;
         setPrompt("");
         S.vanHidden[0] = S.first === 0 && S.cast[0] === "incognito";
+        if (S.vanHidden[0]) S.disguised = 0;
         netSend("swap", S.swapId);
         netSend("van", card.id);
         await playCard(0, "van", card, S.vanHidden[0], opts);
@@ -3551,6 +3623,9 @@
         }
         if (!epic) shake();
         await sleep(epic ? 1500 : 600);
+        if (game !== gameId) return;
+        await explainCombos(winner);
+        if (game !== gameId) return;
         // Chaque carte envoie sa propre pièce au butin : le butin monte et la mise se vide à chaque arrivée.
         const gainPts = won + steal, lootEl = $(`#loot${winner}`), potEl = $("#potNo"), from = S.loot[winner];
         const stake = Number(potEl.textContent) || pts;
@@ -3589,12 +3664,13 @@
         S.pot = [];
         $("#pot").classList.remove("drain");
         floatText($(`#lootBox${winner}`), tr("+{n} pts", { n: won + steal }), false, won + steal >= 6);
-        if (winner === 0) nextDecor();
+        claimArena(winner);
         const tierHit = winner === 0 ? LOOT_TIERS.find(([min]) => S.loot[0] >= min && S.loot[0] - won - steal < min) : null;
         if (tierHit) setTimeout(() => { floatText($("#lootBox0"), tr("Palier {min} : +{gems} ◆", { min: tierHit[0], gems: tierHit[1] }), false, true); burst($("#lootBox0"), [YE, "#fff", "#8fd8cc"], 22, 1.6); sfx.rare(); buzz(40); }, 650);
         if (steal) { floatText($(`#lootBox${loser}`), `−${steal}`, true); bump($(`#lootBox${loser}`)); }
         gainFuel(loser, 1);
         if (refuel) gainFuel(winner, 1);
+        if (!war && S.disguised === winner) { gainFuel(winner, 1); floatText($(`#valor${winner}`), tr("Déguisement : +1 ⚡")); }
         sfx.coin();
         const extra = `${steal - siphon ? ` ${tr("Rayon tracteur : {n} pts volés.", { n: steal - siphon })}` : ""}${siphon ? ` ${tr("Siphon : {n} pts volés !", { n: siphon })}` : ""}${nova ? ` ${tr("La Supernova s'est consumée.")}` : ""}`;
         setPrompt(winner === 0
@@ -4249,10 +4325,9 @@
       let text = "", action = null;
       if (kind === "char") text = tr("{tribe} · talent <b>{perk}</b> : {desc}", { tribe: tr(CASTS[def.tribe].label), perk: tr(PERKS[def.tribe].name), desc: tr(PERKS[def.tribe].desc) });
       else if (kind === "atout") text = tr(ATOUTS[id].desc);
-      else if (kind === "decor") text = id === "espace" ? tr("Le décor du début de chaque partie.") : tr("Gagne une manche : le décor change pour un de ceux de ta collection.");
+      else if (kind === "decor") text = tr("Ton arène : elle prend la place du décor adverse chaque fois que tu gagnes une manche.");
       else text = kind === "dice" ? tr("Ton dé, lancé sous les yeux de ton adversaire.") : tr("Le dos de tes cartes, vu par ton adversaire.");
       if (!own) text += `<br><i>${howToGet(kind, id)}</i>`;
-      else if (kind === "decor") action = null;
       else if (kind === "atout") action = equipped(kind, id) ? { label: tr("Retirer"), cls: "ghost" } : save.loadout.length < atoutSlots() ? { label: tr("Équiper") } : { label: tr("Retire d'abord un atout équipé"), cls: "ghost", off: true };
       else action = equipped(kind, id) ? { label: tr("Équipé ✓"), cls: "ghost", off: true } : { label: tr("Équiper") };
       $("#showcase").innerHTML = `<div class="big">${own ? visual(id, true) : `<div class="locked-big">${visual(id, true)}</div>`}</div>
@@ -4690,6 +4765,7 @@
     $("#version").textContent = `v${VERSION}`;
     $("#aboutVer").innerHTML = `Version <b>${VERSION}</b> · MusclorDuck games`;
     buildDie();
+    $("#arena").innerHTML = ARENA_SVG;
     document.title = tr(document.title);
     BDAi18n.apply();
     $("#pseudo").placeholder = tr("Ton nom de martien");
