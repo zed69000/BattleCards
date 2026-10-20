@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.62";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.63";</script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -803,6 +803,22 @@
     .cap-slot .card { --cw: clamp(70px, 23vw, 98px); }
     .cap-slot small { min-height: 1.2em; font-size: 0.68rem; color: var(--yellow); }
     .cap-slot.dealt { animation: rise 520ms cubic-bezier(.2, 1.3, .4, 1) backwards; }
+    /* Booster stage: slow poster rays behind a violet turntable; the rays turn gold for a legendary. */
+    #capStage { position: relative; isolation: isolate; }
+    .cap-decor { position: absolute; inset: -12px 0 0; z-index: -1; overflow: hidden; pointer-events: none; }
+    .cap-rays { position: absolute; left: 50%; top: 46%; width: 380px; aspect-ratio: 1; translate: -50% -50%; background: repeating-conic-gradient(from 0deg, rgba(245, 196, 69, 0.14) 0 10deg, transparent 10deg 22deg); -webkit-mask: radial-gradient(circle, #000 12%, transparent 62%); mask: radial-gradient(circle, #000 12%, transparent 62%); animation: spin 32s linear infinite; }
+    .cap-rays.gold { background: repeating-conic-gradient(from 0deg, rgba(245, 196, 69, 0.42) 0 10deg, transparent 10deg 22deg); animation-duration: 9s; opacity: 0; transition: opacity 500ms; }
+    #capStage.gold .cap-rays.gold { opacity: 1; }
+    .cap-podium { position: absolute; left: 50%; bottom: 40px; width: min(300px, 94%); height: 34px; translate: -50% 0; border-radius: 50%; background: var(--violet); border: 3px solid #10162b; box-shadow: 0 6px 0 #10162b; }
+    .cap-podium::after { content: ""; position: absolute; inset: 6px 14px; border-radius: 50%; border: 3px dotted var(--yellow); }
+    #capStage.gold .cap-podium::after { animation: pulse 260ms steps(2) 6; }
+    .pack-cut { position: absolute; left: 0; top: 32px; width: 0; height: 3px; z-index: 2; border-radius: 2px; background: var(--navy); pointer-events: none; }
+    .pack-scis { position: absolute; left: 0; top: 19px; z-index: 3; width: 28px; height: 28px; margin-left: -8px; pointer-events: none; }
+    .pack:not(.cutting) .pack-scis { animation: scisHint 1.8s ease-in-out infinite; }
+    .pack.cutting { animation: none; }
+    @keyframes scisHint { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(30px); } }
+    .glit { position: absolute; left: 0; top: 0; pointer-events: none; }
+    .glit svg { display: block; }
 
     @keyframes flash { 0% { opacity: 0.85; } 100% { opacity: 0; } }
     @keyframes hover { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-6px) rotate(1deg); } }
@@ -4050,7 +4066,40 @@
       return `<${dull ? "div" : "button"} class="pack${dull ? " dull" : ""}" id="pack" ${dull ? "" : `aria-label="${tr("Déchirer le booster")}"`}>
         <span class="pack-top" style="clip-path:${crimp(true)}"><i>${tr("✂ déchire ici")}</i></span>
         <span class="pack-body" style="clip-path:${crimp(false)}"><span class="pack-label"><small>${tr("BATAILLE DES ALLIÉS")}</small><span class="pack-art">${art("cranes", "S", "R", 7)}</span><b>${tr("3 OBJETS")}</b></span></span>
+        ${dull ? "" : `<span class="pack-cut"></span><span class="pack-scis">${SCISSORS}</span>`}
       </${dull ? "div" : "button"}>`;
+    }
+    const SCISSORS = `<svg viewBox="0 0 28 28" width="28" height="28"><path d="M13 14 L26 6 M13 14 L26 22" stroke="#1f2a44" stroke-width="3.5" stroke-linecap="round"/><circle cx="7" cy="7" r="4.5" fill="#f26a3d" stroke="#1f2a44" stroke-width="2.5"/><circle cx="7" cy="21" r="4.5" fill="#f26a3d" stroke="#1f2a44" stroke-width="2.5"/></svg>`;
+    const CAP_DECOR = `<span class="cap-decor"><span class="cap-rays"></span><span class="cap-rays gold"></span><span class="cap-podium"></span></span>`;
+    const STAR4 = c => `<svg viewBox="0 0 10 10" width="11" height="11"><path d="M5 0 L6 4 L10 5 L6 6 L5 10 L4 6 L0 5 L4 4Z" fill="${c}"/></svg>`;
+    const ALIEN_DOT = `<svg viewBox="0 0 20 20" width="14" height="14"><circle cx="10" cy="11" r="7.5" fill="#7be0a4" stroke="#1f2a44" stroke-width="2"/><circle cx="7.3" cy="10" r="1.8" fill="#1f2a44"/><circle cx="12.7" cy="10" r="1.8" fill="#1f2a44"/></svg>`;
+    // Glitter around a revealed card, scaled to its rarity. Transform and opacity only, a few dozen pieces at most.
+    function glitter(target, rarity) {
+      if (reduced) return;
+      const { x, y } = center(target);
+      const set = [
+        { n: 5, shapes: [STAR4(K), STAR4("#fff")], rx: 46, ry: 54, turns: 0, ms: 700 },
+        { n: 10, shapes: [STAR4("#2fa394"), STAR4("#8fd8cc"), ALIEN_DOT], rx: 58, ry: 70, turns: 1, ms: 1500 },
+        { n: 16, shapes: [STAR4(YE), STAR4("#fff"), STAR4("#d0508f"), ALIEN_DOT], rx: 66, ry: 80, turns: 1.25, ms: 2100 },
+      ][rarity];
+      for (let i = 0; i < set.n; i += 1) {
+        const el = document.createElement("span");
+        el.className = "glit";
+        el.innerHTML = set.shapes[i % set.shapes.length];
+        $("#fx").appendChild(el);
+        const a0 = (i / set.n) * Math.PI * 2, kf = [];
+        if (!set.turns) {
+          // Commune: a short puff outwards.
+          const dx = Math.cos(a0) * set.rx, dy = Math.sin(a0) * set.ry;
+          kf.push({ transform: `translate(${x}px, ${y}px) scale(0.3)`, opacity: 1 }, { transform: `translate(${x + dx}px, ${y + dy}px) scale(1) rotate(90deg)`, opacity: 0 });
+        } else {
+          for (let k = 0; k <= 12; k += 1) {
+            const t = k / 12, a = a0 + t * Math.PI * 2 * set.turns, grow = 0.7 + t * 0.3;
+            kf.push({ transform: `translate(${(x + Math.cos(a) * set.rx * grow - 6).toFixed(1)}px, ${(y + Math.sin(a) * set.ry * grow - 6).toFixed(1)}px)`, opacity: t < 0.12 ? t / 0.12 : t > 0.8 ? (1 - t) / 0.2 : 1 });
+          }
+        }
+        el.animate(kf, { duration: set.ms * (0.85 + Math.random() * 0.3), easing: set.turns ? "linear" : "ease-out" }).onfinish = () => el.remove();
+      }
     }
     function closeCapsule() { $("#capsule").classList.remove("on"); renderMenu(); }
     function openCapsuleShop(free = false) {
@@ -4061,23 +4110,49 @@
       const stage = $("#capStage");
       const closeBtn = { label: tr("Fermer"), cls: "ghost", fn: closeCapsule };
       if (!freePack && save.crystals < CAPSULE_COST) {
-        stage.innerHTML = packHTML(true);
+        stage.innerHTML = CAP_DECOR + packHTML(true);
         $("#capText").innerHTML = tr("Il te manque <b>{n} ◆</b>. Chaque partie rapporte des cristaux, même perdue.", { n: CAPSULE_COST - save.crystals });
         return fillButtons($("#capActions"), [closeBtn]);
       }
-      stage.innerHTML = packHTML();
+      stage.classList.remove("gold");
+      stage.innerHTML = CAP_DECOR + packHTML();
       $("#capText").innerHTML = tr("3 objets au hasard (personnages, dés, dos de cartes, parfois un atout rare) pour <b>{cost} ◆</b>. Tu as {n} ◆. Déchire le haut du sachet : glisse le doigt dessus, ou touche-le.", { cost: CAPSULE_COST, n: save.crystals });
       fillButtons($("#capActions"), [closeBtn]);
-      // Le haut se décolle sous le doigt ; un simple appui suffit aussi.
-      const pack = $("#pack"), top = pack.querySelector(".pack-top");
-      let sx = null;
-      pack.addEventListener("pointerdown", e => { sx = e.clientX; });
+      // The scissors advance with the finger along the dotted line and the top lifts as it is cut;
+      // reaching the far edge opens the pack. A plain tap still opens it.
+      const pack = $("#pack"), top = pack.querySelector(".pack-top"), cut = pack.querySelector(".pack-cut"), scis = pack.querySelector(".pack-scis");
+      let lastX = null, prog = 0, notch = 0, done = false;
+      const open = () => { if (done) return; done = true; breakCapsule(); };
+      pack.addEventListener("pointerdown", e => { lastX = e.clientX; try { pack.setPointerCapture(e.pointerId); } catch (err) { /* capture is optional */ } });
       pack.addEventListener("pointermove", e => {
-        if (sx === null) return;
-        const prog = Math.min(1, Math.abs(e.clientX - sx) / 90);
-        top.style.transform = `rotate(${prog * 16}deg) translateY(${-prog * 8}px)`;
+        if (lastX === null || done) return;
+        const w = pack.getBoundingClientRect().width, dx = e.clientX - lastX;
+        lastX = e.clientX;
+        if (dx <= 0) return;
+        prog = Math.min(1, prog + dx / (w * 0.9));
+        pack.classList.add("cutting");
+        scis.style.left = `${prog * 100}%`;
+        cut.style.width = `${prog * 100}%`;
+        top.style.transform = `rotate(${prog * 9}deg) translateY(${-prog * 4}px)`;
+        const n = Math.floor(prog * 10);
+        if (n > notch) {
+          notch = n;
+          sfx.tap(); buzz(5);
+          if (!reduced) for (let i = 0; i < 2; i += 1) {
+            const bit = document.createElement("span");
+            bit.className = "glit";
+            bit.innerHTML = `<i style="display:block;width:4px;height:3px;border-radius:1px;background:${i ? "#aeb8c8" : "#f6f9fd"}"></i>`;
+            pack.appendChild(bit);
+            const bx = prog * w, fx = bx + (Math.random() * 24 - 12);
+            bit.animate([{ transform: `translate(${bx}px, 30px)`, opacity: 1 }, { transform: `translate(${fx}px, ${70 + Math.random() * 40}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }], { duration: 600, easing: "ease-in" }).onfinish = () => bit.remove();
+          }
+        }
+        if (prog >= 0.96) open();
       });
-      pack.addEventListener("click", breakCapsule, { once: true });
+      pack.addEventListener("pointerup", () => { lastX = null; });
+      pack.addEventListener("pointercancel", () => { lastX = null; });
+      // A tap opens at once; a cut left halfway waits for the finger to finish it.
+      pack.addEventListener("click", () => { if (prog < 0.05) open(); });
     }
     let freePack = false;
     async function breakCapsule() {
@@ -4099,13 +4174,14 @@
       fillButtons($("#capActions"), []);
       $("#capText").textContent = "";
       pack.style.animation = "none";
+      pack.querySelector(".pack-scis")?.remove();
       sfx.rip();
       burst(top, ["#fff", "#cfd6e2", YE], 16);
       top.animate([{ transform: top.style.transform || "none", opacity: 1 }, { transform: "translate(80px, -90px) rotate(75deg)", opacity: 0 }], { duration: reduced ? 1 : 460, easing: "ease-in", fill: "forwards" });
       await sleep(430);
       pack.animate([{ transform: "none", opacity: 1 }, { transform: "translateY(70px) scale(0.85)", opacity: 0 }], { duration: reduced ? 1 : 300, fill: "forwards" });
       await sleep(280);
-      stage.innerHTML = "";
+      stage.innerHTML = CAP_DECOR;
       const slots = results.map((res, i) => {
         const slot = document.createElement("div");
         slot.className = "cap-slot dealt";
@@ -4118,10 +4194,11 @@
       await sleep(950);
       for (let i = 0; i < slots.length; i += 1) {
         const { item, dup } = results[i], def = itemDef(item);
-        if (def.rarity === 2) { slots[i].querySelector(".card").animate([{ transform: "none" }, { transform: "scale(1.12) rotate(-3deg)" }, { transform: "scale(1.12) rotate(3deg)" }, { transform: "none" }], { duration: reduced ? 1 : 700 }); await sleep(650); }
+        if (def.rarity === 2) { stage.classList.add("gold"); slots[i].querySelector(".card").animate([{ transform: "none" }, { transform: "scale(1.12) rotate(-3deg)" }, { transform: "scale(1.12) rotate(3deg)" }, { transform: "none" }], { duration: reduced ? 1 : 700 }); await sleep(650); }
         await flipCard(slots[i].querySelector(".card"), true);
-        if (def.rarity > 0) { sfx.rare(); burst(slots[i], def.rarity === 2 ? [YE, "#fff", OR] : ["#2fa394", "#fff", K], def.rarity === 2 ? 28 : 16); if (def.rarity === 2) warp(900); }
-        else sfx.flip();
+        glitter(slots[i].querySelector(".card"), def.rarity);
+        if (def.rarity > 0) sfx.rare(); else sfx.flip();
+        if (def.rarity === 2) setTimeout(() => stage.classList.remove("gold"), 2200);
         await sleep(450);
         slots[i].querySelector("small").textContent = dup ? tr("Doublon +{n} ◆", { n: RARITY[def.rarity].dup }) : item.kind === "atout" ? `${tr(def.name)} · ${tr(RARITY[def.rarity].name)}` : item.kind === "char" ? `${tr(def.name)} · ${tr(RARITY[def.rarity].name)}` : tr("Nouveau · {rarity}", { rarity: tr(RARITY[def.rarity].name) });
         await sleep(350);
