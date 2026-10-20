@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.63";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.64";</script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -66,12 +66,13 @@
     .j-lvl { flex: 1; } .j-lvl b { font-weight: 400; font-size: 1.3rem; color: var(--yellow); } .j-lvl small { color: rgba(245, 233, 207, 0.7); font-size: 0.72rem; }
     .j-title { margin: 14px 0 8px; font-weight: 400; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); }
     .j-list { display: grid; gap: 8px; }
-    .j-row { display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: rgba(31, 42, 68, 0.95); border: 2px solid transparent; }
+    .j-row { display: grid; grid-template-columns: 58px minmax(0, 1fr); align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: rgba(31, 42, 68, 0.95); border: 2px solid transparent; }
     .j-row.next { border-color: var(--yellow); }
     .j-row .portrait { width: 46px; height: 46px; }
     .j-row > div { min-width: 0; text-align: left; }
-    .j-row b { display: block; font-weight: 400; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .j-row small { display: block; font-size: 0.7rem; color: rgba(245, 233, 207, 0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .j-row b { display: block; font-weight: 400; font-size: 1rem; line-height: 1.2; }
+    .j-row small { display: block; margin-top: 2px; font-size: 0.78rem; line-height: 1.25; color: rgba(245, 233, 207, 0.75); }
+    .j-vis { display: grid; place-items: center; } .j-vis .card { --cw: 50px; } .j-vis .portrait { width: 52px; height: 52px; }
     .j-badge { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; border: 3px solid var(--navy); background: var(--yellow); color: var(--navy); font-size: 1.2rem; box-shadow: 0 3px 0 #0a0f1e; }
     .j-prize { display: grid; justify-items: center; gap: 2px; font-size: 0.62rem; text-align: center; max-width: 76px; color: var(--yellow); }
     .j-prize .card { --cw: 34px; } .j-prize .portrait { width: 38px; height: 38px; }
@@ -103,12 +104,14 @@
     .bp-bar { max-width: 240px; margin: 0 auto 12px; }
     .boosters-sheet .boost.daily { margin: 12px 0 0; width: 100%; max-width: none; text-align: left; }
     .boosters-sheet .j-title, .boosters-sheet .j-text { text-align: left; }
-    .bp-kinds { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .bp-kinds { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
     .bp-kind { display: grid; justify-items: center; align-content: start; gap: 4px; padding: 8px 4px; border-radius: 12px; background: rgba(31, 42, 68, 0.95); font-size: 0.68rem; }
     .bp-kind .portrait { width: 40px; height: 40px; } .bp-kind .die-prev { width: 34px; } .bp-kind .back-prev { width: 30px; } .bp-kind .card { --cw: 32px; }
     .bp-kind small { color: rgba(245, 233, 207, 0.65); font-size: 0.6rem; }
     .bp-odds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
     .bp-odd { padding: 8px 4px; border-radius: 12px; background: rgba(31, 42, 68, 0.95); border: 2px solid var(--rc); font-size: 0.72rem; }
+    .bp-odd.now { background: var(--yellow); color: var(--navy); } .bp-odd.now b { color: var(--navy); }
+    .bp-odds.prices { grid-template-columns: repeat(4, 1fr); } .bp-odds.prices .bp-odd { padding: 6px 2px; font-size: 0.6rem; }
     .bp-odd b { display: block; font-weight: 400; font-size: 1.15rem; color: var(--rc); }
     /* Fiche « Ce que tu peux gagner ». */
     .prize-sheet { text-align: left; }
@@ -218,9 +221,10 @@
     .rank .ln.me { background: var(--yellow); color: var(--navy); }
     .rank .ln.me b, .rank .ln.me small { color: var(--navy); }
     .version { align-self: flex-end; margin: -4px 2px -4px 0; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.62rem; color: rgba(245, 233, 207, 0.4); user-select: text; }
-    .tabs { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0 -10px; padding-bottom: env(safe-area-inset-bottom, 0px); background: #0a0f1e; border-top: 2px solid rgba(245, 233, 207, 0.25); }
-    .tabs button { display: grid; justify-items: center; gap: 1px; padding: 8px 0 9px; border: 0; background: none; font-size: 0.62rem; color: rgba(245, 233, 207, 0.6); }
+    .tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; margin: 0 -10px; padding-bottom: env(safe-area-inset-bottom, 0px); background: #0a0f1e; border-top: 2px solid rgba(245, 233, 207, 0.25); }
+    .tabs button { display: grid; justify-items: center; min-width: 0; gap: 1px; padding: 8px 0 9px; border: 0; background: none; font-size: 0.62rem; color: rgba(245, 233, 207, 0.6); }
     .tabs button b { font-weight: 400; font-size: 1.2rem; line-height: 1; }
+    .tabs button[hidden] { display: none; }
     .tabs button.on { color: var(--yellow); }
     .quick { display: flex; gap: 8px; justify-content: center; width: 100%; max-width: 380px; }
     .quick .btn { flex: 1; padding: 0.5rem 0.6rem; font-size: 0.86rem; }
@@ -236,6 +240,43 @@
     .boost.daily.used { border-color: rgba(245, 233, 207, 0.25); background: rgba(16, 22, 43, 0.8); }
     .boost.daily.used .boost-cta { background: transparent; border-color: rgba(245, 233, 207, 0.4); box-shadow: none; color: rgba(245, 233, 207, 0.7); }
     .daily-ic svg { display: block; width: 48px; height: 48px; }
+    /* Small round close cross in the top right corner of a sheet. */
+    .sheet { position: relative; }
+    .xclose { position: absolute; top: 10px; right: 10px; z-index: 3; width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 2px solid var(--cream); background: var(--navy); color: var(--cream); font-size: 1rem; line-height: 1; }
+    .cap-gems { position: absolute; top: 12px; left: 12px; z-index: 3; color: var(--yellow); border-color: var(--yellow); }
+    .cap-gems b { font-weight: 400; }
+    .cap-sheet h2, .boosters-sheet h2, .journey-sheet .j-head { padding: 0 44px; }
+    .cap-slot.dup .card { opacity: 0.45; transition: opacity 400ms; }
+    .fly-coin { position: absolute; left: 0; top: 0; z-index: 60; width: 28px; height: 28px; pointer-events: none; }
+    .linkish { margin: 10px auto 0; display: block; padding: 4px 8px; border: 0; background: none; color: rgba(245, 233, 207, 0.7); font-size: 0.8rem; text-decoration: underline; }
+    /* Spinning star on what is new. */
+    .fresh-star { position: absolute; top: -8px; right: -6px; z-index: 6; width: 22px; height: 22px; pointer-events: none; animation: spin 3s linear infinite; }
+    .subtabs button, .tabs button { position: relative; }
+    .subtabs button.fresh::after, .tabs button.fresh::after { content: ""; position: absolute; top: 2px; right: 6px; width: 16px; height: 16px; background: var(--yellow); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); animation: spin 3s linear infinite; }
+    .tabs button.fresh::after { top: 3px; right: calc(50% - 22px); }
+    /* Boutique. */
+    .shop-pane { display: grid; gap: 6px; width: 100%; max-width: 380px; text-align: left; }
+    .sh-top { display: flex; align-items: center; justify-content: space-between; }
+    .sh-top .pill { color: var(--yellow); border-color: var(--yellow); }
+    .sh-starter { position: relative; display: grid; gap: 10px; margin-top: 10px; padding: 14px 12px 12px; border-radius: 16px; border: 3px solid var(--yellow); background: var(--navy); }
+    .sh-flag { position: absolute; top: -12px; left: 12px; padding: 1px 10px; border-radius: 8px; background: var(--yellow); color: var(--navy); font-size: 0.75rem; }
+    .sh-head { display: flex; align-items: center; gap: 10px; } .sh-head svg { width: 50px; height: 50px; display: block; }
+    .sh-head b { display: block; font-weight: 400; font-size: 1.15rem; color: var(--yellow); } .sh-head small { color: rgba(245, 233, 207, 0.75); }
+    .sh-perks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; }
+    .sh-perks > div { display: grid; justify-items: center; align-content: center; gap: 2px; min-height: 58px; padding: 6px 4px; border-radius: 10px; background: #10162b; }
+    .sh-perks b { font-weight: 400; font-size: 1.1rem; color: var(--yellow); } .sh-perks small { font-size: 0.66rem; color: rgba(245, 233, 207, 0.8); } .sh-perks .die-prev { width: 28px; }
+    .sh-gems { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .sh-gem { display: grid; justify-items: center; gap: 3px; padding: 10px 4px; border-radius: 14px; border: 2px solid var(--cream); background: var(--navy); color: var(--cream); }
+    .sh-gem .mcoin { width: 26px; height: 26px; } .sh-gem b { font-weight: 400; font-size: 1.15rem; color: var(--yellow); } .sh-gem small { font-size: 0.66rem; color: rgba(245, 233, 207, 0.7); }
+    .sh-gem .price { padding: 2px 10px; border-radius: 99px; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); font-size: 0.78rem; }
+    .sh-ad { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px; border-radius: 14px; border: 2px solid var(--teal); background: var(--navy); }
+    .sh-ad b { font-weight: 400; } .sh-ad .btn { padding: 0.45rem 0.8rem; font-size: 0.85rem; }
+    .sh-ladder { display: flex; gap: 4px; margin-top: 4px; }
+    .sh-step { min-width: 30px; padding: 1px 4px; border-radius: 99px; border: 1px solid rgba(245, 233, 207, 0.35); text-align: center; font-size: 0.7rem; color: rgba(245, 233, 207, 0.7); }
+    .sh-step.done { border-color: var(--ok); color: var(--ok); } .sh-step.next { border-color: var(--yellow); color: var(--navy); background: var(--yellow); }
+    .shop-pane .shopgrid { grid-template-columns: repeat(4, 1fr); }
+    .shopitem:disabled { opacity: 0.6; }
+    .pick-big { display: grid; place-items: center; margin: 4px 0 10px; } .pick-big .portrait { width: 96px; height: 96px; } .pick-big .die-prev { width: 76px; } .pick-big .back-prev { width: 70px; } .pick-big .decor-prev { width: 120px; }
     .premium-sheet { text-align: center; }
     .premium-badge svg { width: 64px; height: 64px; }
     .premium-sheet h2 { margin: 4px 0 0; }
@@ -342,7 +383,10 @@
     .cell span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgba(245, 233, 207, 0.8); }
     .cell.on { border-color: var(--yellow); box-shadow: 0 0 12px rgba(245, 196, 69, 0.7); }
     .cell.pick { background: rgba(91, 95, 199, 0.45); }
-    .cell.locked > :first-child { filter: grayscale(1) brightness(0.3); }
+    .cell.locked > :first-child { opacity: 0.5; }
+    .cell.locked { border-style: dashed; }
+    .cell.locked::after { content: ""; position: absolute; top: 4px; right: 4px; width: 18px; height: 18px; border-radius: 50%; background: var(--navy) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Crect x='5' y='9' width='10' height='8' rx='1.5' fill='%23f5e9cf'/%3E%3Cpath d='M7 9V7a3 3 0 0 1 6 0v2' fill='none' stroke='%23f5e9cf' stroke-width='2'/%3E%3C/svg%3E") center / 14px no-repeat; border: 2px solid var(--cream); }
+    .locked-big { opacity: 0.55; }
     .cell .eq { position: absolute; top: -6px; right: -4px; z-index: 5; padding: 0 5px; border-radius: 99px; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); font-size: 0.6rem; }
     .portrait { border-radius: 50%; overflow: hidden; border: 3px solid var(--navy); background: var(--hc, var(--orange)); box-shadow: 0 3px 0 #0a0f1e; }
     .portrait svg { display: block; width: 100%; height: 100%; }
@@ -366,7 +410,10 @@
     .die-prev.s-rond, .token.s-rond { border-radius: 50%; }
     .die-prev.s-hexa, .token.s-hexa, .token.s-hexa::before { clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); border-radius: 0; }
     .die-prev.s-octo, .token.s-octo, .token.s-octo::before { clip-path: polygon(29% 0, 71% 0, 100% 29%, 100% 71%, 71% 100%, 29% 100%, 0 71%, 0 29%); border-radius: 0; }
-    .die-prev.s-gemme, .token.s-gemme, .token.s-gemme::before { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); border-radius: 0; padding: 23%; }
+    /* The gem is a square standing on its corner, so all nine pip spots stay inside it. */
+    .die-prev.s-gemme, .token.s-gemme { border-radius: 16%; transform: rotate(45deg) scale(0.76); }
+    .die-prev.s-hexa, .die-prev.s-octo { padding: 17%; }
+    .p-star i.p { transform: scale(1.35); } .p-diamond i.p { transform: scale(1.2); }
     .die-prev { box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.28), inset 0 4px 0 rgba(255, 255, 255, 0.35); }
     .die-prev.s-rond { background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.75), transparent 28%), var(--die-face); box-shadow: inset -6px -8px 12px rgba(0, 0, 0, 0.45); }
     .token-wrap { position: absolute; inset: 0; display: none; filter: drop-shadow(0 3px 0 #0a0f1e) drop-shadow(0 0 8px rgba(91, 95, 199, 0.7)); }
@@ -377,7 +424,7 @@
     .token.s-rond { background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.8), transparent 26%), var(--die-face); box-shadow: inset -7px -9px 12px rgba(0, 0, 0, 0.5); }
     .token.s-rond::before { display: none; }
     .token i { position: relative; z-index: 1; border-radius: 50%; margin: 1px; }
-    .token i.p { background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.8), transparent 58%), var(--die-pip, var(--yellow)); box-shadow: 0 0 5px var(--die-pip, var(--yellow)); }
+    .token i.p { background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.8), transparent 58%), var(--die-pip, var(--yellow)); box-shadow: 0 0 0 1.5px var(--die-ring, rgba(16, 22, 43, 0.85)); }
     .token.rainbow i.p { animation: hue 1.6s linear infinite; }
     .tray.hit .token-wrap { filter: drop-shadow(0 3px 0 #0a0f1e) drop-shadow(0 0 10px var(--ok)); }
     .tray.miss .token-wrap { filter: drop-shadow(0 3px 0 #0a0f1e) drop-shadow(0 0 10px var(--bad)); }
@@ -422,7 +469,9 @@
     .skin.locked { filter: grayscale(1) brightness(0.42); }
     .die-prev { aspect-ratio: 1; display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); padding: 14%; gap: 2%; border-radius: 22%; background: var(--die-face); border: 2px solid var(--die-edge); }
     .die-prev i { border-radius: 50%; }
-    .back-prev { aspect-ratio: 1 / 1.3; border-radius: 12%; border: 2px solid var(--navy); background: var(--back); }
+    .back-prev { position: relative; aspect-ratio: 1 / 1.3; border-radius: 12%; border: 2px solid var(--navy); background: var(--back); box-shadow: inset 0 0 0 3px rgba(245, 233, 207, 0.85); }
+    .bp-em { position: absolute; left: 50%; top: 50%; width: 46%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: rgba(16, 22, 43, 0.92); border: 2px solid var(--cream); }
+    .bp-em::after { content: ""; position: absolute; inset: 26%; border-radius: 50%; border: 2px solid var(--yellow); }
     .item-art { display: grid; place-items: center; background: var(--navy) !important; }
     .card.item .top { font-size: calc(var(--cw) * 0.17); }
     .card.item .top span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -460,7 +509,15 @@
     .menu-row .btn { padding: 0.5rem 0.9rem; font-size: 0.86rem; }
 
     /* ───── Jeu ───── */
-    #game .col { gap: 6px; }
+    #game .col { gap: 6px; position: relative; z-index: 1; }
+    .decor { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .decor-l { position: absolute; inset: 0; opacity: 0.62; }
+    .decor-l svg { display: block; width: 100%; height: 100%; }
+    .decor-spin { animation: spin 60s linear infinite; }
+    .decor-ring { position: absolute; left: 50%; top: 55%; width: 220vmax; height: 220vmax; border-radius: 50%; border: 6px solid rgba(245, 196, 69, 0.8); }
+    .decor-prev { position: relative; width: 100%; aspect-ratio: 9 / 16; border-radius: 8px; overflow: hidden; border: 2px solid var(--navy); background: #10162b radial-gradient(circle, #f5e9cf 0 1px, transparent 1.6px) 0 0 / 13px 13px; }
+    .decor-prev svg { display: block; width: 100%; height: 100%; }
+    .cell .decor-prev { width: 36px; } .showcase .big .decor-prev { width: 66px; } .item-art .decor-prev { width: 52%; } .bp-kind .decor-prev { width: 24px; }
     .hud { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 14px; background: rgba(16, 22, 43, 0.88); border: 2px solid var(--cream); }
     .hud.active { border-color: var(--yellow); box-shadow: 0 0 16px rgba(245, 196, 69, 0.45); }
     .ava { flex: none; width: 36px; height: 36px; border-radius: 50%; overflow: hidden; border: 2px solid var(--cream); background: var(--orange); color: var(--orange); }
@@ -560,7 +617,7 @@
     .cube { --h: 22px; position: relative; width: 44px; height: 44px; transform-style: preserve-3d; transition: transform 1100ms cubic-bezier(.16, .8, .28, 1); }
     .cube .f { position: absolute; inset: 0; border-radius: 9px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 6px; gap: 1px; background: var(--die-face, radial-gradient(circle at 30% 24%, #8f93f0, #4a4fb8 55%, #262b78)); border: 2px solid var(--die-edge, var(--cream)); box-shadow: inset 0 0 9px rgba(0, 0, 0, 0.55), 0 0 12px rgba(91, 95, 199, 0.7); transition: border-color 200ms, box-shadow 200ms; }
     .cube .f i { border-radius: 50%; margin: 1px; }
-    .cube .f i.p, .die-prev i.p { background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.8), transparent 58%), var(--die-pip, var(--yellow)); box-shadow: 0 0 5px var(--die-pip, var(--yellow)); }
+    .cube .f i.p, .die-prev i.p { background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.8), transparent 58%), var(--die-pip, var(--yellow)); box-shadow: 0 0 0 1.5px var(--die-ring, rgba(16, 22, 43, 0.85)); }
     .cube.rainbow .f i.p, .die-prev.rainbow i.p { animation: hue 1.6s linear infinite; }
     .tray.hit .cube .f { border-color: var(--ok); box-shadow: inset 0 0 9px rgba(0, 0, 0, 0.4), 0 0 18px var(--ok); }
     .tray.miss .cube .f { border-color: var(--bad); box-shadow: inset 0 0 9px rgba(0, 0, 0, 0.4), 0 0 18px var(--bad); }
@@ -626,7 +683,7 @@
     .card.mid .face { filter: brightness(1.6); box-shadow: 0 0 0 2px #fff, 0 0 14px rgba(255, 255, 255, 0.8); }
     .face { position: absolute; inset: 0; border-radius: calc(var(--cw) * 0.15); border: 2px solid var(--navy); overflow: hidden; box-shadow: 0 4px 0 #0a0f1e; contain: paint; }
     .front { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr auto; gap: 1px; padding: 2px 3px; background: var(--cream); color: var(--navy); }
-    .back { background: var(--back, repeating-radial-gradient(circle at 50% 50%, var(--orange) 0 5px, var(--navy) 5px 10px)); }
+    .back { background: var(--back, repeating-radial-gradient(circle at 50% 50%, var(--orange) 0 5px, var(--navy) 5px 10px)); box-shadow: inset 0 0 0 3px rgba(245, 233, 207, 0.8), 0 4px 0 #0a0f1e; }
     .h-S { --hc: var(--violet); } .h-H { --hc: var(--orange); } .h-D { --hc: #e0a91f; } .h-C { --hc: var(--teal); } .h-X { --hc: var(--pink); }
     .card .top { display: flex; justify-content: space-between; align-items: center; padding: 0 2px; font-size: calc(var(--cw) * 0.24); line-height: 1.05; }
     .card .top span:last-child { color: var(--hc); }
@@ -925,16 +982,17 @@
             <button data-sub="atouts">Atouts<small id="cntAtouts"></small></button>
             <button data-sub="dice">Dés<small id="cntDice"></small></button>
             <button data-sub="back">Dos<small id="cntBack"></small></button>
-            <button data-sub="shop" id="shopTab" hidden>Boutique<small>€</small></button>
+            <button data-sub="decor">Décors<small id="cntDecor"></small></button>
           </div>
           <div class="showcase" id="showcase"></div>
           <div class="colgrid" id="colGrid"></div>
           <button class="btn teal" id="capsuleBtn">Booster · 60 ◆</button>
         </section>
+        <section class="pane" data-pane="shop"><div class="shop-pane" id="shopPane"></div></section>
         <section class="pane" data-pane="more">
           <div class="section-title">Options</div>
           <div class="stack">
-            <button class="btn" id="premiumBtn">Pack Commandant</button>
+            <button class="btn" id="premiumBtn">Boutique</button>
             <button class="btn ghost" id="tutoBtn">Revoir toutes les explications</button>
             <button class="btn ghost" id="menuHelp">Règles</button>
             <button class="btn ghost" id="menuSound">Son : oui</button>
@@ -963,12 +1021,14 @@
         <button class="on" data-tab="adv"><b>☾</b>Aventure</button>
         <button data-tab="cards"><b>▣</b>Cartes</button>
         <button data-tab="arena"><b>♛</b>Multijoueur</button>
+        <button data-tab="shop" id="shopTabBtn" hidden><b>◆</b>Boutique</button>
         <button data-tab="more"><b>⚙</b>Options</button>
       </nav>
     </div>
   </main>
 
   <main class="view" id="game">
+    <div class="decor" id="decor" aria-hidden="true"></div>
     <div class="col">
       <div class="hud" id="hud1">
         <div class="ava" id="ava1"></div>
@@ -1043,7 +1103,9 @@
   </div>
 
   <div class="overlay" id="capsule">
-    <div class="sheet">
+    <div class="sheet cap-sheet">
+      <span class="pill cap-gems">◆ <b id="capGems">0</b></span>
+      <button class="xclose" id="capClose" aria-label="Fermer">✕</button>
       <h2 id="capTitle">Booster</h2>
       <div class="cap-stage" id="capStage"></div>
       <p id="capText"></p>
@@ -1070,24 +1132,12 @@
 
   <div class="overlay" id="boosters">
     <div class="sheet boosters-sheet">
+      <button class="xclose" id="bpClose" aria-label="Fermer">✕</button>
       <h2>Boosters</h2>
       <div class="bp-pack" id="bpPack"></div>
-      <div class="bp-balance"><span class="mcoin">◆</span><b id="bpGems">0</b><small id="bpNeed"></small></div>
-      <div class="xp bp-bar"><i id="bpBar"></i></div>
-      <div class="stack"><button class="btn big hot" id="bpOpen"></button></div>
-      <button class="boost daily" id="dailyBox" hidden>
-            <span class="daily-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="8" y="20" width="32" height="22" rx="3" fill="#f5c445" stroke="#1f2a44" stroke-width="2.4"/><rect x="5" y="13" width="38" height="9" rx="2" fill="#f26a3d" stroke="#1f2a44" stroke-width="2.4"/><path d="M24 13 V42" stroke="#1f2a44" stroke-width="2.4"/><path d="M24 13 Q15 3 12 9 Q11 14 24 13 Q37 14 36 9 Q33 3 24 13z" fill="#d0508f" stroke="#1f2a44" stroke-width="2.2" stroke-linejoin="round"/></svg></span>
-            <span class="boost-txt"><b>Gratuit</b><small id="dailySub">Booster du jour</small></span>
-            <span class="boost-cta" id="dailyCta">Vidéo · ouvrir</span>
-          </button>
-      <h3 class="j-title">Dans chaque booster</h3>
-      <p class="j-text">3 objets au hasard, tous différents.</p>
-      <div class="bp-kinds" id="bpKinds"></div>
-      <h3 class="j-title">Chances par objet</h3>
-      <div class="bp-odds" id="bpOdds"></div>
-      <p class="j-text" id="bpDup"></p>
-      <p class="j-text">Les cristaux se gagnent à chaque partie, même perdue.</p>
-      <div class="stack"><button class="btn ghost" id="bpClose">Fermer</button></div>
+      <div class="bp-balance"><span class="mcoin">◆</span><b id="bpGems">0</b></div>
+      <div class="stack"><button class="btn big hot" id="bpOpen"></button><button class="btn teal" id="bpAd" hidden></button></div>
+      <button class="linkish" id="bpOdds">Ce qu'il peut contenir</button>
     </div>
   </div>
 
@@ -1102,19 +1152,10 @@
 
   <div class="overlay" id="journey">
     <div class="sheet journey-sheet">
+      <button class="xclose" id="jClose" aria-label="Fermer">✕</button>
       <div class="j-head"><div id="jAva"></div><div class="j-lvl"><b id="jLvl"></b><div class="xp"><i id="jXp"></i></div><small id="jXpText"></small></div></div>
-      <h3 class="j-title">Tes prochaines récompenses</h3>
+      <h3 class="j-title">Prochainement</h3>
       <div class="j-list" id="jList"></div>
-      <h3 class="j-title">Comment ça marche</h3>
-      <div class="j-flow">
-        <div class="j-step"><span class="mcoin j-coin">◆</span><b>Cristaux</b><small>Chaque partie t'en donne, même perdue.</small></div>
-        <div class="j-step"><span class="j-pack" id="jPack"></span><b>Booster</b><small>60 cristaux : 3 objets au hasard.</small></div>
-        <div class="j-step"><span id="jCol"></span><b>Collection</b><small>Persos, dés et dos de cartes, dans l'onglet Cartes.</small></div>
-      </div>
-      <h3 class="j-title">Tes atouts</h3>
-      <p class="j-text" id="jAtoutText"></p>
-      <div class="j-atouts" id="jAtouts"></div>
-      <div class="stack"><button class="btn teal" id="jManage">Gérer mes atouts</button><button class="btn ghost" id="jClose">Fermer</button></div>
     </div>
   </div>
 
@@ -1126,22 +1167,6 @@
       <p id="uDesc"></p>
       <p class="u-help" id="uHelp"></p>
       <div class="stack" id="uActions"></div>
-    </div>
-  </div>
-
-  <div class="overlay" id="premium">
-    <div class="sheet premium-sheet">
-      <div class="premium-badge" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M32 4 L54 16 V36 Q54 52 32 60 Q10 52 10 36 V16z" fill="#1f2a44" stroke="#f5c445" stroke-width="3"/><path d="M20 30 L26 22 L32 30 L38 22 L44 30 L42 42 H22z" fill="#f5c445" stroke="#1f2a44" stroke-width="2" stroke-linejoin="round"/></svg></div>
-      <h2>Pack Commandant</h2>
-      <p class="premium-sub" id="premiumSub">Achat unique, à vie</p>
-      <ul class="premium-list">
-        <li data-i18n>Plus aucune pub imposée</li>
-        <li data-i18n>Les bonus des vidéos sans regarder de vidéo</li>
-        <li data-i18n>Un booster gratuit de plus chaque jour</li>
-        <li data-i18n>Le dé et le dos de cartes « Commandant », exclusifs et visibles en duel</li>
-      </ul>
-      <p class="premium-fair">Aucun avantage en partie : le jeu reste équitable.</p>
-      <div class="stack" id="premiumActions"></div>
     </div>
   </div>
 
@@ -1538,7 +1563,7 @@
     const ATOUT_IDS = Object.keys(ATOUTS);
     /* Objets de collection des boosters : purement décoratifs, visibles par l'adversaire. */
     const DICE = {
-      commandant: { name: "Dé du Commandant", rarity: 2, shape: "octo", pips: "star", face: "radial-gradient(circle at 30% 24%, #3a4a78, #1f2a44 55%, #0a0f1e)", pip: "#f5c445", edge: "#f5c445" },
+      commandant: { name: "Dé du Commandant", rarity: 2, shape: "octo", pips: "star", face: "radial-gradient(circle at 30% 24%, #4a5c96, #1f2a44 55%, #0a0f1e)", pip: "#ffd45a", edge: "#f5c445" },
       violet: { name: "Dé stellaire", rarity: 0, face: "radial-gradient(circle at 30% 24%, #8f93f0, #4a4fb8 55%, #262b78)", pip: "#f5c445", edge: "#f5e9cf" },
       lave: { name: "Galet de lave", rarity: 0, shape: "galet", face: "radial-gradient(circle at 30% 24%, #ffc08a, #f26a3d 52%, #7d2410)", pip: "#fff3c4", edge: "#3a120a" },
       glace: { name: "Cristal de glace", rarity: 0, shape: "hexa", pips: "star", face: "radial-gradient(circle at 30% 24%, #ffffff, #a8e9f2 52%, #3d8fb0)", pip: "#1f2a44", edge: "#ffffff" },
@@ -1548,11 +1573,26 @@
       slime: { name: "Œil gluant", rarity: 1, shape: "rond", pips: "eye", face: "radial-gradient(circle at 30% 24%, #e3ffc4, #7bd65a 52%, #2a7030)", pip: "#d0508f", edge: "#1f2a44" },
       or: { name: "Octo d'or", rarity: 1, shape: "octo", pips: "diamond", face: "radial-gradient(circle at 30% 24%, #fffbe0, #f5c445 48%, #9c6a08)", pip: "#1f2a44", edge: "#fff6c9" },
       nuit: { name: "Hexa de nuit", rarity: 1, shape: "hexa", pips: "eye", face: "radial-gradient(circle at 30% 24%, #5b5fc7, #1f2a44 58%, #0a0f1e)", pip: "#7be0a4", edge: "#8f93f0" },
-      corail: { name: "Gemme corail", rarity: 1, shape: "gemme", pips: "star", face: "radial-gradient(circle at 30% 24%, #ffd9c9, #ff7a6b 52%, #9c2a20)", pip: "#fff6c9", edge: "#1f2a44" },
+      corail: { name: "Gemme corail", rarity: 1, shape: "gemme", pips: "star", face: "radial-gradient(circle at 30% 24%, #ffd9c9, #ff7a6b 52%, #9c2a20)", pip: "#1f2a44", ring: "#fff6c9", edge: "#1f2a44" },
       radio: { name: "Dé radioactif", rarity: 1, shape: "octo", pips: "dot", face: "radial-gradient(circle at 30% 24%, #f4ffb0, #b8f03d 50%, #4f7a10)", pip: "#1f2a44", edge: "#e8ff6a" },
       saturne: { name: "Saturnien", rarity: 2, shape: "rond", pips: "star", face: "conic-gradient(from 30deg, #f5c445, #f26a3d, #d0508f, #5b5fc7, #f5c445)", pip: "#fff", edge: "#fff" },
       oeil: { name: "Œil cosmique", rarity: 2, shape: "gemme", pips: "eye", face: "radial-gradient(circle at 30% 24%, #ffe0f0, #d0508f 50%, #3a0a2a)", pip: "#f5c445", edge: "#fff", rainbow: true },
-      neant: { name: "Dé du néant", rarity: 2, shape: "galet", pips: "star", face: "radial-gradient(circle at 30% 24%, #4a4f86, #10162b 58%, #000)", pip: "#ff5fa8", edge: "#d0508f", rainbow: true }
+      neant: { name: "Dé du néant", rarity: 2, shape: "galet", pips: "star", face: "radial-gradient(circle at 30% 24%, #4a4f86, #10162b 58%, #000)", pip: "#ff5fa8", edge: "#d0508f", rainbow: true },
+      lingot: { name: "Or massif", rarity: 2, face: "linear-gradient(135deg, #fff3b0, #f5c445 30%, #c8901a 55%, #ffe58a 75%, #a8730a)", pip: "#1f2a44", ring: "#fff3b0", edge: "#7a5208" },
+      diamant: { name: "Diamant", rarity: 2, shape: "gemme", face: "conic-gradient(from 45deg, #e8fbff, #9fe0f2, #ffffff, #7cc8e8, #e8fbff, #b8ecf8, #ffffff, #8fd3ec, #e8fbff)", pip: "#1f2a44", ring: "#ffffff", edge: "#ffffff" },
+      arcenciel: { name: "Arc-en-ciel", rarity: 1, face: "linear-gradient(160deg, #ff6b6b, #f5c445 25%, #7be0a4 50%, #5b8fd8 75%, #b06ad8)", pip: "#ffffff", edge: "#1f2a44" },
+      obsidienne: { name: "Obsidienne", rarity: 1, shape: "galet", face: "radial-gradient(circle at 30% 24%, #3a3a4a, #121218 55%, #000)", pip: "#3cf0d0", ring: "#000", edge: "#3cf0d0" },
+      cuivre: { name: "Cuivre", rarity: 0, face: "linear-gradient(135deg, #ffc9a0, #d9844a 35%, #9c4f22 65%, #e8a070)", pip: "#fff3e0", edge: "#5a2a10" },
+      cyber: { name: "Cyber", rarity: 1, shape: "octo", face: "linear-gradient(rgba(60, 240, 208, 0.35) 1px, transparent 1px) 0 0 / 8px 8px, linear-gradient(90deg, rgba(60, 240, 208, 0.35) 1px, transparent 1px) 0 0 / 8px 8px, #140c2e", pip: "#ff4fb0", ring: "#140c2e", edge: "#3cf0d0" },
+      licorne: { name: "Licorne", rarity: 1, shape: "rond", pips: "star", face: "linear-gradient(140deg, #ffd1ec, #e0c4ff 45%, #b8f2e0)", pip: "#8a3fc0", ring: "#ffffff", edge: "#ffffff" },
+      france: { name: "France", rarity: 0, face: "linear-gradient(90deg, #1e4fae 0 33.4%, #ffffff 0 66.6%, #e0373c 0)", pip: "#1f2a44", ring: "#ffffff", edge: "#1f2a44" },
+      italie: { name: "Italie", rarity: 0, face: "linear-gradient(90deg, #12965a 0 33.4%, #ffffff 0 66.6%, #d8343c 0)", pip: "#1f2a44", ring: "#ffffff", edge: "#1f2a44" },
+      allemagne: { name: "Allemagne", rarity: 0, face: "linear-gradient(#1a1a1a 0 33.4%, #d8202a 0 66.6%, #ffce00 0)", pip: "#ffffff", edge: "#1f2a44" },
+      belgique: { name: "Belgique", rarity: 0, face: "linear-gradient(90deg, #1a1a1a 0 33.4%, #fdda24 0 66.6%, #ef3340 0)", pip: "#ffffff", edge: "#1f2a44" },
+      espagne: { name: "Espagne", rarity: 0, face: "linear-gradient(#c8102e 0 25%, #ffc400 0 75%, #c8102e 0)", pip: "#1f2a44", ring: "#ffffff", edge: "#1f2a44" },
+      japon: { name: "Japon", rarity: 0, face: "radial-gradient(circle, #d0102e 0 26%, #ffffff 27%)", pip: "#1f2a44", ring: "#ffffff", edge: "#1f2a44" },
+      ukraine: { name: "Ukraine", rarity: 0, face: "linear-gradient(#0057b7 0 50%, #ffd700 0)", pip: "#ffffff", edge: "#1f2a44" },
+      suede: { name: "Suède", rarity: 0, face: "linear-gradient(90deg, transparent 30%, #fecc00 0 46%, transparent 0), linear-gradient(transparent 42%, #fecc00 0 58%, transparent 0), #006aa7", pip: "#ffffff", edge: "#1f2a44" }
     };
     const BACKS = {
       commandant: { name: "Dos Commandant", rarity: 2, css: "repeating-conic-gradient(from 45deg, #f5c445 0 25%, #1f2a44 0 50%) 0 0 / 18px 18px" },
@@ -1561,12 +1601,89 @@
       rayures: { name: "Rayures bonbon", rarity: 0, css: "repeating-linear-gradient(45deg, #d0508f 0 8px, #5b5fc7 8px 16px)" },
       etoiles: { name: "Nuit étoilée", rarity: 1, css: "radial-gradient(circle, #f5e9cf 0 1.2px, transparent 1.8px) 0 0 / 14px 14px, radial-gradient(circle, #f5c445 0 1px, transparent 1.6px) 7px 7px / 22px 22px, #10162b" },
       or: { name: "Soleil d'or", rarity: 1, css: "repeating-conic-gradient(from 0deg at 50% 50%, #f5c445 0 10deg, #b8800e 10deg 20deg)" },
-      galaxie: { name: "Galaxie", rarity: 2, css: "conic-gradient(from 0deg, #d0508f, #5b5fc7, #2fa394, #f5c445, #f26a3d, #d0508f)" }
+      galaxie: { name: "Galaxie", rarity: 2, css: "radial-gradient(circle, #ffffff 0 1px, transparent 1.6px) 0 0 / 12px 12px, radial-gradient(ellipse at 50% 50%, rgba(16, 22, 43, 0) 20%, rgba(16, 22, 43, 0.55) 70%), conic-gradient(from 0deg, #d0508f, #5b5fc7, #2fa394, #f5c445, #f26a3d, #d0508f)" },
+      lingot: { name: "Or massif", rarity: 2, css: "repeating-linear-gradient(45deg, rgba(122, 82, 8, 0.45) 0 2px, transparent 2px 12px), repeating-linear-gradient(-45deg, rgba(255, 243, 176, 0.5) 0 2px, transparent 2px 12px), linear-gradient(135deg, #ffe58a, #f5c445 40%, #c8901a)" },
+      diamant: { name: "Diamant", rarity: 2, css: "conic-gradient(from 45deg at 50% 50%, #e8fbff 0 25%, #8fd3ec 0 50%, #ffffff 0 75%, #b8ecf8 0) 0 0 / 16px 16px" },
+      arcenciel: { name: "Arc-en-ciel", rarity: 1, css: "repeating-linear-gradient(160deg, #ff6b6b 0 8px, #f5c445 8px 16px, #7be0a4 16px 24px, #5b8fd8 24px 32px, #b06ad8 32px 40px)" },
+      ombre: { name: "Ombre", rarity: 1, css: "repeating-linear-gradient(45deg, #1a1a26 0 6px, #25223a 6px 12px), #121218" },
+      cuivre: { name: "Cuivre", rarity: 0, css: "repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.12) 0 1px, transparent 1px 4px), linear-gradient(135deg, #ffc9a0, #d9844a 40%, #9c4f22)" },
+      guimauve: { name: "Guimauve", rarity: 0, css: "radial-gradient(circle, #ffffff 0 4px, transparent 4.5px) 0 0 / 16px 16px, radial-gradient(circle, #ffffff 0 4px, transparent 4.5px) 8px 8px / 16px 16px, #ff9fcc" },
+      cyber: { name: "Grille cyber", rarity: 1, css: "linear-gradient(rgba(60, 240, 208, 0.55) 1px, transparent 1px) 0 0 / 10px 10px, linear-gradient(90deg, rgba(255, 79, 176, 0.55) 1px, transparent 1px) 0 0 / 10px 10px, #140c2e" },
+      licorne: { name: "Licorne", rarity: 1, css: "radial-gradient(circle, #ffffff 0 1.5px, transparent 2px) 0 0 / 14px 14px, linear-gradient(160deg, #ffd1ec, #e0c4ff 50%, #b8f2e0)" },
+      france: { name: "France", rarity: 0, css: "linear-gradient(90deg, #1e4fae 0 33.4%, #ffffff 0 66.6%, #e0373c 0)" },
+      italie: { name: "Italie", rarity: 0, css: "linear-gradient(90deg, #12965a 0 33.4%, #ffffff 0 66.6%, #d8343c 0)" },
+      allemagne: { name: "Allemagne", rarity: 0, css: "linear-gradient(#1a1a1a 0 33.4%, #d8202a 0 66.6%, #ffce00 0)" },
+      belgique: { name: "Belgique", rarity: 0, css: "linear-gradient(90deg, #1a1a1a 0 33.4%, #fdda24 0 66.6%, #ef3340 0)" },
+      espagne: { name: "Espagne", rarity: 0, css: "linear-gradient(#c8102e 0 25%, #ffc400 0 75%, #c8102e 0)" },
+      paysbas: { name: "Pays-Bas", rarity: 0, css: "linear-gradient(#ae1c28 0 33.4%, #ffffff 0 66.6%, #21468b 0)" },
+      ukraine: { name: "Ukraine", rarity: 0, css: "linear-gradient(#0057b7 0 50%, #ffd700 0)" },
+      suede: { name: "Suède", rarity: 0, css: "linear-gradient(90deg, transparent 30%, #fecc00 0 44%, transparent 0), linear-gradient(transparent 43%, #fecc00 0 57%, transparent 0), #006aa7" }
     };
-    const dieVars = id => `--die-face:${DICE[id].face};--die-pip:${DICE[id].pip};--die-edge:${DICE[id].edge}`;
+    /* Décors de partie : la scène derrière le plateau. Chaque manche gagnée fait passer au décor suivant de ta collection. */
+    const DECORS = {
+      espace: { name: "Espace profond", rarity: 0 },
+      lune: { name: "Mer de la Tranquillité", rarity: 0 },
+      mars: { name: "Dunes de Mars", rarity: 0 },
+      hangar: { name: "Hangar de la station", rarity: 0 },
+      affiche: { name: "Avant-première", rarity: 1 },
+      saturne: { name: "Anneaux de Saturne", rarity: 1 },
+      neptune: { name: "Océan de Neptune", rarity: 1 },
+      bonbon: { name: "Planète Bonbon", rarity: 1 },
+      nebuleuse: { name: "Nébuleuse rose", rarity: 2 },
+      neon: { name: "Néo-Tokyo 3000", rarity: 2 }
+    };
+    /* Scenes are drawn in a 400×860 box and cropped to the screen; the middle stays calm behind the cards. */
+    function decorSVG(id) {
+      const N = "#10162b", st = (n, seed, c = "#f5e9cf", y1 = 560) => {
+        let out = "", k = seed;
+        for (let i = 0; i < n; i += 1) { k = (k * 9301 + 49297) % 233280; const x = (k / 233280) * 400; k = (k * 9301 + 49297) % 233280; const y = (k / 233280) * y1; out += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(1 + (i % 3) * 0.6).toFixed(1)}" fill="${c}" opacity="${0.4 + (i % 4) * 0.15}"/>`; }
+        return out;
+      };
+      const scenes = {
+        espace: "",
+        lune: `${st(26, 3)}<circle cx="318" cy="120" r="52" fill="#5b8fd8" stroke="${N}" stroke-width="5"/><path d="M282 104q20-18 38 0t36-4M290 140q22 10 46-6" fill="none" stroke="#7be0a4" stroke-width="10" stroke-linecap="round"/>
+          <path d="M0 640 Q90 600 190 628 T400 612 V860 H0Z" fill="#c9c4b8" stroke="${N}" stroke-width="5"/><path d="M0 700 Q120 680 230 706 T400 694 V860 H0Z" fill="#a9a395"/>
+          <ellipse cx="80" cy="760" rx="46" ry="12" fill="#8c8678"/><ellipse cx="300" cy="790" rx="60" ry="14" fill="#8c8678"/><ellipse cx="210" cy="664" rx="26" ry="7" fill="#a9a395"/>
+          <path d="M330 650 v-56" stroke="${N}" stroke-width="4"/><path d="M332 596 h40 v24 h-40" fill="#f26a3d" stroke="${N}" stroke-width="4"/>`,
+        mars: `${st(18, 7, "#ffd9b8", 420)}<circle cx="70" cy="110" r="22" fill="#d9a07a" stroke="${N}" stroke-width="4"/><circle cx="330" cy="70" r="12" fill="#c98a62" stroke="${N}" stroke-width="3"/>
+          <path d="M0 610 Q70 560 150 600 Q240 650 300 590 Q350 548 400 580 V860 H0Z" fill="#c0532e" stroke="${N}" stroke-width="5"/>
+          <path d="M0 690 Q110 650 210 690 T400 670 V860 H0Z" fill="#f26a3d"/><path d="M0 770 Q150 740 260 780 T400 760 V860 H0Z" fill="#d95a30"/>
+          <path d="M40 700 q20-8 40 0M250 730 q24-10 48 0M150 800 q20-8 40 0" fill="none" stroke="#ffb08a" stroke-width="4" stroke-linecap="round"/>`,
+        hangar: `<rect width="400" height="860" fill="#3a4360"/><path d="M0 0 H400 V90 H0Z" fill="#2b3350"/>
+          ${[0, 1, 2, 3, 4].map(i => `<path d="M${i * 100} 0 V860" stroke="#2b3350" stroke-width="10"/>`).join("")}
+          <circle cx="300" cy="170" r="66" fill="#10162b" stroke="#8fd8cc" stroke-width="10"/><circle cx="286" cy="160" r="28" fill="#f26a3d"/><path d="M256 178 Q300 158 346 182" fill="none" stroke="#f5c445" stroke-width="4"/>
+          ${[[30, 130], [130, 130], [30, 230], [130, 230]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="5" fill="#2b3350"/>`).join("")}
+          <rect y="680" width="400" height="180" fill="#4a5470"/><rect y="680" width="400" height="20" fill="#f5c445"/>
+          ${Array.from({ length: 21 }, (_, i) => `<path d="M${i * 20 - 6} 680 l14 20" stroke="${N}" stroke-width="7"/>`).join("")}<path d="M0 700 H400" stroke="${N}" stroke-width="4"/>`,
+        affiche: `<rect width="400" height="860" fill="#3a2a68"/><g class="decor-spin" style="transform-origin:200px 430px">${Array.from({ length: 18 }, (_, i) => `<path d="M200 430 L${(200 + Math.cos((i * 20) * Math.PI / 180) * 700).toFixed(0)} ${(430 + Math.sin((i * 20) * Math.PI / 180) * 700).toFixed(0)} L${(200 + Math.cos((i * 20 + 10) * Math.PI / 180) * 700).toFixed(0)} ${(430 + Math.sin((i * 20 + 10) * Math.PI / 180) * 700).toFixed(0)}Z" fill="#f5c445" opacity="0.2"/>`).join("")}</g>
+          <g transform="rotate(-10 80 90)"><rect x="24" y="64" width="116" height="48" rx="6" fill="#f5c445" stroke="${N}" stroke-width="4"/><text x="82" y="98" text-anchor="middle" font-size="28" font-family="Righteous, sans-serif" fill="${N}">POW !</text></g>
+          <ellipse cx="200" cy="790" rx="190" ry="44" fill="#5b5fc7" stroke="${N}" stroke-width="5"/><ellipse cx="200" cy="790" rx="168" ry="32" fill="none" stroke="#f5c445" stroke-width="5" stroke-dasharray="2 14" stroke-linecap="round"/>`,
+        saturne: `${st(40, 11)}<g transform="rotate(-16 220 170)"><ellipse cx="220" cy="170" rx="170" ry="34" fill="none" stroke="#e0b46a" stroke-width="16"/><circle cx="220" cy="170" r="82" fill="#f5c445" stroke="${N}" stroke-width="5"/>
+          <path d="M146 150 H294 M140 182 H300" stroke="#e09a3a" stroke-width="10"/><path d="M50 170 A170 34 0 0 0 390 170" fill="none" stroke="#e0b46a" stroke-width="16"/><path d="M50 170 A170 34 0 0 0 390 170" fill="none" stroke="${N}" stroke-width="3" opacity=".5"/></g>
+          ${st(30, 5, "#f5c445", 860)}`,
+        neptune: `${st(24, 13, "#bfe3ff", 420)}<circle cx="96" cy="130" r="58" fill="#3d6fd0" stroke="${N}" stroke-width="5"/><path d="M48 118 Q96 104 144 122 M52 148 Q96 160 140 146" fill="none" stroke="#7fb0f5" stroke-width="8"/>
+          <path d="M0 620 q25-18 50 0t50 0t50 0t50 0t50 0t50 0t50 0t50 0 V860 H0Z" fill="#2a5cb8" stroke="${N}" stroke-width="5"/>
+          <path d="M0 690 q25-16 50 0t50 0t50 0t50 0t50 0t50 0t50 0t50 0 V860 H0Z" fill="#3d7ae0"/><path d="M0 770 q25-14 50 0t50 0t50 0t50 0t50 0t50 0t50 0t50 0 V860 H0Z" fill="#5b8fd8"/>
+          ${[[60, 560, 8], [90, 520, 5], [330, 580, 10], [350, 530, 6], [300, 500, 4]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#bfe3ff" stroke-width="3"/>`).join("")}`,
+        bonbon: `<rect width="400" height="860" fill="#4a2a5a"/>${st(20, 17, "#ffd1e8", 500)}
+          <path d="M0 640 Q60 580 130 620 Q200 660 260 600 Q330 540 400 610 V860 H0Z" fill="#ff8fc4" stroke="${N}" stroke-width="5"/><path d="M0 720 Q120 680 220 720 T400 700 V860 H0Z" fill="#f5e9cf"/>
+          ${[[70, 600, "#7be0a4"], [330, 590, "#f5c445"]].map(([x, y, c]) => `<path d="M${x} ${y} V${y - 90}" stroke="${N}" stroke-width="6"/><circle cx="${x}" cy="${y - 110}" r="30" fill="${c}" stroke="${N}" stroke-width="5"/><path d="M${x - 18} ${y - 110} a18 18 0 0 1 36 0 a12 12 0 0 1 -24 0" fill="none" stroke="#fff" stroke-width="5"/>`).join("")}
+          <path d="M0 720 Q120 680 220 720 T400 700" fill="none" stroke="#d0508f" stroke-width="8" stroke-dasharray="20 16"/>`,
+        nebuleuse: `<rect width="400" height="860" fill="#1a1440"/><ellipse cx="120" cy="180" rx="200" ry="120" fill="#d0508f" opacity=".35"/><ellipse cx="300" cy="300" rx="180" ry="110" fill="#5b5fc7" opacity=".45"/>
+          <ellipse cx="200" cy="700" rx="240" ry="130" fill="#d0508f" opacity=".3"/><ellipse cx="80" cy="760" rx="150" ry="90" fill="#2fa394" opacity=".3"/>${st(60, 23, "#fff", 860)}
+          ${[[90, 120], [320, 220], [60, 640], [340, 720]].map(([x, y]) => `<path d="M${x} ${y - 12} L${x + 3} ${y - 3} L${x + 12} ${y} L${x + 3} ${y + 3} L${x} ${y + 12} L${x - 3} ${y + 3} L${x - 12} ${y} L${x - 3} ${y - 3}Z" fill="#f5c445"/>`).join("")}`,
+        neon: `<rect width="400" height="860" fill="#140c2e"/>${st(20, 29, "#8fd8cc", 360)}<circle cx="200" cy="300" r="90" fill="#d0508f" opacity=".85"/>${[0, 1, 2, 3].map(i => `<rect x="100" y="${310 + i * 18}" width="200" height="${6 + i * 2}" fill="#140c2e"/>`).join("")}
+          ${[[0, 420, 60], [52, 470, 48], [96, 380, 70], [160, 450, 50], [214, 400, 64], [272, 460, 46], [312, 390, 88]].map(([x, y, w]) => `<rect x="${x}" y="${y}" width="${w}" height="${640 - y}" fill="#221a4a" stroke="#5b5fc7" stroke-width="3"/>${Array.from({ length: 6 }, (_, j) => `<rect x="${x + 8 + (j % 2) * (w / 2 - 4)}" y="${y + 14 + Math.floor(j / 2) * 26}" width="${w / 2 - 16}" height="8" fill="${j % 3 ? "#2fa394" : "#f5c445"}" opacity=".85"/>`).join("")}`).join("")}
+          <rect y="640" width="400" height="220" fill="#1a0f3a"/>${Array.from({ length: 9 }, (_, i) => `<path d="M${i * 50} 640 L${(i * 50 - 200) * 3 + 200} 860" stroke="#d0508f" stroke-width="2" opacity=".7"/>`).join("")}
+          ${[660, 690, 730, 790].map(y => `<path d="M0 ${y} H400" stroke="#2fa394" stroke-width="2" opacity=".7"/>`).join("")}`
+      };
+      return `<svg viewBox="0 0 400 860" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${scenes[id] || ""}</svg>`;
+    }
+    const decorPrev = id => `<div class="decor-prev">${decorSVG(id)}</div>`;
+    const dieVars = id => `--die-face:${DICE[id].face};--die-pip:${DICE[id].pip};--die-edge:${DICE[id].edge};--die-ring:${DICE[id].ring || "rgba(16, 22, 43, 0.85)"}`;
     const dieCls = id => `s-${DICE[id].shape || "cube"} p-${DICE[id].pips || "dot"}${DICE[id].rainbow ? " rainbow" : ""}`;
     const diePrev = id => `<div class="die-prev ${dieCls(id)}" style="${dieVars(id)}">${[1, 0, 1, 0, 1, 0, 1, 0, 1].map(on => `<i${on ? ' class="p"' : ""}></i>`).join("")}</div>`;
-    const backPrev = id => `<div class="back-prev" style="--back:${BACKS[id].css}"></div>`;
+    const backPrev = id => `<div class="back-prev" style="--back:${BACKS[id].css}"><i class="bp-em"></i></div>`;
     /* Chaque tribu a un talent, valable pour le joueur comme pour Gaspard. */
     const PERKS = {
       mars: { name: "Ravitaillés", desc: "démarre avec 2 boosts ⚡ au lieu de 1." },
@@ -1601,9 +1718,10 @@
       ...CHAR_IDS.filter(id => CHARS[id].rarity < 3 && !id.endsWith("0")).map(id => ({ kind: "char", id })),
       ...Object.keys(DICE).filter(id => id !== "violet" && id !== "commandant").map(id => ({ kind: "dice", id })),
       ...Object.keys(BACKS).filter(id => id !== "cible" && id !== "commandant").map(id => ({ kind: "back", id })),
+      ...Object.keys(DECORS).filter(id => id !== "espace").map(id => ({ kind: "decor", id })),
       ...Object.keys(ATOUTS).filter(id => ATOUTS[id].rarity > 0).map(id => ({ kind: "atout", id }))
     ];
-    const itemDef = it => ({ dice: DICE, back: BACKS, char: CHARS, atout: ATOUTS })[it.kind][it.id];
+    const itemDef = it => ({ dice: DICE, back: BACKS, char: CHARS, atout: ATOUTS, decor: DECORS })[it.kind][it.id];
     /* Progression : les trophées montent et descendent (ligues, classement), l'expérience ne fait que monter (niveau). */
     const LEAGUES = [
       { name: "Bronze", min: 0, cls: "bronze" }, { name: "Argent", min: 100, cls: "" }, { name: "Or", min: 250, cls: "gold" },
@@ -1682,10 +1800,14 @@
 
     /* ═════ Sauvegarde ═════ */
     const SAVE_KEY = "bda_save_v1";
-    const save = Object.assign({ crystals: CAPSULE_COST, owned: {}, loadout: [], unlocked: 0, level: 0, tribe: "mars", name: "", games: 0, premium: false, premiumSeen: false, dailyDay: "", dailyUsed: 0, tuto: false, wins: [0, 0, 0], xp: 0, trophies: 0, stars: [0, 0, 0], seen: {}, mute: false, skins: { dice: { violet: 1 }, back: { cible: 1 } }, equip: { dice: "violet", back: "cible" }, camp: null, stage: null, chars: { mars0: 1 }, char: null }, (() => {
+    const save = Object.assign({ crystals: CAPSULE_COST, owned: {}, loadout: [], unlocked: 0, level: 0, tribe: "mars", name: "", games: 0, starter: false, freePacks: 0, adDay: "", adUsed: 0, fresh: {}, picks: null, tuto: false, wins: [0, 0, 0], xp: 0, trophies: 0, stars: [0, 0, 0], seen: {}, mute: false, skins: { dice: { violet: 1 }, back: { cible: 1 } }, equip: { dice: "violet", back: "cible" }, camp: null, stage: null, chars: { mars0: 1 }, char: null }, (() => {
       try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch (e) { return {}; }
     })());
     save.loadout = save.loadout.filter(id => ATOUTS[id] && save.owned[id]);
+    // The former Pack Commandant becomes the starter pack: same exclusive dice and back, nothing taken away.
+    if (save.premium) { save.starter = true; delete save.premium; }
+    save.fresh = save.fresh || {};
+    save.skins.decor = Object.assign({ espace: 1 }, save.skins.decor);
     /* Campagne : `cleared` = nombre d'étapes gagnées dans l'ordre. Une ancienne sauvegarde (3 planètes) devient des chapitres finis. */
     if (!save.camp) save.camp = { cleared: 4 * (save.wins || []).filter(w => w > 0).length, stars: [] };
     save.stage = Math.min(save.stage ?? save.camp.cleared, save.camp.cleared, STAGES.length - 1);
@@ -1698,11 +1820,17 @@
     /* Les atouts se gagnent en campagne (et les plus rares dans les boosters) ; un atout gagné s'équipe tout seul s'il reste une place. */
     function grantAtouts(ids) {
       const fresh = ids.filter(id => !save.owned[id]);
-      for (const id of fresh) { save.owned[id] = 1; if (save.loadout.length < atoutSlots()) save.loadout.push(id); }
+      for (const id of fresh) { save.owned[id] = 1; markFresh("atout", id); if (save.loadout.length < atoutSlots()) save.loadout.push(id); }
       return fresh;
     }
+    /* New items wear a spinning star until the player taps them in the collection. Items granted while the save loads are not news. */
+    let saveReady = false;
+    function markFresh(kind, id) { if (saveReady) save.fresh[`${kind}:${id}`] = 1; }
+    const isFresh = (kind, id) => Boolean(save.fresh[`${kind}:${id}`]);
+    const anyFresh = kind => Object.keys(save.fresh).some(k => !kind || k.startsWith(`${kind}:`));
     grantAtouts(START_ATOUTS);
     STAGES.forEach((sg, i) => { if (i < save.camp.cleared && sg.gift) grantAtouts([sg.gift]); });
+    saveReady = true;
     function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* stockage indisponible */ } }
 
 
@@ -2629,8 +2757,29 @@
       return near[rand(near.length)];
     }
     /* mode « adv » : la planète choisie en aventure. mode « arena » : un duel classé contre un rival proche au classement. */
+    /* Décor of the game: starts in deep space, then each round the player wins swaps to another one they own. */
+    let decorNow = "espace";
+    function setDecor(id, animate) {
+      const box = $("#decor"), layer = document.createElement("div");
+      decorNow = id;
+      layer.className = "decor-l";
+      layer.innerHTML = decorSVG(id);
+      box.appendChild(layer);
+      const old = [...box.children].slice(0, -1);
+      if (!animate || reduced) { old.forEach(e => e.remove()); return; }
+      const ring = document.createElement("span");
+      ring.className = "decor-ring";
+      box.appendChild(ring);
+      ring.animate([{ transform: "translate(-50%, -50%) scale(0.05)", opacity: 1 }, { transform: "translate(-50%, -50%) scale(1)", opacity: 0 }], { duration: 900, easing: "cubic-bezier(.5, 0, .3, 1)" }).onfinish = () => ring.remove();
+      layer.animate([{ clipPath: "circle(0% at 50% 55%)" }, { clipPath: "circle(80% at 50% 55%)" }], { duration: 900, easing: "cubic-bezier(.5, 0, .3, 1)" }).onfinish = () => old.forEach(e => e.remove());
+    }
+    function nextDecor() {
+      const mine = Object.keys(DECORS).filter(id => save.skins.decor[id] && id !== decorNow);
+      if (mine.length) setDecor(mine[rand(mine.length)], true);
+    }
     function newGame(mode = "adv", pre = null) {
       gameId += 1;
+      setDecor("espace", false);
       closeCoach();
       S.mode = mode;
       S.cast[0] = CHARS[save.char].tribe;
@@ -3404,6 +3553,7 @@
         S.pot = [];
         $("#pot").classList.remove("drain");
         floatText($(`#lootBox${winner}`), tr("+{n} pts", { n: won + steal }), false, won + steal >= 6);
+        if (winner === 0) nextDecor();
         const tierHit = winner === 0 ? LOOT_TIERS.find(([min]) => S.loot[0] >= min && S.loot[0] - won - steal < min) : null;
         if (tierHit) setTimeout(() => { floatText($("#lootBox0"), tr("Palier {min} : +{gems} ◆", { min: tierHit[0], gems: tierHit[1] }), false, true); burst($("#lootBox0"), [YE, "#fff", "#8fd8cc"], 22, 1.6); sfx.rare(); buzz(40); }, 650);
         if (steal) { floatText($(`#lootBox${loser}`), `−${steal}`, true); bump($(`#lootBox${loser}`)); }
@@ -3493,7 +3643,7 @@
         const before = { league: leagueOf(save.trophies), rank: myRank() };
         const dT = won ? (above ? 32 : 24) : lost ? -Math.min(above ? 8 : 12, save.trophies) : 0;
         save.trophies += dT;
-        gain = won ? 25 : 8;
+        gain = won ? ARENA_GEMS[0] : ARENA_GEMS[1];
         const after = { league: leagueOf(save.trophies), rank: myRank() };
         trophyDelta = dT;
         if (after.league > before.league) notes.push({ v: "♛", t: tr("Promotion en ligue {league} !", { league: tr(LEAGUES[after.league].name) }), hot: true });
@@ -3517,7 +3667,7 @@
           if (first) {
             save.camp.cleared += 1;
             if (sg.gift && grantAtouts([sg.gift]).length && unlocked.push({ kind: "atout", id: sg.gift })) notes.push({ v: cardEl(makeAtout(sg.gift, "end"), 0).outerHTML, t: tr("Atout gagné : {name}", { name: tr(ATOUTS[sg.gift].name) }), hot: true, wide: true });
-            for (const id of sg.unlocks) if (!save.chars[id]) { save.chars[id] = 1; unlocked.push({ kind: "char", id }); notes.push({ v: portrait(id), t: tr("Personnage débloqué : {name}", { name: tr(CHARS[id].name) }), hot: true, wide: true }); }
+            for (const id of sg.unlocks) if (!save.chars[id]) { save.chars[id] = 1; markFresh("char", id); unlocked.push({ kind: "char", id }); notes.push({ v: portrait(id), t: tr("Personnage débloqué : {name}", { name: tr(CHARS[id].name) }), hot: true, wide: true }); }
             if (sg.boss) { trip = [ch, CHAPTERS[sg.c + 1] || null]; if (CHAPTERS[sg.c + 1]) notes.push({ v: `<i class="pdot" style="display:block;width:30px;height:30px;border-radius:50%;border:2px solid var(--navy);background:${CHAPTERS[sg.c + 1].color}"></i>`, t: tr("Nouveau chapitre : {planet}", { planet: tr(CHAPTERS[sg.c + 1].planet) }), wide: true }); }
             if (save.camp.cleared < STAGES.length) { S.stage = save.stage = save.camp.cleared; chapterView = STAGES[S.stage].c; }
           }
@@ -3539,7 +3689,7 @@
       save.crystals += gain;
       save.games = (save.games || 0) + 1;
       persist();
-      offerDouble(gain);
+      offerAd(gain);
       // Les tuiles de récompense : étoiles, cristaux, XP (ou trophées), puis chaque nouveauté
       const lv = levelInfo(save.xp), tiles = [];
       if (starsWon) tiles.push(`<div class="rw hot"><div class="ic">★</div><div><span class="stars">${"★".repeat(starsWon)}${"☆".repeat(3 - starsWon)}</span><small>${tr("Étoiles")}</small></div></div>`);
@@ -3562,7 +3712,7 @@
       $(".end-sheet").classList.toggle("win", won);
       // Pluie de pièces à la victoire
       $("#endRain").innerHTML = won && !reduced ? Array.from({ length: 26 }, (_, i) => `<span class="mcoin${i % 5 === 0 ? " c2" : i % 7 === 0 ? " c1" : ""}" style="left:${rand(96)}%;--d:${2.2 + Math.random() * 1.8}s;--dl:${(Math.random() * 2.4).toFixed(2)}s">★</span>`).join("") : "";
-      $("#endBooster").hidden = save.crystals < CAPSULE_COST;
+      $("#endBooster").hidden = save.crystals < boosterCost();
       if (trip) { await voyage(trip[0], trip[1]); if (game !== gameId) return; }
       else if (won) { warp(2200); sfx.win(); }
       else sfx.lose();
@@ -3575,14 +3725,21 @@
        Pubs récompensées et achats simulés : un écran « Vidéo de test » et une confirmation « Achat de test »
        remplacent AdMob et les stores tant que les comptes ne sont pas branchés. Tout reste au choix du joueur,
        et rien de ce qui se vend ne donne d'avantage en partie. */
-    const MONET = { doubleFrom: 3, dailyLevel: 3, premiumStage: 4, shopStage: 8, adSeconds: 5, premiumPrice: "3,99 €" };
-    const SHOP = [
-      { kind: "char", id: "poulpes5", price: "1,99 €" }, { kind: "char", id: "incognito6", price: "1,99 €" }, { kind: "char", id: "cranes7", price: "2,99 €" },
-      { kind: "dice", id: "or", price: "0,99 €" }, { kind: "dice", id: "glace", price: "0,99 €" }, { kind: "back", id: "etoiles", price: "0,99 €" }
-    ];
-    const SHOP_LOT = { tribe: "poulpes", ids: ["poulpes4", "poulpes5", "poulpes6"], dice: "slime", price: "2,99 €" };
+    /* Économie : tout se gagne en jouant. Les vidéos et les achats ne font qu'aller plus vite, et tout se paie en cristaux. */
+    const MONET = { adFrom: 2, adSeconds: 5, ladder: [10, 15, 25, 40], starterPrice: "1,99 €", starterGems: 300, starterPacks: 3 };
+    const GEM_PACKS = [{ gems: 300, price: "1,99 €" }, { gems: 800, price: "4,99 €" }, { gems: 2000, price: "9,99 €" }];
+    /* Vitrine du jour : quatre objets de collection au choix, payés en cristaux selon leur rareté (jamais d'atout). */
+    const PICK_PRICE = [100, 200, 400];
+    /* Booster price follows the collection: every booster guarantees something new, and what is left gets rarer.
+       Steps tuned with tools/economy-sim.js. */
+    const PRICE_STEPS = [[0.25, 60], [0.5, 90], [0.75, 130], [1, 180]];
+    const collected = () => ITEMS.filter(it => owns(it.kind, it.id)).length / ITEMS.length;
+    const boosterCost = () => (PRICE_STEPS.find(([max]) => collected() < max) || PRICE_STEPS[PRICE_STEPS.length - 1])[1];
+    /* Cristaux d'une partie d'arène : victoire, défaite (plus la prime de butin, comme partout). */
+    const ARENA_GEMS = [25, 8];
     const today = () => new Date().toLocaleDateString("sv");
-    const dailyLeft = () => (save.premium ? 2 : 1) - (save.dailyDay === today() ? save.dailyUsed : 0);
+    const adsToday = () => (save.adDay === today() ? save.adUsed : 0);
+    const nextAdGems = () => MONET.ladder[adsToday()] || 0;
     function storeSheet(title, body, actions) {
       $("#storeTitle").textContent = title;
       $("#storeBody").innerHTML = body;
@@ -3590,9 +3747,8 @@
       $("#store").classList.add("on");
     }
     const closeStore = () => $("#store").classList.remove("on");
-    /* Pub récompensée : le Pack Commandant donne la récompense sans vidéo. Renvoie true si la récompense est gagnée. */
+    /* Pub récompensée (simulée en attendant AdMob). Renvoie true si la récompense est gagnée. */
     function watchAd(reward) {
-      if (save.premium) return Promise.resolve(true);
       return new Promise(resolve => {
         let left = MONET.adSeconds, done = false;
         const finish = ok => { if (done) return; done = true; clearInterval(tick); closeStore(); resolve(ok); };
@@ -3615,119 +3771,153 @@
         `<p><b>${name}</b> · ${price}</p><p class="premium-sub">${tr("Mode test : aucun paiement réel. Le vrai paiement passera par Google Play ou l'App Store.")}</p>`,
         [{ label: tr("Confirmer l'achat (test)"), cls: "hot", fn: () => { closeStore(); resolve(true); } }, { label: tr("Annuler"), cls: "ghost", fn: () => { closeStore(); resolve(false); } }]));
     }
-    /* Fin de partie : doubler les cristaux gagnés, à partir de la 3ᵉ partie. */
-    function offerDouble(gain) {
-      const btn = $("#endDouble");
-      btn.hidden = !(gain > 0 && S.mode !== "p2p" && save.games >= MONET.doubleFrom);
+    /* Une vidéo de l'échelle du jour : +10, +15, +25 puis +40 ◆. Renvoie les cristaux gagnés (0 si refusée ou épuisée). */
+    async function rewardedGems() {
+      const gems = nextAdGems();
+      if (!gems || !(await watchAd(tr("Récompense : +{n} ◆", { n: gems })))) return 0;
+      save.adUsed = adsToday() + 1;
+      save.adDay = today();
+      save.crystals += gems;
+      persist();
+      sfx.coin();
+      return gems;
+    }
+    const adLabel = gems => {
+      const short = boosterCost() - save.crystals;
+      return short > 0 ? tr("Vidéo · +{n} ◆ · il t'en manque {m} pour un booster", { n: gems, m: short }) : tr("Vidéo · +{n} ◆", { n: gems });
+    };
+    /* Fin de partie : une vidéo de plus rapporte la marche suivante de l'échelle, jusqu'à 4 par jour. */
+    function offerAd(gain) {
+      const btn = $("#endDouble"), gems = nextAdGems();
+      btn.hidden = !(gems && S.mode !== "p2p" && save.games >= MONET.adFrom);
       if (btn.hidden) return;
-      btn.textContent = save.premium ? tr("Doubler les cristaux (+{n} ◆) · Commandant", { n: gain }) : tr("Vidéo · doubler les cristaux (+{n} ◆)", { n: gain });
+      btn.textContent = adLabel(gems);
       btn.onclick = async () => {
-        if (!(await watchAd(tr("Récompense : +{n} ◆", { n: gain })))) return;
-        save.crystals += gain;
-        persist();
-        btn.hidden = true;
+        const got = await rewardedGems();
+        if (!got) return;
         const el = $("#gemCount");
-        if (el) { el.textContent = `+${gain * 2}`; bump(el); }
-        burst(el || $("#endReward"), [YE, "#fff", "#8fd8cc"], 18);
-        sfx.coin();
-        $("#endBooster").hidden = save.crystals < CAPSULE_COST;
+        if (el) { el.textContent = `+${gain + got}`; bump(el); }
+        burst(el || $("#endReward"), [YE, "#fff", "#8fd8cc"], 14);
+        $("#endBooster").hidden = save.crystals < boosterCost();
+        offerAd(gain + got);
       };
     }
-    /* Menu : booster gratuit du jour (dès le niveau 3), bouton Pack Commandant, offre Premium montrée une fois. */
     function renderOffers() {
-      const box = $("#dailyBox"), left = dailyLeft();
-      box.hidden = levelInfo(save.xp).lvl < MONET.dailyLevel;
-      box.classList.toggle("used", left <= 0);
-      $("#dailySub").textContent = left > 0 ? (save.premium && left > 1 ? tr("{n} boosters offerts aujourd'hui", { n: left }) : tr("Booster du jour")) : tr("Revient demain");
-      $("#dailyCta").textContent = left <= 0 ? tr("Pris ✓") : save.premium ? tr("Ouvrir !") : tr("Vidéo · ouvrir");
-      $("#premiumBtn").textContent = save.premium ? tr("Pack Commandant ✓") : tr("Pack Commandant · {price}", { price: MONET.premiumPrice });
-      $("#shopTab").hidden = save.camp.cleared < MONET.shopStage;
-      if (!save.premium && !save.premiumSeen && save.camp.cleared >= MONET.premiumStage && $("#menu").classList.contains("on")) {
-        save.premiumSeen = true;
-        persist();
-        setTimeout(openPremium, 900);
-      }
+      $("#shopTabBtn").hidden = !(save.games >= 1 || save.starter);
+      $("#shopTabBtn").classList.toggle("fresh", !save.starter && !save.seen.shop && save.games >= 1);
     }
-    async function openDaily() {
-      if (dailyLeft() <= 0) { bump($("#dailyCta")); return; }
-      closeBoosters();
-      if (!(await watchAd(tr("Récompense : un booster de 3 objets")))) return;
-      save.dailyUsed = (save.dailyDay === today() ? save.dailyUsed : 0) + 1;
-      save.dailyDay = today();
-      persist();
-      renderOffers();
-      openCapsuleShop(true);
-    }
-    function openPremium() {
-      $("#premiumSub").textContent = save.premium ? tr("Actif sur cet appareil. Merci !") : tr("Achat unique, à vie");
-      fillButtons($("#premiumActions"), save.premium
-        ? [{ label: tr("Restaurer mes achats"), cls: "ghost", fn: restorePurchases }, { label: tr("Fermer"), cls: "ghost", fn: closePremium }]
-        : [{ label: tr("Débloquer · {price}", { price: MONET.premiumPrice }), cls: "hot", fn: buyPremium }, { label: tr("Plus tard"), cls: "ghost", fn: closePremium }, { label: tr("Restaurer mes achats"), cls: "ghost", fn: restorePurchases }]);
-      $("#premium").classList.add("on");
-    }
-    function closePremium() { $("#premium").classList.remove("on"); renderMenu(); }
-    async function buyPremium() {
-      if (!(await buyTest(tr("Pack Commandant"), MONET.premiumPrice))) return;
-      save.premium = true;
-      save.skins.dice.commandant = 1;
-      save.skins.back.commandant = 1;
+    async function buyStarter() {
+      if (save.starter || !(await buyTest(tr("Pack de départ"), MONET.starterPrice))) return;
+      save.starter = true;
+      save.crystals += MONET.starterGems;
+      save.freePacks = (save.freePacks || 0) + MONET.starterPacks;
+      for (const kind of ["dice", "back"]) { save.skins[kind].commandant = 1; markFresh(kind, "commandant"); }
       persist();
       sfx.rare();
-      closePremium();
-      boom(tr("Commandant !"), true, $("#menuAva"));
+      renderShop();
+      renderMenu();
+      boom(tr("Merci, commandant !"), true, $("#shopPane"));
+    }
+    async function buyGems(pack) {
+      if (!(await buyTest(tr("{n} cristaux", { n: pack.gems }), pack.price))) return;
+      save.crystals += pack.gems;
+      persist();
+      sfx.coin();
+      renderShop();
+      renderMenu();
     }
     function restorePurchases() {
-      storeSheet(tr("Restaurer mes achats"), `<p>${save.premium ? tr("Pack Commandant déjà actif sur cet appareil.") : tr("Mode test : aucun achat à restaurer. Avec les stores, cette touche retrouve les achats faits avec ton compte.")}</p>`,
+      storeSheet(tr("Restaurer mes achats"), `<p>${save.starter ? tr("Pack de départ déjà actif sur cet appareil.") : tr("Mode test : aucun achat à restaurer. Avec les stores, cette touche retrouve les achats faits avec ton compte.")}</p>`,
         [{ label: tr("Fermer"), cls: "ghost", fn: closeStore }]);
     }
-    /* Boutique à prix fixes : on sait ce qu'on achète, pas de hasard. */
-    function renderShop() {
-      const visual = it => it.kind === "char" ? portrait(it.id) : it.kind === "dice" ? diePrev(it.id) : backPrev(it.id);
-      const lotOwned = SHOP_LOT.ids.every(id => owns("char", id)) && owns("dice", SHOP_LOT.dice);
-      $("#showcase").innerHTML = "";
-      $("#colGrid").innerHTML = `<div class="shopgrid">${SHOP.map((it, i) => `<button class="shopitem" data-i="${i}">${visual(it)}<span>${tr(itemDef(it).name)}</span>${owns(it.kind, it.id) ? `<span class="owned">${tr("Possédé")}</span>` : `<span class="price">${it.price}</span>`}</button>`).join("")}
-        <button class="shoplot" data-lot="1"><span class="faces">${SHOP_LOT.ids.map(id => portrait(id)).join("")}</span><span class="grow">${tr("Lot tribu {tribe}", { tribe: tr(CASTS[SHOP_LOT.tribe].label) })}<small>${tr("3 persos et un dé assorti")}</small></span>${lotOwned ? `<span class="owned">${tr("Possédé")}</span>` : `<span class="price">${SHOP_LOT.price}</span>`}</button></div>
-        <p class="shop-note">${tr("Prix fixes, pas de hasard. Les boosters restent payés en cristaux gagnés en jouant.")}</p>`;
-      for (const btn of document.querySelectorAll("#colGrid .shopitem")) btn.addEventListener("click", async () => {
-        const it = SHOP[Number(btn.dataset.i)];
-        if (owns(it.kind, it.id)) return;
-        if (!(await buyTest(tr(itemDef(it).name), it.price))) return;
-        grantItem(it); persist(); sfx.rare(); renderCollection();
-      });
-      $("#colGrid .shoplot").addEventListener("click", async () => {
-        if (lotOwned) return;
-        if (!(await buyTest(tr("Lot tribu {tribe}", { tribe: tr(CASTS[SHOP_LOT.tribe].label) }), SHOP_LOT.price))) return;
-        for (const id of SHOP_LOT.ids) grantItem({ kind: "char", id });
-        grantItem({ kind: "dice", id: SHOP_LOT.dice });
-        persist(); sfx.rare(); renderCollection();
-      });
+    /* The daily showcase is drawn once per day from what the player does not own yet, then kept as is. */
+    function dailyPicks() {
+      if (save.picks && save.picks.day === today()) return save.picks.items;
+      const pool = ITEMS.filter(it => it.kind !== "atout" && !owns(it.kind, it.id));
+      let seed = [...today()].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
+      const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+      const items = [];
+      while (items.length < 4 && pool.length) items.push(pool.splice(Math.floor(rnd() * pool.length), 1)[0]);
+      save.picks = { day: today(), items };
+      persist();
+      return items;
     }
+    const pickPrice = it => PICK_PRICE[itemDef(it).rarity] || PICK_PRICE[2];
+    function buyPick(it) {
+      const def = itemDef(it), price = pickPrice(it);
+      if (save.crystals < price) {
+        return storeSheet(tr(def.name), `<div class="pick-big">${itemVisual(it)}</div><p>${tr("Il te manque {n} ◆.", { n: price - save.crystals })}</p>`, [{ label: tr("Fermer"), cls: "ghost", fn: closeStore }]);
+      }
+      storeSheet(tr(def.name), `<div class="pick-big">${itemVisual(it)}</div>`, [
+        { label: tr("Acheter · {n} ◆", { n: price }), cls: "hot", fn: () => { save.crystals -= price; grantItem(it); persist(); sfx.rare(); closeStore(); renderShop(); renderMenu(); } },
+        { label: tr("Annuler"), cls: "ghost", fn: closeStore }
+      ]);
+    }
+    const itemVisual = it => it.kind === "char" ? portrait(it.id) : it.kind === "dice" ? diePrev(it.id) : it.kind === "back" ? backPrev(it.id) : it.kind === "decor" ? decorPrev(it.id) : cardEl(makeAtout(it.id, "v"), 0).outerHTML;
+    /* Boutique : le pack de départ en tête, les cristaux, les vidéos du jour, puis la vitrine. */
+    function renderShop() {
+      const box = $("#shopPane"), used = adsToday(), gems = nextAdGems();
+      save.seen.shop = 1;
+      persist();
+      const starter = save.starter ? "" : `<div class="sh-starter">
+          <span class="sh-flag">${tr("Le meilleur choix")}</span>
+          <div class="sh-head"><span class="premium-badge" aria-hidden="true">${SHIELD_SVG}</span><div><b>${tr("Pack de départ")}</b><small>${tr("Une seule fois")}</small></div></div>
+          <div class="sh-perks"><div><b>${MONET.starterGems} ◆</b><small>${tr("cristaux")}</small></div><div><b>${MONET.starterPacks}</b><small>${tr("boosters")}</small></div><div>${diePrev("commandant")}<small>${tr("dé et dos exclusifs")}</small></div></div>
+          <button class="btn hot" id="shStarter">${MONET.starterPrice}</button></div>`;
+      const packs = GEM_PACKS.map((pk, i) => `<button class="sh-gem" data-i="${i}"><span class="mcoin">◆</span><b>${pk.gems}</b><small>${tr("{n} boosters", { n: Math.floor(pk.gems / boosterCost()) })}</small><span class="price">${pk.price}</span></button>`).join("");
+      const ladder = MONET.ladder.map((g, i) => `<span class="sh-step${i < used ? " done" : i === used ? " next" : ""}">${i < used ? "✓" : `+${g}`}</span>`).join("");
+      const picks = dailyPicks().map((it, i) => {
+        const own = owns(it.kind, it.id);
+        return `<button class="shopitem" data-p="${i}" ${own ? "disabled" : ""}>${itemVisual(it)}<span>${tr(itemDef(it).name)}</span>${own ? `<span class="owned">${tr("Possédé")}</span>` : `<span class="price">${pickPrice(it)} ◆</span>`}</button>`;
+      }).join("");
+      box.innerHTML = `<div class="section-title">${tr("Boutique")}</div>${starter}
+        <h3 class="j-title">${tr("Cristaux")}</h3><div class="sh-gems">${packs}</div>
+        <h3 class="j-title">${tr("Gratuit")}</h3>
+        <div class="sh-ad"><div><b>${tr("Vidéos du jour")}</b><div class="sh-ladder">${ladder}</div></div><button class="btn teal" id="shAd" ${gems ? "" : "disabled"}>${gems ? tr("Regarder · +{n} ◆", { n: gems }) : tr("Reviens demain")}</button></div>
+        <h3 class="j-title">${tr("Vitrine du jour")}</h3><div class="shopgrid">${picks || `<p class="shop-note">${tr("Tu as toute la collection. Bravo !")}</p>`}</div>
+        <p class="shop-note">${tr("Tout se gagne aussi en jouant. Les atouts ne se vendent pas : le jeu reste équitable.")}</p>
+        <button class="linkish" id="shRestore">${tr("Restaurer mes achats")}</button>`;
+      $("#shStarter")?.addEventListener("click", buyStarter);
+      for (const b of box.querySelectorAll(".sh-gem")) b.addEventListener("click", () => buyGems(GEM_PACKS[Number(b.dataset.i)]));
+      $("#shAd").addEventListener("click", async () => { if (await rewardedGems()) { renderShop(); renderMenu(); } });
+      for (const b of box.querySelectorAll(".shopitem")) b.addEventListener("click", () => buyPick(save.picks.items[Number(b.dataset.p)]));
+      $("#shRestore").addEventListener("click", restorePurchases);
+      renderOffers();
+    }
+    const SHIELD_SVG = `<svg viewBox="0 0 64 64"><path d="M32 4 L54 16 V36 Q54 52 32 60 Q10 52 10 36 V16z" fill="#1f2a44" stroke="#f5c445" stroke-width="3"/><path d="M21 26 L27 35 L32 22 L37 35 L43 26 L40 43 H24Z" fill="#f5c445" stroke="#1f2a44" stroke-width="1.5"/></svg>`;
 
-    /* ═════ Page Boosters : solde, ouverture, booster du jour, contenu et chances réelles ═════ */
+    /* ═════ Page Boosters : le paquet, le solde, et c'est tout. Les chances restent à un toucher. ═════ */
     function openBoosters() {
-      const ready = save.crystals >= CAPSULE_COST;
+      const free = save.freePacks || 0, ready = free > 0 || save.crystals >= boosterCost(), gems = nextAdGems();
       $("#bpPack").innerHTML = packHTML(!ready).replace(' id="pack"', "");
       $("#bpGems").textContent = save.crystals;
-      $("#bpNeed").textContent = ready ? tr("cristaux") : tr("cristaux · encore {n} pour un booster", { n: CAPSULE_COST - save.crystals });
-      $("#bpBar").style.width = `${Math.min(100, Math.round((save.crystals / CAPSULE_COST) * 100))}%`;
-      $("#bpOpen").textContent = ready ? tr("Ouvrir un booster · {cost} ◆", { cost: CAPSULE_COST }) : tr("Joue une partie pour gagner des cristaux");
-      $("#bpOpen").classList.toggle("hot", ready);
-      $("#bpOpen").classList.toggle("ghost", !ready);
-      const rareAtout = ATOUT_IDS.find(id => ATOUTS[id].rarity === 1);
-      $("#bpKinds").innerHTML = [
-        [portrait(CHAR_IDS.find(id => CHARS[id].rarity === 1) || save.char), tr("Personnages"), tr("ton héros et son talent")],
-        [diePrev("or"), tr("Dés"), tr("ton dé en partie")],
-        [backPrev("etoiles"), tr("Dos de cartes"), tr("vus par l'adversaire")],
-        [cardEl(makeAtout(rareAtout, "bp"), 0).outerHTML, tr("Atouts rares"), tr("parfois")]
-      ].map(([v, t, sub]) => `<div class="bp-kind">${v}<span>${t}</span><small>${sub}</small></div>`).join("");
-      const colors = ["#c9d2dc", "var(--teal)", "var(--yellow)"], total = RARITY.reduce((t, r) => t + r.weight, 0);
-      $("#bpOdds").innerHTML = RARITY.slice(0, 3).map((r, i) => `<div class="bp-odd" style="--rc:${colors[i]}"><b>${Math.round((r.weight / total) * 100)} %</b>${tr(r.name)}</div>`).join("");
-      $("#bpDup").textContent = tr("Déjà dans ta collection ? L'objet est changé en cristaux : +{a} ◆ (commune), +{b} ◆ (rare), +{c} ◆ (légendaire).", { a: RARITY[0].dup, b: RARITY[1].dup, c: RARITY[2].dup });
-      renderOffers();
+      const open = $("#bpOpen");
+      const full = collected() >= 1;
+      open.textContent = full ? tr("Collection complète !") : free > 0 ? tr("Ouvrir · offert ({n})", { n: free }) : ready ? tr("Ouvrir · {cost} ◆", { cost: boosterCost() }) : tr("Il te manque {n} ◆", { n: boosterCost() - save.crystals });
+      open.classList.toggle("hot", ready && !full);
+      open.classList.toggle("ghost", !ready || full);
+      const ad = $("#bpAd");
+      ad.hidden = !(gems && save.games >= MONET.adFrom);
+      ad.textContent = tr("Vidéo · +{n} ◆", { n: gems });
       sfx.tap();
       $("#boosters").classList.add("on");
     }
     const closeBoosters = () => $("#boosters").classList.remove("on");
+    function showOdds() {
+      const colors = ["#c9d2dc", "var(--teal)", "var(--yellow)"], total = RARITY.reduce((t, r) => t + r.weight, 0);
+      const rareAtout = ATOUT_IDS.find(id => ATOUTS[id].rarity === 1);
+      const kinds = [[portrait(CHAR_IDS.find(id => CHARS[id].rarity === 1) || save.char), tr("Personnages")], [diePrev("or"), tr("Dés")], [backPrev("etoiles"), tr("Dos de cartes")],
+        [decorPrev("lune"), tr("Décors")], [cardEl(makeAtout(rareAtout, "bp"), 0).outerHTML, tr("Atouts rares")]]
+        .map(([v, t]) => `<div class="bp-kind">${v}<span>${t}</span></div>`).join("");
+      const odds = RARITY.slice(0, 3).map((r, i) => `<div class="bp-odd" style="--rc:${colors[i]}"><b>${Math.round((r.weight / total) * 100)} %</b>${tr(r.name)}</div>`).join("");
+      storeSheet(tr("Ce qu'il peut contenir"), `<p class="j-text">${tr("3 objets différents, dont au moins un nouveau tant que ta collection n'est pas complète.")}</p><div class="bp-kinds">${kinds}</div>
+        <h3 class="j-title">${tr("Chances par objet")}</h3><div class="bp-odds">${odds}</div>
+        <h3 class="j-title">${tr("Prix du booster")}</h3>
+        <div class="bp-odds prices">${PRICE_STEPS.map(([max, price], i) => `<div class="bp-odd${boosterCost() === price ? " now" : ""}" style="--rc:var(--cream)"><b>${price} ◆</b>${tr("jusqu'à {n} %", { n: Math.round(max * 100) })}</div>`).join("")}</div>
+        <p class="j-text">${tr("Le prix suit ta collection : plus elle est grande, plus les objets qui manquent sont rares.")}</p>
+        <p class="j-text">${tr("Un objet que tu as déjà se change en cristaux : +{a} ◆ (commune), +{b} ◆ (rare), +{c} ◆ (légendaire).", { a: RARITY[0].dup, b: RARITY[1].dup, c: RARITY[2].dup })}</p>`,
+        [{ label: tr("Fermer"), cls: "ghost", fn: closeStore }]);
+    }
 
     /* ═════ Fiche « Ce que tu peux gagner » contre l'adversaire choisi ═════ */
     function openPrize() {
@@ -3787,18 +3977,22 @@
       for (const [at, id] of Object.entries(LEVEL_ATOUTS)) if (Number(at) > lvl && !save.owned[id]) levels.push({ kind: "level", lvl: Number(at), atout: id });
       for (const [at, slots] of SLOT_LEVELS) if (at > lvl) levels.push({ kind: "level", lvl: at, slots });
       levels.sort((a, b) => a.lvl - b.lvl);
-      return [camp[0], levels[0], camp[1], levels[1]].filter(Boolean);
+      return [camp[0], levels[0], camp[1], levels[1]].filter(Boolean).slice(0, 3);
     }
+    /* One reward per row: what you get, in big, then how to get it. */
     function rewardRow(r, next) {
+      let visual, title, sub;
       if (r.kind === "stage") {
-        const sg = r.sg, prize = r.gift ? `${cardEl(makeAtout(r.gift, "j"), 0).outerHTML}<span>${tr(ATOUTS[r.gift].name)}</span>`
-          : `${portrait(r.chars[0])}<span>${tr(CHARS[r.chars[0]].name)}</span>`;
-        const more = r.gift && r.chars.length ? ` · ${tr("+ un personnage")}` : "";
-        return `<div class="j-row${next ? " next" : ""}">${portrait(sg.char)}<div><b>${sg.boss ? tr("Vaincre {name}", { name: tr(sg.name) }) : tr("Battre {name}", { name: tr(sg.name) })}</b><small>${tr(CHAPTERS[sg.c].planet)} · ${tr("étape {n}", { n: (STAGES.indexOf(sg) % 4) + 1 })}${more}</small></div><div class="j-prize">${prize}</div></div>`;
+        const sg = r.sg, how = sg.boss ? tr("Vaincre {name}", { name: tr(sg.name) }) : tr("Battre {name}", { name: tr(sg.name) });
+        visual = r.gift ? cardEl(makeAtout(r.gift, "j"), 0).outerHTML : portrait(r.chars[0]);
+        title = r.gift ? tr(ATOUTS[r.gift].name) : tr("Nouveau perso : {name}", { name: tr(CHARS[r.chars[0]].name) });
+        sub = r.gift && r.chars.length ? `${how} · ${tr("+ un personnage")}` : how;
+      } else {
+        visual = r.atout ? cardEl(makeAtout(r.atout, "j"), 0).outerHTML : `<span class="j-badge">${r.slots}</span>`;
+        title = r.atout ? tr(ATOUTS[r.atout].name) : tr("{n} atouts équipés", { n: r.slots });
+        sub = tr("Au niveau {n}", { n: r.lvl });
       }
-      const prize = r.atout ? `${cardEl(makeAtout(r.atout, "j"), 0).outerHTML}<span>${tr(ATOUTS[r.atout].name)}</span>`
-        : `<span class="j-slots">${Array.from({ length: r.slots }, (_, k) => `<i style="--k:${k - (r.slots - 1) / 2};--back:${BACKS[save.equip.back].css}"></i>`).join("")}</span><span>${tr("{n} atouts équipés", { n: r.slots })}</span>`;
-      return `<div class="j-row${next ? " next" : ""}"><span class="j-badge">${r.lvl}</span><div><b>${tr("Atteindre le niveau {n}", { n: r.lvl })}</b><small>${tr("En jouant, même en perdant")}</small></div><div class="j-prize">${prize}</div></div>`;
+      return `<div class="j-row${next ? " next" : ""}"><div class="j-vis">${visual}</div><div><b>${title}</b><small>${sub}</small></div></div>`;
     }
     function openJourney() {
       const lv = levelInfo(save.xp), list = upcomingRewards();
@@ -3807,11 +4001,6 @@
       $("#jXp").style.width = `${Math.round((lv.into / lv.need) * 100)}%`;
       $("#jXpText").textContent = tr("{n} / {max} XP jusqu'au niveau suivant", { n: lv.into, max: lv.need });
       $("#jList").innerHTML = list.length ? list.map((r, i) => rewardRow(r, i === 0)).join("") : `<div class="j-done">${tr("Tu as tout débloqué en campagne. Bravo, commandant !")}</div>`;
-      $("#jPack").innerHTML = packHTML(true).replace(' id="pack"', "").replace("pack dull", "pack mini");
-      $("#jCol").innerHTML = portrait(save.char);
-      const slots = atoutSlots();
-      $("#jAtoutText").textContent = tr("Les atouts sont des cartes spéciales mélangées à ta pioche. Tu en équipes {n} : choisis ceux qui te plaisent dans l'onglet Cartes.", { n: slots });
-      $("#jAtouts").innerHTML = save.loadout.map(id => cardEl(makeAtout(id, "jl"), 0).outerHTML).join("") + Array.from({ length: Math.max(0, slots - save.loadout.length) }, () => '<span class="slot-free">+</span>').join("");
       save.seen.journey = 1;
       persist();
       renderJourneyHint();
@@ -3863,6 +4052,7 @@
       return `<div class="medal ${L.cls}">♛</div><div class="bar">${tr("Ligue {league}", { league: tr(L.name) })}<small>${next ? tr("Encore {n} ♛ pour la ligue {league}", { n: next.min - t, league: tr(next.name) }) : tr("Le sommet de la galaxie")}</small><div class="xp"><i style="width:${pct}%"></i></div></div><div class="pill tr">${tr("{n}ᵉ", { n: myRank() })}</div>`;
     }
     function showTab(name) {
+      if (name === "shop") renderShop();
       for (const pane of document.querySelectorAll(".pane")) pane.classList.toggle("on", pane.dataset.pane === name);
       for (const btn of document.querySelectorAll("#tabs button")) btn.classList.toggle("on", btn.dataset.tab === name);
     }
@@ -3878,15 +4068,16 @@
       $("#crystals").textContent = save.crystals;
       $("#trophyPill").hidden = !save.trophies;
       renderJourneyTile();
-      $("#capsuleBtn").textContent = tr("Booster · {cost} ◆", { cost: CAPSULE_COST });
-      const ready = save.crystals >= CAPSULE_COST;
+      $("#capsuleBtn").textContent = tr("Booster · {cost} ◆", { cost: boosterCost() });
+      const ready = save.crystals >= boosterCost() || (save.freePacks || 0) > 0;
       $("#quickBooster").classList.toggle("ready", ready);
       $("#boostPack").innerHTML = packHTML(true).replace(' id="pack"', "").replace("pack dull", "pack mini");
-      $("#boostSub").textContent = ready ? tr("3 objets au hasard") : tr("Encore {n} ◆", { n: CAPSULE_COST - save.crystals });
-      $("#boostBar").style.width = `${Math.min(100, Math.round((save.crystals / CAPSULE_COST) * 100))}%`;
-      $("#boostCta").textContent = ready ? tr("Ouvrir !") : `${save.crystals} / ${CAPSULE_COST} ◆`;
-      $("#quickBooster").classList.toggle("free", dailyLeft() > 0 && levelInfo(save.xp).lvl >= MONET.dailyLevel);
-      $('#tabs [data-tab="cards"]').classList.toggle("dot", ready);
+      $("#boostSub").textContent = save.freePacks > 0 ? tr("{n} offerts", { n: save.freePacks }) : ready ? tr("3 objets au hasard") : tr("Encore {n} ◆", { n: boosterCost() - save.crystals });
+      $("#boostBar").style.width = `${Math.min(100, Math.round((save.crystals / boosterCost()) * 100))}%`;
+      $("#boostCta").textContent = ready ? tr("Ouvrir !") : `${save.crystals} / ${boosterCost()} ◆`;
+      $("#quickBooster").classList.toggle("free", (save.freePacks || 0) > 0);
+      $('#tabs [data-tab="cards"]').classList.toggle("dot", ready && !anyFresh());
+      $('#tabs [data-tab="cards"]').classList.toggle("fresh", anyFresh());
 
       renderCampaign();
 
@@ -3981,7 +4172,7 @@
       return save.equip[kind] === id;
     }
     function howToGet(kind, id) {
-      if (id === "commandant") return tr("Exclusif au Pack Commandant.");
+      if (id === "commandant") return tr("Exclusif au Pack de départ.");
       if (kind === "char") {
         const sg = STAGES.find(x => x.unlocks.includes(id));
         if (sg) return tr("À gagner en battant {name} ({planet}).", { name: tr(sg.name), planet: tr(CHAPTERS[sg.c].planet) });
@@ -3995,35 +4186,41 @@
       return tr("À trouver dans un booster.");
     }
     function renderCollection() {
-      const lists = { chars: CHAR_IDS, atouts: ATOUT_IDS, dice: Object.keys(DICE), back: Object.keys(BACKS) };
-      const kinds = { chars: "char", atouts: "atout", dice: "dice", back: "back" };
+      const lists = { chars: CHAR_IDS, atouts: ATOUT_IDS, dice: Object.keys(DICE), back: Object.keys(BACKS), decor: Object.keys(DECORS) };
+      const kinds = { chars: "char", atouts: "atout", dice: "dice", back: "back", decor: "decor" };
       const count = sub => `${lists[sub].filter(id => owns(kinds[sub], id)).length}/${lists[sub].length}`;
       $("#cntChars").textContent = count("chars");
       $("#cntAtouts").textContent = tr("{n}/{max} équipés", { n: save.loadout.length, max: atoutSlots() });
       $("#cntDice").textContent = count("dice");
       $("#cntBack").textContent = count("back");
-      for (const btn of document.querySelectorAll("#subtabs button")) btn.classList.toggle("on", btn.dataset.sub === colSub);
-      document.querySelector('[data-pane="cards"]').classList.toggle("shop-on", colSub === "shop");
-      if (colSub === "shop") return renderShop();
+      $("#cntDecor").textContent = count("decor");
+      for (const btn of document.querySelectorAll("#subtabs button")) { btn.classList.toggle("on", btn.dataset.sub === colSub); btn.classList.toggle("fresh", anyFresh(kinds[btn.dataset.sub])); }
       const kind = kinds[colSub], ids = lists[colSub];
       if (!colPick || !ids.includes(colPick)) colPick = ids.find(id => equipped(kind, id)) || ids[0];
-      const visual = (id, big) => kind === "char" ? portrait(id) : kind === "atout" ? cardEl(makeAtout(id, big ? "big" : "cell"), 0).outerHTML : kind === "dice" ? diePrev(id) : backPrev(id);
+      const visual = (id, big) => kind === "char" ? portrait(id) : kind === "atout" ? cardEl(makeAtout(id, big ? "big" : "cell"), 0).outerHTML : kind === "dice" ? diePrev(id) : kind === "decor" ? decorPrev(id) : backPrev(id);
       $("#colGrid").innerHTML = ids.map(id => {
         const own = owns(kind, id), def = kind === "char" ? CHARS[id] : itemDef({ kind, id });
-        return `<button class="cell${own ? "" : " locked"}${equipped(kind, id) ? " on" : ""}${colPick === id ? " pick" : ""}" data-id="${id}">${visual(id)}<span>${own ? tr(def.name) : "???"}</span>${kind === "atout" && equipped(kind, id) ? '<b class="eq">✓</b>' : ""}</button>`;
+        return `<button class="cell${own ? "" : " locked"}${equipped(kind, id) ? " on" : ""}${colPick === id ? " pick" : ""}" data-id="${id}">${visual(id)}<span>${tr(def.name)}</span>${isFresh(kind, id) ? FRESH_STAR : ""}${kind === "atout" && equipped(kind, id) ? '<b class="eq">✓</b>' : ""}</button>`;
       }).join("");
-      for (const btn of document.querySelectorAll("#colGrid .cell")) btn.addEventListener("click", () => { colPick = btn.dataset.id; sfx.tap(); renderCollection(); });
+      for (const btn of document.querySelectorAll("#colGrid .cell")) btn.addEventListener("click", () => {
+        colPick = btn.dataset.id;
+        if (isFresh(kind, colPick)) { delete save.fresh[`${kind}:${colPick}`]; persist(); renderMenu(); }
+        sfx.tap(); renderCollection();
+      });
       // Vitrine
       const id = colPick, own = owns(kind, id), def = kind === "char" ? CHARS[id] : itemDef({ kind, id });
+      $("#showcase").classList.toggle("wide", kind === "decor");
       let text = "", action = null;
       if (kind === "char") text = tr("{tribe} · talent <b>{perk}</b> : {desc}", { tribe: tr(CASTS[def.tribe].label), perk: tr(PERKS[def.tribe].name), desc: tr(PERKS[def.tribe].desc) });
       else if (kind === "atout") text = tr(ATOUTS[id].desc);
+      else if (kind === "decor") text = id === "espace" ? tr("Le décor du début de chaque partie.") : tr("Gagne une manche : le décor change pour un de ceux de ta collection.");
       else text = kind === "dice" ? tr("Ton dé, lancé sous les yeux de ton adversaire.") : tr("Le dos de tes cartes, vu par ton adversaire.");
       if (!own) text += `<br><i>${howToGet(kind, id)}</i>`;
+      else if (kind === "decor") action = null;
       else if (kind === "atout") action = equipped(kind, id) ? { label: tr("Retirer"), cls: "ghost" } : save.loadout.length < atoutSlots() ? { label: tr("Équiper") } : { label: tr("Retire d'abord un atout équipé"), cls: "ghost", off: true };
       else action = equipped(kind, id) ? { label: tr("Équipé ✓"), cls: "ghost", off: true } : { label: tr("Équiper") };
-      $("#showcase").innerHTML = `<div class="big">${own ? visual(id, true) : `<div class="locked-big" style="filter:grayscale(1) brightness(.3)">${visual(id, true)}</div>`}</div>
-        <div><h3>${own ? tr(def.name) : "???"}</h3><span class="rar r${def.rarity}">${tr(RARITY[def.rarity].name)}</span><p>${text}</p>${action ? `<button class="btn ${action.cls || ""}" id="equipBtn" ${action.off ? "disabled" : ""}>${action.label}</button>` : ""}</div>`;
+      $("#showcase").innerHTML = `<div class="big">${own ? visual(id, true) : `<div class="locked-big">${visual(id, true)}</div>`}</div>
+        <div><h3>${tr(def.name)}</h3><span class="rar r${def.rarity}">${tr(RARITY[def.rarity].name)}</span><p>${text}</p>${action ? `<button class="btn ${action.cls || ""}" id="equipBtn" ${action.off ? "disabled" : ""}>${action.label}</button>` : ""}</div>`;
       const eq = $("#equipBtn");
       if (eq && !action.off) eq.addEventListener("click", () => {
         if (kind === "char") { save.char = id; S.cast[0] = CHARS[id].tribe; }
@@ -4041,9 +4238,10 @@
       return pool[rand(pool.length)];
     }
     function grantItem(item) {
+      if (item.kind === "atout") return grantAtouts([item.id]);
       if (item.kind === "char") save.chars[item.id] = 1;
-      else if (item.kind === "atout") grantAtouts([item.id]);
       else save.skins[item.kind][item.id] = 1;
+      markFresh(item.kind, item.id);
     }
     /* Carte de présentation d'un objet de collection, au format des cartes du jeu. */
     function itemEl(item, faceDown) {
@@ -4051,8 +4249,8 @@
       const def = itemDef(item), el = document.createElement("div");
       el.className = `card item h-X atout rar-${def.rarity}${faceDown ? " facedown" : ""}`;
       el.innerHTML = `<div class="card-inner"><div class="face front">
-        <div class="top"><span>${{ dice: tr("Dé"), back: tr("Dos"), char: tr("Perso") }[item.kind]}</span><span>★</span></div>
-        <div class="art${item.kind === "char" ? "" : " item-art"}">${item.kind === "dice" ? diePrev(item.id) : item.kind === "char" ? charArt(item.id) : backPrev(item.id)}</div>
+        <div class="top"><span>${{ dice: tr("Dé"), back: tr("Dos"), char: tr("Perso"), decor: tr("Décor") }[item.kind]}</span><span>★</span></div>
+        <div class="art${item.kind === "char" ? "" : " item-art"}">${item.kind === "dice" ? diePrev(item.id) : item.kind === "char" ? charArt(item.id) : item.kind === "decor" ? decorPrev(item.id) : backPrev(item.id)}</div>
         <div class="n">${tr(def.name)}</div>
       </div><div class="face back">${emblem(0)}</div></div>`;
       return el;
@@ -4069,6 +4267,7 @@
         ${dull ? "" : `<span class="pack-cut"></span><span class="pack-scis">${SCISSORS}</span>`}
       </${dull ? "div" : "button"}>`;
     }
+    const FRESH_STAR = `<svg class="fresh-star" viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0 L6.2 3.8 L10 5 L6.2 6.2 L5 10 L3.8 6.2 L0 5 L3.8 3.8Z" fill="#f5c445" stroke="#1f2a44" stroke-width=".7"/></svg>`;
     const SCISSORS = `<svg viewBox="0 0 28 28" width="28" height="28"><path d="M13 14 L26 6 M13 14 L26 22" stroke="#1f2a44" stroke-width="3.5" stroke-linecap="round"/><circle cx="7" cy="7" r="4.5" fill="#f26a3d" stroke="#1f2a44" stroke-width="2.5"/><circle cx="7" cy="21" r="4.5" fill="#f26a3d" stroke="#1f2a44" stroke-width="2.5"/></svg>`;
     const CAP_DECOR = `<span class="cap-decor"><span class="cap-rays"></span><span class="cap-rays gold"></span><span class="cap-podium"></span></span>`;
     const STAR4 = c => `<svg viewBox="0 0 10 10" width="11" height="11"><path d="M5 0 L6 4 L10 5 L6 6 L5 10 L4 6 L0 5 L4 4Z" fill="${c}"/></svg>`;
@@ -4102,22 +4301,23 @@
       }
     }
     function closeCapsule() { $("#capsule").classList.remove("on"); renderMenu(); }
+    // A free pack comes from the starter pack; it is spent when the pack is cut open.
     function openCapsuleShop(free = false) {
       // Appelée aussi comme gestionnaire de clic : seul un vrai booléen vaut « offert ».
       freePack = free === true;
       $("#capsule").classList.add("on");
       $("#capTitle").textContent = freePack ? tr("Booster offert") : tr("Booster");
+      $("#capGems").textContent = save.crystals;
       const stage = $("#capStage");
-      const closeBtn = { label: tr("Fermer"), cls: "ghost", fn: closeCapsule };
-      if (!freePack && save.crystals < CAPSULE_COST) {
+      fillButtons($("#capActions"), []);
+      $("#capText").textContent = "";
+      if (!freePack && save.crystals < boosterCost()) {
         stage.innerHTML = CAP_DECOR + packHTML(true);
-        $("#capText").innerHTML = tr("Il te manque <b>{n} ◆</b>. Chaque partie rapporte des cristaux, même perdue.", { n: CAPSULE_COST - save.crystals });
-        return fillButtons($("#capActions"), [closeBtn]);
+        $("#capText").textContent = tr("Il te manque {n} ◆.", { n: boosterCost() - save.crystals });
+        return;
       }
       stage.classList.remove("gold");
       stage.innerHTML = CAP_DECOR + packHTML();
-      $("#capText").innerHTML = tr("3 objets au hasard (personnages, dés, dos de cartes, parfois un atout rare) pour <b>{cost} ◆</b>. Tu as {n} ◆. Déchire le haut du sachet : glisse le doigt dessus, ou touche-le.", { cost: CAPSULE_COST, n: save.crystals });
-      fillButtons($("#capActions"), [closeBtn]);
       // The scissors advance with the finger along the dotted line and the top lifts as it is cut;
       // reaching the far edge opens the pack. A plain tap still opens it.
       const pack = $("#pack"), top = pack.querySelector(".pack-top"), cut = pack.querySelector(".pack-cut"), scis = pack.querySelector(".pack-scis");
@@ -4157,20 +4357,20 @@
     let freePack = false;
     async function breakCapsule() {
       const stage = $("#capStage"), pack = $("#pack"), top = pack.querySelector(".pack-top");
-      if (!freePack) save.crystals -= CAPSULE_COST;
+      if (freePack) save.freePacks = Math.max(0, (save.freePacks || 0) - 1); else save.crystals -= boosterCost();
       freePack = false;
-      // trois objets différents dans un même sachet
-      const pulls = [];
-      for (let tries = 0; pulls.length < 3 && tries < 40; tries += 1) {
-        const item = rollItem();
-        if (!pulls.some(x => x.kind === item.kind && x.id === item.id)) pulls.push(item);
-      }
+      $("#capGems").textContent = save.crystals;
+      const pulls = rollPack();
       const results = pulls.map(item => {
         const dup = owns(item.kind, item.id);
-        if (dup) save.crystals += RARITY[itemDef(item).rarity].dup; else grantItem(item);
+        if (!dup) grantItem(item);
         return { item, dup };
       });
+      // Duplicates are paid as their coin lands, so the balance at the top climbs in front of the player.
+      const dupGems = results.reduce((t, r) => t + (r.dup ? RARITY[itemDef(r.item).rarity].dup : 0), 0);
+      save.crystals += dupGems;
       persist();
+      let shown = save.crystals - dupGems;
       fillButtons($("#capActions"), []);
       $("#capText").textContent = "";
       pack.style.animation = "none";
@@ -4200,16 +4400,54 @@
         if (def.rarity > 0) sfx.rare(); else sfx.flip();
         if (def.rarity === 2) setTimeout(() => stage.classList.remove("gold"), 2200);
         await sleep(450);
-        slots[i].querySelector("small").textContent = dup ? tr("Doublon +{n} ◆", { n: RARITY[def.rarity].dup }) : item.kind === "atout" ? `${tr(def.name)} · ${tr(RARITY[def.rarity].name)}` : item.kind === "char" ? `${tr(def.name)} · ${tr(RARITY[def.rarity].name)}` : tr("Nouveau · {rarity}", { rarity: tr(RARITY[def.rarity].name) });
-        await sleep(350);
+        if (dup) {
+          const n = RARITY[def.rarity].dup;
+          slots[i].classList.add("dup");
+          slots[i].querySelector("small").textContent = `+${n} ◆`;
+          await coinTo(slots[i].querySelector(".card"), $("#capGems").parentElement);
+          shown += n;
+          $("#capGems").textContent = shown;
+          bump($("#capGems").parentElement);
+          sfx.coin();
+        } else slots[i].querySelector("small").textContent = tr(def.name);
+        await sleep(300);
       }
       $("#capTitle").textContent = results.some(r => !r.dup) ? tr("Nouveaux objets !") : tr("Que des doublons…");
-      $("#capText").innerHTML = tr("Il te reste <b>{n} ◆</b>.", { n: save.crystals }) + (results.some(r => !r.dup && r.item.kind === "char") ? ` ${tr("Un nouveau perso se choisit dans Cartes, onglet Persos.")}` : "")
-        + results.filter(r => !r.dup && r.item.kind === "atout").map(r => ` ${save.loadout.includes(r.item.id) ? tr("{name} est déjà dans ta pioche.", { name: tr(ATOUTS[r.item.id].name) }) : tr("Équipe {name} dans Cartes, onglet Atouts.", { name: tr(ATOUTS[r.item.id].name) })}`).join("");
-      const buttons = [{ label: tr("Voir ma collection"), fn: () => { colSub = { char: "chars", atout: "atouts", dice: "dice", back: "back" }[results[0].item.kind]; colPick = results[0].item.id; closeCapsule(); showTab("cards"); renderMenu(); } }];
-      if (save.crystals >= CAPSULE_COST) buttons.push({ label: tr("Encore un · {cost} ◆", { cost: CAPSULE_COST }), cls: "teal", fn: openCapsuleShop });
-      buttons.push({ label: tr("Fermer"), cls: "ghost", fn: closeCapsule });
-      fillButtons($("#capActions"), buttons);
+    }
+    /* A coin leaves the card and flies to the balance pill. */
+    function coinTo(from, to) {
+      const a = center(from), b = center(to), coin = document.createElement("span");
+      coin.className = "mcoin fly-coin";
+      coin.textContent = "◆";
+      $("#fx").appendChild(coin);
+      if (reduced) { coin.remove(); return Promise.resolve(); }
+      const mid = { x: (a.x + b.x) / 2, y: Math.min(a.y, b.y) - 60 };
+      return new Promise(res => {
+        coin.animate([
+          { transform: `translate(${a.x - 14}px, ${a.y - 14}px) scale(0.4)`, opacity: 0 },
+          { transform: `translate(${mid.x - 14}px, ${mid.y - 14}px) scale(1.3)`, opacity: 1, offset: 0.45 },
+          { transform: `translate(${b.x - 14}px, ${b.y - 14}px) scale(0.8)`, opacity: 1 }
+        ], { duration: 650, easing: "cubic-bezier(.4, 0, .6, 1)" }).onfinish = () => { coin.remove(); res(); };
+      });
+    }
+    /* Three different items; while the collection is incomplete, at least one of them is new. */
+    function rollPack() {
+      const pulls = [];
+      for (let tries = 0; pulls.length < 3 && tries < 60; tries += 1) {
+        const item = rollItem();
+        if (!pulls.some(x => x.kind === item.kind && x.id === item.id)) pulls.push(item);
+      }
+      if (pulls.every(it => owns(it.kind, it.id))) {
+        const missing = ITEMS.filter(it => !owns(it.kind, it.id));
+        if (missing.length) {
+          // Same rarity odds as a normal pull, restricted to what is still missing.
+          const w = missing.map(it => RARITY[itemDef(it).rarity].weight), total = w.reduce((t, x) => t + x, 0);
+          let r = Math.random() * total, k = 0;
+          while (r >= w[k]) { r -= w[k]; k += 1; }
+          pulls[2] = missing[k];
+        }
+      }
+      return pulls;
     }
     function toggleSound() {
       soundOn = !soundOn;
@@ -4231,17 +4469,23 @@
     for (const btn of document.querySelectorAll("#tabs button")) btn.addEventListener("click", () => { sfx.tap(); showTab(btn.dataset.tab); });
     $("#tutoBtn").addEventListener("click", () => { save.seen = {}; save.mute = false; S.stage = save.stage = 0; chapterView = 0; persist(); newGame("adv"); });
     for (const id of ["capsuleBtn", "quickBooster", "crystalsBtn"]) $(`#${id}`).addEventListener("click", openBoosters);
-    $("#bpOpen").addEventListener("click", () => { if (save.crystals < CAPSULE_COST) { closeBoosters(); showTab("adv"); return; } closeBoosters(); openCapsuleShop(); });
+    $("#bpOpen").addEventListener("click", () => {
+      if (collected() >= 1) return bump($("#bpOpen"));
+      if (save.freePacks > 0) { closeBoosters(); return openCapsuleShop(true); }
+      if (save.crystals < boosterCost()) return bump($("#bpOpen"));
+      closeBoosters(); openCapsuleShop();
+    });
+    $("#bpAd").addEventListener("click", async () => { if (await rewardedGems()) { renderMenu(); openBoosters(); } });
+    $("#bpOdds").addEventListener("click", () => { sfx.tap(); showOdds(); });
+    $("#capClose").addEventListener("click", () => { sfx.tap(); closeCapsule(); });
     $("#bpClose").addEventListener("click", () => { sfx.tap(); closeBoosters(); });
     $("#journeyTile").addEventListener("click", openJourney);
     $("#stake").addEventListener("click", openPrize);
     $("#przClose").addEventListener("click", () => { sfx.tap(); $("#prize").classList.remove("on"); });
     $("#przGo").addEventListener("click", () => { $("#prize").classList.remove("on"); $("#playBtn").click(); });
-    $("#dailyBox").addEventListener("click", openDaily);
     $("#journeyBtn").addEventListener("click", openJourney);
     $("#jClose").addEventListener("click", () => { sfx.tap(); closeJourney(); });
-    $("#jManage").addEventListener("click", () => { sfx.tap(); closeJourney(); openAtouts(); });
-    $("#premiumBtn").addEventListener("click", () => { sfx.tap(); openPremium(); });
+    $("#premiumBtn").addEventListener("click", () => { sfx.tap(); $("#shopTabBtn").hidden = false; showTab("shop"); });
     $("#menuHelp").addEventListener("click", () => openHelp(null));
     $("#pauseHelp").addEventListener("click", () => openHelp("pause"));
     $("#helpClose").addEventListener("click", () => { $("#help").classList.remove("on"); if (helpFrom) $(`#${helpFrom}`).classList.add("on"); });
@@ -4382,18 +4626,15 @@
       grantAtouts(ATOUT_IDS);
       Object.keys(DICE).forEach(id => { save.skins.dice[id] = 1; });
       Object.keys(BACKS).forEach(id => { save.skins.back[id] = 1; });
+      Object.keys(DECORS).forEach(id => { save.skins.decor[id] = 1; });
       persist(); sfx.rare(); renderMenu();
     });
     $("#devGems").addEventListener("click", () => { save.crystals += 500; persist(); sfx.coin(); renderMenu(); });
-    // Met la partie au point où toutes les offres sont visibles : niveau 3, 3 parties, Mars conquise, Premium non acheté.
+    // Puts the save where every offer shows: a few games played, starter pack not bought, today's videos unused.
     $("#devOffers").addEventListener("click", () => {
-      while (levelInfo(save.xp).lvl < MONET.dailyLevel) save.xp += 40;
-      save.games = Math.max(save.games || 0, MONET.doubleFrom);
-      const target = Math.max(save.camp.cleared, MONET.shopStage + 1);
-      STAGES.forEach((sg, j) => { if (j < target) { if (sg.gift) grantAtouts([sg.gift]); for (const id of sg.unlocks) save.chars[id] = 1; } });
-      save.camp.cleared = target;
-      Object.assign(save, { premium: false, premiumSeen: false, dailyDay: "", dailyUsed: 0 });
-      persist(); sfx.rare(); showTab("adv"); renderMenu();
+      save.games = Math.max(save.games || 0, MONET.adFrom);
+      Object.assign(save, { starter: false, adDay: "", adUsed: 0, picks: null });
+      persist(); sfx.rare(); renderMenu(); showTab("shop");
     });
     $("#devOff").addEventListener("click", () => { save.dev = false; persist(); renderDev(); });
     for (const [id, win] of [["devWin", true], ["devLose", false]]) $(`#${id}`).addEventListener("click", () => {
