@@ -21,6 +21,26 @@ window.BalanceSim = (function () {
     if (a.house === b.house && a.house !== "X") out.push(3);
     return out;
   }
+  /* Combinaisons de l'allié (OPT.allyCombo, "trio" = règle du jeu) : "none" = l'allié n'ajoute que sa valeur ;
+     "pair" = il forme aussi la meilleure paire avec l'avant-garde ou l'embuscade ; "trio" = en plus, les trois cartes
+     ensemble donnent un bonus (même famille, même valeur ou valeurs qui se suivent). */
+  function allyCombo(van, amb, ally, vv, va, av) {
+    if (OPT.allyCombo === "none") return 0;
+    const pair = (x, vx) => {
+      let t = 0;
+      if (vx === av) t += 5; else if (Math.abs(vx - av) === 1) t += 2;
+      if (x.house === ally.house && x.house !== "X") t += 3;
+      return t;
+    };
+    let bonus = Math.max(pair(van, vv), pair(amb, va));
+    if (OPT.allyCombo === "trio") {
+      const vals = [vv, va, av].sort((a, b) => a - b);
+      if (van.house === amb.house && amb.house === ally.house && ally.house !== "X") bonus += OPT.trio[0];
+      if (vals[0] === vals[2]) bonus += OPT.trio[1];
+      else if (vals[1] === vals[0] + 1 && vals[2] === vals[1] + 1) bonus += OPT.trio[2];
+    }
+    return bonus;
+  }
   const atoutLoot = id => (ATOUTS[id].loot !== undefined ? ATOUTS[id].loot : 2);
   function makeDeck() { const d = []; for (const h of "SHDC") for (const [label, value] of RANKS) d.push({ label, value, house: h, loot: lootOf(value) }); return shuffle(d); }
   const atout = id => ({ label: "★", value: ATOUTS[id].value, thr: ATOUTS[id].thr, house: "X", special: id, loot: atoutLoot(id) });
@@ -56,7 +76,11 @@ window.BalanceSim = (function () {
       if (van && van.special === "satellite") t += 3;
       const shield = onBoard(p, "shield"), impact = B.amb[o] && B.amb[o].house === "S" && !onBoard(p, "eclipse"), hole = onBoard(o, "hole"), met = onBoard(o, "meteor");
       if (!shield) { if (impact) t -= OPT.impact; if (hole && van && amb) t -= Math.min(vv, va); if (met) t -= 3; }
-      if (B.allyOk[p]) { const c = B.ally[p]; t += c.special === "clone" ? Math.min(Math.max(vv, va), cloneCap()) : c.special === "turbo" ? c.value * 2 : c.value; }
+      if (B.allyOk[p]) {
+        const c = B.ally[p], av = c.special === "clone" ? Math.min(Math.max(vv, va), cloneCap()) : c.value;
+        t += c.special === "turbo" ? c.value * 2 : av;
+        if (van && amb) t += allyCombo(van, amb, c, vv, va, av);
+      }
       if (sup(p, "crush")) t += vv;
       if (sup(p, "tide")) t += 4;
       if (sup(o, "bomb")) t -= 3;
@@ -280,6 +304,8 @@ window.BalanceSim = (function () {
       stats.ally += 1;
       st.fuel[l] -= 1;
       B.role[l] = "ally"; take(l, pick); B.ally[l] = pick; tank(l, pick);
+      if (!pick.special && pick.value <= 5) stats.allyLow = (stats.allyLow || 0) + 1;
+      if (allyCombo(B.van[l], B.amb[l], pick, ev(B.van[l], B.amb[l]), ev(B.amb[l], B.van[l]), pick.special === "clone" ? Math.min(Math.max(ev(B.van[l], B.amb[l]), ev(B.amb[l], B.van[l])), cloneCap()) : pick.value)) stats.allyCombo = (stats.allyCombo || 0) + 1;
       if (!roll(l, pick, "ally")) return finish(w, battle > 0);
       B.allyOk[l] = true; stats.allyOk += 1;
       t = totals();
@@ -338,7 +364,7 @@ window.BalanceSim = (function () {
      war = "round" (règle du jeu : manche rejouée par-dessus) | "pick" (duel choisi) | "blind" (cartes du dessus),
      mulligan = échange de départ, clone = plafond du Clone à essayer (null = valeur du jeu),
      slots = nombre d'atouts du joueur type en campagne (3, 4 ou 5 selon son niveau). */
-  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "round", mulligan: true, clone: null, slots: 3, deck: 20, impact: 2 };
+  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "round", mulligan: true, clone: null, slots: 3, deck: 20, impact: 2, allyCombo: "trio", trio: [5, 5, 4] };
   const set = o => Object.assign(OPT, o);
   return { game, run, campaign, set, OPT };
 })();

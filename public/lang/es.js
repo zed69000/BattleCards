@@ -712,5 +712,13 @@ BDAi18n.add("es", {
   "jusqu'à {n} %": "hasta el {n} %",
   "{n} boosters": "{n} sobres",
   "{n} cristaux": "{n} cristales",
-  "{n} offerts": "{n} gratis"
+  "{n} offerts": "{n} gratis",
+  "Combo : {list}.": "Combo: {list}.",
+  "Flotte": "Flota",
+  "Triplés": "Trillizos",
+  "Grand sillage": "Gran estela",
+  "L'allié forme aussi une paire avec ta meilleure carte posée. Avec les trois cartes : <b>Flotte</b> (même famille) +5, <b>Triplés</b> (même valeur) +5, <b>Grand sillage</b> (trois valeurs qui se suivent) +4.": "El aliado también forma pareja con tu mejor carta en mesa. Con las tres cartas: <b>Flota</b> (misma familia) +5, <b>Trillizos</b> (mismo valor) +5, <b>Gran estela</b> (tres valores seguidos) +4.",
+  "les trois cartes de la même famille, +5 en plus": "las tres cartas de la misma familia, +5 más",
+  "les trois cartes de même valeur, +5 en plus": "las tres cartas del mismo valor, +5 más",
+  "trois valeurs qui se suivent, +4 en plus": "tres valores seguidos, +4 más"
 });

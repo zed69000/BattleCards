@@ -712,5 +712,13 @@ BDAi18n.add("ja", {
   "jusqu'à {n} %": "{n}%まで",
   "{n} boosters": "ブースター{n}個",
   "{n} cristaux": "クリスタル{n}個",
-  "{n} offerts": "{n}個無料"
+  "{n} offerts": "{n}個無料",
+  "Combo : {list}.": "コンボ：{list}。",
+  "Flotte": "フリート",
+  "Triplés": "トリプル",
+  "Grand sillage": "ロングスリップストリーム",
+  "L'allié forme aussi une paire avec ta meilleure carte posée. Avec les trois cartes : <b>Flotte</b> (même famille) +5, <b>Triplés</b> (même valeur) +5, <b>Grand sillage</b> (trois valeurs qui se suivent) +4.": "援軍も場のいちばん良いカードとペアを組む。3枚そろうと：<b>フリート</b>（同じファミリー）+5、<b>トリプル</b>（同じ数字）+5、<b>ロングスリップストリーム</b>（3つ続きの数字）+4。",
+  "les trois cartes de la même famille, +5 en plus": "3枚とも同じファミリー、さらに+5",
+  "les trois cartes de même valeur, +5 en plus": "3枚とも同じ数字、さらに+5",
+  "trois valeurs qui se suivent, +4 en plus": "3つ続きの数字、さらに+4"
 });

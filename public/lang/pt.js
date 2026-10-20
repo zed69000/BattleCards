@@ -712,5 +712,13 @@ BDAi18n.add("pt", {
   "jusqu'à {n} %": "até {n}%",
   "{n} boosters": "{n} pacotes",
   "{n} cristaux": "{n} cristais",
-  "{n} offerts": "{n} grátis"
+  "{n} offerts": "{n} grátis",
+  "Combo : {list}.": "Combo: {list}.",
+  "Flotte": "Frota",
+  "Triplés": "Trigêmeos",
+  "Grand sillage": "Grande rastro",
+  "L'allié forme aussi une paire avec ta meilleure carte posée. Avec les trois cartes : <b>Flotte</b> (même famille) +5, <b>Triplés</b> (même valeur) +5, <b>Grand sillage</b> (trois valeurs qui se suivent) +4.": "O aliado também forma par com sua melhor carta na mesa. Com as três cartas: <b>Frota</b> (mesma família) +5, <b>Trigêmeos</b> (mesmo valor) +5, <b>Grande rastro</b> (três valores em sequência) +4.",
+  "les trois cartes de la même famille, +5 en plus": "as três cartas da mesma família, +5 a mais",
+  "les trois cartes de même valeur, +5 en plus": "as três cartas com o mesmo valor, +5 a mais",
+  "trois valeurs qui se suivent, +4 en plus": "três valores em sequência, +4 a mais"
 });

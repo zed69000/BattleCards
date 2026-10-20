@@ -712,5 +712,13 @@ BDAi18n.add("en", {
   "jusqu'à {n} %": "up to {n}%",
   "{n} boosters": "{n} boosters",
   "{n} cristaux": "{n} crystals",
-  "{n} offerts": "{n} free"
+  "{n} offerts": "{n} free",
+  "Combo : {list}.": "Combo: {list}.",
+  "Flotte": "Fleet",
+  "Triplés": "Triplets",
+  "Grand sillage": "Long slipstream",
+  "L'allié forme aussi une paire avec ta meilleure carte posée. Avec les trois cartes : <b>Flotte</b> (même famille) +5, <b>Triplés</b> (même valeur) +5, <b>Grand sillage</b> (trois valeurs qui se suivent) +4.": "The ally also pairs up with your best card on the table. With all three cards: <b>Fleet</b> (same family) +5, <b>Triplets</b> (same value) +5, <b>Long slipstream</b> (three values in a row) +4.",
+  "les trois cartes de la même famille, +5 en plus": "all three cards from the same family, +5 more",
+  "les trois cartes de même valeur, +5 en plus": "all three cards with the same value, +5 more",
+  "trois valeurs qui se suivent, +4 en plus": "three values in a row, +4 more"
 });

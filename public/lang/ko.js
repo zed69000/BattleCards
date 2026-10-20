@@ -712,5 +712,13 @@ BDAi18n.add("ko", {
   "jusqu'à {n} %": "{n}%까지",
   "{n} boosters": "부스터 {n}개",
   "{n} cristaux": "크리스탈 {n}개",
-  "{n} offerts": "{n}개 무료"
+  "{n} offerts": "{n}개 무료",
+  "Combo : {list}.": "콤보: {list}.",
+  "Flotte": "함대",
+  "Triplés": "세쌍둥이",
+  "Grand sillage": "긴 후류",
+  "L'allié forme aussi une paire avec ta meilleure carte posée. Avec les trois cartes : <b>Flotte</b> (même famille) +5, <b>Triplés</b> (même valeur) +5, <b>Grand sillage</b> (trois valeurs qui se suivent) +4.": "지원군도 놓인 카드 중 가장 좋은 카드와 짝을 이뤄요. 세 장이 모두 맞으면: <b>함대</b>(같은 가족) +5, <b>세쌍둥이</b>(같은 숫자) +5, <b>긴 후류</b>(연속된 세 숫자) +4.",
+  "les trois cartes de la même famille, +5 en plus": "세 장 모두 같은 가족, +5 추가",
+  "les trois cartes de même valeur, +5 en plus": "세 장 모두 같은 숫자, +5 추가",
+  "trois valeurs qui se suivent, +4 en plus": "연속된 세 숫자, +4 추가"
 });

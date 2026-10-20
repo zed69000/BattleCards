@@ -712,5 +712,13 @@ BDAi18n.add("zh", {
   "jusqu'à {n} %": "至 {n}%",
   "{n} boosters": "{n} 个补充包",
   "{n} cristaux": "{n} 水晶",
-  "{n} offerts": "免费 {n} 个"
+  "{n} offerts": "免费 {n} 个",
+  "Combo : {list}.": "组合：{list}。",
+  "Flotte": "舰队",
+  "Triplés": "三胞胎",
+  "Grand sillage": "长尾流",
+  "L'allié forme aussi une paire avec ta meilleure carte posée. Avec les trois cartes : <b>Flotte</b> (même famille) +5, <b>Triplés</b> (même valeur) +5, <b>Grand sillage</b> (trois valeurs qui se suivent) +4.": "援军也会和你场上最好的那张牌组成一对。三张牌齐全时：<b>舰队</b>（同一家族）+5，<b>三胞胎</b>（同一数值）+5，<b>长尾流</b>（三个连续数值）+4。",
+  "les trois cartes de la même famille, +5 en plus": "三张牌同一家族，再 +5",
+  "les trois cartes de même valeur, +5 en plus": "三张牌数值相同，再 +5",
+  "trois valeurs qui se suivent, +4 en plus": "三个连续数值，再 +4"
 });

@@ -712,5 +712,13 @@ BDAi18n.add("de", {
   "jusqu'à {n} %": "bis {n} %",
   "{n} boosters": "{n} Booster",
   "{n} cristaux": "{n} Kristalle",
-  "{n} offerts": "{n} gratis"
+  "{n} offerts": "{n} gratis",
+  "Combo : {list}.": "Kombo: {list}.",
+  "Flotte": "Flotte",
+  "Triplés": "Drillinge",
+  "Grand sillage": "Langer Windschatten",
+  "L'allié forme aussi une paire avec ta meilleure carte posée. Avec les trois cartes : <b>Flotte</b> (même famille) +5, <b>Triplés</b> (même valeur) +5, <b>Grand sillage</b> (trois valeurs qui se suivent) +4.": "Der Verbündete bildet auch ein Paar mit deiner besten gelegten Karte. Mit allen drei Karten: <b>Flotte</b> (gleiche Familie) +5, <b>Drillinge</b> (gleicher Wert) +5, <b>Langer Windschatten</b> (drei Werte in Folge) +4.",
+  "les trois cartes de la même famille, +5 en plus": "alle drei Karten aus derselben Familie, +5 extra",
+  "les trois cartes de même valeur, +5 en plus": "alle drei Karten mit demselben Wert, +5 extra",
+  "trois valeurs qui se suivent, +4 en plus": "drei Werte in Folge, +4 extra"
 });

@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>Bataille des Alliés — Conquête de l'espace</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.64";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.65";</script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -668,6 +668,7 @@
     .hand .card.drawn { animation: draw 460ms cubic-bezier(.2, .8, .2, 1) backwards; }
     .hint { position: absolute; left: 50%; top: -19px; transform: translateX(-50%); z-index: 6; padding: 1px 7px; border-radius: 99px; white-space: nowrap; font-size: 0.6rem; background: var(--ok); color: var(--navy); border: 2px solid var(--navy); }
     .hint.warn { background: var(--yellow); }
+    .hint.combo { background: var(--pink); color: #fff; }
 
     .prompt { flex: none; display: flex; flex-wrap: nowrap; align-items: center; justify-content: center; gap: 8px; height: 78px; overflow: hidden; padding: 6px 10px; border-radius: 14px; background: rgba(16, 22, 43, 0.88); border: 2px solid rgba(245, 233, 207, 0.4); text-align: center; }
     .prompt p { margin: 0; flex: 1 1 auto; min-width: 0; max-height: 100%; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; line-height: 1.22; font-size: 0.8rem; }
@@ -1244,6 +1245,7 @@
           <p data-i18n><b>Tes deux cartes ensemble</b> peuvent former :</p>
           <ul>
             <li data-i18n><b>Jumeaux</b> (même valeur) : +5 · <b>Escadron</b> (même famille) : +3 · <b>Sillage</b> (valeurs qui se suivent) : +2</li>
+            <li data-i18n>L'allié forme aussi une paire avec ta meilleure carte posée. Avec les trois cartes : <b>Flotte</b> (même famille) +5, <b>Triplés</b> (même valeur) +5, <b>Grand sillage</b> (trois valeurs qui se suivent) +4.</li>
           </ul>
         </details>
         <details><summary>Les atouts ★</summary>
@@ -1869,6 +1871,33 @@
       if (a.house === b.house && a.house !== "X") parts.push(["Escadron", 3]);
       return parts;
     }
+    /* The ally joins the formations: its best pair with the vanguard or the ambush, then a bonus when all three match
+       (Flotte: same family, Triplés: same value, Grand sillage: three values in a row). Tuned with tools/balance-sim.js. */
+    function allyFormation(van, amb, ally, vv, va, av) {
+      const pair = (x, vx) => {
+        const parts = [];
+        if (vx === av) parts.push(["Jumeaux", 5]);
+        else if (Math.abs(vx - av) === 1) parts.push(["Sillage", 2]);
+        if (x.house === ally.house && x.house !== "X") parts.push(["Escadron", 3]);
+        return parts;
+      };
+      const sum = list => list.reduce((t, [, v]) => t + v, 0);
+      const a = pair(van, vv), b = pair(amb, va), parts = sum(a) >= sum(b) ? a : b;
+      const vals = [vv, va, av].sort((x, y) => x - y);
+      if (ally.house !== "X" && van.house === ally.house && amb.house === ally.house) parts.push(["Flotte", 5]);
+      if (vals[0] === vals[2]) parts.push(["Triplés", 5]);
+      else if (vals[1] === vals[0] + 1 && vals[2] === vals[1] + 1) parts.push(["Grand sillage", 4]);
+      return parts;
+    }
+    /* Formations the player's ally would add, for the hand hints and the prompt before the die roll. */
+    function allyComboParts(card) {
+      const b = S.board, van = b.van[0], amb = b.amb[0];
+      if (!van || !amb || !S.revealed) return [];
+      const vv = ev(van, amb), va = ev(amb, van);
+      return allyFormation(van, amb, card, vv, va, allyValue(card, vv, va));
+    }
+    const comboLine = card => { const parts = allyComboParts(card); return parts.length ? ` ${tr("Combo : {list}.", { list: `<b>${parts.map(partText).join(", ")}</b>` })}` : ""; };
+    const allyValue = (card, vv, va) => (card.special === "clone" ? Math.min(Math.max(vv, va), CLONE_CAP) : card.value);
     function onBoard(p, special) {
       const b = S.board;
       return [b.van[p], S.revealed ? b.amb[p] : null, b.allyOk[p] ? b.ally[p] : null].some(c => c && c.special === special);
@@ -1891,8 +1920,9 @@
         if (meteor) parts.push(["Météore", -3]);
       }
       if (b.allyOk[p]) {
-        const c = b.ally[p], gain = c.special === "clone" ? Math.min(Math.max(vv, va), CLONE_CAP) : c.special === "turbo" ? c.value * 2 : c.value;
+        const c = b.ally[p], av = allyValue(c, vv, va), gain = c.special === "turbo" ? c.value * 2 : av;
         if (gain) parts.push([b.role[p] === "riposte" ? "Riposte" : "Allié", gain]);
+        if (van && amb) parts.push(...allyFormation(van, amb, c, vv, va, av));
       }
       const sup = superOn();
       if (p === 1 && sup === "crush" && vv) parts.push(["Écrasement", vv]);
@@ -2124,10 +2154,13 @@
         }
         if (S.phase === "mull" && S.mull.has(card.id)) { el.classList.add("mull"); hint = { text: "↻" }; }
         if (third()) {
-          if (can) { const { pct } = allyInfo(card); hint = { text: `${pct} %`, warn: pct < 50 }; }
+          if (can) {
+            const { pct } = allyInfo(card), bonus = allyComboParts(card).reduce((t, [, v]) => t + v, 0);
+            hint = { text: bonus ? `${pct} % · +${bonus}` : `${pct} %`, warn: pct < 50, combo: bonus > 0 };
+          }
           else el.classList.add("dim");
         }
-        if (hint) { const tag = document.createElement("span"); tag.className = `hint${hint.warn ? " warn" : ""}`; tag.textContent = hint.text; el.appendChild(tag); }
+        if (hint) { const tag = document.createElement("span"); tag.className = `hint${hint.warn ? " warn" : ""}${hint.combo ? " combo" : ""}`; tag.textContent = hint.text; el.appendChild(tag); }
         if (S.sel === card.id) el.classList.add("sel");
         if (can) {
           el.tabIndex = 0;
@@ -3156,7 +3189,7 @@
       } else if (third()) {
         const { thr, pct } = allyInfo(card);
         const t = afterAlly(0, card);
-        setPrompt((t[0] === t[1] ? tr("<b>{title}</b> : dé <b>{thr}+</b> ({pct} %). Total {me} contre {foe} — égalité.", { title: tr(card.title), thr, pct, me: t[0], foe: t[1] }) : tr("<b>{title}</b> : dé <b>{thr}+</b> ({pct} %). Total {me} contre {foe}.", { title: tr(card.title), thr, pct, me: t[0], foe: t[1] })) + atout,
+        setPrompt((t[0] === t[1] ? tr("<b>{title}</b> : dé <b>{thr}+</b> ({pct} %). Total {me} contre {foe} — égalité.", { title: tr(card.title), thr, pct, me: t[0], foe: t[1] }) : tr("<b>{title}</b> : dé <b>{thr}+</b> ({pct} %). Total {me} contre {foe}.", { title: tr(card.title), thr, pct, me: t[0], foe: t[1] })) + comboLine(card) + atout,
           [{ label: tr("Lancer le dé · 1 ⚡"), cls: "hot", ...go }, S.phase === "ally" ? { label: tr("Se replier"), cls: "ghost", fn: fold } : { label: tr("Laisser filer"), cls: "ghost", fn: () => pickRiposte(null) }]);
       }
     }
@@ -3258,7 +3291,8 @@
 
       // Première apparition d'un pouvoir, d'une formation ou d'un atout adverse : on l'explique une fois.
       const facts = [];
-      const COMBO = { Jumeaux: tr("deux cartes de même valeur, +5"), Sillage: tr("deux valeurs qui se suivent, +2"), Escadron: tr("deux cartes de la même famille, +3") };
+      const COMBO = { Jumeaux: tr("deux cartes de même valeur, +5"), Sillage: tr("deux valeurs qui se suivent, +2"), Escadron: tr("deux cartes de la même famille, +3"),
+        Flotte: tr("les trois cartes de la même famille, +5 en plus"), "Triplés": tr("les trois cartes de même valeur, +5 en plus"), "Grand sillage": tr("trois valeurs qui se suivent, +4 en plus") };
       for (const q of [0, 1]) {
         const amb = S.board.amb[q];
         if (amb.house !== "X") facts.push([`power-${amb.house}`, (q === 0 ? tr("Ta carte cachée est un {sym}. Son pouvoir, <b>{power}</b> : {desc}.", { sym: SYM[amb.house], power: tr(HOUSES[amb.house].power), desc: tr(HOUSES[amb.house].desc) }) : tr("La carte cachée de Gaspard est un {sym}. Son pouvoir, <b>{power}</b> : {desc}.", { sym: SYM[amb.house], power: tr(HOUSES[amb.house].power), desc: tr(HOUSES[amb.house].desc) }))]);
@@ -3344,6 +3378,8 @@
         const gain = breakdown(p).total - before;
         floatText(el, gain ? `+${gain}` : tr(card.title));
         sfx.win();
+        const trio = breakdown(p).parts.find(([n]) => n === "Flotte" || n === "Triplés" || n === "Grand sillage");
+        if (trio) { await sleep(450); boom(partText(trio), p === 0, el); }
       } else {
         el.classList.add("broken");
         sfx.lose();
