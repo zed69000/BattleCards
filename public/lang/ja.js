@@ -722,5 +722,6 @@ BDAi18n.add("ja", {
   "La Bataille <span>Galactique</span>": "<span>ギャラクティック</span>バトル",
   "La Bataille Galactique": "ギャラクティックバトル",
   "Niveau": "レベル",
-  "toutes les {n} manches": "{n}ラウンドごと"
+  "toutes les {n} manches": "{n}ラウンドごと",
+  "Confidentialité": "プライバシー"
 });

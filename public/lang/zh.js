@@ -722,5 +722,6 @@ BDAi18n.add("zh", {
   "La Bataille <span>Galactique</span>": "<span>银河</span>大战",
   "La Bataille Galactique": "银河大战",
   "Niveau": "等级",
-  "toutes les {n} manches": "每 {n} 局一次"
+  "toutes les {n} manches": "每 {n} 局一次",
+  "Confidentialité": "隐私"
 });

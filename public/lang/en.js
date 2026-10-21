@@ -722,5 +722,6 @@ BDAi18n.add("en", {
   "La Bataille <span>Galactique</span>": "Galactic <span>Battle</span>",
   "La Bataille Galactique": "Galactic Battle",
   "Niveau": "Level",
-  "toutes les {n} manches": "every {n} rounds"
+  "toutes les {n} manches": "every {n} rounds",
+  "Confidentialité": "Privacy"
 });

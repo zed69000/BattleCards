@@ -722,5 +722,6 @@ BDAi18n.add("ko", {
   "La Bataille <span>Galactique</span>": "<span>은하</span> 대전투",
   "La Bataille Galactique": "은하 대전투",
   "Niveau": "레벨",
-  "toutes les {n} manches": "{n}라운드마다"
+  "toutes les {n} manches": "{n}라운드마다",
+  "Confidentialité": "개인정보"
 });
