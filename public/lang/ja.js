@@ -1,6 +1,5 @@
 /* Bataille des Alliés – 日本語. Clé = texte français (voir ../i18n.js). */
 BDAi18n.add("ja", {
-  "+ atout <b>{name}</b>": "+ 切り札 <b>{name}</b>",
   "+ un personnage": "+ キャラ1体",
   "+1 au dé d'allié ou de riposte": "援軍・反撃のダイス+1",
   "+1 au dé de ses ripostes.": "反撃のダイス+1。",
@@ -87,14 +86,10 @@ BDAi18n.add("ja", {
   "Aucune partie avec ce code. Vérifie-le avec ton ami.": "このコードのゲームはないよ。友だちに確認してね。",
   "Avant-<br>garde": "先<br>鋒",
   "Aventure": "冒険",
-  "BATAILLE DES ALLIÉS": "援軍バトル",
   "BOSS DE {planet}": "{planet}のボス",
   "Balise": "ビーコン",
   "Baron Synapse": "シナプス男爵",
   "Baronne Tempête": "嵐の男爵夫人",
-  "Bataille des <span>Alliés</span>": "<span>援軍</span>バトル",
-  "Bataille des Alliés": "援軍バトル",
-  "Bataille des Alliés — Conquête de l'espace": "援軍バトル — 宇宙征服",
   "Bataille gagnée !": "決戦に勝利！",
   "Bataille galactique !": "銀河大決戦！",
   "Bataille perdue": "決戦に敗北",
@@ -605,7 +600,6 @@ BDAi18n.add("ja", {
   "Ce que tu peux gagner": "手に入るもの",
   "Chances par objet": "アイテムごとの確率",
   "Deux atouts sont déjà dans ta pioche : la Citerne et le Bouclier. Tu les croiseras pendant tes parties.": "切り札2枚がもう山札に入っている：タンクとシールド。試合中に引けるよ。",
-  "Difficulté": "難しさ",
   "Dos de cartes": "カード裏",
   "Détails": "くわしく",
   "Et l'XP : 50 en cas de victoire, 20 en cas de défaite. Chaque niveau gagné donne +30 ◆.": "それにXP：勝てば50、負けても20。レベルが上がるたびに+30 ◆。",
@@ -723,5 +717,10 @@ BDAi18n.add("ja", {
   "Ton arène : elle prend la place du décor adverse chaque fois que tu gagnes une manche.": "きみのアリーナ：ラウンドに勝つたびに相手の背景と入れ替わる。",
   "Manche gagnée grâce à tes combinaisons : {list}. Sans elles, {name} l'emportait.": "コンボのおかげでラウンドに勝った：{list}。なければ{name}の勝ちだった。",
   "{name} gagne grâce à ses combinaisons : {list}. Sans elles, la manche était pour toi.": "{name}はコンボで勝った：{list}。なければきみの勝ちだった。",
-  "Dès qu'il est visible sur la table, il coule 1 boost ⚡ de l'adversaire. Vaut 5.": "場に表向きになった瞬間、相手のブースト⚡を1つ沈める。価値5。"
+  "Dès qu'il est visible sur la table, il coule 1 boost ⚡ de l'adversaire. Vaut 5.": "場に表向きになった瞬間、相手のブースト⚡を1つ沈める。価値5。",
+  "LA BATAILLE GALACTIQUE": "ギャラクティックバトル",
+  "La Bataille <span>Galactique</span>": "<span>ギャラクティック</span>バトル",
+  "La Bataille Galactique": "ギャラクティックバトル",
+  "Niveau": "レベル",
+  "toutes les {n} manches": "{n}ラウンドごと"
 });

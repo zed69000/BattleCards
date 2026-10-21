@@ -1,6 +1,5 @@
 /* Bataille des Alliés – Deutsch. Clé = texte français (voir ../i18n.js). */
 BDAi18n.add("de", {
-  "+ atout <b>{name}</b>": "+ Trumpf <b>{name}</b>",
   "+ un personnage": "+ eine Figur",
   "+1 au dé d'allié ou de riposte": "+1 auf Verbündeten- oder Konterwurf",
   "+1 au dé de ses ripostes.": "+1 auf ihre Konterwürfe.",
@@ -87,14 +86,10 @@ BDAi18n.add("de", {
   "Aucune partie avec ce code. Vérifie-le avec ton ami.": "Kein Spiel mit diesem Code. Prüf ihn mit deinem Freund.",
   "Avant-<br>garde": "Vor-<br>hut",
   "Aventure": "Abenteuer",
-  "BATAILLE DES ALLIÉS": "SCHLACHT DER VERBÜNDETEN",
   "BOSS DE {planet}": "BOSS VON {planet}",
   "Balise": "Bake",
   "Baron Synapse": "Baron Synapse",
   "Baronne Tempête": "Baronin Sturm",
-  "Bataille des <span>Alliés</span>": "Schlacht der <span>Verbündeten</span>",
-  "Bataille des Alliés": "Schlacht der Verbündeten",
-  "Bataille des Alliés — Conquête de l'espace": "Schlacht der Verbündeten — Eroberung des Alls",
   "Bataille gagnée !": "Schlacht gewonnen!",
   "Bataille galactique !": "Galaktische Schlacht!",
   "Bataille perdue": "Schlacht verloren",
@@ -605,7 +600,6 @@ BDAi18n.add("de", {
   "Ce que tu peux gagner": "Was du gewinnen kannst",
   "Chances par objet": "Chancen pro Objekt",
   "Deux atouts sont déjà dans ta pioche : la Citerne et le Bouclier. Tu les croiseras pendant tes parties.": "Zwei Trümpfe sind schon in deinem Stapel: der Tankwagen und der Schild. Du wirst sie in deinen Partien ziehen.",
-  "Difficulté": "Schwierigkeit",
   "Dos de cartes": "Kartenrücken",
   "Détails": "Details",
   "Et l'XP : 50 en cas de victoire, 20 en cas de défaite. Chaque niveau gagné donne +30 ◆.": "Dazu XP: 50 bei einem Sieg, 20 bei einer Niederlage. Jedes neue Level bringt +30 ◆.",
@@ -723,5 +717,10 @@ BDAi18n.add("de", {
   "Ton arène : elle prend la place du décor adverse chaque fois que tu gagnes une manche.": "Deine Arena: Sie ersetzt die gegnerische Kulisse, sobald du eine Runde gewinnst.",
   "Manche gagnée grâce à tes combinaisons : {list}. Sans elles, {name} l'emportait.": "Runde dank deiner Kombos gewonnen: {list}. Ohne sie hätte {name} gewonnen.",
   "{name} gagne grâce à ses combinaisons : {list}. Sans elles, la manche était pour toi.": "{name} gewinnt dank Kombos: {list}. Ohne sie wäre die Runde deine gewesen.",
-  "Dès qu'il est visible sur la table, il coule 1 boost ⚡ de l'adversaire. Vaut 5.": "Sobald er offen auf dem Tisch liegt, versenkt er 1 Boost ⚡ des Gegners. Wert 5."
+  "Dès qu'il est visible sur la table, il coule 1 boost ⚡ de l'adversaire. Vaut 5.": "Sobald er offen auf dem Tisch liegt, versenkt er 1 Boost ⚡ des Gegners. Wert 5.",
+  "LA BATAILLE GALACTIQUE": "DIE GALAKTISCHE SCHLACHT",
+  "La Bataille <span>Galactique</span>": "Die Galaktische <span>Schlacht</span>",
+  "La Bataille Galactique": "Die Galaktische Schlacht",
+  "Niveau": "Stufe",
+  "toutes les {n} manches": "alle {n} Runden"
 });

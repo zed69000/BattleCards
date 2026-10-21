@@ -1,4 +1,4 @@
-# Bataille des Alliés — Conquête de l'espace
+# La Bataille Galactique
 
 Prototype web d'un jeu de cartes dérivé de la bataille, jouable sur mobile et sur ordinateur.
 

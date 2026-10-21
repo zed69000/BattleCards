@@ -1,6 +1,5 @@
 /* Bataille des Alliés – English. Clé = texte français (voir ../i18n.js). */
 BDAi18n.add("en", {
-  "+ atout <b>{name}</b>": "+ power card <b>{name}</b>",
   "+ un personnage": "+ a character",
   "+1 au dé d'allié ou de riposte": "+1 to ally or riposte die",
   "+1 au dé de ses ripostes.": "+1 to its riposte dice.",
@@ -87,14 +86,10 @@ BDAi18n.add("en", {
   "Aucune partie avec ce code. Vérifie-le avec ton ami.": "No game with this code. Check it with your friend.",
   "Avant-<br>garde": "Van-<br>guard",
   "Aventure": "Adventure",
-  "BATAILLE DES ALLIÉS": "BATTLE OF THE ALLIES",
   "BOSS DE {planet}": "BOSS OF {planet}",
   "Balise": "Beacon",
   "Baron Synapse": "Baron Synapse",
   "Baronne Tempête": "Baroness Storm",
-  "Bataille des <span>Alliés</span>": "Battle of the <span>Allies</span>",
-  "Bataille des Alliés": "Battle of the Allies",
-  "Bataille des Alliés — Conquête de l'espace": "Battle of the Allies — Space Conquest",
   "Bataille gagnée !": "Battle won!",
   "Bataille galactique !": "Galactic battle!",
   "Bataille perdue": "Battle lost",
@@ -605,7 +600,6 @@ BDAi18n.add("en", {
   "Ce que tu peux gagner": "What you can win",
   "Chances par objet": "Odds per item",
   "Deux atouts sont déjà dans ta pioche : la Citerne et le Bouclier. Tu les croiseras pendant tes parties.": "Two power cards are already in your deck: the Tanker and the Shield. You'll draw them during your games.",
-  "Difficulté": "Difficulty",
   "Dos de cartes": "Card backs",
   "Détails": "Details",
   "Et l'XP : 50 en cas de victoire, 20 en cas de défaite. Chaque niveau gagné donne +30 ◆.": "Plus XP: 50 for a win, 20 for a loss. Every new level gives +30 ◆.",
@@ -723,5 +717,10 @@ BDAi18n.add("en", {
   "Ton arène : elle prend la place du décor adverse chaque fois que tu gagnes une manche.": "Your arena: it takes over from the opponent's scenery every time you win a round.",
   "Manche gagnée grâce à tes combinaisons : {list}. Sans elles, {name} l'emportait.": "Round won thanks to your combos: {list}. Without them, {name} would have won.",
   "{name} gagne grâce à ses combinaisons : {list}. Sans elles, la manche était pour toi.": "{name} wins thanks to their combos: {list}. Without them, the round was yours.",
-  "Dès qu'il est visible sur la table, il coule 1 boost ⚡ de l'adversaire. Vaut 5.": "As soon as it's face up on the table, it sinks 1 of the opponent's boosts ⚡. Worth 5."
+  "Dès qu'il est visible sur la table, il coule 1 boost ⚡ de l'adversaire. Vaut 5.": "As soon as it's face up on the table, it sinks 1 of the opponent's boosts ⚡. Worth 5.",
+  "LA BATAILLE GALACTIQUE": "GALACTIC BATTLE",
+  "La Bataille <span>Galactique</span>": "Galactic <span>Battle</span>",
+  "La Bataille Galactique": "Galactic Battle",
+  "Niveau": "Level",
+  "toutes les {n} manches": "every {n} rounds"
 });

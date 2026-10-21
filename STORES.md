@@ -6,7 +6,7 @@ Les projets natifs `android/` et `ios/` ne sont pas dans le dépôt : Codemagic 
 
 - **Identifiant de l'app** : `com.musclorduck.battlecards` (dans `capacitor.config.json` et `codemagic.yaml`).
   À changer *avant* la première publication si besoin : il est définitif sur les stores ensuite.
-- **Nom affiché** : « Bataille des Alliés ».
+- **Nom affiché** : « La Bataille Galactique ».
 - **Version** : celle du jeu (`window.BDA_V` dans `cosmos.html`) ; numéro de build : celui de Codemagic.
 - **Icônes** : `python tools/make_icons.py` régénère `public/icon-*.png` et `assets/` (icône 1024 px, écran de démarrage).
 

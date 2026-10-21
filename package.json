@@ -1,7 +1,7 @@
 {
   "name": "battlecards",
   "private": true,
-  "description": "Bataille des Alliés : le jeu web de public/, emballé en apps Android et iOS avec Capacitor.",
+  "description": "La Bataille Galactique : le jeu web de public/, emballé en apps Android et iOS avec Capacitor.",
   "scripts": {
     "android": "cap add android && npx @capacitor/assets@3.0.5 generate --android --iconBackgroundColor \"#10162b\" --splashBackgroundColor \"#10162b\" && cap sync android",
     "ios": "cap add ios && npx @capacitor/assets@3.0.5 generate --ios --iconBackgroundColor \"#10162b\" --splashBackgroundColor \"#10162b\" && cap sync ios",

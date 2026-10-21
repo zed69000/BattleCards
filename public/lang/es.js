@@ -1,6 +1,5 @@
 /* Bataille des Alliés – Español. Clé = texte français (voir ../i18n.js). */
 BDAi18n.add("es", {
-  "+ atout <b>{name}</b>": "+ comodín <b>{name}</b>",
   "+ un personnage": "+ un personaje",
   "+1 au dé d'allié ou de riposte": "+1 al dado de aliado o de contraataque",
   "+1 au dé de ses ripostes.": "+1 al dado de sus contraataques.",
@@ -87,14 +86,10 @@ BDAi18n.add("es", {
   "Aucune partie avec ce code. Vérifie-le avec ton ami.": "No hay ninguna partida con ese código. Compruébalo con tu amigo.",
   "Avant-<br>garde": "Van-<br>guardia",
   "Aventure": "Aventura",
-  "BATAILLE DES ALLIÉS": "BATALLA DE LOS ALIADOS",
   "BOSS DE {planet}": "JEFE DE {planet}",
   "Balise": "Baliza",
   "Baron Synapse": "Barón Sinapsis",
   "Baronne Tempête": "Baronesa Tormenta",
-  "Bataille des <span>Alliés</span>": "Batalla de los <span>Aliados</span>",
-  "Bataille des Alliés": "Batalla de los Aliados",
-  "Bataille des Alliés — Conquête de l'espace": "Batalla de los Aliados — Conquista del espacio",
   "Bataille gagnée !": "¡Batalla ganada!",
   "Bataille galactique !": "¡Batalla galáctica!",
   "Bataille perdue": "Batalla perdida",
@@ -605,7 +600,6 @@ BDAi18n.add("es", {
   "Ce que tu peux gagner": "Lo que puedes ganar",
   "Chances par objet": "Probabilidad por objeto",
   "Deux atouts sont déjà dans ta pioche : la Citerne et le Bouclier. Tu les croiseras pendant tes parties.": "Dos comodines ya están en tu mazo: la Cisterna y el Escudo. Te los encontrarás en tus partidas.",
-  "Difficulté": "Dificultad",
   "Dos de cartes": "Dorsos",
   "Détails": "Detalles",
   "Et l'XP : 50 en cas de victoire, 20 en cas de défaite. Chaque niveau gagné donne +30 ◆.": "Y la XP: 50 si ganas, 20 si pierdes. Cada nivel nuevo da +30 ◆.",
@@ -723,5 +717,10 @@ BDAi18n.add("es", {
   "Ton arène : elle prend la place du décor adverse chaque fois que tu gagnes une manche.": "Tu arena: sustituye el escenario rival cada vez que ganas una ronda.",
   "Manche gagnée grâce à tes combinaisons : {list}. Sans elles, {name} l'emportait.": "Ronda ganada gracias a tus combinaciones: {list}. Sin ellas, ganaba {name}.",
   "{name} gagne grâce à ses combinaisons : {list}. Sans elles, la manche était pour toi.": "{name} gana gracias a sus combinaciones: {list}. Sin ellas, la ronda era tuya.",
-  "Dès qu'il est visible sur la table, il coule 1 boost ⚡ de l'adversaire. Vaut 5.": "En cuanto está visible en la mesa, hunde 1 impulso ⚡ del rival. Vale 5."
+  "Dès qu'il est visible sur la table, il coule 1 boost ⚡ de l'adversaire. Vaut 5.": "En cuanto está visible en la mesa, hunde 1 impulso ⚡ del rival. Vale 5.",
+  "LA BATAILLE GALACTIQUE": "LA BATALLA GALÁCTICA",
+  "La Bataille <span>Galactique</span>": "La Batalla <span>Galáctica</span>",
+  "La Bataille Galactique": "La Batalla Galáctica",
+  "Niveau": "Nivel",
+  "toutes les {n} manches": "cada {n} rondas"
 });

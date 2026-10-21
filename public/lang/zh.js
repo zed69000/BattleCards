@@ -1,6 +1,5 @@
 /* Bataille des Alliés – 中文. Clé = texte français (voir ../i18n.js). */
 BDAi18n.add("zh", {
-  "+ atout <b>{name}</b>": "+ 王牌 <b>{name}</b>",
   "+ un personnage": "+ 一个角色",
   "+1 au dé d'allié ou de riposte": "援军或反击骰子 +1",
   "+1 au dé de ses ripostes.": "其反击骰子 +1。",
@@ -87,14 +86,10 @@ BDAi18n.add("zh", {
   "Aucune partie avec ce code. Vérifie-le avec ton ami.": "没有这个代码的对局。跟好友核对一下。",
   "Avant-<br>garde": "先<br>锋",
   "Aventure": "冒险",
-  "BATAILLE DES ALLIÉS": "援军大战",
   "BOSS DE {planet}": "{planet}首领",
   "Balise": "信标",
   "Baron Synapse": "突触男爵",
   "Baronne Tempête": "风暴男爵夫人",
-  "Bataille des <span>Alliés</span>": "<span>援军</span>大战",
-  "Bataille des Alliés": "援军大战",
-  "Bataille des Alliés — Conquête de l'espace": "援军大战 —— 征服太空",
   "Bataille gagnée !": "战斗胜利！",
   "Bataille galactique !": "银河大战！",
   "Bataille perdue": "战斗失败",
@@ -605,7 +600,6 @@ BDAi18n.add("zh", {
   "Ce que tu peux gagner": "你能赢得的",
   "Chances par objet": "每件物品的概率",
   "Deux atouts sont déjà dans ta pioche : la Citerne et le Bouclier. Tu les croiseras pendant tes parties.": "你的牌堆里已经有两张王牌：油罐和护盾。对局中会抽到它们。",
-  "Difficulté": "难度",
   "Dos de cartes": "卡背",
   "Détails": "详情",
   "Et l'XP : 50 en cas de victoire, 20 en cas de défaite. Chaque niveau gagné donne +30 ◆.": "还有经验：赢 50，输 20。每升一级 +30 ◆。",
@@ -723,5 +717,10 @@ BDAi18n.add("zh", {
   "Ton arène : elle prend la place du décor adverse chaque fois que tu gagnes une manche.": "你的竞技场：每赢一局，它就取代对手的场景。",
   "Manche gagnée grâce à tes combinaisons : {list}. Sans elles, {name} l'emportait.": "靠组合赢下本局：{list}。没有它们，{name} 就赢了。",
   "{name} gagne grâce à ses combinaisons : {list}. Sans elles, la manche était pour toi.": "{name} 靠组合获胜：{list}。没有它们，这局是你的。",
-  "Dès qu'il est visible sur la table, il coule 1 boost ⚡ de l'adversaire. Vaut 5.": "一旦在桌上亮出，就击沉对手 1 个加速 ⚡。价值 5。"
+  "Dès qu'il est visible sur la table, il coule 1 boost ⚡ de l'adversaire. Vaut 5.": "一旦在桌上亮出，就击沉对手 1 个加速 ⚡。价值 5。",
+  "LA BATAILLE GALACTIQUE": "银河大战",
+  "La Bataille <span>Galactique</span>": "<span>银河</span>大战",
+  "La Bataille Galactique": "银河大战",
+  "Niveau": "等级",
+  "toutes les {n} manches": "每 {n} 局一次"
 });

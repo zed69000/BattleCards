@@ -1,6 +1,5 @@
 /* Bataille des Alliés – 한국어. Clé = texte français (voir ../i18n.js). */
 BDAi18n.add("ko", {
-  "+ atout <b>{name}</b>": "+ 비장의 카드 <b>{name}</b>",
   "+ un personnage": "+ 캐릭터 1명",
   "+1 au dé d'allié ou de riposte": "지원군·반격 주사위 +1",
   "+1 au dé de ses ripostes.": "반격 주사위 +1.",
@@ -87,14 +86,10 @@ BDAi18n.add("ko", {
   "Aucune partie avec ce code. Vérifie-le avec ton ami.": "이 코드의 게임이 없어요. 친구와 다시 확인해요.",
   "Avant-<br>garde": "선봉<br>카드",
   "Aventure": "모험",
-  "BATAILLE DES ALLIÉS": "지원군 대전투",
   "BOSS DE {planet}": "{planet}의 보스",
   "Balise": "신호기",
   "Baron Synapse": "시냅스 남작",
   "Baronne Tempête": "폭풍 남작부인",
-  "Bataille des <span>Alliés</span>": "<span>지원군</span> 대전투",
-  "Bataille des Alliés": "지원군 대전투",
-  "Bataille des Alliés — Conquête de l'espace": "지원군 대전투 — 우주 정복",
   "Bataille gagnée !": "전투 승리!",
   "Bataille galactique !": "은하 대전!",
   "Bataille perdue": "전투 패배",
@@ -605,7 +600,6 @@ BDAi18n.add("ko", {
   "Ce que tu peux gagner": "얻을 수 있는 것",
   "Chances par objet": "아이템별 확률",
   "Deux atouts sont déjà dans ta pioche : la Citerne et le Bouclier. Tu les croiseras pendant tes parties.": "비장의 카드 2장이 이미 덱에 들어 있어요: 탱크와 방패. 게임 중에 뽑게 될 거예요.",
-  "Difficulté": "난이도",
   "Dos de cartes": "카드 뒷면",
   "Détails": "자세히",
   "Et l'XP : 50 en cas de victoire, 20 en cas de défaite. Chaque niveau gagné donne +30 ◆.": "그리고 XP: 이기면 50, 져도 20. 레벨이 오를 때마다 +30 ◆.",
@@ -723,5 +717,10 @@ BDAi18n.add("ko", {
   "Ton arène : elle prend la place du décor adverse chaque fois que tu gagnes une manche.": "내 경기장: 라운드를 이길 때마다 상대 배경을 대신해요.",
   "Manche gagnée grâce à tes combinaisons : {list}. Sans elles, {name} l'emportait.": "콤보 덕분에 라운드 승리: {list}. 없었다면 {name}이(가) 이겼어요.",
   "{name} gagne grâce à ses combinaisons : {list}. Sans elles, la manche était pour toi.": "{name}이(가) 콤보로 이겼어요: {list}. 없었다면 내가 이겼어요.",
-  "Dès qu'il est visible sur la table, il coule 1 boost ⚡ de l'adversaire. Vaut 5.": "테이블에 공개되는 순간 상대 부스트 ⚡ 1개를 가라앉혀요. 가치 5."
+  "Dès qu'il est visible sur la table, il coule 1 boost ⚡ de l'adversaire. Vaut 5.": "테이블에 공개되는 순간 상대 부스트 ⚡ 1개를 가라앉혀요. 가치 5.",
+  "LA BATAILLE GALACTIQUE": "은하 대전투",
+  "La Bataille <span>Galactique</span>": "<span>은하</span> 대전투",
+  "La Bataille Galactique": "은하 대전투",
+  "Niveau": "레벨",
+  "toutes les {n} manches": "{n}라운드마다"
 });

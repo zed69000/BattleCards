@@ -1,6 +1,6 @@
 {
-  "name": "Bataille des Alliés",
-  "short_name": "Bataille",
+  "name": "La Bataille Galactique",
+  "short_name": "Galactique",
   "start_url": "./cosmos.html",
   "scope": "./",
   "display": "fullscreen",

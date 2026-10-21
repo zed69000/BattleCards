@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bataille des Alliés : liste des textes à traduire.
+"""La Bataille Galactique : liste des textes à traduire.
 
     python tools/i18n/extract.py          -> écrit tools/i18n/source.json (toutes les clés françaises, triées)
     python tools/i18n/extract.py --check  -> vérifie public/lang/<code>.js : clés manquantes, clés en trop,

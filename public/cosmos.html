@@ -13,7 +13,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
-  <title>Bataille des Alliés — Conquête de l'espace</title>
+  <title>La Bataille Galactique</title>
   <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.67";</script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
@@ -93,7 +93,6 @@
     .jt-ic { display: grid; place-items: center; height: 64px; }
     .jt-ic .card { --cw: 40px; } .jt-ic .portrait { width: 44px; height: 44px; }
     #stake { cursor: pointer; }
-    #stake .chip.more { flex: none; font-size: 0.72rem; background: rgba(245, 233, 207, 0.12); color: var(--cream); padding: 3px 9px; }
     /* Page Boosters. */
     .boosters-sheet { text-align: center; }
     .bp-pack { display: grid; place-items: center; height: 150px; }
@@ -162,14 +161,25 @@
     .stake { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.78rem; color: rgba(245, 233, 207, 0.85); }
     .stake b { font-family: "Righteous", sans-serif; font-weight: 400; color: var(--yellow); }
     /* Gain de la prochaine victoire, en pastilles sur une seule ligne (rien ne bouge quand on change d'adversaire). */
-    #stake { display: flex; justify-content: center; align-items: center; gap: 4px; width: 100%; max-width: 380px; min-width: 0; flex-wrap: nowrap; overflow: hidden; margin-top: -2px; }
-    #stake .chip { min-width: 0; padding: 3px 8px; border-radius: 99px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: "Righteous", sans-serif; font-size: 0.8rem; line-height: 1.3; }
-    #stake .chip.tier { flex: 0 1 auto; font-size: 0.72rem; letter-spacing: -0.02em; background: rgba(245, 233, 207, 0.12); color: rgba(245, 233, 207, 0.85); }
-    #stake .chip.tier.boss { background: rgba(255, 95, 122, 0.22); color: #ffb3bf; }
-    #stake .chip.win { flex: none; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); box-shadow: 0 3px 0 #0a0f1e; font-size: 0.9rem; }
-    #stake .chip.win b { color: var(--navy); }
-    #stake .chip.bonus { flex: 0 1 auto; background: rgba(47, 163, 148, 0.25); color: #9fe6da; }
-    #stake .chip.bonus b { color: inherit; }
+    /* Opponent sheet before the fight button: a framed card with the foe, its talent and the prizes. */
+    #stake.foe-card { display: grid; gap: 8px; width: 100%; max-width: 380px; padding: 10px 12px; border-radius: 16px; border: 3px solid var(--cream); background: linear-gradient(160deg, #26325a, #141b36 70%); box-shadow: 0 4px 0 #0a0f1e; text-align: left; font-size: 0.82rem; }
+    #stake.foe-card.boss { border-color: #ff8a9e; }
+    .fc-head { display: flex; align-items: center; gap: 10px; }
+    .fc-head .portrait { flex: none; width: 52px; height: 52px; }
+    .fc-id { flex: 1; min-width: 0; } .fc-id b { display: block; font-family: "Righteous", sans-serif; font-weight: 400; font-size: 1.15rem; color: var(--yellow); line-height: 1.1; }
+    .fc-id small { display: block; margin-top: 2px; font-size: 0.74rem; color: rgba(245, 233, 207, 0.75); }
+    .fc-lvl { flex: none; display: grid; justify-items: end; font-family: "Righteous", sans-serif; font-size: 0.7rem; color: rgba(245, 233, 207, 0.75); }
+    .fc-lvl span { color: var(--yellow); font-size: 0.9rem; letter-spacing: 0.05em; } .fc-lvl.boss, .fc-lvl.boss span { color: #ff8a9e; }
+    .fc-moves { display: grid; gap: 4px; padding: 6px 0; border-top: 2px solid rgba(245, 233, 207, 0.15); border-bottom: 2px solid rgba(245, 233, 207, 0.15); }
+    .fc-move { display: flex; gap: 8px; align-items: baseline; line-height: 1.3; color: rgba(245, 233, 207, 0.9); }
+    .fc-move > i { flex: none; width: 18px; font-style: normal; text-align: center; color: var(--yellow); } .fc-move.boss > i { color: #ff8a9e; }
+    .fc-move b { font-family: "Righteous", sans-serif; font-weight: 400; color: var(--cream); }
+    .fc-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+    .fc-win { padding: 3px 10px; border-radius: 99px; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); font-family: "Righteous", sans-serif; }
+    .fc-win b { font-weight: 400; color: var(--navy); }
+    .fc-prize { display: inline-flex; align-items: center; gap: 6px; font-family: "Righteous", sans-serif; color: var(--cream); }
+    .fc-prize .card { --cw: 26px; } .fc-prize .portrait { width: 28px; height: 28px; }
+    .fc-more { margin-left: auto; font-size: 0.75rem; color: rgba(245, 233, 207, 0.7); }
     /* Boutons et titres sur une ligne : un nom long est coupé proprement au lieu de tout décaler. */
     #playBtn { width: 100%; max-width: 380px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: clamp(1rem, 5.2vw, 1.25rem); }
     .boost-txt b, .boost-txt small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -949,7 +959,7 @@
             <div class="hero-rays"></div>
             <span class="pow">POW !</span><span class="pow l">⚡ BOOST</span>
             <div class="hero-fan" id="heroFan"></div>
-            <h1 data-i18n>Bataille des <span>Alliés</span></h1>
+            <h1 data-i18n>La Bataille <span>Galactique</span></h1>
             <div class="hero-tag">Pose · Bluffe · Renverse !</div>
           </div>
           <div class="chapter">
@@ -958,8 +968,8 @@
             <button class="ch-nav" id="chNext" aria-label="Chapitre suivant">›</button>
           </div>
           <div class="path" id="path"></div>
+          <div class="stake" id="stake" role="button" tabindex="0"></div>
           <button class="btn big hot" id="playBtn">Décoller</button>
-          <div class="stake" id="stake"></div>
           <div class="offers">
           <button class="boost" id="quickBooster">
             <span class="boost-pack" id="boostPack"></span>
@@ -4262,13 +4272,19 @@
       const sg = STAGES[S.stage], done = S.stage < cleared;
       $("#playBtn").textContent = sg.boss ? tr("Affronter {name}", { name: tr(sg.name) }) : tr("Combattre {name}", { name: tr(sg.name) });
       $("#playBtn").classList.toggle("boss", Boolean(sg.boss));
-      // Gain lisible d'un coup d'œil : niveau de l'adversaire, cristaux de la victoire, bonus éventuels.
+      // Opponent sheet, read like a trading card: who they are, what they do, what you win.
       const gems = done ? Math.round(sg.reward / 2) : sg.reward;
-      const extras = done ? [] : [sg.gift && !save.owned[sg.gift] ? tr("+ atout <b>{name}</b>", { name: tr(ATOUTS[sg.gift].name) }) : null, sg.boss ? tr("+ un personnage") : null].filter(Boolean);
-      // Difficulté en points plutôt qu'en surnom, et la fourchette réelle de cristaux (base + écart, 20 au plus).
       const dots = Math.min(5, Math.floor(sg.tier / 3) + 1);
-      $("#stake").innerHTML = `<span class="chip tier${sg.boss ? " boss" : ""}">${sg.boss ? tr("Boss") : tr("Difficulté")} ${"●".repeat(dots)}${"○".repeat(5 - dots)}</span>`
-        + `<span class="chip win">${tr("Victoire")} <b>${gems}–${gems + 20} ◆</b></span>${extras.map(x => `<span class="chip bonus">${x}</span>`).join("")}<span class="chip more">${tr("Détails")} ›</span>`;
+      const perk = PERKS[sg.cast], boss = sg.boss ? BOSSES[sg.boss] : null;
+      const moves = [`<div class="fc-move"><i>✦</i><span><b>${tr(perk.name)}</b> ${tr(perk.desc)}</span></div>`];
+      if (boss) moves.push(`<div class="fc-move boss"><i>✸</i><span><b>${tr(boss.move)}</b> ${tr("toutes les {n} manches", { n: boss.every })}</span></div>`);
+      const prizes = done ? [] : [sg.gift && !save.owned[sg.gift] ? `<span class="fc-prize">${cardEl(makeAtout(sg.gift, "fc"), 0).outerHTML}${tr(ATOUTS[sg.gift].name)}</span>` : "",
+        ...sg.unlocks.filter(id => !save.chars[id]).map(id => `<span class="fc-prize">${portrait(id)}${tr(CHARS[id].name)}</span>`)].filter(Boolean);
+      $("#stake").className = `stake foe-card${boss ? " boss" : ""}`;
+      $("#stake").innerHTML = `<div class="fc-head">${portrait(sg.char)}<div class="fc-id"><b>${tr(sg.name)}</b><small>${tr(CASTS[sg.cast].label)} · ${tr(CHAPTERS[sg.c].planet)} · ${tr("étape {n}", { n: (S.stage % 4) + 1 })}</small></div>
+          <div class="fc-lvl${boss ? " boss" : ""}">${boss ? tr("Boss") : tr("Niveau")}<span>${"●".repeat(dots)}${"○".repeat(5 - dots)}</span></div></div>
+        <div class="fc-moves">${moves.join("")}</div>
+        <div class="fc-foot"><div class="fc-win">${tr("Victoire")} <b>${gems}–${gems + 20} ◆</b></div>${prizes.join("")}<span class="fc-more">${tr("Détails")} ›</span></div>`;
     }
     function openBossIntro() {
       const sg = STAGES[S.stage], b = BOSSES[sg.boss];
@@ -4384,7 +4400,7 @@
     function packHTML(dull = false) {
       return `<${dull ? "div" : "button"} class="pack${dull ? " dull" : ""}" id="pack" ${dull ? "" : `aria-label="${tr("Déchirer le booster")}"`}>
         <span class="pack-top" style="clip-path:${crimp(true)}"><i>${tr("✂ déchire ici")}</i></span>
-        <span class="pack-body" style="clip-path:${crimp(false)}"><span class="pack-label"><small>${tr("BATAILLE DES ALLIÉS")}</small><span class="pack-art">${art("cranes", "S", "R", 7)}</span><b>${tr("3 OBJETS")}</b></span></span>
+        <span class="pack-body" style="clip-path:${crimp(false)}"><span class="pack-label"><small>${tr("LA BATAILLE GALACTIQUE")}</small><span class="pack-art">${art("cranes", "S", "R", 7)}</span><b>${tr("3 OBJETS")}</b></span></span>
         ${dull ? "" : `<span class="pack-cut"></span><span class="pack-scis">${SCISSORS}</span>`}
       </${dull ? "div" : "button"}>`;
     }
@@ -4686,7 +4702,7 @@
     $("#shareBtn").addEventListener("click", async () => {
       const url = `${location.origin}${location.pathname}?duel=${$("#roomCode").textContent}`;
       try {
-        if (navigator.share) await navigator.share({ title: tr("Bataille des Alliés"), text: tr("Rejoins-moi pour un duel !"), url });
+        if (navigator.share) await navigator.share({ title: tr("La Bataille Galactique"), text: tr("Rejoins-moi pour un duel !"), url });
         else { await navigator.clipboard.writeText(url); lobbyMsg(tr("Lien copié : colle-le dans un message à ton ami.")); }
       } catch (e) { lobbyMsg(tr("Lien à envoyer : {url}", { url })); }
     });

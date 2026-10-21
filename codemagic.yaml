@@ -1,4 +1,4 @@
-# Builds Codemagic des apps Android et iOS de Bataille des Alliés.
+# Builds Codemagic des apps Android et iOS de La Bataille Galactique.
 # Le jeu web (public/) est emballé par Capacitor ; les projets natifs android/ et ios/ sont régénérés
 # à chaque build, ils ne sont pas dans le dépôt. Les builds se lancent à la main depuis Codemagic.
 # Mode d'emploi et réglages à faire dans Codemagic : voir STORES.md.
