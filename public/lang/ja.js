@@ -723,5 +723,6 @@ BDAi18n.add("ja", {
   "La Bataille Galactique": "ギャラクティックバトル",
   "Niveau": "レベル",
   "toutes les {n} manches": "{n}ラウンドごと",
-  "Confidentialité": "プライバシー"
+  "Confidentialité": "プライバシー",
+  "Touche pour jouer": "タップしてスタート"
 });

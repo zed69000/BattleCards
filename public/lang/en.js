@@ -723,5 +723,6 @@ BDAi18n.add("en", {
   "La Bataille Galactique": "Galactic Battle",
   "Niveau": "Level",
   "toutes les {n} manches": "every {n} rounds",
-  "Confidentialité": "Privacy"
+  "Confidentialité": "Privacy",
+  "Touche pour jouer": "Tap to play"
 });

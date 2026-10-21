@@ -723,5 +723,6 @@ BDAi18n.add("pt", {
   "La Bataille Galactique": "A Batalha Galáctica",
   "Niveau": "Nível",
   "toutes les {n} manches": "a cada {n} rodadas",
-  "Confidentialité": "Privacidade"
+  "Confidentialité": "Privacidade",
+  "Touche pour jouer": "Toque para jogar"
 });

@@ -723,5 +723,6 @@ BDAi18n.add("zh", {
   "La Bataille Galactique": "银河大战",
   "Niveau": "等级",
   "toutes les {n} manches": "每 {n} 局一次",
-  "Confidentialité": "隐私"
+  "Confidentialité": "隐私",
+  "Touche pour jouer": "点击开始"
 });

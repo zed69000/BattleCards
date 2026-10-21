@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.68";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.69";</script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -351,8 +351,8 @@
     @keyframes heroBack { 0% { opacity: 1; } 43% { opacity: 0; } 93% { opacity: 1; } }
     .pow { position: absolute; z-index: 3; right: 2%; top: 0; padding: 8px 9px; font-size: 1rem; color: var(--navy); background: var(--yellow); clip-path: polygon(0 20%, 14% 0, 32% 14%, 50% 0, 68% 16%, 86% 0, 100% 26%, 92% 52%, 100% 80%, 84% 100%, 62% 84%, 46% 100%, 28% 82%, 10% 100%, 0 70%, 8% 46%); rotate: 12deg; animation: beat 1.5s ease-in-out infinite; }
     .pow.l { right: auto; left: 3%; top: 30%; background: var(--orange); color: var(--cream); rotate: -10deg; font-size: 0.8rem; animation-delay: -0.7s; }
-    .hero h1 { position: relative; z-index: 2; margin: -4px 0 0; font-weight: 400; font-size: clamp(1.6rem, 8vw, 2.3rem); line-height: 0.95; text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e; animation: hover 3.2s ease-in-out infinite; }
-    .hero h1 span { color: var(--yellow); }
+    .hero h1 { position: relative; z-index: 2; margin: -4px 0 0; font-family: "Bowlby One", sans-serif; font-weight: 400; font-size: clamp(1.5rem, 7.6vw, 2.2rem); line-height: 0.95; text-transform: uppercase; letter-spacing: 0.01em; color: var(--cream); -webkit-text-stroke: 2px #10162b; paint-order: stroke fill; text-shadow: 3px 3px 0 var(--orange), 6px 6px 0 #10162b; rotate: -3deg; animation: hover 3.2s ease-in-out infinite; }
+    .hero h1 span { display: block; color: var(--yellow); font-size: 1.12em; }
     .hero-tag { position: relative; z-index: 2; margin-top: 6px; padding: 2px 12px; border-radius: 99px; background: var(--cream); color: var(--navy); font-size: 0.8rem; letter-spacing: 0.08em; box-shadow: 0 3px 0 #0a0f1e; rotate: -2deg; }
     #playBtn { animation: playPulse 1.6s ease-in-out infinite; }
     @keyframes playPulse { 0%, 100% { scale: 1; box-shadow: 0 4px 0 #0a0f1e, 0 0 0 0 rgba(242, 106, 61, 0.6); } 50% { scale: 1.05; box-shadow: 0 4px 0 #0a0f1e, 0 0 0 10px rgba(242, 106, 61, 0); } }
@@ -759,6 +759,12 @@
     .card.broken { filter: grayscale(1) brightness(0.5); transform: rotate(10deg) translateY(6px); transition: all 400ms; }
 
     /* ───── Écran d'ouverture du studio MusclorDuck (repris de CubeGravity) : deux secondes et demie, un toucher le passe ───── */
+    #cover{display:none}
+    html.cover #cover{position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:#10162b repeating-conic-gradient(from 0deg at 50% 45%, rgba(245,196,69,.12) 0 10deg, transparent 10deg 22deg);animation:spFade .4s ease both}
+    html.cover-out #cover{animation:coverOut .35s ease forwards}
+    #cover img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 0 #0a0f1e)}
+    .cover-tap{position:absolute;left:50%;white-space:nowrap;bottom:max(28px, env(safe-area-inset-bottom));translate:-50% 0;padding:8px 22px;border-radius:99px;background:var(--yellow);color:var(--navy);border:3px solid var(--navy);box-shadow:0 4px 0 #0a0f1e;font-family:"Bowlby One",sans-serif;font-size:1rem;text-transform:uppercase;animation:pulse 1.4s ease-in-out infinite}
+    @keyframes coverOut{to{opacity:0;transform:scale(1.06)}}
     #splash{display:none}
     html.splash #splash{position:fixed;inset:0;z-index:100;display:block;background:#f0e6cf;animation:spOut .35s ease 2.45s forwards}
     .spBlock{position:absolute;left:7%;right:7%;top:6%;bottom:6%;border-radius:1rem;background:#d8232f;transform:rotate(-1.5deg);animation:spPress .4s cubic-bezier(.2,1.5,.4,1) both}
@@ -943,6 +949,7 @@
 </head>
 <body>
   <div id="splash" aria-hidden="true" data-no-i18n><div class="spStage"><div class="spBlock"></div><svg viewBox="-74 -44 468 400" aria-hidden="true"><defs><filter id="spWob1" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9"/></filter><filter id="spWob2" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="11" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9"/></filter><filter id="spWob3" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="23" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9"/></filter></defs><g id="spArt" filter="url(#spWob1)" stroke="#f0e6cf" stroke-linecap="round" stroke-linejoin="round"><path class="spFloor" d="M-40 246H360" fill="none" stroke-width="4"/><g transform="translate(192 246) scale(.95) translate(-150 -286)"><g class="spBig" fill="#d8232f" stroke-width="6"><path d="M128 232V274M128 274L110 284M128 274L128 288M128 274L144 284M176 232V274M176 274L158 284M176 274L176 288M176 274L192 284" fill="none"/><path d="M214 120Q250 126 268 104Q250 88 256 64Q262 40 286 46Q306 54 300 82Q312 120 282 146Q250 168 212 150Z"/><path d="M266 100Q276 92 288 98" fill="none"/><g transform="translate(300 0) scale(-1 1)"><path d="M214 120Q250 126 268 104Q250 88 256 64Q262 40 286 46Q306 54 300 82Q312 120 282 146Q250 168 212 150Z"/><path d="M266 100Q276 92 288 98" fill="none"/></g><path d="M150 34Q184 34 190 66Q232 70 232 122Q232 200 196 228Q150 246 104 228Q68 200 68 122Q68 70 110 66Q116 34 150 34Z"/><path d="M100 150Q124 168 147 150M153 150Q176 168 200 150M150 170V214M134 184H166M136 202H164" fill="none"/><circle cx="134" cy="70" r="4.5" fill="#f0e6cf"/><circle cx="166" cy="70" r="4.5" fill="#f0e6cf"/><path d="M126 60L140 63M174 60L160 63" fill="none"/><path d="M141 74Q150 68 159 74Q150 86 141 74Z"/></g></g><path class="spTrail" d="M58 290L150 246L246 246L112 296Z" fill="#17130f" stroke="none"/><g transform="translate(79 290) scale(.3) translate(-150 -286)"><g class="spSmall" fill="#17130f" stroke-width="15"><path d="M128 232V274M128 274L110 284M128 274L128 288M128 274L144 284M176 232V274M176 274L158 284M176 274L176 288M176 274L192 284" fill="none"/><path d="M220 128Q252 116 254 86Q246 74 236 84Q238 102 212 110Z"/><g transform="translate(300 0) scale(-1 1)"><path d="M220 128Q252 116 254 86Q246 74 236 84Q238 102 212 110Z"/></g><path d="M150 34Q184 34 190 66Q232 70 232 122Q232 200 196 228Q150 246 104 228Q68 200 68 122Q68 70 110 66Q116 34 150 34Z"/><circle cx="134" cy="70" r="4.5" fill="#f0e6cf"/><circle cx="166" cy="70" r="4.5" fill="#f0e6cf"/><path d="M126 60L140 63M174 60L160 63" fill="none"/><path d="M141 74Q150 68 159 74Q150 86 141 74Z"/></g></g></g></svg><div class="spName">Musclor<br>Duck</div><div class="spTag">games</div></div></div>
+  <div id="cover" aria-hidden="true" data-no-i18n><img src="cover.webp" alt=""><span class="cover-tap">Touche pour jouer</span></div>
   <canvas id="space" aria-hidden="true"></canvas>
   <div id="flash" aria-hidden="true"></div>
   <div class="fx" id="fx" aria-hidden="true"></div>
@@ -4721,6 +4728,13 @@
     $("#endMenu").addEventListener("click", goMenu);
     $("#endBooster").addEventListener("click", () => { goMenu(); openCapsuleShop(); });
 
+    /* Title page after the studio logo: the game's cover art, until the player taps. */
+    function showCover() {
+      const root = document.documentElement, el = $("#cover");
+      $(".cover-tap").textContent = tr("Touche pour jouer");
+      root.classList.add("cover");
+      el.addEventListener("pointerdown", () => { sfx.tap(); root.classList.add("cover-out"); setTimeout(() => root.classList.remove("cover", "cover-out"), 350); }, { once: true });
+    }
     /* Écran d'ouverture : il s'efface seul, un toucher le passe tout de suite. */
     (function () {
       const root = document.documentElement, el = $("#splash");
@@ -4729,7 +4743,7 @@
       const artEl = $("#spArt");
       let step = 0;
       const boil = setInterval(() => { step = (step + 1) % 3; artEl.setAttribute("filter", `url(#spWob${step + 1})`); }, 170);
-      const end = () => { clearInterval(boil); root.classList.remove("splash"); };
+      const end = () => { clearInterval(boil); root.classList.remove("splash"); showCover(); };
       const timer = setTimeout(end, 2850);
       el.addEventListener("pointerdown", () => { clearTimeout(timer); end(); }, { once: true });
     })();

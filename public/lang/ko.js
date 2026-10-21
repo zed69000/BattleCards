@@ -723,5 +723,6 @@ BDAi18n.add("ko", {
   "La Bataille Galactique": "은하 대전투",
   "Niveau": "레벨",
   "toutes les {n} manches": "{n}라운드마다",
-  "Confidentialité": "개인정보"
+  "Confidentialité": "개인정보",
+  "Touche pour jouer": "터치해서 시작"
 });
