@@ -536,9 +536,6 @@
     /* Darker band behind the field so the arena and the cards stay readable on any scene. */
     .decor::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 95% 40% at 50% 47%, rgba(10, 15, 30, 0.82), rgba(10, 15, 30, 0.35) 100%); }
     .decor-spin { animation: spin 60s linear infinite; }
-    .decor-sky { position: absolute; inset: 0; overflow: hidden; pointer-events: none; -webkit-mask: linear-gradient(#000 55%, transparent 75%); mask: linear-gradient(#000 55%, transparent 75%); }
-    .decor-stars { position: absolute; inset: -128px; background: radial-gradient(circle, rgba(245, 233, 207, 0.9) 0 1.2px, transparent 1.8px) 0 0 / 48px 64px, radial-gradient(circle, rgba(245, 196, 69, 0.85) 0 1px, transparent 1.6px) 17px 29px / 96px 128px; animation: starDrift 25s linear infinite; }
-    @keyframes starDrift { to { transform: translate(-96px, 128px); } }
     .decor-front { position: absolute; left: 0; right: 0; top: -6px; z-index: 2; height: 12px; border-radius: 6px; box-shadow: 0 0 24px 8px currentColor; opacity: 0; }
     .arena { position: absolute; left: 50%; top: 50%; z-index: -1; width: 128%; aspect-ratio: 400 / 260; transform: translate(-50%, -50%); pointer-events: none; }
     .arena svg { display: block; width: 100%; height: 100%; overflow: visible; }
@@ -1666,12 +1663,13 @@
     };
     /* Scenes are drawn in a 400×860 box and cropped to the screen. The sky sits behind the opponent, the ground behind
        the player's hand, and the middle stays dark so the arena floor and the cards read first. */
-    /* Painted backgrounds (public/decors); the other scenes are still drawn below until they get their painting. */
+    /* Painted backgrounds (public/decors), their dark sky cut out so the animated starfield shows through;
+       the other scenes are still drawn below until they get their painting. */
     const DECOR_IMG = ["espace", "lune", "mars", "hangar", "affiche", "saturne"];
     const preloaded = new Set();
-    function preloadDecor(id) { if (DECOR_IMG.includes(id) && !preloaded.has(id)) { preloaded.add(id); new Image().src = `decors/${id}.webp`; } }
+    function preloadDecor(id) { if (DECOR_IMG.includes(id) && !preloaded.has(id)) { preloaded.add(id); new Image().src = `decors/${id}.webp?v=${window.BDA_V}`; } }
     function decorSVG(id) {
-      if (DECOR_IMG.includes(id)) return `<img class="decor-img" src="decors/${id}.webp" alt="" decoding="async">`;
+      if (DECOR_IMG.includes(id)) return `<img class="decor-img" src="decors/${id}.webp?v=${window.BDA_V}" alt="" decoding="async">`;
       const N = "#10162b";
       let k = id.length * 977;
       const rnd = () => { k = (k * 9301 + 49297) % 233280; return k / 233280; };
@@ -2882,9 +2880,7 @@
       arena.classList.toggle("owned", owner !== null);
       const layer = document.createElement("div");
       layer.className = "decor-l";
-      // The painted scenes hide the animated starfield, so open skies get their own slowly drifting stars.
-      const scene = owner === null ? null : sideDecor(owner);
-      layer.innerHTML = scene ? decorSVG(scene) + (scene === "hangar" || scene === "affiche" ? "" : '<i class="decor-sky"><i class="decor-stars"></i></i>') : "";
+      layer.innerHTML = owner === null ? "" : decorSVG(sideDecor(owner));
       box.appendChild(layer);
       const old = [...box.querySelectorAll(".decor-l")].slice(0, -1);
       if (!animate || reduced) { old.forEach(e => e.remove()); return; }
