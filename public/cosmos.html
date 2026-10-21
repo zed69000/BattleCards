@@ -1663,9 +1663,9 @@
     };
     /* Scenes are drawn in a 400×860 box and cropped to the screen. The sky sits behind the opponent, the ground behind
        the player's hand, and the middle stays dark so the arena floor and the cards read first. */
-    /* Painted backgrounds (public/decors), their dark sky cut out so the animated starfield shows through;
-       the other scenes are still drawn below until they get their painting. */
-    const DECOR_IMG = ["espace", "lune", "mars", "hangar", "affiche", "saturne"];
+    /* Painted backgrounds (public/decors, skies cut out by tools/sky_alpha.py so the animated starfield shows
+       through). The drawn scenes below are kept as a fallback for any décor without a painting. */
+    const DECOR_IMG = ["espace", "lune", "mars", "jupiter", "saturne", "neptune", "hangar", "affiche", "bonbon", "nebuleuse", "neon"];
     const preloaded = new Set();
     function preloadDecor(id) { if (DECOR_IMG.includes(id) && !preloaded.has(id)) { preloaded.add(id); new Image().src = `decors/${id}.webp?v=${window.BDA_V}`; } }
     function decorSVG(id) {
