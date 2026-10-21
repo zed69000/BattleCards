@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <script>/* premier affichage de la session : l'écran du studio passe avant le menu */
-  try { if (!sessionStorage.getItem("bda_splash")) { sessionStorage.setItem("bda_splash", "1"); document.documentElement.classList.add("splash"); } } catch (e) {}</script>
+  try { if (!sessionStorage.getItem("bda_splash")) { sessionStorage.setItem("bda_splash", "1"); document.documentElement.classList.add("splash", "cover"); } } catch (e) {}</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#10162b">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.69";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.70";</script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -760,13 +760,13 @@
 
     /* ───── Écran d'ouverture du studio MusclorDuck (repris de CubeGravity) : deux secondes et demie, un toucher le passe ───── */
     #cover{display:none}
-    html.cover #cover{position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:#10162b repeating-conic-gradient(from 0deg at 50% 45%, rgba(245,196,69,.12) 0 10deg, transparent 10deg 22deg);animation:spFade .4s ease both}
-    html.cover-out #cover{animation:coverOut .35s ease forwards}
+    html.cover #cover{position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:#10162b repeating-conic-gradient(from 0deg at 50% 45%, rgba(245,196,69,.12) 0 10deg, transparent 10deg 22deg)}
+    html.cover-out #cover{animation:coverOut .6s ease forwards}
     #cover img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 0 #0a0f1e)}
-    .cover-tap{position:absolute;left:50%;white-space:nowrap;bottom:max(28px, env(safe-area-inset-bottom));translate:-50% 0;padding:8px 22px;border-radius:99px;background:var(--yellow);color:var(--navy);border:3px solid var(--navy);box-shadow:0 4px 0 #0a0f1e;font-family:"Bowlby One",sans-serif;font-size:1rem;text-transform:uppercase;animation:pulse 1.4s ease-in-out infinite}
-    @keyframes coverOut{to{opacity:0;transform:scale(1.06)}}
+    .cover-tap{position:absolute;left:50%;white-space:nowrap;bottom:max(28px, env(safe-area-inset-bottom));translate:-50% 0;padding:8px 22px;border-radius:99px;background:var(--yellow);color:var(--navy);border:3px solid var(--navy);box-shadow:0 4px 0 #0a0f1e;font-family:"Bowlby One",sans-serif;font-size:1rem;text-transform:uppercase;animation:spFade .5s ease 2.9s both, pulse 1.4s ease-in-out 3.4s infinite}
+    @keyframes coverOut{to{opacity:0}}
     #splash{display:none}
-    html.splash #splash{position:fixed;inset:0;z-index:100;display:block;background:#f0e6cf;animation:spOut .35s ease 2.45s forwards}
+    html.splash #splash{position:fixed;inset:0;z-index:100;display:block;background:#f0e6cf;animation:spOut .6s ease 2.25s forwards}
     .spBlock{position:absolute;left:7%;right:7%;top:6%;bottom:6%;border-radius:1rem;background:#d8232f;transform:rotate(-1.5deg);animation:spPress .4s cubic-bezier(.2,1.5,.4,1) both}
     #splash svg{position:absolute;left:0;top:12%;width:100%;overflow:visible}
     .spFloor,.spSmall{animation:spFade .3s ease .3s both}
@@ -4728,12 +4728,12 @@
     $("#endMenu").addEventListener("click", goMenu);
     $("#endBooster").addEventListener("click", () => { goMenu(); openCapsuleShop(); });
 
-    /* Title page after the studio logo: the game's cover art, until the player taps. */
+    /* Title page, already in place under the studio logo so the menu never shows in between; it stays until the player taps. */
     function showCover() {
       const root = document.documentElement, el = $("#cover");
+      if (!root.classList.contains("cover")) return;
       $(".cover-tap").textContent = tr("Touche pour jouer");
-      root.classList.add("cover");
-      el.addEventListener("pointerdown", () => { sfx.tap(); root.classList.add("cover-out"); setTimeout(() => root.classList.remove("cover", "cover-out"), 350); }, { once: true });
+      el.addEventListener("pointerdown", () => { sfx.tap(); root.classList.add("cover-out"); setTimeout(() => root.classList.remove("cover", "cover-out"), 600); }, { once: true });
     }
     /* Écran d'ouverture : il s'efface seul, un toucher le passe tout de suite. */
     (function () {
