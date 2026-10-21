@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.67";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.68";</script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -531,7 +531,8 @@
     #game .col { gap: 6px; position: relative; z-index: 1; }
     .decor { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
     .decor-l { position: absolute; inset: 0; opacity: 0.85; }
-    .decor-l svg { display: block; width: 100%; height: 100%; }
+    .decor-l:has(.decor-img) { opacity: 1; }
+    .decor-l svg, .decor-img { display: block; width: 100%; height: 100%; object-fit: cover; }
     /* Darker band behind the field so the arena and the cards stay readable on any scene. */
     .decor::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 95% 40% at 50% 47%, rgba(10, 15, 30, 0.82), rgba(10, 15, 30, 0.35) 100%); }
     .decor-spin { animation: spin 60s linear infinite; }
@@ -540,7 +541,7 @@
     .arena svg { display: block; width: 100%; height: 100%; overflow: visible; }
     .arena .ar-s { stroke: var(--arena); transition: stroke 600ms; } .arena .ar-f { fill: var(--arena); transition: fill 600ms; }
     .decor-prev { position: relative; width: 100%; aspect-ratio: 9 / 16; border-radius: 8px; overflow: hidden; border: 2px solid var(--navy); background: #10162b radial-gradient(circle, #f5e9cf 0 1px, transparent 1.6px) 0 0 / 13px 13px; }
-    .decor-prev svg { display: block; width: 100%; height: 100%; }
+    .decor-prev svg, .decor-prev .decor-img { display: block; width: 100%; height: 100%; object-fit: cover; }
     .cell .decor-prev { width: 36px; } .showcase .big .decor-prev { width: 66px; } .item-art .decor-prev { width: 52%; } .bp-kind .decor-prev { width: 24px; }
     .hud { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 14px; background: rgba(16, 22, 43, 0.88); border: 2px solid var(--cream); }
     .hud.active { border-color: var(--yellow); box-shadow: 0 0 16px rgba(245, 196, 69, 0.45); }
@@ -1662,7 +1663,12 @@
     };
     /* Scenes are drawn in a 400×860 box and cropped to the screen. The sky sits behind the opponent, the ground behind
        the player's hand, and the middle stays dark so the arena floor and the cards read first. */
+    /* Painted backgrounds (public/decors); the other scenes are still drawn below until they get their painting. */
+    const DECOR_IMG = ["espace", "lune", "mars", "hangar", "affiche", "saturne"];
+    const preloaded = new Set();
+    function preloadDecor(id) { if (DECOR_IMG.includes(id) && !preloaded.has(id)) { preloaded.add(id); new Image().src = `decors/${id}.webp`; } }
     function decorSVG(id) {
+      if (DECOR_IMG.includes(id)) return `<img class="decor-img" src="decors/${id}.webp" alt="" decoding="async">`;
       const N = "#10162b";
       let k = id.length * 977;
       const rnd = () => { k = (k * 9301 + 49297) % 233280; return k / 233280; };
@@ -2927,7 +2933,9 @@
       }
       // Contre l'IA, l'adversaire arbore des objets au hasard : ça montre ce qu'on peut trouver.
       if (mode !== "p2p") S.foeSkin = { dice: Object.keys(DICE)[rand(6)], back: Object.keys(BACKS)[rand(6)] };
+      preloadDecor(sideDecor(0));
       S.foeDecor = mode === "adv" ? PLANET_DECOR[CHAPTERS[STAGES[S.stage].c].planet] : mode === "p2p" ? (DECORS[(net.them || {}).decor] ? net.them.decor : "espace") : Object.keys(PLANET_DECOR).map(k => PLANET_DECOR[k])[rand(5)];
+      preloadDecor(S.foeDecor);
       setArena(null, false);
       const deck = makeDeck();
       const mine = save.loadout.slice(0, atoutSlots());
