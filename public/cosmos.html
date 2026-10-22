@@ -14,7 +14,24 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.70";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.71";</script>
+  <script>
+    /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
+       pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
+    window.UIZ = 1;
+    function fitScreen() {
+      const w = window.innerWidth, h = window.innerHeight, root = document.documentElement.style;
+      const z = Math.min(w / 480, h / 840);
+      window.UIZ = z > 1.05 ? Math.min(z, 2.4) : 1;
+      if (window.UIZ === 1) { root.zoom = ""; ["--vw", "--vh", "--dvh"].forEach(k => root.removeProperty(k)); return; }
+      root.zoom = window.UIZ;
+      root.setProperty("--vw", `${w / window.UIZ / 100}px`);
+      root.setProperty("--vh", `${h / window.UIZ / 100}px`);
+      root.setProperty("--dvh", `${h / window.UIZ / 100}px`);
+    }
+    fitScreen();
+    window.addEventListener("resize", fitScreen);
+  </script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -22,8 +39,9 @@
       color-scheme: dark;
       --navy: #1f2a44; --deep: #10162b; --cream: #f5e9cf; --orange: #f26a3d; --yellow: #f5c445; --teal: #2fa394; --violet: #5b5fc7; --pink: #d0508f;
       --ok: #7be0a4; --bad: #ff7a6b;
-      --cwb: clamp(38px, min(17.5vw, calc((100vh - 368px) / 6.05)), 78px);
-      --cwb: clamp(38px, min(17.5vw, calc((100dvh - 368px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) / 6.05)), 78px);
+      --vw: 1vw; --vh: 1vh; --dvh: 1dvh;
+      --cwb: clamp(38px, min(calc(17.5 * var(--vw)), calc((calc(100 * var(--vh)) - 368px) / 6.05)), 78px);
+      --cwb: clamp(38px, min(calc(17.5 * var(--vw)), calc((calc(100 * var(--dvh)) - 368px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) / 6.05)), 78px);
       --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -150,11 +168,11 @@
     .sheet, .coach .bubble { scrollbar-width: none; }
     .pane.on { display: flex; }
     .pane > * { flex: none; }
-    #menu .logo h1 { font-size: clamp(1.5rem, 7.6vw, 2.2rem); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e; }
+    #menu .logo h1 { font-size: clamp(1.5rem, calc(7.6 * var(--vw)), 2.2rem); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e; }
     #menu .logo small { font-size: 0.6rem; }
     /* Le duel : ta carte face à une carte inconnue */
     .versus { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; justify-items: center; width: 100%; max-width: 340px; padding: 4px 0 8px; }
-    .versus .card { --cw: clamp(84px, 26vw, 112px); }
+    .versus .card { --cw: clamp(84px, calc(26 * var(--vw)), 112px); }
     .versus .card:first-child { transform: rotate(-5deg); animation: hover 3.4s ease-in-out infinite; }
     .versus .card:last-child { transform: rotate(5deg); }
     .vsBurst { z-index: 2; margin: 0 -16px; padding: 12px 11px; font-size: 1.5rem; color: var(--orange); background: var(--cream); clip-path: polygon(0 20%, 14% 0, 32% 14%, 50% 0, 68% 16%, 86% 0, 100% 26%, 92% 52%, 100% 80%, 84% 100%, 62% 84%, 46% 100%, 28% 82%, 10% 100%, 0 70%, 8% 46%); animation: beat 1.8s ease-in-out infinite; }
@@ -181,7 +199,7 @@
     .fc-prize .card { --cw: 26px; } .fc-prize .portrait { width: 28px; height: 28px; }
     .fc-more { margin-left: auto; font-size: 0.75rem; color: rgba(245, 233, 207, 0.7); }
     /* Boutons et titres sur une ligne : un nom long est coupé proprement au lieu de tout décaler. */
-    #playBtn { width: 100%; max-width: 380px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: clamp(1rem, 5.2vw, 1.25rem); }
+    #playBtn { width: 100%; max-width: 380px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: clamp(1rem, calc(5.2 * var(--vw)), 1.25rem); }
     .boost-txt b, .boost-txt small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .rank .ln > div { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .showcase h3 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -199,8 +217,8 @@
     .offers .daily-ic { display: grid; place-items: center; height: 64px; }
     .offers .daily-ic svg { width: 42px; height: 42px; }
     @media (max-height: 760px) {
-      .hero-fan { --hcw: clamp(36px, 11vw, 52px); }
-      .hero h1 { font-size: clamp(1.4rem, 7vw, 1.9rem); }
+      .hero-fan { --hcw: clamp(36px, calc(11 * var(--vw)), 52px); }
+      .hero h1 { font-size: clamp(1.4rem, calc(7 * var(--vw)), 1.9rem); }
       .node .pic { width: 46px; height: 46px; }
       #menu .pane { gap: 8px; }
     }
@@ -341,7 +359,7 @@
     .lvl { position: relative; }
     .hero { position: relative; width: 100%; max-width: 380px; display: grid; justify-items: center; padding: 2px 0 0; overflow: hidden; }
     .hero-rays { position: absolute; left: 50%; top: 44%; width: 150%; aspect-ratio: 1; translate: -50% -50%; z-index: 0; pointer-events: none; background: repeating-conic-gradient(from 0deg, rgba(245, 196, 69, 0.2) 0 10deg, transparent 10deg 22deg); -webkit-mask: radial-gradient(circle, #000 12%, transparent 62%); mask: radial-gradient(circle, #000 12%, transparent 62%); animation: spin 26s linear infinite; }
-    .hero-fan { position: relative; z-index: 1; display: flex; justify-content: center; align-items: flex-end; height: calc(var(--hcw) * 1.42 + 18px); --hcw: clamp(42px, 13vw, 64px); }
+    .hero-fan { position: relative; z-index: 1; display: flex; justify-content: center; align-items: flex-end; height: calc(var(--hcw) * 1.42 + 18px); --hcw: clamp(42px, calc(13 * var(--vw)), 64px); }
     .hero-fan .card { --cw: var(--hcw); margin: 0 calc(var(--hcw) * -0.14); transform-origin: 50% 120%; animation: fanBob 3.2s ease-in-out infinite; animation-delay: calc(var(--i) * -0.55s); }
     .hero-fan .card:nth-child(3) { --cw: calc(var(--hcw) * 1.18); z-index: 2; }
     .hero-fan .card.flipper .card-inner { animation: heroFlip 4.6s ease-in-out infinite; }
@@ -351,7 +369,7 @@
     @keyframes heroBack { 0% { opacity: 1; } 43% { opacity: 0; } 93% { opacity: 1; } }
     .pow { position: absolute; z-index: 3; right: 2%; top: 0; padding: 8px 9px; font-size: 1rem; color: var(--navy); background: var(--yellow); clip-path: polygon(0 20%, 14% 0, 32% 14%, 50% 0, 68% 16%, 86% 0, 100% 26%, 92% 52%, 100% 80%, 84% 100%, 62% 84%, 46% 100%, 28% 82%, 10% 100%, 0 70%, 8% 46%); rotate: 12deg; animation: beat 1.5s ease-in-out infinite; }
     .pow.l { right: auto; left: 3%; top: 30%; background: var(--orange); color: var(--cream); rotate: -10deg; font-size: 0.8rem; animation-delay: -0.7s; }
-    .hero h1 { position: relative; z-index: 2; margin: -4px 0 0; font-family: "Bowlby One", sans-serif; font-weight: 400; font-size: clamp(1.5rem, 7.6vw, 2.2rem); line-height: 0.95; text-transform: uppercase; letter-spacing: 0.01em; color: var(--cream); -webkit-text-stroke: 2px #10162b; paint-order: stroke fill; text-shadow: 3px 3px 0 var(--orange), 6px 6px 0 #10162b; rotate: -3deg; animation: hover 3.2s ease-in-out infinite; }
+    .hero h1 { position: relative; z-index: 2; margin: -4px 0 0; font-family: "Bowlby One", sans-serif; font-weight: 400; font-size: clamp(1.5rem, calc(7.6 * var(--vw)), 2.2rem); line-height: 0.95; text-transform: uppercase; letter-spacing: 0.01em; color: var(--cream); -webkit-text-stroke: 2px #10162b; paint-order: stroke fill; text-shadow: 3px 3px 0 var(--orange), 6px 6px 0 #10162b; rotate: -3deg; animation: hover 3.2s ease-in-out infinite; }
     .hero h1 span { display: block; color: var(--yellow); font-size: 1.12em; }
     .hero-tag { position: relative; z-index: 2; margin-top: 6px; padding: 2px 12px; border-radius: 99px; background: var(--cream); color: var(--navy); font-size: 0.8rem; letter-spacing: 0.08em; box-shadow: 0 3px 0 #0a0f1e; rotate: -2deg; }
     #playBtn { animation: playPulse 1.6s ease-in-out infinite; }
@@ -471,8 +489,8 @@
     /* Voyage vers la planète suivante, après une victoire en aventure */
     .voyage { position: fixed; inset: 0; z-index: 55; display: none; overflow: hidden; text-align: center; }
     .voyage.on { display: block; }
-    .vy-title { position: absolute; left: 0; right: 0; top: 34%; font-size: clamp(1.8rem, 9vw, 3rem); text-transform: uppercase; color: var(--yellow); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e, 0 0 30px rgba(245, 196, 69, 0.8); animation: vyText 2.1s ease both; }
-    .vy-sub { position: absolute; left: 0; right: 0; top: 46%; font-size: clamp(1.3rem, 6.5vw, 2.1rem); color: var(--cream); text-shadow: 0 3px 0 #0a0f1e; opacity: 0; animation: vyText 2.3s ease 2.4s both; }
+    .vy-title { position: absolute; left: 0; right: 0; top: 34%; font-size: clamp(1.8rem, calc(9 * var(--vw)), 3rem); text-transform: uppercase; color: var(--yellow); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e, 0 0 30px rgba(245, 196, 69, 0.8); animation: vyText 2.1s ease both; }
+    .vy-sub { position: absolute; left: 0; right: 0; top: 46%; font-size: clamp(1.3rem, calc(6.5 * var(--vw)), 2.1rem); color: var(--cream); text-shadow: 0 3px 0 #0a0f1e; opacity: 0; animation: vyText 2.3s ease 2.4s both; }
     .vy-skip { position: absolute; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); font-size: 0.7rem; color: rgba(245, 233, 207, 0.6); }
     @keyframes vyText { 0% { opacity: 0; scale: 0.5; } 18% { opacity: 1; scale: 1.1; } 80% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1.15; } }
     .lobby-field { display: grid; gap: 4px; margin: 0 0 12px; text-align: left; font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(245, 233, 207, 0.75); }
@@ -501,7 +519,7 @@
     .pane .stack { display: grid; gap: 10px; width: 100%; max-width: 300px; }
     .wallet { padding: 4px 14px; border-radius: 99px; background: rgba(16, 22, 43, 0.86); border: 2px solid var(--yellow); color: var(--yellow); }
     .logo small { display: block; letter-spacing: 0.34em; color: var(--yellow); font-size: 0.72rem; }
-    .logo h1 { margin: 4px 0 0; font-weight: 400; font-size: clamp(2rem, 10.5vw, 3.1rem); line-height: 0.95; text-shadow: 0 4px 0 var(--orange), 0 8px 0 #0a0f1e; animation: hover 3.2s ease-in-out infinite; }
+    .logo h1 { margin: 4px 0 0; font-weight: 400; font-size: clamp(2rem, calc(10.5 * var(--vw)), 3.1rem); line-height: 0.95; text-shadow: 0 4px 0 var(--orange), 0 8px 0 #0a0f1e; animation: hover 3.2s ease-in-out infinite; }
     .logo h1 span { color: var(--yellow); }
     .section-title { margin: 4px 0 -6px; font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(245, 233, 207, 0.75); }
     .levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; max-width: 380px; }
@@ -629,7 +647,7 @@
     .pot.war::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; width: 80px; height: 80px; translate: -50% -50%; border-radius: 50%; background: conic-gradient(from 0deg, transparent, rgba(245, 196, 69, 0.85), transparent 30%, rgba(208, 80, 143, 0.8), transparent 60%, rgba(143, 147, 240, 0.85), transparent); -webkit-mask: radial-gradient(circle, transparent 30%, #000 34%, #000 62%, transparent 66%); mask: radial-gradient(circle, transparent 30%, #000 34%, #000 62%, transparent 66%); animation: spin 1.4s linear infinite; }
     .pot.war b { color: #fff; text-shadow: 0 0 12px var(--yellow), 0 2px 0 var(--orange); }
     .flycoin { position: absolute; width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff6c9, var(--yellow) 55%, #b8800e); border: 2px solid var(--navy); box-shadow: 0 0 8px var(--yellow); }
-    .countdown { position: absolute; left: 50%; top: 50%; z-index: 22; pointer-events: none; translate: -50% -50%; font-size: clamp(4rem, 26vw, 7rem); line-height: 1; color: #fff; text-shadow: 0 0 20px var(--yellow), 0 5px 0 var(--orange), 0 10px 0 #0a0f1e; animation: count 520ms cubic-bezier(.2, 1.5, .4, 1) both; }
+    .countdown { position: absolute; left: 50%; top: 50%; z-index: 22; pointer-events: none; translate: -50% -50%; font-size: clamp(4rem, calc(26 * var(--vw)), 7rem); line-height: 1; color: #fff; text-shadow: 0 0 20px var(--yellow), 0 5px 0 var(--orange), 0 10px 0 #0a0f1e; animation: count 520ms cubic-bezier(.2, 1.5, .4, 1) both; }
     @keyframes count { 0% { opacity: 0; scale: 2.6; } 30% { opacity: 1; scale: 0.9; } 70% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 0.6; } }
     .pot.bump { animation: bump 450ms ease; }
     .vs { font-size: 0.78rem; white-space: nowrap; padding: 4px 11px; border-radius: 99px; background: var(--yellow); color: var(--navy); border: 2px solid var(--navy); letter-spacing: 0.1em; box-shadow: 0 4px 0 #0a0f1e; }
@@ -652,7 +670,7 @@
     .f2 { transform: rotateY(90deg) translateZ(var(--h)); } .f5 { transform: rotateY(-90deg) translateZ(var(--h)); }
     .f3 { transform: rotateX(90deg) translateZ(var(--h)); } .f4 { transform: rotateX(-90deg) translateZ(var(--h)); }
 
-    .banner { position: absolute; left: 50%; top: 50%; z-index: 20; pointer-events: none; opacity: 0; white-space: nowrap; transform: translate(-50%, -50%); font-size: clamp(1.5rem, 8.5vw, 2.6rem); letter-spacing: 0.06em; text-transform: uppercase; color: var(--yellow); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e, 0 0 28px rgba(245, 196, 69, 0.8); }
+    .banner { position: absolute; left: 50%; top: 50%; z-index: 20; pointer-events: none; opacity: 0; white-space: nowrap; transform: translate(-50%, -50%); font-size: clamp(1.5rem, calc(8.5 * var(--vw)), 2.6rem); letter-spacing: 0.06em; text-transform: uppercase; color: var(--yellow); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e, 0 0 28px rgba(245, 196, 69, 0.8); }
     .banner.show { animation: banner 1200ms ease both; }
     /* Bandeau sombre derrière le mot, et le centre de la table s'efface le temps de l'annonce. */
     .banner::before { content: ""; position: absolute; left: -100vw; right: -100vw; top: -10px; bottom: -10px; z-index: -1; background: linear-gradient(90deg, transparent 20%, rgba(8, 11, 22, 0.92) 38%, rgba(8, 11, 22, 0.92) 62%, transparent 80%); }
@@ -676,7 +694,7 @@
     .shock.bad::after { background: radial-gradient(circle closest-side, transparent 20%, rgba(255, 95, 168, 0.35) 70%, rgba(255, 95, 168, 0.8) 100%); }
     .spark.fat { width: 9px; height: 30px; }
     @keyframes shock { from { opacity: 1; transform: scale(0.2); } to { opacity: 0; transform: scale(15); } }
-    .banner.mega { width: min(94vw, 460px); white-space: normal; text-align: center; line-height: 1.02; font-size: clamp(2rem, 11vw, 3.6rem); color: #fff; text-shadow: 0 0 6px #fff, 0 3px 0 var(--orange), 0 6px 0 var(--pink), 0 9px 0 #0a0f1e, 0 0 40px var(--yellow); }
+    .banner.mega { width: min(calc(94 * var(--vw)), 460px); white-space: normal; text-align: center; line-height: 1.02; font-size: clamp(2rem, calc(11 * var(--vw)), 3.6rem); color: #fff; text-shadow: 0 0 6px #fff, 0 3px 0 var(--orange), 0 6px 0 var(--pink), 0 9px 0 #0a0f1e, 0 0 40px var(--yellow); }
     .banner.mega.show { animation: mega 1700ms cubic-bezier(.2, 1.5, .4, 1) both; }
     .banner.mega.bad { color: var(--cream); text-shadow: 0 3px 0 var(--orange), 0 6px 0 #0a0f1e, 0 0 30px var(--orange); }
     @keyframes mega { 0% { opacity: 0; scale: 3.2; rotate: -14deg; } 14% { opacity: 1; scale: 0.88; rotate: 5deg; } 24% { scale: 1.12; rotate: -3deg; } 34% { scale: 1; rotate: 0deg; } 82% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1.5; } }
@@ -773,8 +791,8 @@
     .spTrail{animation:spFade .3s ease .55s both}
     /* l'ombre monte sur le mur depuis les pattes */
     .spBig{transform-box:fill-box;transform-origin:50% 100%;animation:spGrow .55s cubic-bezier(.2,1.5,.4,1) .6s both}
-    .spName{position:absolute;left:0;right:0;top:62%;text-align:center;font:400 clamp(2.4rem,13vw,3.6rem)/.9 "Bowlby One",Rubik,Arial,sans-serif;text-transform:uppercase;color:#17130f;animation:spPop .35s cubic-bezier(.2,1.7,.4,1) 1.15s both}
-    .spTag{position:absolute;left:0;right:0;top:calc(62% + clamp(4.6rem,25vw,6.9rem));text-align:center;font:900 1.1rem/1 Rubik,Arial,sans-serif;letter-spacing:.34em;text-indent:.34em;text-transform:uppercase;color:#f0e6cf;animation:spFade .3s ease 1.4s both}
+    .spName{position:absolute;left:0;right:0;top:62%;text-align:center;font:400 clamp(2.4rem,calc(13 * var(--vw)),3.6rem)/.9 "Bowlby One",Rubik,Arial,sans-serif;text-transform:uppercase;color:#17130f;animation:spPop .35s cubic-bezier(.2,1.7,.4,1) 1.15s both}
+    .spTag{position:absolute;left:0;right:0;top:calc(62% + clamp(4.6rem,calc(25 * var(--vw)),6.9rem));text-align:center;font:900 1.1rem/1 Rubik,Arial,sans-serif;letter-spacing:.34em;text-indent:.34em;text-transform:uppercase;color:#f0e6cf;animation:spFade .3s ease 1.4s both}
     @keyframes spPress{from{transform:rotate(-1.5deg) scale(1.14);opacity:0}to{transform:rotate(-1.5deg);opacity:1}}
     @keyframes spFade{from{opacity:0}to{opacity:1}}
     @keyframes spGrow{from{transform:scale(.6,0);opacity:0}to{transform:none;opacity:1}}
@@ -808,7 +826,7 @@
     /* ───── Feuilles ───── */
     .overlay { position: fixed; inset: 0; z-index: 50; display: none; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) 16px max(16px, env(safe-area-inset-bottom, 0px)); background: rgba(8, 11, 22, 0.82); }
     .overlay.on { display: grid; }
-    .sheet { width: min(440px, 100%); max-height: 92vh; max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow: auto; padding: 18px; border-radius: 18px; background: var(--navy); border: 2px solid var(--cream); box-shadow: 0 8px 0 #0a0f1e; text-align: center; }
+    .sheet { width: min(440px, 100%); max-height: calc(92 * var(--vh)); max-height: calc(calc(100 * var(--dvh)) - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); overflow: auto; padding: 18px; border-radius: 18px; background: var(--navy); border: 2px solid var(--cream); box-shadow: 0 8px 0 #0a0f1e; text-align: center; }
     .sheet h2 { margin: 0 0 10px; font-weight: 400; font-size: 1.5rem; color: var(--yellow); }
     .sheet .stack { display: grid; gap: 10px; }
     .sheet .score { font-size: 3rem; margin: 4px 0 6px; }
@@ -851,7 +869,7 @@
     @keyframes barIn { from { width: 0; } }
     .end-rain { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
     .end-rain .mcoin { position: absolute; top: -40px; width: 26px; height: 26px; font-size: 0.7rem; animation: coinFall var(--d) linear var(--dl) infinite; }
-    @keyframes coinFall { 0% { transform: translateY(0) rotateY(0deg); opacity: 0; } 8% { opacity: 1; } 100% { transform: translateY(110vh) rotateY(1080deg); opacity: 0.9; } }
+    @keyframes coinFall { 0% { transform: translateY(0) rotateY(0deg); opacity: 0; } 8% { opacity: 1; } 100% { transform: translateY(calc(110 * var(--vh))) rotateY(1080deg); opacity: 0.9; } }
     .reward { margin: 0 0 12px; padding: 8px; border-radius: 12px; background: rgba(245, 196, 69, 0.14); border: 2px dashed var(--yellow); color: var(--yellow); }
     .help { text-align: left; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.9rem; line-height: 1.45; user-select: text; }
     .help ol, .help ul { margin: 0 0 12px; padding-left: 1.2rem; }
@@ -865,7 +883,7 @@
 
     .at-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 8px; justify-items: center; margin: 6px 0 12px; }
     .at { position: relative; padding: 0; border: 0; background: none; }
-    .at .card { --cw: clamp(58px, 19vw, 84px); }
+    .at .card { --cw: clamp(58px, calc(19 * var(--vw)), 84px); }
     .at.locked .card { filter: grayscale(1) brightness(0.42); }
     .at.locked::after { content: "?"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 2rem; color: var(--cream); }
     .at.on .front { box-shadow: 0 0 0 3px var(--yellow), 0 0 16px var(--yellow); }
@@ -891,7 +909,7 @@
     .pack-art { width: 74px; height: 74px; border-radius: 50%; overflow: hidden; border: 2px solid var(--cream); background: var(--violet); color: var(--violet); }
     .pack-art svg { display: block; width: 100%; height: 100%; }
     .cap-slot { display: grid; justify-items: center; gap: 6px; }
-    .cap-slot .card { --cw: clamp(70px, 23vw, 98px); }
+    .cap-slot .card { --cw: clamp(70px, calc(23 * var(--vw)), 98px); }
     .cap-slot small { min-height: 1.2em; font-size: 0.68rem; color: var(--yellow); }
     .cap-slot.dealt { animation: rise 520ms cubic-bezier(.2, 1.3, .4, 1) backwards; }
     /* Booster stage: slow poster rays behind a violet turntable; the rays turn gold for a legendary. */
@@ -940,7 +958,7 @@
     #love { position: fixed; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; }
     #love i { position: absolute; bottom: -60px; font-style: normal; font-size: var(--s); opacity: 0; animation: loveUp var(--d) ease-in var(--dl) forwards; }
     @keyframes loveUp { 0% { opacity: 0; transform: translateY(0) scale(0.6); } 10% { opacity: 1; } 100% { opacity: 0.9; transform: translate(var(--x), -115vh) rotate(var(--r)) scale(1.1); } }
-    #love .love-msg { position: absolute; left: 50%; top: 42%; translate: -50% -50%; width: max-content; max-width: calc(100vw - 32px); padding: 14px 28px; border-radius: 32px; background: var(--pink); color: #fff; border: 3px solid var(--cream); box-shadow: 0 6px 0 #0a0f1e, 0 0 40px rgba(208, 80, 143, 0.8); font-family: "Bowlby One", "Righteous", sans-serif; font-size: clamp(1.8rem, 10vw, 3rem); line-height: 1.08; text-align: center; text-shadow: 0 3px 0 #8a2457; animation: loveMsg 4.2s cubic-bezier(.2, 1.4, .4, 1) both; }
+    #love .love-msg { position: absolute; left: 50%; top: 42%; translate: -50% -50%; width: max-content; max-width: calc(calc(100 * var(--vw)) - 32px); padding: 14px 28px; border-radius: 32px; background: var(--pink); color: #fff; border: 3px solid var(--cream); box-shadow: 0 6px 0 #0a0f1e, 0 0 40px rgba(208, 80, 143, 0.8); font-family: "Bowlby One", "Righteous", sans-serif; font-size: clamp(1.8rem, calc(10 * var(--vw)), 3rem); line-height: 1.08; text-align: center; text-shadow: 0 3px 0 #8a2457; animation: loveMsg 4.2s cubic-bezier(.2, 1.4, .4, 1) both; }
     @keyframes loveMsg { 0% { opacity: 0; scale: 0.3; rotate: -10deg; } 15% { opacity: 1; scale: 1.1; rotate: 3deg; } 25% { scale: 1; rotate: 0deg; } 85% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1.3; } }
     @keyframes coachIn { from { opacity: 0; scale: 0.85; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; } }
@@ -2283,7 +2301,9 @@
       clearTimeout(banner.timer);
       banner.timer = setTimeout(() => field.classList.remove("hush"), 1150);
     }
-    function center(el) { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
+    /* Rectangle en pixels CSS : getBoundingClientRect et les pointeurs comptent en pixels d'écran, agrandis par UIZ. */
+    function rectOf(el) { const r = el.getBoundingClientRect(), z = window.UIZ; return { left: r.left / z, top: r.top / z, width: r.width / z, height: r.height / z, right: r.right / z, bottom: r.bottom / z }; }
+    function center(el) { const r = rectOf(el); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
     function burst(target, colors = [YE, "#fff", OR], count = 14, reach = 1) {
       const { x, y } = center(target);
       for (let i = 0; i < count; i += 1) {
@@ -2298,7 +2318,7 @@
       }
     }
     function floatText(target, text, neg = false, big = false) {
-      const y = Math.max(64, center(target).y), x = Math.max(56, Math.min(window.innerWidth - 56, center(target).x));
+      const y = Math.max(64, center(target).y), x = Math.max(56, Math.min(window.innerWidth / window.UIZ - 56, center(target).x));
       const el = document.createElement("span");
       el.className = `float${neg ? " neg" : ""}${big ? " big" : ""}`;
       el.textContent = text;
@@ -2391,7 +2411,7 @@
     async function playCard(p, slotName, card, faceDown, opts = {}) {
       const handEl = p === 0 ? $(`#hand .card[data-id="${card.id}"]`) : $("#oppHand i:last-child") || $("#oppHand");
       const thrown = Boolean(opts.from);
-      const from = opts.from || (handEl || $("#hand")).getBoundingClientRect();
+      const from = opts.from || rectOf(handEl || $("#hand"));
       if (thrown) sfx.whoosh();
       S.hands[p] = S.hands[p].filter(c => c.id !== card.id);
       S.board[slotName][p] = card;
@@ -2413,7 +2433,7 @@
         el.style.setProperty("--r", `${(n % 2 ? 1 : -1) * (2 + rand(5))}deg`);
       } else slot.innerHTML = "";
       slot.appendChild(el);
-      const to = el.getBoundingClientRect();
+      const to = rectOf(el);
       const dx = from.left + from.width / 2 - (to.left + to.width / 2);
       const dy = from.top + from.height / 2 - (to.top + to.height / 2);
       el.style.zIndex = 30;
@@ -2559,7 +2579,7 @@
         const spot = $("#coachSpot"), box = $("#coachBubble");
         box.innerHTML = `<div class="guide">${charArt(save.char)}</div><div>${named(html)}</div><div class="row"><button class="skip">${tr("Ne plus rien m'expliquer")}</button><button class="btn">${tr("Compris")}</button></div>`;
         box.style.top = box.style.bottom = "";
-        const r = target && target.getBoundingClientRect();
+        const r = target && rectOf(target);
         if (r && r.width) {
           const pad = 6;
           Object.assign(spot.style, { left: `${r.left - pad}px`, top: `${r.top - pad}px`, width: `${r.width + pad * 2}px`, height: `${r.height + pad * 2}px` });
@@ -2567,7 +2587,7 @@
         $("#coach").classList.add("on");
         // On mesure la bulle une fois affichée, puis on la loge sous ou sur la zone montrée, sans jamais
         // déborder de la partie visible de l'écran (encoche, barre de Safari, bandeau d'installation).
-        const safe = safeInsets(), vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        const safe = safeInsets(), vh = (window.visualViewport ? window.visualViewport.height : window.innerHeight) / window.UIZ;
         const lo = safe.top + 8, hi = vh - safe.bottom - 8;
         box.style.maxHeight = `${hi - lo}px`;
         const h = box.offsetHeight;
@@ -2901,7 +2921,7 @@
       front.className = "decor-front";
       front.style.background = front.style.color = ARENA_COLORS[owner];
       box.appendChild(front);
-      front.animate([{ transform: `translateY(${fromBottom ? "100vh" : "0"})`, opacity: 1 }, { transform: `translateY(${fromBottom ? "0" : "100vh"})`, opacity: 1, offset: 0.92 }, { transform: `translateY(${fromBottom ? "0" : "100vh"})`, opacity: 0 }], { duration: dur, easing: "cubic-bezier(.6, 0, .3, 1)" }).onfinish = () => front.remove();
+      front.animate([{ transform: `translateY(${fromBottom ? "calc(100 * var(--vh))" : "0"})`, opacity: 1 }, { transform: `translateY(${fromBottom ? "0" : "calc(100 * var(--vh))"})`, opacity: 1, offset: 0.92 }, { transform: `translateY(${fromBottom ? "0" : "calc(100 * var(--vh))"})`, opacity: 0 }], { duration: dur, easing: "cubic-bezier(.6, 0, .3, 1)" }).onfinish = () => front.remove();
       arena.animate([{ transform: "translate(-50%, -50%) scale(1)" }, { transform: "translate(-50%, -50%) scale(1.06)", offset: 0.5 }, { transform: "translate(-50%, -50%) scale(1)" }], { duration: 700, delay: dur * 0.6, easing: "ease-out" });
       buzz(25);
     }
@@ -3120,21 +3140,23 @@
       const release = () => { start = null; dragging = false; const t = target(); if (t) t.classList.remove("hot"); };
       el.addEventListener("pointerdown", e => {
         if (S.busy) return;
-        start = { x: e.clientX, y: e.clientY };
-        last = { x: e.clientX, y: e.clientY, t: performance.now() };
+        const px = e.clientX / window.UIZ, py = e.clientY / window.UIZ;
+        start = { x: px, y: py };
+        last = { x: px, y: py, t: performance.now() };
         vel = { x: 0, y: 0 }; peak = 0; dy = 0;
         try { el.setPointerCapture(e.pointerId); } catch (err) { /* pointeur synthétique */ }
       });
       el.addEventListener("pointermove", e => {
         if (!start || S.phase === "mull") return;
-        const dx = e.clientX - start.x;
-        dy = e.clientY - start.y;
+        const px = e.clientX / window.UIZ, py = e.clientY / window.UIZ;
+        const dx = px - start.x;
+        dy = py - start.y;
         if (!dragging && Math.hypot(dx, dy) > 6) { dragging = true; el.classList.add("dragging"); describe(card); }
         if (!dragging) return;
         const now = performance.now(), dt = Math.max(1, now - last.t);
-        vel = { x: vel.x * 0.5 + ((e.clientX - last.x) / dt) * 0.5, y: vel.y * 0.5 + ((e.clientY - last.y) / dt) * 0.5 };
+        vel = { x: vel.x * 0.5 + ((px - last.x) / dt) * 0.5, y: vel.y * 0.5 + ((py - last.y) / dt) * 0.5 };
         peak = Math.min(peak, vel.y);
-        last = { x: e.clientX, y: e.clientY, t: now };
+        last = { x: px, y: py, t: now };
         el.style.transform = `translate(${dx}px, ${dy}px) rotate(${Math.max(-18, Math.min(18, vel.x * 14))}deg) scale(1.12)`;
         const t = target();
         if (t) t.classList.toggle("hot", willPlay());
@@ -3142,7 +3164,7 @@
       el.addEventListener("pointerup", () => {
         if (!start) return;
         const wasDrag = dragging, play = wasDrag && willPlay();
-        const opts = { from: el.getBoundingClientRect(), spin: Math.max(-40, Math.min(40, vel.x * 30)), force: Math.min(1, -peak / 2) };
+        const opts = { from: rectOf(el), spin: Math.max(-40, Math.min(40, vel.x * 30)), force: Math.min(1, -peak / 2) };
         release();
         if (!wasDrag || S.swapMode || S.phase === "mull") return onHandCard(card);
         if (play) return confirmCard(card, opts);
@@ -3550,7 +3572,7 @@
 
     /* Égalité : tout reste en jeu, chacun met une carte en otage puis retourne une carte à l'aveugle. */
     const stock = p => S.decks[p].length + S.hands[p].length;
-    const deckRect = p => $(`#deck${p}`).getBoundingClientRect();
+    const deckRect = p => rectOf($(`#deck${p}`));
     async function drawBlind(p) {
       if (S.decks[p].length) return S.decks[p].shift();
       if (!S.hands[p].length) return null;

@@ -4,7 +4,8 @@ Visuels dans ce dossier :
 - `icon-512.png` : icône 512 × 512 (PNG 32 bits).
 - `feature-graphic.png` : bannière 1024 × 500.
 - `screenshots/` : 6 captures téléphone 1080 × 2160 (accueil, partie, booster, collection, décors, boutique).
-- `screenshots-tablet/` : les mêmes 6 écrans en 1440 × 2560 pour les tablettes 7 et 10 pouces.
+- `screenshots-tablet-7/` : les 6 écrans en 1080 × 1920 pour les tablettes 7 pouces.
+- `screenshots-tablet-10/` : les 6 écrans en 1440 × 2560 pour les tablettes 10 pouces.
 
 Catégorie : **Jeux › Cartes**. Tags conseillés : cartes, stratégie, solo, espace.
 
