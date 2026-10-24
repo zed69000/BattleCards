@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.79";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.80";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -2880,7 +2880,7 @@
     function serverConn() {
       const on = {}, outbox = [];
       let ws = null, ping = null, quit = false, seat = null, match = null, seatToken = null;
-      let heard = Date.now(), warned = false, partnerAway = false, lostAt = 0, retry = null;
+      let heard = Date.now(), warned = false, partnerAway = false, lostAt = 0, retry = null, lastQ = 0;
       const fire = (ev, x) => { if (on[ev]) on[ev](x); };
       const raw = d => { if (ws && ws.readyState === 1 && !lostAt) ws.send(d); else outbox.push(d); };
       const conn = {
@@ -2905,7 +2905,7 @@
         retry = setTimeout(() => { retry = null; open(true); }, 1500);
       }
       function open(resume) {
-        ws = new WebSocket(resume ? `${GAME_SERVER}?resume=${match}&seat=${seat}&token=${seatToken}` : GAME_SERVER);
+        ws = new WebSocket(resume ? `${GAME_SERVER}?resume=${match}&seat=${seat}&token=${seatToken}&last=${lastQ}` : GAME_SERVER);
         ws.onopen = () => {
           clearInterval(ping);
           // Signe de vie toutes les 5 s pendant la partie : sans nouvelles (et sans annonce du serveur),
@@ -2927,6 +2927,8 @@
           heard = Date.now();
           warned = false;
           if (msg.t === "hb") return;
+          // Coups numérotés : un coup déjà reçu (renvoyé après une reconnexion) est ignoré
+          if (msg.q) { if (msg.q <= lastQ) return; lastQ = msg.q; }
           if (msg.sys === "wait") { seekUI(true); return lobbyMsg(tr("Recherche d'un adversaire…")); }
           if (msg.sys === "start") { seekUI(false); ({ match, seat, token: seatToken } = msg); net.host = Boolean(msg.host); conn.open = true; return fire("open"); }
           if (msg.sys === "resumed") { const was = lostAt; lostAt = 0; while (outbox.length) ws.send(outbox.shift()); if (was && inGame()) banner(tr("Reconnecté !")); return; }

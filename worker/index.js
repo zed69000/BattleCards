@@ -109,8 +109,10 @@ const die = () => 1 + (crypto.getRandomValues(new Uint32Array(1))[0] % 6);
 
 /* Lobby: pairs waiting players, relays their moves and rolls the dice.
    A player whose phone sleeps or loses the network keeps their seat for AWAY_MS: the other player is told,
-   the moves meant for the absent one are kept, and the game resumes as soon as they reconnect with their
-   seat token. Past the delay, the other player wins by forfeit. */
+   the game resumes as soon as they reconnect with their seat token. Every move gets a number per seat and
+   the last ones are kept, so a phone that comes back asks for everything after the last number it got
+   (moves sent to a connection that died in its sleep are not lost). Past the delay, the other player wins
+   by forfeit. */
 const AWAY_MS = 60000;
 const token = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, "0")).join("");
 
@@ -126,7 +128,7 @@ export class Lobby extends DurableObject {
     const [client, server] = Object.values(new WebSocketPair());
     const id = crypto.randomUUID();
     this.ctx.acceptWebSocket(server, [id]);
-    if (resume) await this.rejoin(server, id, resume, Number(url.searchParams.get("seat")), url.searchParams.get("token"));
+    if (resume) await this.rejoin(server, id, resume, Number(url.searchParams.get("seat")), url.searchParams.get("token"), Number(url.searchParams.get("last")) || 0);
     else { server.serializeAttachment({ id, partner: null }); await this.pair(server); }
     return new Response(null, { status: 101, webSocket: client });
   }
@@ -142,7 +144,7 @@ export class Lobby extends DurableObject {
     const other = this.ctx.getWebSockets().find(o => o !== ws && this.info(o).partner === null);
     if (!other) return this.send(ws, { sys: "wait" });
     const them = this.info(other), match = crypto.randomUUID(), tokens = [token(), token()];
-    await this.ctx.storage.put(`m:${match}`, { ids: [them.id, me.id], tokens, away: [0, 0] });
+    await this.ctx.storage.put(`m:${match}`, { ids: [them.id, me.id], tokens, away: [0, 0], seq: [0, 0] });
     other.serializeAttachment({ ...them, partner: me.id, match, seat: 0 });
     ws.serializeAttachment({ ...me, partner: them.id, match, seat: 1 });
     this.send(other, { sys: "start", host: true, match, seat: 0, token: tokens[0] });
@@ -150,7 +152,7 @@ export class Lobby extends DurableObject {
   }
 
   /* Back from sleep: the seat is given back, the kept moves are delivered, the other player is told. */
-  async rejoin(ws, id, match, seat, tok) {
+  async rejoin(ws, id, match, seat, tok, last) {
     const m = await this.match(match);
     if (!m || (seat !== 0 && seat !== 1) || m.tokens[seat] !== tok) {
       ws.serializeAttachment({ id, partner: "gone" });
@@ -164,20 +166,24 @@ export class Lobby extends DurableObject {
     m.ids[seat] = id; m.away[seat] = 0;
     await this.ctx.storage.put(`m:${match}`, m);
     ws.serializeAttachment({ id, partner: partnerId, match, seat });
-    const kept = (await this.ctx.storage.get(`b:${match}:${seat}`)) || [];
-    await this.ctx.storage.delete(`b:${match}:${seat}`);
-    for (const d of kept) this.send(ws, d);
+    const kept = (await this.ctx.storage.get(`h:${match}:${seat}`)) || [];
+    for (const d of kept) if (d.q > last) this.send(ws, d);
     this.send(ws, { sys: "resumed" });
     const partner = this.find(partnerId);
     if (partner) { partner.serializeAttachment({ ...this.info(partner), partner: id }); this.send(partner, { sys: "back" }); }
   }
 
-  /* Message for the other seat: delivered now, or kept until they come back. */
-  async deliver(match, m, seat, data) {
+  /* Move for a seat: numbered, kept in that seat's recent history, delivered now if they are here. */
+  async deliver(match, m, seat, msg) {
+    m.seq = m.seq || [0, 0];
+    m.seq[seat] += 1;
+    const out = { ...msg, q: m.seq[seat] }, key = `h:${match}:${seat}`, kept = (await this.ctx.storage.get(key)) || [];
+    kept.push(out);
+    if (kept.length > 300) kept.splice(0, kept.length - 300);
+    await this.ctx.storage.put(key, kept);
+    await this.ctx.storage.put(`m:${match}`, m);
     const ws = m.away[seat] ? null : this.find(m.ids[seat]);
-    if (ws) return this.send(ws, data);
-    const key = `b:${match}:${seat}`, kept = (await this.ctx.storage.get(key)) || [];
-    if (kept.length < 300) { kept.push(data); await this.ctx.storage.put(key, kept); }
+    if (ws) this.send(ws, out);
   }
 
   async webSocketMessage(ws, data) {
@@ -191,18 +197,20 @@ export class Lobby extends DurableObject {
     if (!m) return;
     const other = 1 - me.seat;
     if (msg.t === "bye") return this.end(me.match, m, me.seat);
+    // Signes de vie : seulement à qui est là, sans numéro ni historique
+    if (msg.t === "hb") { const ws2 = m.away[other] ? null : this.find(m.ids[other]); if (ws2) this.send(ws2, data); return; }
     if (msg.t === "rollreq") {
-      const roll = JSON.stringify({ t: "roll", v: die() });
-      this.send(ws, roll);
+      const roll = { t: "roll", v: die() };
+      await this.deliver(me.match, m, me.seat, roll);
       return this.deliver(me.match, m, other, roll);
     }
-    return this.deliver(me.match, m, other, data);
+    return this.deliver(me.match, m, other, msg);
   }
 
   /* A player leaves on purpose (or for good): the other one is told at once. */
   async end(match, m, seat) {
     const partner = m.away[1 - seat] ? null : this.find(m.ids[1 - seat]), mine = this.find(m.ids[seat]);
-    await this.ctx.storage.delete([`m:${match}`, `b:${match}:0`, `b:${match}:1`]);
+    await this.ctx.storage.delete([`m:${match}`, `h:${match}:0`, `h:${match}:1`]);
     for (const ws of [partner, mine]) if (ws) { try { ws.serializeAttachment({ ...this.info(ws), partner: "gone", match: null }); } catch (e) { /* closing */ } }
     if (partner) { this.send(partner, { sys: "left" }); try { partner.close(1000, "partner left"); } catch (e) { /* closed */ } }
   }
