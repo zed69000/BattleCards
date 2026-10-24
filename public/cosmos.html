@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.75";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.76";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -1056,12 +1056,14 @@
             <button class="btn ghost" id="tutoBtn">Revoir toutes les explications</button>
             <button class="btn ghost" id="menuHelp">Règles</button>
             <button class="btn ghost" id="menuSound">Son : oui</button>
+            <button class="btn ghost" id="menuMusic">Musique : oui</button>
             <button class="btn ghost" id="langBtn" data-no-i18n>🌐 Français</button>
             <button class="btn ghost" id="fsBtn">Plein écran</button>
             <button class="btn ghost danger" id="resetBtn">Recommencer à zéro</button>
           </div>
           <p class="about" id="aboutVer" data-no-i18n></p>
           <a class="linkish" href="confidentialite.html" target="_blank" rel="noopener">Confidentialité</a>
+          <p class="about">Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).</p>
           <div class="section-title">Code secret</div>
           <div class="join"><input id="devCode" maxlength="8" inputmode="numeric" autocomplete="off" placeholder="••••" aria-label="Code secret"><button class="btn" id="devGo">OK</button></div>
           <div class="devbox" id="devBox" hidden>
@@ -1148,6 +1150,7 @@
       <button class="btn" id="resumeBtn">Reprendre</button>
       <button class="btn ghost" id="pauseHelp">Règles</button>
       <button class="btn ghost" id="pauseSound">Son : oui</button>
+      <button class="btn ghost" id="pauseMusic">Musique : oui</button>
       <button class="btn hot" id="quitBtn">Retour au menu</button>
       <button class="btn teal" id="devWin" hidden>Test : victoire immédiate</button>
       <button class="btn ghost" id="devLose" hidden>Test : défaite immédiate</button>
@@ -1350,6 +1353,8 @@
   </div>
 
   <script src="casts.js"></script>
+  <script src="music.js?v=5"></script>
+  <script src="music-tracks.js?v=6"></script>
   <script>
     const $ = sel => document.querySelector(sel);
     const tr = BDAi18n.t; // traduction : tr("texte français", {variables})
@@ -3119,6 +3124,7 @@
     }
     function newGame(mode = "adv", pre = null, opt = {}) {
       gameId += 1;
+      music("calm");
       closeCoach();
       S.mode = mode;
       S.resident = mode === "arena" && Boolean(opt.resident);
@@ -3176,7 +3182,7 @@
       warp(1100);
       startRound();
     }
-    function goMenu() { battleFx(0); gameId += 1; if (S.mode === "p2p") { closeNet(); S.mode = "arena"; } closeCoach(); holdWarp(0); $("#voyage").classList.remove("on"); renderMenu(); showTab(S.mode === "arena" ? "arena" : "adv"); show("menu"); offerInstall(); }
+    function goMenu() { music("menu"); battleFx(0); gameId += 1; if (S.mode === "p2p") { closeNet(); S.mode = "arena"; } closeCoach(); holdWarp(0); $("#voyage").classList.remove("on"); renderMenu(); showTab(S.mode === "arena" ? "arena" : "adv"); show("menu"); offerInstall(); }
 
     async function startRound(battle = 0) {
       const game = gameId;
@@ -3775,11 +3781,13 @@
     /* Ambiance de bataille : battements de cœur qui accélèrent avec la mise, éclairs, vignette. */
     function battleFx(level) {
       clearInterval(battleFx.beat); clearTimeout(battleFx.zap);
-      if (!level) { document.body.classList.remove("battle"); return; }
+      if (!level) { document.body.classList.remove("battle"); if (musicNow === MUSIC.battle && $("#game").classList.contains("on")) music("calm"); return; }
+      music("battle", Math.min(3, level));
       const ms = Math.max(420, 900 - level * 160);
       document.body.style.setProperty("--beat", `${ms}ms`);
       document.body.classList.add("battle");
-      const thump = () => { tone(58, 0.14, "sine", 0.16); tone(46, 0.12, "sine", 0.12, 0.16); };
+      // Battement de cœur seulement sans musique : la musique de bataille a déjà ses timbales
+      const thump = () => { if (musicNow) return; tone(58, 0.14, "sine", 0.16); tone(46, 0.12, "sine", 0.12, 0.16); };
       thump();
       battleFx.beat = setInterval(thump, ms);
       const zap = () => {
@@ -4075,6 +4083,8 @@
         : lost ? `${them.replace('class="portrait', 'class="portrait top')}${me.replace('class="portrait', 'class="portrait low')}`
           : `${me.replace('class="portrait', 'class="portrait top')}${them.replace('class="portrait', 'class="portrait low')}`;
       $(".end-sheet").classList.toggle("win", won);
+      if (musicNow === MUSIC.battle) music("calm");
+      if (won || lost) jingle(won);
       // Pluie de pièces à la victoire
       $("#endRain").innerHTML = won && !reduced ? Array.from({ length: 26 }, (_, i) => `<span class="mcoin${i % 5 === 0 ? " c2" : i % 7 === 0 ? " c1" : ""}" style="left:${rand(96)}%;--d:${2.2 + Math.random() * 1.8}s;--dl:${(Math.random() * 2.4).toFixed(2)}s">★</span>`).join("") : "";
       $("#endBooster").hidden = save.crystals < boosterCost();
@@ -4830,6 +4840,30 @@
     function toggleSound() {
       soundOn = !soundOn;
       for (const id of ["menuSound", "pauseSound"]) $(`#${id}`).textContent = soundOn ? tr("Son : oui") : tr("Son : non");
+      music(musicKind());
+    }
+
+    /* ═════ Musique (music.js) ═════
+       Robot Disco dans les menus, Apesanteur pendant la partie, Grille quand une bataille éclate (elle monte
+       d'un cran à chaque nouvelle égalité), puis un jingle de victoire ou de défaite. */
+    const MUSIC = { menu: "disco", calm: "apesanteur", battle: "grille" };
+    let musicNow = null;
+    const musicOn = () => Boolean(window.BDAMusic) && soundOn && save.music !== false;
+    const musicKind = () => ($("#game").classList.contains("on") ? (S.battle && S.phase !== "over" ? "battle" : "calm") : "menu");
+    function music(kind, level = 1) {
+      if (!window.BDAMusic) return;
+      if (!musicOn()) { if (musicNow) { BDAMusic.stop(0.8); musicNow = null; } return; }
+      const name = MUSIC[kind];
+      if (musicNow === name) { if (kind === "battle") BDAMusic.setLevel(level); return; }
+      musicNow = name;
+      BDAMusic.cross(name, { level, fade: musicNow === MUSIC.battle ? 1.2 : 2.4 });
+    }
+    function jingle(won) { if (musicOn()) BDAMusic.jingle(won ? "victoire" : "defaite"); }
+    function toggleMusic() {
+      save.music = save.music === false;
+      persist();
+      for (const id of ["menuMusic", "pauseMusic"]) $(`#${id}`).textContent = save.music !== false ? tr("Musique : oui") : tr("Musique : non");
+      music(musicKind());
     }
     let helpFrom = null;
     function openHelp(from) { helpFrom = from; if (from) $(`#${from}`).classList.remove("on"); $("#help").classList.add("on"); }
@@ -4841,7 +4875,10 @@
     $("#chNext").addEventListener("click", () => { chapterView += 1; S.stage = save.stage = Math.min(save.camp.cleared, 4 * chapterView + 3); sfx.tap(); renderCampaign(); });
     for (const btn of document.querySelectorAll("#subtabs button")) btn.addEventListener("click", () => { colSub = btn.dataset.sub; colPick = null; sfx.tap(); renderCollection(); });
     // Appel, autre appli, écran verrouillé : la partie se met en pause toute seule.
-    document.addEventListener("visibilitychange", () => { if (document.hidden && $("#game").classList.contains("on") && !["over"].includes(S.phase)) $("#pause").classList.add("on"); });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && $("#game").classList.contains("on") && !["over"].includes(S.phase)) $("#pause").classList.add("on");
+      if (window.BDAMusic && BDAMusic.ctx()) { if (document.hidden) BDAMusic.ctx().suspend(); else if (musicNow) BDAMusic.ctx().resume(); }
+    });
     $("#helpAtouts").innerHTML = ATOUT_IDS.map(id => `<li><b>${tr(ATOUTS[id].name)}</b> (${tr(RARITY[ATOUTS[id].rarity].name).toLowerCase()}) : ${tr(ATOUTS[id].desc)}</li>`).join("");
     for (const btn of document.querySelectorAll("#tabs button")) btn.addEventListener("click", () => { sfx.tap(); showTab(btn.dataset.tab); });
     $("#tutoBtn").addEventListener("click", () => { save.seen = {}; save.mute = false; S.stage = save.stage = 0; chapterView = 0; persist(); newGame("adv"); });
@@ -4867,6 +4904,14 @@
     $("#pauseHelp").addEventListener("click", () => openHelp("pause"));
     $("#helpClose").addEventListener("click", () => { $("#help").classList.remove("on"); if (helpFrom) $(`#${helpFrom}`).classList.add("on"); });
     $("#menuSound").addEventListener("click", toggleSound);
+    $("#menuMusic").addEventListener("click", toggleMusic);
+    $("#pauseMusic").addEventListener("click", toggleMusic);
+    for (const id of ["menuMusic", "pauseMusic"]) $(`#${id}`).textContent = save.music !== false ? tr("Musique : oui") : tr("Musique : non");
+    // Sans page de garde (retour dans l'app), la musique démarre au premier toucher ; les autres morceaux se chargent ensuite
+    document.addEventListener("pointerdown", () => {
+      if (!musicNow && !document.documentElement.classList.contains("cover")) music(musicKind());
+      if (window.BDAMusic) setTimeout(() => BDAMusic.load([...new Set(Object.values(MUSIC).concat(["victoire", "defaite"]).flatMap(n => BDAMusic.tracks[n].uses || []))]).catch(() => {}), 4000);
+    }, { once: true, capture: true });
     /* Langue : même système que Cube Gravity (i18n.js). Changer de langue recharge la page. */
     $("#langBtn").textContent = `🌐 ${BDAi18n.LANGS[BDAi18n.lang]}`;
     $("#langGrid").innerHTML = Object.entries(BDAi18n.LANGS).map(([code, name]) => `<button class="btn ${code === BDAi18n.lang ? "on" : "ghost"}" data-lang="${code}">${name}</button>`).join("");
@@ -4966,7 +5011,7 @@
       const root = document.documentElement, el = $("#cover");
       if (!root.classList.contains("cover")) return;
       $(".cover-tap").textContent = tr("Touche pour jouer");
-      el.addEventListener("pointerdown", () => { sfx.tap(); root.classList.add("cover-out"); setTimeout(() => root.classList.remove("cover", "cover-out"), 600); }, { once: true });
+      el.addEventListener("pointerdown", () => { sfx.tap(); music("menu"); root.classList.add("cover-out"); setTimeout(() => root.classList.remove("cover", "cover-out"), 600); }, { once: true });
     }
     /* Écran d'ouverture : il s'efface seul, un toucher le passe tout de suite. */
     (function () {

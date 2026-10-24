@@ -728,5 +728,8 @@ BDAi18n.add("pt", {
   "{name} ne répond plus…": "{name} não responde…",
   "Affronte des joueurs du monde entier et grimpe au classement.": "Enfrenta jogadores de todo o mundo e sobe na classificação.",
   "Partie classée : victoire <b>+24 à +32 ♛</b>, défaite <b>−8 à −12 ♛</b>": "Partida classificada: vitória <b>+24 a +32 ♛</b>, derrota <b>−8 a −12 ♛</b>",
-  "Voir tout le classement": "Ver a classificação completa"
+  "Voir tout le classement": "Ver a classificação completa",
+  "Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).": "Música: instrumentos FluidR3_GM de Frank Wen (CC BY 3.0).",
+  "Musique : non": "Música: não",
+  "Musique : oui": "Música: sim"
 });

@@ -728,5 +728,8 @@ BDAi18n.add("en", {
   "{name} ne répond plus…": "{name} isn't responding…",
   "Affronte des joueurs du monde entier et grimpe au classement.": "Take on players from all over the world and climb the ranking.",
   "Partie classée : victoire <b>+24 à +32 ♛</b>, défaite <b>−8 à −12 ♛</b>": "Ranked game: win <b>+24 to +32 ♛</b>, loss <b>−8 to −12 ♛</b>",
-  "Voir tout le classement": "See the full ranking"
+  "Voir tout le classement": "See the full ranking",
+  "Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).": "Music: FluidR3_GM instruments by Frank Wen (CC BY 3.0).",
+  "Musique : non": "Music: off",
+  "Musique : oui": "Music: on"
 });

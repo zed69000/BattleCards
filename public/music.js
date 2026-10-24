@@ -517,6 +517,7 @@
     if (q) p.T.filt.Q.setValueAtTime(q, t);
   };
   BDAMusic.setup = setup;
+  BDAMusic.ctx = () => ctx;
   BDAMusic.output = () => comp;
   BDAMusic.tracks = {};
   window.BDAMusic = BDAMusic;

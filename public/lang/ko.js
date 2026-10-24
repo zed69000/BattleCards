@@ -728,5 +728,8 @@ BDAi18n.add("ko", {
   "{name} ne répond plus…": "{name}님이 응답하지 않습니다…",
   "Affronte des joueurs du monde entier et grimpe au classement.": "전 세계 플레이어와 대결하고 순위를 올리세요.",
   "Partie classée : victoire <b>+24 à +32 ♛</b>, défaite <b>−8 à −12 ♛</b>": "랭크 게임: 승리 <b>+24~+32 ♛</b>, 패배 <b>−8~−12 ♛</b>",
-  "Voir tout le classement": "전체 순위 보기"
+  "Voir tout le classement": "전체 순위 보기",
+  "Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).": "음악: Frank Wen의 FluidR3_GM 악기 (CC BY 3.0).",
+  "Musique : non": "음악: 끔",
+  "Musique : oui": "음악: 켬"
 });

@@ -728,5 +728,8 @@ BDAi18n.add("ja", {
   "{name} ne répond plus…": "{name}の応答がありません…",
   "Affronte des joueurs du monde entier et grimpe au classement.": "世界中のプレイヤーと対戦して、ランキングを駆け上がろう。",
   "Partie classée : victoire <b>+24 à +32 ♛</b>, défaite <b>−8 à −12 ♛</b>": "ランク戦：勝利 <b>+24〜+32 ♛</b>、敗北 <b>−8〜−12 ♛</b>",
-  "Voir tout le classement": "ランキングをすべて見る"
+  "Voir tout le classement": "ランキングをすべて見る",
+  "Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).": "音楽：Frank Wen による FluidR3_GM 楽器（CC BY 3.0）。",
+  "Musique : non": "音楽：オフ",
+  "Musique : oui": "音楽：オン"
 });
