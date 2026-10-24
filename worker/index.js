@@ -73,7 +73,9 @@ export class Board extends DurableObject {
       try { body = await request.json(); } catch (e) { return json({ error: "json" }, 400); }
       const id = String(body.id || "");
       if (!/^[a-z0-9]{16,40}$/.test(id)) return json({ error: "id" }, 400);
-      const name = String(body.name || "").replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 14) || "Joueur";
+      let name = String(body.name || "").replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 14);
+      // Without a first name, older versions sent a translated "you" (Toi, You, Player…): use a fixed nickname instead
+      if (!name || /^(toi|you|player|tú|du|você|你|キミ|나|ami|friend|amigo|freund|joueur)$/i.test(name)) name = `pilote${id.slice(0, 4)}`;
       const cast = CASTS.includes(body.cast) ? body.cast : "mars";
       let t = Math.max(0, Math.min(3000, Math.round(Number(body.t) || 0)));
       const old = this.ctx.storage.sql.exec("SELECT t FROM ranking WHERE id = ?", id).toArray()[0];

@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.82";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.83";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -1900,7 +1900,7 @@
       if (rankBusy || (!force && save.rank && Date.now() - (save.rank.at || 0) < 60000)) return;
       rankBusy = true;
       try {
-        const res = await fetch(`${RANK_API}/score`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: playerId(), name: myName(), cast: CHARS[save.char].tribe, t: save.trophies }) });
+        const res = await fetch(`${RANK_API}/score`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: playerId(), name: save.name && save.name !== tr("Ami") ? save.name : "", cast: CHARS[save.char].tribe, t: save.trophies }) });
         if (res.ok) {
           const data = await res.json();
           if (data && data.top) { save.rank = { ...data, at: Date.now() }; persist(); renderRank(); if ($("#rankSheet").classList.contains("on")) renderRankFull(); }
