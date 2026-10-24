@@ -732,5 +732,16 @@ BDAi18n.add("ja", {
   "Jouer en ligne": "オンライン対戦",
   "Partie en ligne": "オンライン対戦",
   "Recherche d'un adversaire…": "対戦相手を探しています…",
-  "en ligne": "オンライン"
+  "en ligne": "オンライン",
+  "Adversaire déconnecté": "相手の接続が切れました",
+  "Chercher un autre joueur": "別のプレイヤーを探す",
+  "Continuer à chercher": "探し続ける",
+  "Jouer contre un robot": "ロボットと対戦",
+  "Nouveau duel": "新しい対戦",
+  "Personne n'est disponible pour l'instant. Tu peux attendre encore, ou jouer tout de suite contre un robot.": "今は誰もいません。もう少し待つか、すぐにロボットと対戦できます。",
+  "Ta connexion internet a été coupée : la partie ne peut pas continuer.": "インターネット接続が切れました。対戦を続けられません。",
+  "Victoire par forfait": "不戦勝",
+  "{name} a quitté la partie.": "{name}が対戦から抜けました。",
+  "{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.": "{name}の接続が切れました。あなたの勝利です。戦利品は獲得されます。",
+  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name}の接続が切れました。あなたの勝利です。戦利品はそのままです。"
 });

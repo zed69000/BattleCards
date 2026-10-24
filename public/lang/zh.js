@@ -732,5 +732,16 @@ BDAi18n.add("zh", {
   "Jouer en ligne": "在线对战",
   "Partie en ligne": "在线对局",
   "Recherche d'un adversaire…": "正在寻找对手…",
-  "en ligne": "在线"
+  "en ligne": "在线",
+  "Adversaire déconnecté": "对手已断开",
+  "Chercher un autre joueur": "寻找其他玩家",
+  "Continuer à chercher": "继续寻找",
+  "Jouer contre un robot": "与机器人对战",
+  "Nouveau duel": "新的对决",
+  "Personne n'est disponible pour l'instant. Tu peux attendre encore, ou jouer tout de suite contre un robot.": "目前没有可匹配的玩家。你可以继续等待，或立即与机器人对战。",
+  "Ta connexion internet a été coupée : la partie ne peut pas continuer.": "你的网络连接已中断：对局无法继续。",
+  "Victoire par forfait": "对手弃权获胜",
+  "{name} a quitté la partie.": "{name} 已离开对局。",
+  "{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.": "{name} 已断开连接：你获得胜利，战利品已入账。",
+  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name} 已断开连接。你获得胜利，战利品保留。"
 });

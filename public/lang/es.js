@@ -732,5 +732,16 @@ BDAi18n.add("es", {
   "Jouer en ligne": "Jugar en línea",
   "Partie en ligne": "Partida en línea",
   "Recherche d'un adversaire…": "Buscando un rival…",
-  "en ligne": "en línea"
+  "en ligne": "en línea",
+  "Adversaire déconnecté": "Rival desconectado",
+  "Chercher un autre joueur": "Buscar otro jugador",
+  "Continuer à chercher": "Seguir buscando",
+  "Jouer contre un robot": "Jugar contra un robot",
+  "Nouveau duel": "Nuevo duelo",
+  "Personne n'est disponible pour l'instant. Tu peux attendre encore, ou jouer tout de suite contre un robot.": "No hay nadie disponible ahora mismo. Puedes seguir esperando o jugar ya contra un robot.",
+  "Ta connexion internet a été coupée : la partie ne peut pas continuer.": "Tu conexión a internet se ha cortado: la partida no puede continuar.",
+  "Victoire par forfait": "Victoria por abandono",
+  "{name} a quitté la partie.": "{name} ha abandonado la partida.",
+  "{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.": "{name} se ha desconectado: la victoria es tuya y cobras tu botín.",
+  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name} se ha desconectado. La victoria es tuya y conservas tu botín."
 });

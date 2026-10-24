@@ -732,5 +732,16 @@ BDAi18n.add("ko", {
   "Jouer en ligne": "온라인 플레이",
   "Partie en ligne": "온라인 게임",
   "Recherche d'un adversaire…": "상대를 찾는 중…",
-  "en ligne": "온라인"
+  "en ligne": "온라인",
+  "Adversaire déconnecté": "상대 연결 끊김",
+  "Chercher un autre joueur": "다른 플레이어 찾기",
+  "Continuer à chercher": "계속 찾기",
+  "Jouer contre un robot": "로봇과 대전",
+  "Nouveau duel": "새 결투",
+  "Personne n'est disponible pour l'instant. Tu peux attendre encore, ou jouer tout de suite contre un robot.": "지금은 대전할 사람이 없습니다. 더 기다리거나 바로 로봇과 대전할 수 있습니다.",
+  "Ta connexion internet a été coupée : la partie ne peut pas continuer.": "인터넷 연결이 끊겼습니다. 게임을 계속할 수 없습니다.",
+  "Victoire par forfait": "기권승",
+  "{name} a quitté la partie.": "{name}님이 게임을 떠났습니다.",
+  "{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.": "{name}님의 연결이 끊겼습니다. 승리는 당신의 것이며 전리품을 받습니다.",
+  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name}님의 연결이 끊겼습니다. 승리는 당신의 것이며 전리품은 그대로 유지됩니다."
 });

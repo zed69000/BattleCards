@@ -66,15 +66,16 @@ export class Lobby extends DurableObject {
     partner.send(data);
   }
 
+  /* The partner is told first: the closing socket may refuse any further call. */
   leave(ws) {
     const me = this.info(ws);
-    const partner = this.find(me.partner);
-    ws.serializeAttachment({ ...me, partner: "gone" });
-    if (partner) {
+    const partner = me.partner === "gone" ? null : this.find(me.partner);
+    if (partner && partner !== ws) {
       this.send(partner, { sys: "left" });
-      partner.serializeAttachment({ ...this.info(partner), partner: "gone" });
+      try { partner.serializeAttachment({ ...this.info(partner), partner: "gone" }); } catch (e) { /* closing */ }
       try { partner.close(1000, "partner left"); } catch (e) { /* already closed */ }
     }
+    try { ws.serializeAttachment({ ...me, partner: "gone" }); } catch (e) { /* closing */ }
     try { ws.close(1000, "bye"); } catch (e) { /* already closed */ }
   }
 

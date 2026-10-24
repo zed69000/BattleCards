@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.72";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.73";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -497,6 +497,12 @@
     .sheet input { width: 100%; padding: 0.6rem 0.8rem; border-radius: 12px; border: 2px solid var(--cream); background: rgba(16, 22, 43, 0.85); color: var(--cream); font: inherit; font-size: 1rem; user-select: text; }
     .join { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
     .join input { text-align: center; letter-spacing: 0.3em; text-transform: uppercase; }
+    .seek { display: grid; justify-items: center; gap: 6px; margin: 4px 0 2px; }
+    .seek-radar { position: relative; width: 70px; height: 70px; border-radius: 50%; background: radial-gradient(circle, var(--teal) 0 8px, rgba(47, 163, 148, 0.18) 9px 34px, transparent 35px); }
+    .seek-radar i { position: absolute; inset: 0; border: 3px solid var(--teal); border-radius: 50%; opacity: 0; animation: seekPing 1.8s ease-out infinite; }
+    .seek-radar i + i { animation-delay: 0.9s; }
+    @keyframes seekPing { 0% { transform: scale(0.15); opacity: 0.9; } 100% { transform: scale(1); opacity: 0; } }
+    .seek b { font-size: 1.15rem; letter-spacing: 0.08em; color: var(--yellow); }
     .room-code { margin: 4px 0 10px; font-size: 2.6rem; letter-spacing: 0.22em; text-indent: 0.22em; color: var(--yellow); text-shadow: 0 3px 0 var(--orange); user-select: text; }
     #lobbyMsg { min-height: 2.6em; margin: 12px 0; }
     .friend { width: 100%; max-width: 380px; padding: 12px; border-radius: 16px; background: rgba(91, 95, 199, 0.28); border: 2px solid var(--violet); display: grid; gap: 8px; }
@@ -1180,6 +1186,14 @@
       </div>
       <div class="stack" id="lobbyOnline" hidden>
         <button class="btn hot" id="seekBtn">Chercher un adversaire</button>
+      </div>
+      <div class="seek" id="seekBox" hidden>
+        <div class="seek-radar" aria-hidden="true"><i></i><i></i></div>
+        <b id="seekTime">0:00</b>
+      </div>
+      <div class="stack" id="seekChoice" hidden>
+        <button class="btn hot" id="seekBot">Jouer contre un robot</button>
+        <button class="btn" id="seekMore">Continuer à chercher</button>
       </div>
       <div id="lobbyWait" hidden>
         <div class="room-code" id="roomCode"></div>
@@ -2673,25 +2687,45 @@
     function closeNet() {
       const { conn, peer } = net;
       Object.assign(net, { conn: null, peer: null, online: false, them: null, queue: {}, waiters: {} });
+      clearInterval(seekUI.timer);
       try { if (conn) conn.close(); } catch (e) { /* déjà fermée */ }
       try { if (peer) peer.destroy(); } catch (e) { /* déjà détruit */ }
     }
-    function netLost() {
+    /* Fin de la liaison. Si c'est l'adversaire qui part (ou ne répond plus), la partie s'arrête sur une victoire
+       par forfait : on le dit clairement et le butin déjà gagné est encaissé. Si c'est notre connexion qui tombe,
+       on l'explique avant de revenir au menu. */
+    function netLost(reason) {
       if (!net.conn) return;
-      const playing = duel() && S.phase !== "over", online = net.online;
+      const phase = S.phase, online = net.online, inGame = duel() && phase !== "over";
+      const mine = reason === "lost" || navigator.onLine === false;
       closeNet();
-      if (!playing) {
-        if (online && $("#lobby").classList.contains("on")) { $("#seekBtn").disabled = false; lobbyMsg(tr("La connexion avec ton adversaire a été perdue.")); }
+      if (duel() && phase === "over") {
+        $("#endText").textContent = tr("{name} a quitté la partie.", { name: foe() });
+        $("#endAgain").disabled = false;
+        $("#endAgain").textContent = online ? tr("Chercher un autre joueur") : tr("Nouveau duel");
+        return;
+      }
+      if (!inGame) {
+        if ($("#lobby").classList.contains("on")) { seekUI(false); $("#seekBtn").disabled = false; lobbyMsg(tr("La connexion avec ton adversaire a été perdue.")); }
         return;
       }
       gameId += 1;
       closeCoach();
       holdWarp(0);
-      S.mode = "arena";
-      renderMenu();
-      showTab("arena");
-      show("menu");
-      openLobby(tr("La connexion avec ton adversaire a été perdue."), online);
+      if (mine) {
+        S.mode = "arena";
+        renderMenu();
+        showTab("arena");
+        show("menu");
+        openLobby(tr("Ta connexion internet a été coupée : la partie ne peut pas continuer."), online);
+        return;
+      }
+      S.ended = "forfeit";
+      S.busy = true;
+      setPrompt(tr("{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.", { name: foe() }));
+      banner(tr("Adversaire déconnecté"), "bad");
+      const game = gameId;
+      setTimeout(() => { if (game === gameId) endGame(); }, 2200);
     }
     function loadPeerJS() {
       if (window.Peer) return Promise.resolve();
@@ -2760,6 +2794,8 @@
       $("#lobbyHome").hidden = online;
       $("#lobbyOnline").hidden = !online;
       $("#seekBtn").disabled = false;
+      $("#seekBox").hidden = true;
+      $("#seekChoice").hidden = true;
       $("#lobbyWait").hidden = true;
       lobbyMsg(message);
       $("#lobby").classList.add("on");
@@ -2806,25 +2842,61 @@
         send: msg => { if (ws.readyState === 1) ws.send(JSON.stringify(msg)); },
         close: () => { quit = true; try { ws.close(); } catch (e) { /* déjà fermée */ } }
       };
-      ws.onopen = () => { ping = setInterval(() => { if (ws.readyState === 1) ws.send("ping"); }, 25000); };
+      // Pendant la partie, chacun envoie un signe de vie toutes les 5 s : sans nouvelles de l'adversaire
+      // depuis 40 s (téléphone éteint, réseau perdu sans fermeture propre), il est considéré comme parti.
+      let heard = Date.now();
+      const left = () => { if (!conn.open) return; conn.open = false; quit = true; try { ws.close(); } catch (e) { /* déjà fermée */ } fire("close", "left"); };
+      ws.onopen = () => {
+        ping = setInterval(() => {
+          if (ws.readyState !== 1) return;
+          if (!conn.open) { ws.send("ping"); return; }
+          ws.send(JSON.stringify({ t: "hb" }));
+          if (Date.now() - heard > 40000) left();
+        }, 5000);
+      };
       ws.onmessage = e => {
         if (e.data === "pong") return;
         let msg;
         try { msg = JSON.parse(e.data); } catch (err) { return; }
-        if (msg.sys === "wait") return lobbyMsg(tr("Recherche d'un adversaire…"));
-        if (msg.sys === "start") { net.host = Boolean(msg.host); conn.open = true; return fire("open"); }
-        if (msg.sys === "left") return fire("close");
+        heard = Date.now();
+        if (msg.t === "hb") return;
+        if (msg.sys === "wait") { seekUI(true); return lobbyMsg(tr("Recherche d'un adversaire…")); }
+        if (msg.sys === "start") { seekUI(false); net.host = Boolean(msg.host); conn.open = true; return fire("open"); }
+        if (msg.sys === "left") return left();
         fire("data", msg);
       };
       ws.onclose = () => {
         clearInterval(ping);
         if (quit) return;
-        if (conn.open) { conn.open = false; fire("close"); return; }
+        if (conn.open) { conn.open = false; fire("close", "lost"); return; }
+        seekUI(false);
         $("#seekBtn").disabled = false;
         lobbyMsg(tr("Impossible de joindre le serveur de jeu. Vérifie ta connexion internet."));
         closeNet();
       };
       return conn;
+    }
+    /* Recherche en cours : radar et chronomètre. Après 30 s sans personne, on le dit et on propose un robot
+       (annoncé comme tel) ou de continuer à chercher. */
+    function seekUI(on) {
+      clearInterval(seekUI.timer);
+      $("#seekBox").hidden = !on;
+      $("#seekChoice").hidden = true;
+      $("#lobbyOnline").hidden = on || $("#lobbyTitle").textContent !== tr("Partie en ligne");
+      if (!on) return;
+      const t0 = Date.now();
+      let offered = false;
+      const tick = () => {
+        const sec = Math.floor((Date.now() - t0) / 1000);
+        $("#seekTime").textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
+        if (sec >= 30 && !offered) {
+          offered = true;
+          $("#seekChoice").hidden = false;
+          lobbyMsg(tr("Personne n'est disponible pour l'instant. Tu peux attendre encore, ou jouer tout de suite contre un robot."));
+        }
+      };
+      tick();
+      seekUI.timer = setInterval(tick, 1000);
     }
     function seekOnline() {
       saveName();
@@ -2833,6 +2905,12 @@
       $("#seekBtn").disabled = true;
       lobbyMsg(tr("Connexion au serveur…"));
       wire(serverConn());
+    }
+    function seekBot() {
+      seekUI(false);
+      closeNet();
+      $("#lobby").classList.remove("on");
+      newGame("arena");
     }
     /* L'hôte distribue : mêmes cartes pour les deux, et autant d'atouts de chaque côté (le plus petit des deux choix). */
     function dealDuel() {
@@ -3031,7 +3109,7 @@
       const theirs = shuffle(ATOUT_IDS).slice(0, mode === "adv" ? Math.min(mine.length, STAGES[S.stage].foeAtouts) : mine.length);
       Object.assign(S, {
         decks: pre ? pre.decks : [inject(deck.slice(0, DECK_SIZE), mine, "a"), inject(deck.slice(26, 26 + DECK_SIZE), theirs, "b")],
-        hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 3 : 1) + aiBonus(q, "bonusFuel")), radar: [false, false], battle: 0, lockAsked: false, ended: null, vanHidden: [false, false], pot: [], round: 0, first: pre ? pre.first : rand(2), phase: "idle", busy: true,
+        hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 3 : 1) + aiBonus(q, "bonusFuel")), radar: [false, false], battle: 0, lockAsked: false, ended: null, online: mode === "p2p" && net.online, vanHidden: [false, false], pot: [], round: 0, first: pre ? pre.first : rand(2), phase: "idle", busy: true,
         revealed: false, sel: null, board: emptyBoard(), war: null, spy: null, fx: new Set()
       });
       $("#ava0").innerHTML = charArt(save.char);
@@ -3851,8 +3929,9 @@
     async function endGame() {
       const game = gameId;
       S.phase = "over";
-      const [a, b] = S.loot, won = a > b, lost = a < b, arena = S.mode === "arena";
-      $("#endTitle").textContent = won ? (S.ended === "claim" ? tr("Victoire assurée") : tr("Victoire")) : lost ? (S.ended === "flee" ? tr("Repli") : tr("Défaite")) : tr("Match nul");
+      const forfeit = S.ended === "forfeit";
+      const [a, b] = S.loot, won = forfeit || a > b, lost = !forfeit && a < b, arena = S.mode === "arena";
+      $("#endTitle").textContent = won ? (S.ended === "claim" ? tr("Victoire assurée") : forfeit ? tr("Victoire par forfait") : tr("Victoire")) : lost ? (S.ended === "flee" ? tr("Repli") : tr("Défaite")) : tr("Match nul");
       $("#endScore").textContent = `${a} — ${b}`;
       $("#endScore").title = tr("Points de butin");
       const notes = [];   // { v: visuel, t: titre, s: sous-titre, hot: mise en avant }
@@ -3865,8 +3944,9 @@
       const unlocked = [], gemParts = [];
       if (S.mode === "p2p") {
         gain = won ? 20 : 10;
-        $("#endText").textContent = won ? tr("Tu as battu {name} !", { name: foe() }) : lost ? tr("{name} remporte ce duel.", { name: foe() }) : tr("Égalité parfaite entre amis.");
+        $("#endText").textContent = forfeit ? tr("{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.", { name: foe() }) : won ? tr("Tu as battu {name} !", { name: foe() }) : lost ? tr("{name} remporte ce duel.", { name: foe() }) : tr("Égalité parfaite entre amis.");
         head = tr("Duel amical · +{xp} XP", { xp: dXp });
+        if (forfeit) $("#endAgain").textContent = S.online ? tr("Chercher un autre joueur") : tr("Nouveau duel");
       } else if (arena) {
         const above = S.rival.t >= save.trophies;
         const before = { league: leagueOf(save.trophies), rank: myRank() };
@@ -4785,6 +4865,13 @@
     $("#quitBtn").addEventListener("click", goMenu);
     $("#endAgain").addEventListener("click", async () => {
       if (S.mode !== "p2p") { if (S.mode === "arena") S.rival = null; return newGame(S.mode); }
+      if (!net.conn) {
+        const online = S.online;
+        goMenu();
+        openLobby("", online);
+        if (online) seekOnline();
+        return;
+      }
       // Revanche entre amis : il faut que les deux la demandent, puis l'hôte redistribue.
       $("#endAgain").disabled = true;
       $("#endText").textContent = tr("Revanche demandée. En attente de {name}…", { name: foe() });
@@ -4796,6 +4883,8 @@
     $("#friendBtn").addEventListener("click", () => openLobby());
     $("#onlineBtn").addEventListener("click", () => openLobby("", true));
     $("#seekBtn").addEventListener("click", seekOnline);
+    $("#seekBot").addEventListener("click", seekBot);
+    $("#seekMore").addEventListener("click", () => { $("#seekChoice").hidden = true; lobbyMsg(tr("Recherche d'un adversaire…")); });
     $("#hostBtn").addEventListener("click", hostDuel);
     $("#joinBtn").addEventListener("click", () => joinDuel($("#joinCode").value));
     $("#lobbyClose").addEventListener("click", () => { if (!duel()) closeNet(); $("#lobby").classList.remove("on"); });

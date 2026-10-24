@@ -732,5 +732,16 @@ BDAi18n.add("en", {
   "Jouer en ligne": "Play online",
   "Partie en ligne": "Online game",
   "Recherche d'un adversaire…": "Looking for an opponent…",
-  "en ligne": "online"
+  "en ligne": "online",
+  "Adversaire déconnecté": "Opponent disconnected",
+  "Chercher un autre joueur": "Find another player",
+  "Continuer à chercher": "Keep searching",
+  "Jouer contre un robot": "Play against a robot",
+  "Nouveau duel": "New duel",
+  "Personne n'est disponible pour l'instant. Tu peux attendre encore, ou jouer tout de suite contre un robot.": "Nobody is available right now. You can keep waiting, or play a robot right away.",
+  "Ta connexion internet a été coupée : la partie ne peut pas continuer.": "Your internet connection dropped: the game can't go on.",
+  "Victoire par forfait": "Victory by forfeit",
+  "{name} a quitté la partie.": "{name} left the game.",
+  "{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.": "{name} disconnected: the win is yours, and your loot is cashed in.",
+  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name} disconnected. The win is yours, and you keep your loot."
 });

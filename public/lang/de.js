@@ -732,5 +732,16 @@ BDAi18n.add("de", {
   "Jouer en ligne": "Online spielen",
   "Partie en ligne": "Online-Partie",
   "Recherche d'un adversaire…": "Suche einen Gegner…",
-  "en ligne": "online"
+  "en ligne": "online",
+  "Adversaire déconnecté": "Gegner getrennt",
+  "Chercher un autre joueur": "Anderen Spieler suchen",
+  "Continuer à chercher": "Weitersuchen",
+  "Jouer contre un robot": "Gegen einen Roboter spielen",
+  "Nouveau duel": "Neues Duell",
+  "Personne n'est disponible pour l'instant. Tu peux attendre encore, ou jouer tout de suite contre un robot.": "Gerade ist niemand verfügbar. Du kannst weiter warten oder sofort gegen einen Roboter spielen.",
+  "Ta connexion internet a été coupée : la partie ne peut pas continuer.": "Deine Internetverbindung ist abgebrochen: Die Partie kann nicht weitergehen.",
+  "Victoire par forfait": "Sieg durch Aufgabe",
+  "{name} a quitté la partie.": "{name} hat die Partie verlassen.",
+  "{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.": "{name} ist getrennt: Der Sieg gehört dir, und deine Beute wird ausgezahlt.",
+  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name} ist getrennt. Der Sieg gehört dir, und du behältst deine Beute."
 });
