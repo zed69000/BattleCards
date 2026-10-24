@@ -59,7 +59,7 @@ function residents(now) {
 export class Board extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env);
-    ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS players (id TEXT PRIMARY KEY, name TEXT NOT NULL, cast TEXT NOT NULL, t INTEGER NOT NULL, seen INTEGER NOT NULL)");
+    ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS players (id TEXT PRIMARY KEY, name TEXT NOT NULL, tribe TEXT NOT NULL, t INTEGER NOT NULL, seen INTEGER NOT NULL)");
   }
 
   async fetch(request) {
@@ -76,7 +76,7 @@ export class Board extends DurableObject {
       // A single game moves trophies by a few dozen at most: bigger jumps are trimmed.
       if (old && t > old.t + 40) t = old.t + 40;
       if (!old && t > 1500) t = 1500;
-      this.ctx.storage.sql.exec("INSERT INTO players (id, name, cast, t, seen) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET name = excluded.name, cast = excluded.cast, t = excluded.t, seen = excluded.seen", id, name, cast, t, Date.now());
+      this.ctx.storage.sql.exec("INSERT INTO players (id, name, tribe, t, seen) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET name = excluded.name, tribe = excluded.tribe, t = excluded.t, seen = excluded.seen", id, name, cast, t, Date.now());
       return json(this.rank(id));
     }
     if (url.pathname === "/api/rank") return json(this.rank(url.searchParams.get("id") || ""));
@@ -86,8 +86,8 @@ export class Board extends DurableObject {
   /* The top of the ranking, and the player with their neighbours. */
   rank(id) {
     const now = Date.now();
-    const rows = this.ctx.storage.sql.exec("SELECT id, name, cast, t FROM players WHERE seen > ?", now - 30 * 86400000).toArray();
-    const list = residents(now).concat(rows.map(r => ({ n: r.name, c: r.cast, t: r.t, me: r.id === id ? 1 : 0 })));
+    const rows = this.ctx.storage.sql.exec("SELECT id, name, tribe, t FROM players WHERE seen > ?", now - 30 * 86400000).toArray();
+    const list = residents(now).concat(rows.map(r => ({ n: r.name, c: r.tribe, t: r.t, me: r.id === id ? 1 : 0 })));
     list.sort((x, y) => y.t - x.t || (x.me ? -1 : y.me ? 1 : 0));
     list.forEach((r, i) => { r.r = i + 1; });
     const at = list.findIndex(r => r.me);
