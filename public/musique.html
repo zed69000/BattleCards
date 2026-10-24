@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <title>Musiques · La Bataille Galactique</title>
+  <style>
+    :root { --navy: #1f2a44; --deep: #10162b; --cream: #f5e9cf; --orange: #f26a3d; --yellow: #f5c445; --teal: #2fa394; --pink: #d0508f; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: radial-gradient(ellipse at 50% -10%, #2a2f6b 0, var(--deep) 60%) fixed, var(--deep); color: var(--cream); font: 15px/1.5 ui-sans-serif, system-ui, sans-serif; }
+    main { max-width: 760px; margin: 0 auto; padding: 28px 16px 120px; }
+    h1, h2, h3 { font-family: "Righteous", sans-serif; font-weight: 400; margin: 0; }
+    h1 { font-size: 1.9rem; color: var(--yellow); text-shadow: 0 3px 0 var(--orange); }
+    .lead { color: rgba(245, 233, 207, 0.75); margin: 6px 0 22px; }
+    h2 { font-size: 1.15rem; margin: 26px 0 4px; letter-spacing: 0.04em; }
+    .hint { margin: 0 0 10px; font-size: 0.86rem; color: rgba(245, 233, 207, 0.65); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+    .card { position: relative; padding: 14px 14px 12px; border-radius: 16px; background: rgba(31, 42, 68, 0.92); border: 2px solid rgba(245, 233, 207, 0.25); }
+    .card.on { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(47, 163, 148, 0.25); }
+    .card h3 { font-size: 1.05rem; color: var(--yellow); }
+    .card p { margin: 4px 0 10px; font-size: 0.86rem; color: rgba(245, 233, 207, 0.8); }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    button { font: inherit; font-family: "Righteous", sans-serif; cursor: pointer; border-radius: 999px; border: 2px solid var(--cream); background: var(--navy); color: var(--cream); padding: 7px 14px; }
+    button.play { background: var(--orange); border-color: var(--orange); color: #fff; min-width: 92px; }
+    .card.on button.play { background: var(--teal); border-color: var(--teal); }
+    button.lvl { padding: 6px 11px; }
+    button.lvl.sel { background: var(--yellow); border-color: var(--yellow); color: var(--deep); }
+    label.choose { margin-left: auto; display: flex; gap: 6px; align-items: center; font-size: 0.85rem; cursor: pointer; }
+    .eq { display: none; gap: 3px; align-items: flex-end; height: 18px; position: absolute; right: 14px; top: 14px; }
+    .card.on .eq { display: flex; }
+    .eq i { width: 4px; background: var(--teal); border-radius: 2px; animation: eq 0.9s ease-in-out infinite; }
+    .eq i:nth-child(2) { animation-delay: 0.2s; } .eq i:nth-child(3) { animation-delay: 0.45s; } .eq i:nth-child(4) { animation-delay: 0.1s; }
+    @keyframes eq { 0%, 100% { height: 4px; } 50% { height: 18px; } }
+    .demo { margin-top: 26px; padding: 16px; border-radius: 16px; background: rgba(91, 95, 199, 0.22); border: 2px dashed rgba(245, 233, 207, 0.35); }
+    .demo p { margin: 4px 0 10px; font-size: 0.88rem; }
+    #demoState { font-family: "Righteous", sans-serif; color: var(--yellow); }
+    .bar { position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 16px; background: rgba(16, 22, 43, 0.96); border-top: 2px solid rgba(245, 233, 207, 0.2); }
+    .bar .in { max-width: 760px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    #now { flex: 1; min-width: 180px; font-family: "Righteous", sans-serif; }
+    #choice { width: 100%; font-size: 0.85rem; color: rgba(245, 233, 207, 0.75); }
+    input[type=range] { accent-color: var(--teal); }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Musiques à choisir</h1>
+  <p class="lead">Joué en direct par le jeu, avec de vrais instruments enregistrés. Mets un casque ou des écouteurs pour entendre l'espace stéréo et la réverbération. Coche ton préféré dans chaque catégorie.</p>
+
+  <h2>Menus</h2>
+  <p class="hint">Électro façon Daft Punk, une pointe de cartoon.</p>
+  <div class="grid" data-cat="menu">
+    <div class="card" data-track="disco"><div class="eq"><i></i><i></i><i></i><i></i></div>
+      <h3>A · Robot Disco</h3>
+      <p>French house filtrée, 118 BPM : accords hachés qui pompent, basse funky, filtre qui s'ouvre, puis la voix robot. Pause filtrée vers 1 min, puis ça repart.</p>
+      <div class="row"><button class="play">Écouter</button><label class="choose"><input type="radio" name="menu" value="Robot Disco">Mon choix</label></div></div>
+    <div class="card" data-track="hyper"><div class="eq"><i></i><i></i><i></i><i></i></div>
+      <h3>B · Hyperdrive</h3>
+      <p>Électro épique, 124 BPM : basse qui roule, grands accords, refrain à la voix robot, montée de caisse claire avant la reprise.</p>
+      <div class="row"><button class="play">Écouter</button><label class="choose"><input type="radio" name="menu" value="Hyperdrive">Mon choix</label></div></div>
+  </div>
+
+  <h2>En partie (zen)</h2>
+  <p class="hint">On flotte dans l'espace, sans être dérangé pendant qu'on réfléchit.</p>
+  <div class="grid" data-cat="calm">
+    <div class="card" data-track="apesanteur"><div class="eq"><i></i><i></i><i></i><i></i></div>
+      <h3>A · Apesanteur</h3>
+      <p>Très lent, sans rythme : larges nappes, vent cosmique, cloches rares, et un robot qui fredonne au loin vers 30 s.</p>
+      <div class="row"><button class="play">Écouter</button><label class="choose"><input type="radio" name="calm" value="Apesanteur">Mon choix</label></div></div>
+    <div class="card" data-track="derive"><div class="eq"><i></i><i></i><i></i><i></i></div>
+      <h3>B · Dérive</h3>
+      <p>Downtempo spatial, 76 BPM : petite pulsation feutrée, accords larges, arpège de cloches dans l'écho.</p>
+      <div class="row"><button class="play">Écouter</button><label class="choose"><input type="radio" name="calm" value="Dérive">Mon choix</label></div></div>
+  </div>
+
+  <h2>Bataille</h2>
+  <p class="hint">Épique, électro et orchestre, en trois niveaux qui montent avec la tension : essaie 1, 2 puis 3, ou la montée automatique.</p>
+  <div class="grid" data-cat="battle">
+    <div class="card" data-track="grille"><div class="eq"><i></i><i></i><i></i><i></i></div>
+      <h3>A · Grille</h3>
+      <p>Façon bande originale de film, 128 BPM : basse en doubles croches et taikos, puis grosse caisse, claps et cuivres, puis thème aux cordes, chœur et tonalité qui monte.</p>
+      <div class="row"><button class="play">Écouter</button><button class="lvl sel" data-l="1">1</button><button class="lvl" data-l="2">2</button><button class="lvl" data-l="3">3</button><button class="ramp">Montée auto</button><label class="choose"><input type="radio" name="battle" value="Grille">Mon choix</label></div></div>
+    <div class="card" data-track="surcharge"><div class="eq"><i></i><i></i><i></i><i></i></div>
+      <h3>B · Surcharge</h3>
+      <p>Plus brutal, 132 BPM : d'abord lourd et lent (taikos, cuivres graves), puis tout s'accélère, puis chœur, cordes et lead héroïque.</p>
+      <div class="row"><button class="play">Écouter</button><button class="lvl sel" data-l="1">1</button><button class="lvl" data-l="2">2</button><button class="lvl" data-l="3">3</button><button class="ramp">Montée auto</button><label class="choose"><input type="radio" name="battle" value="Surcharge">Mon choix</label></div></div>
+  </div>
+
+  <h2>Jingles</h2>
+  <p class="hint">À la fin d'une partie, par-dessus la musique.</p>
+  <div class="row"><button class="play" id="jWin">Victoire</button><button class="play" id="jLose">Défaite</button></div>
+
+  <div class="demo">
+    <h3>Comme en partie</h3>
+    <p>La musique calme choisie, puis une bataille éclate et monte jusqu'au niveau 3, puis retour au calme, avec des fondus enchaînés. (Prend la musique calme et la bataille cochées, sinon les A.)</p>
+    <div class="row"><button class="play" id="demoBtn">Lancer la démo</button><span id="demoState"></span></div>
+  </div>
+  <p class="hint" style="margin-top:22px">Instruments enregistrés : banque FluidR3_GM de Frank Wen, licence <a href="https://creativecommons.org/licenses/by/3.0/" style="color:#8fd8cc">CC BY 3.0</a>.</p>
+</main>
+<div class="bar"><div class="in">
+  <span id="now">Rien en lecture</span>
+  <label>Volume <input type="range" id="vol" min="0" max="1" step="0.05" value="0.75"></label>
+  <button id="stopAll">Stop</button>
+  <span id="choice"></span>
+</div></div>
+<script src="music.js?v=4"></script>
+<script src="music-tracks.js?v=5"></script>
+<script>
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  let demoTimers = [], rampTimers = [];
+  const clear = list => { list.forEach(clearTimeout); list.length = 0; };
+  const barSec = name => 16 * 60 / BDAMusic.tracks[name].bpm / 4;
+  function mark(name, label) {
+    $$(".card").forEach(c => c.classList.toggle("on", c.dataset.track === name));
+    $$(".card .play").forEach(b => { b.textContent = b.closest(".card").dataset.track === name ? "Arrêter" : "Écouter"; });
+    $("#now").textContent = name ? `♪ ${BDAMusic.tracks[name].title}${label || ""}` : "Rien en lecture";
+  }
+  function setLvlButtons(card, l) { card.querySelectorAll(".lvl").forEach(b => b.classList.toggle("sel", +b.dataset.l === l)); }
+  function stopAll() { clear(demoTimers); clear(rampTimers); BDAMusic.stop(1); mark(null); $("#demoState").textContent = ""; $("#demoBtn").textContent = "Lancer la démo"; }
+  $$(".card").forEach(card => {
+    const name = card.dataset.track, battle = BDAMusic.tracks[name].battle;
+    card.querySelector(".play").addEventListener("click", () => {
+      if (card.classList.contains("on")) return stopAll();
+      clear(demoTimers); clear(rampTimers); $("#demoState").textContent = "";
+      const lvl = battle ? +card.querySelector(".lvl.sel").dataset.l : 1;
+      BDAMusic.play(name, { level: lvl, cross: 1 });
+      mark(name, battle ? ` · niveau ${lvl}` : "");
+    });
+    card.querySelectorAll(".lvl").forEach(b => b.addEventListener("click", () => {
+      const l = +b.dataset.l;
+      setLvlButtons(card, l);
+      clear(rampTimers);
+      if (card.classList.contains("on")) { BDAMusic.setLevel(l); mark(name, ` · niveau ${l} (à la mesure suivante)`); }
+    }));
+    const ramp = card.querySelector(".ramp");
+    if (ramp) ramp.addEventListener("click", () => {
+      clear(demoTimers); clear(rampTimers);
+      BDAMusic.play(name, { level: 1, cross: 1 });
+      setLvlButtons(card, 1); mark(name, " · niveau 1");
+      const b8 = barSec(name) * 8 * 1000;
+      rampTimers.push(setTimeout(() => { BDAMusic.setLevel(2); setLvlButtons(card, 2); mark(name, " · niveau 2"); }, b8));
+      rampTimers.push(setTimeout(() => { BDAMusic.setLevel(3); setLvlButtons(card, 3); mark(name, " · niveau 3"); }, b8 * 2));
+    });
+  });
+  $("#demoBtn").addEventListener("click", () => {
+    if (demoTimers.length) return stopAll();
+    const calm = { "Apesanteur": "apesanteur", "Dérive": "derive" }[($("input[name=calm]:checked") || {}).value] || "apesanteur";
+    const fight = { "Grille": "grille", "Surcharge": "surcharge" }[($("input[name=battle]:checked") || {}).value] || "grille";
+    clear(rampTimers);
+    $("#demoBtn").textContent = "Arrêter la démo";
+    const steps = [];
+    let at = 0;
+    const step = (sec, fn) => { at += sec; steps.push([at, fn]); };
+    BDAMusic.play(calm, { cross: 1 }); mark(calm); $("#demoState").textContent = "Calme : on pose ses cartes…";
+    const fb = barSec(fight);
+    step(16, () => { BDAMusic.cross(fight, { level: 1 }); mark(fight, " · niveau 1"); $("#demoState").textContent = "Égalité ! La bataille éclate"; });
+    step(fb * 8, () => { BDAMusic.setLevel(2); mark(fight, " · niveau 2"); $("#demoState").textContent = "La mise grossit…"; });
+    step(fb * 8, () => { BDAMusic.setLevel(3); mark(fight, " · niveau 3"); $("#demoState").textContent = "Bataille au sommet !"; });
+    step(fb * 8, () => { BDAMusic.cross(calm); mark(calm); $("#demoState").textContent = "Bataille gagnée : retour au calme"; });
+    step(14, () => stopAll());
+    demoTimers = steps.map(([sec, fn]) => setTimeout(fn, sec * 1000));
+  });
+  $("#stopAll").addEventListener("click", stopAll);
+  $("#jWin").addEventListener("click", () => BDAMusic.jingle("victoire"));
+  $("#jLose").addEventListener("click", () => BDAMusic.jingle("defaite"));
+  // Les instruments se chargent dès l'ouverture de la page pour que l'écoute démarre tout de suite
+  BDAMusic.load([...new Set(Object.values(BDAMusic.tracks).flatMap(t => t.uses || []))]).catch(() => {});
+  $("#vol").addEventListener("input", e => BDAMusic.volume(+e.target.value));
+  const showChoice = () => {
+    const v = ["menu", "calm", "battle"].map(c => ($(`input[name=${c}]:checked`) || {}).value).filter(Boolean);
+    $("#choice").textContent = v.length ? `Tes choix : ${v.join(" · ")}` : "";
+  };
+  $$("input[type=radio]").forEach(r => r.addEventListener("change", showChoice));
+</script>
+</body>
+</html>
