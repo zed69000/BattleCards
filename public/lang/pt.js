@@ -730,6 +730,6 @@ BDAi18n.add("pt", {
   "Partie classée : victoire <b>+24 à +32 ♛</b>, défaite <b>−8 à −12 ♛</b>": "Partida classificada: vitória <b>+24 a +32 ♛</b>, derrota <b>−8 a −12 ♛</b>",
   "Voir tout le classement": "Ver a classificação completa",
   "Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).": "Música: instrumentos FluidR3_GM de Frank Wen (CC BY 3.0).",
-  "Musique : non": "Música: não",
-  "Musique : oui": "Música: sim"
+  "Musique": "Música",
+  "Volume de la musique": "Volume da música"
 });

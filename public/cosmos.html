@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.76";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.77";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -280,6 +280,8 @@
     .sheet.cap-sheet h2 { margin-top: 38px; }
     .cap-slot.dup .card { opacity: 0.45; transition: opacity 400ms; }
     .fly-coin { position: absolute; left: 0; top: 0; z-index: 60; width: 28px; height: 28px; pointer-events: none; }
+    .vol-row { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-radius: 999px; border: 2px solid rgba(245, 233, 207, 0.4); font-size: 0.95rem; color: var(--cream); }
+    .vol-row input { flex: 1; accent-color: var(--teal); }
     .linkish { margin: 10px auto 0; display: block; padding: 4px 8px; border: 0; background: none; color: rgba(245, 233, 207, 0.7); font-size: 0.8rem; text-decoration: underline; }
     /* Spinning star on what is new. */
     .fresh-star { position: absolute; top: -8px; right: -6px; z-index: 6; width: 22px; height: 22px; pointer-events: none; animation: spin 3s linear infinite; }
@@ -1056,7 +1058,7 @@
             <button class="btn ghost" id="tutoBtn">Revoir toutes les explications</button>
             <button class="btn ghost" id="menuHelp">Règles</button>
             <button class="btn ghost" id="menuSound">Son : oui</button>
-            <button class="btn ghost" id="menuMusic">Musique : oui</button>
+            <label class="vol-row">Musique<input type="range" id="menuMusicVol" min="0" max="100" step="5" aria-label="Volume de la musique"></label>
             <button class="btn ghost" id="langBtn" data-no-i18n>🌐 Français</button>
             <button class="btn ghost" id="fsBtn">Plein écran</button>
             <button class="btn ghost danger" id="resetBtn">Recommencer à zéro</button>
@@ -1150,7 +1152,7 @@
       <button class="btn" id="resumeBtn">Reprendre</button>
       <button class="btn ghost" id="pauseHelp">Règles</button>
       <button class="btn ghost" id="pauseSound">Son : oui</button>
-      <button class="btn ghost" id="pauseMusic">Musique : oui</button>
+      <label class="vol-row">Musique<input type="range" id="pauseMusicVol" min="0" max="100" step="5" aria-label="Volume de la musique"></label>
       <button class="btn hot" id="quitBtn">Retour au menu</button>
       <button class="btn teal" id="devWin" hidden>Test : victoire immédiate</button>
       <button class="btn ghost" id="devLose" hidden>Test : défaite immédiate</button>
@@ -4848,7 +4850,10 @@
        d'un cran à chaque nouvelle égalité), puis un jingle de victoire ou de défaite. */
     const MUSIC = { menu: "disco", calm: "apesanteur", battle: "grille" };
     let musicNow = null;
-    const musicOn = () => Boolean(window.BDAMusic) && soundOn && save.music !== false;
+    if (save.musicVol === undefined) save.musicVol = save.music === false ? 0 : 40;
+    // La musique reste sous les bruitages : à fond, elle joue à 80 % de sa force
+    const musicGain = () => (save.musicVol / 100) * 0.8;
+    const musicOn = () => Boolean(window.BDAMusic) && soundOn && save.musicVol > 0;
     const musicKind = () => ($("#game").classList.contains("on") ? (S.battle && S.phase !== "over" ? "battle" : "calm") : "menu");
     function music(kind, level = 1) {
       if (!window.BDAMusic) return;
@@ -4856,13 +4861,14 @@
       const name = MUSIC[kind];
       if (musicNow === name) { if (kind === "battle") BDAMusic.setLevel(level); return; }
       musicNow = name;
+      BDAMusic.volume(musicGain());
       BDAMusic.cross(name, { level, fade: musicNow === MUSIC.battle ? 1.2 : 2.4 });
     }
     function jingle(won) { if (musicOn()) BDAMusic.jingle(won ? "victoire" : "defaite"); }
-    function toggleMusic() {
-      save.music = save.music === false;
-      persist();
-      for (const id of ["menuMusic", "pauseMusic"]) $(`#${id}`).textContent = save.music !== false ? tr("Musique : oui") : tr("Musique : non");
+    function setMusicVol(v) {
+      save.musicVol = Math.max(0, Math.min(100, Math.round(v)));
+      for (const id of ["menuMusicVol", "pauseMusicVol"]) $(`#${id}`).value = save.musicVol;
+      if (window.BDAMusic && musicNow) BDAMusic.volume(musicGain());
       music(musicKind());
     }
     let helpFrom = null;
@@ -4904,9 +4910,11 @@
     $("#pauseHelp").addEventListener("click", () => openHelp("pause"));
     $("#helpClose").addEventListener("click", () => { $("#help").classList.remove("on"); if (helpFrom) $(`#${helpFrom}`).classList.add("on"); });
     $("#menuSound").addEventListener("click", toggleSound);
-    $("#menuMusic").addEventListener("click", toggleMusic);
-    $("#pauseMusic").addEventListener("click", toggleMusic);
-    for (const id of ["menuMusic", "pauseMusic"]) $(`#${id}`).textContent = save.music !== false ? tr("Musique : oui") : tr("Musique : non");
+    for (const id of ["menuMusicVol", "pauseMusicVol"]) {
+      $(`#${id}`).value = save.musicVol;
+      $(`#${id}`).addEventListener("input", e => setMusicVol(+e.target.value));
+      $(`#${id}`).addEventListener("change", persist);
+    }
     // Sans page de garde (retour dans l'app), la musique démarre au premier toucher ; les autres morceaux se chargent ensuite
     document.addEventListener("pointerdown", () => {
       if (!musicNow && !document.documentElement.classList.contains("cover")) music(musicKind());

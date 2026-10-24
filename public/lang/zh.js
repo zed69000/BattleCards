@@ -730,6 +730,6 @@ BDAi18n.add("zh", {
   "Partie classée : victoire <b>+24 à +32 ♛</b>, défaite <b>−8 à −12 ♛</b>": "排位赛：胜利 <b>+24 至 +32 ♛</b>，失败 <b>−8 至 −12 ♛</b>",
   "Voir tout le classement": "查看完整排行榜",
   "Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).": "音乐：Frank Wen 的 FluidR3_GM 乐器（CC BY 3.0）。",
-  "Musique : non": "音乐：关",
-  "Musique : oui": "音乐：开"
+  "Musique": "音乐",
+  "Volume de la musique": "音乐音量"
 });

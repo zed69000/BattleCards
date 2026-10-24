@@ -730,6 +730,6 @@ BDAi18n.add("ja", {
   "Partie classée : victoire <b>+24 à +32 ♛</b>, défaite <b>−8 à −12 ♛</b>": "ランク戦：勝利 <b>+24〜+32 ♛</b>、敗北 <b>−8〜−12 ♛</b>",
   "Voir tout le classement": "ランキングをすべて見る",
   "Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).": "音楽：Frank Wen による FluidR3_GM 楽器（CC BY 3.0）。",
-  "Musique : non": "音楽：オフ",
-  "Musique : oui": "音楽：オン"
+  "Musique": "音楽",
+  "Volume de la musique": "音楽の音量"
 });

@@ -730,6 +730,6 @@ BDAi18n.add("de", {
   "Partie classée : victoire <b>+24 à +32 ♛</b>, défaite <b>−8 à −12 ♛</b>": "Ranglistenpartie: Sieg <b>+24 bis +32 ♛</b>, Niederlage <b>−8 bis −12 ♛</b>",
   "Voir tout le classement": "Ganze Rangliste ansehen",
   "Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).": "Musik: FluidR3_GM-Instrumente von Frank Wen (CC BY 3.0).",
-  "Musique : non": "Musik: aus",
-  "Musique : oui": "Musik: an"
+  "Musique": "Musik",
+  "Volume de la musique": "Musiklautstärke"
 });
