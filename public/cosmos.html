@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.80";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.81";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -1365,6 +1365,15 @@
        hold() garde la durée exacte, pour les attentes calées sur une animation (dé, dissolution). */
     const PACE = 0.6;
     const sleep = ms => new Promise(resolve => setTimeout(resolve, reduced ? Math.min(ms, 80) : ms * PACE));
+    /* Après une mise en veille, une animation commencée peut ne jamais se terminer : le jeu attendrait pour
+       toujours. Chaque animation annonce donc sa fin au plus tard à sa durée prévue, plus une petite marge. */
+    const nativeAnimate = Element.prototype.animate;
+    Element.prototype.animate = function (keyframes, options) {
+      const anim = nativeAnimate.call(this, keyframes, options), timing = anim.effect ? anim.effect.getTiming() : {};
+      const max = (Number(timing.duration) || 0) + (Number(timing.delay) || 0) + 400;
+      Object.defineProperty(anim, "finished", { value: Promise.race([anim.finished, new Promise(resolve => setTimeout(() => resolve(anim), max))]), configurable: true });
+      return anim;
+    };
     const hold = ms => new Promise(resolve => setTimeout(resolve, reduced ? Math.min(ms, 80) : ms));
     const rand = n => Math.floor(Math.random() * n);
     SYM.X = "★";
@@ -3981,7 +3990,7 @@
       if (![0, 1].every(p => S.hands[p].length + S.decks[p].length >= 2)) { await sleep(700); if (game === gameId) endGame(); return; }
       // La manche suivante part toute seule, sauf si le joueur a ouvert la pause ou les règles.
       await sleep(800);
-      while (game === gameId && ["pause", "help"].some(id => $(`#${id}`).classList.contains("on"))) await sleep(300);
+      while (game === gameId && !duel() && ["pause", "help"].some(id => $(`#${id}`).classList.contains("on"))) await sleep(300);
       if (game === gameId && S.phase === "next") startRound();
     }
 
@@ -4909,7 +4918,8 @@
     for (const btn of document.querySelectorAll("#subtabs button")) btn.addEventListener("click", () => { colSub = btn.dataset.sub; colPick = null; sfx.tap(); renderCollection(); });
     // Appel, autre appli, écran verrouillé : la partie se met en pause toute seule.
     document.addEventListener("visibilitychange", () => {
-      if (document.hidden && $("#game").classList.contains("on") && !["over"].includes(S.phase)) $("#pause").classList.add("on");
+      // En duel, pas de pause automatique : l'adversaire attendrait qu'on touche « Reprendre »
+      if (document.hidden && $("#game").classList.contains("on") && !["over"].includes(S.phase) && !duel()) $("#pause").classList.add("on");
       if (window.BDAMusic && BDAMusic.ctx()) { if (document.hidden) BDAMusic.ctx().suspend(); else BDAMusic.ctx().resume(); }
     });
     $("#helpAtouts").innerHTML = ATOUT_IDS.map(id => `<li><b>${tr(ATOUTS[id].name)}</b> (${tr(RARITY[ATOUTS[id].rarity].name).toLowerCase()}) : ${tr(ATOUTS[id].desc)}</li>`).join("");
