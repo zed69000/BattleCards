@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.81";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.82";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -4485,6 +4485,8 @@
     }
     function showTab(name) {
       if (name === "shop") renderShop();
+      // Classement : rafraîchi à chaque visite de l'onglet (au plus une fois toutes les 10 s)
+      if (name === "arena" && (!save.rank || Date.now() - (save.rank.at || 0) > 10000)) syncRank(true);
       for (const pane of document.querySelectorAll(".pane")) pane.classList.toggle("on", pane.dataset.pane === name);
       for (const btn of document.querySelectorAll("#tabs button")) btn.classList.toggle("on", btn.dataset.tab === name);
     }

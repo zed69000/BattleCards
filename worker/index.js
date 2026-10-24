@@ -91,8 +91,9 @@ export class Board extends DurableObject {
   rank(id) {
     const now = Date.now();
     const rows = this.ctx.storage.sql.exec("SELECT id, name, tribe, t FROM ranking WHERE seen > ?", now - 30 * 86400000).toArray();
-    const list = residents(now).concat(rows.map(r => ({ n: r.name, c: r.tribe, t: r.t, me: r.id === id ? 1 : 0 })));
-    list.sort((x, y) => y.t - x.t || (x.me ? -1 : y.me ? 1 : 0));
+    const list = residents(now).concat(rows.map(r => ({ id: r.id, n: r.name, c: r.tribe, t: r.t, me: r.id === id ? 1 : 0 })));
+    // Même ordre pour tout le monde : à trophées égaux, par pseudo (le joueur qui demande n'est pas favorisé)
+    list.sort((x, y) => y.t - x.t || x.n.localeCompare(y.n) || (x.id || "").localeCompare(y.id || ""));
     list.forEach((r, i) => { r.r = i + 1; });
     const at = list.findIndex(r => r.me);
     const clean = r => ({ r: r.r, n: r.n, c: r.c, t: r.t, ...(r.me ? { me: 1 } : {}), ...(r.g ? { g: 1 } : {}) });
