@@ -731,5 +731,9 @@ BDAi18n.add("ja", {
   "Voir tout le classement": "ランキングをすべて見る",
   "Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).": "音楽：Frank Wen による FluidR3_GM 楽器（CC BY 3.0）。",
   "Musique": "音楽",
-  "Volume de la musique": "音楽の音量"
+  "Volume de la musique": "音楽の音量",
+  "Connexion perdue… on se reconnecte": "接続が切れました…再接続中",
+  "Reconnecté !": "再接続しました！",
+  "{name} a mis son téléphone en veille… on l'attend": "{name}がスリープ中…待っています",
+  "{name} est de retour !": "{name}が戻ってきました！"
 });

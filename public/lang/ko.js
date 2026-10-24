@@ -731,5 +731,9 @@ BDAi18n.add("ko", {
   "Voir tout le classement": "전체 순위 보기",
   "Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).": "음악: Frank Wen의 FluidR3_GM 악기 (CC BY 3.0).",
   "Musique": "음악",
-  "Volume de la musique": "음악 볼륨"
+  "Volume de la musique": "음악 볼륨",
+  "Connexion perdue… on se reconnecte": "연결이 끊겼습니다… 다시 연결 중",
+  "Reconnecté !": "다시 연결되었습니다!",
+  "{name} a mis son téléphone en veille… on l'attend": "{name}님의 휴대폰이 절전 모드입니다… 기다리는 중",
+  "{name} est de retour !": "{name}님이 돌아왔습니다!"
 });

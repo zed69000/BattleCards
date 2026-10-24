@@ -107,6 +107,13 @@ export class Board extends DurableObject {
 
 const die = () => 1 + (crypto.getRandomValues(new Uint32Array(1))[0] % 6);
 
+/* Lobby: pairs waiting players, relays their moves and rolls the dice.
+   A player whose phone sleeps or loses the network keeps their seat for AWAY_MS: the other player is told,
+   the moves meant for the absent one are kept, and the game resumes as soon as they reconnect with their
+   seat token. Past the delay, the other player wins by forfeit. */
+const AWAY_MS = 60000;
+const token = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, "0")).join("");
+
 export class Lobby extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env);
@@ -114,60 +121,119 @@ export class Lobby extends DurableObject {
     ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair("ping", "pong"));
   }
 
-  async fetch() {
+  async fetch(request) {
+    const url = new URL(request.url), resume = url.searchParams.get("resume");
     const [client, server] = Object.values(new WebSocketPair());
     const id = crypto.randomUUID();
     this.ctx.acceptWebSocket(server, [id]);
-    server.serializeAttachment({ id, partner: null });
-    this.pair(server);
+    if (resume) await this.rejoin(server, id, resume, Number(url.searchParams.get("seat")), url.searchParams.get("token"));
+    else { server.serializeAttachment({ id, partner: null }); await this.pair(server); }
     return new Response(null, { status: 101, webSocket: client });
   }
 
-  info(ws) { return ws.deserializeAttachment() || {}; }
+  info(ws) { try { return ws.deserializeAttachment() || {}; } catch (e) { return {}; } }
   find(id) { return id ? this.ctx.getWebSockets(id)[0] || null : null; }
-  send(ws, msg) { try { ws.send(JSON.stringify(msg)); } catch (e) { /* socket already closed */ } }
+  send(ws, msg) { try { ws.send(typeof msg === "string" ? msg : JSON.stringify(msg)); } catch (e) { /* socket already closed */ } }
+  match(id) { return this.ctx.storage.get(`m:${id}`); }
 
   /* The player who has been waiting hosts the game: it deals the cards, as in a duel between friends. */
-  pair(ws) {
+  async pair(ws) {
     const me = this.info(ws);
     const other = this.ctx.getWebSockets().find(o => o !== ws && this.info(o).partner === null);
     if (!other) return this.send(ws, { sys: "wait" });
-    const them = this.info(other);
-    other.serializeAttachment({ ...them, partner: me.id });
-    ws.serializeAttachment({ ...me, partner: them.id });
-    this.send(other, { sys: "start", host: true });
-    this.send(ws, { sys: "start", host: false });
+    const them = this.info(other), match = crypto.randomUUID(), tokens = [token(), token()];
+    await this.ctx.storage.put(`m:${match}`, { ids: [them.id, me.id], tokens, away: [0, 0] });
+    other.serializeAttachment({ ...them, partner: me.id, match, seat: 0 });
+    ws.serializeAttachment({ ...me, partner: them.id, match, seat: 1 });
+    this.send(other, { sys: "start", host: true, match, seat: 0, token: tokens[0] });
+    this.send(ws, { sys: "start", host: false, match, seat: 1, token: tokens[1] });
   }
 
-  webSocketMessage(ws, data) {
+  /* Back from sleep: the seat is given back, the kept moves are delivered, the other player is told. */
+  async rejoin(ws, id, match, seat, tok) {
+    const m = await this.match(match);
+    if (!m || (seat !== 0 && seat !== 1) || m.tokens[seat] !== tok) {
+      ws.serializeAttachment({ id, partner: "gone" });
+      this.send(ws, { sys: "gone" });
+      try { ws.close(1000, "gone"); } catch (e) { /* closed */ }
+      return;
+    }
+    const old = this.find(m.ids[seat]);
+    if (old && old !== ws) { try { old.serializeAttachment({ ...this.info(old), partner: "gone", match: null }); old.close(1000, "replaced"); } catch (e) { /* closed */ } }
+    const other = 1 - seat, partnerId = m.ids[other];
+    m.ids[seat] = id; m.away[seat] = 0;
+    await this.ctx.storage.put(`m:${match}`, m);
+    ws.serializeAttachment({ id, partner: partnerId, match, seat });
+    const kept = (await this.ctx.storage.get(`b:${match}:${seat}`)) || [];
+    await this.ctx.storage.delete(`b:${match}:${seat}`);
+    for (const d of kept) this.send(ws, d);
+    this.send(ws, { sys: "resumed" });
+    const partner = this.find(partnerId);
+    if (partner) { partner.serializeAttachment({ ...this.info(partner), partner: id }); this.send(partner, { sys: "back" }); }
+  }
+
+  /* Message for the other seat: delivered now, or kept until they come back. */
+  async deliver(match, m, seat, data) {
+    const ws = m.away[seat] ? null : this.find(m.ids[seat]);
+    if (ws) return this.send(ws, data);
+    const key = `b:${match}:${seat}`, kept = (await this.ctx.storage.get(key)) || [];
+    if (kept.length < 300) { kept.push(data); await this.ctx.storage.put(key, kept); }
+  }
+
+  async webSocketMessage(ws, data) {
     if (typeof data !== "string" || data.length > MAX_MESSAGE) return;
-    const partner = this.find(this.info(ws).partner);
-    if (!partner) return;
+    const me = this.info(ws);
+    if (!me.match) return;
     let msg;
     try { msg = JSON.parse(data); } catch (e) { return; }
     if (!msg || typeof msg.t !== "string") return;
+    const m = await this.match(me.match);
+    if (!m) return;
+    const other = 1 - me.seat;
+    if (msg.t === "bye") return this.end(me.match, m, me.seat);
     if (msg.t === "rollreq") {
-      const roll = { t: "roll", v: die() };
+      const roll = JSON.stringify({ t: "roll", v: die() });
       this.send(ws, roll);
-      this.send(partner, roll);
-      return;
+      return this.deliver(me.match, m, other, roll);
     }
-    partner.send(data);
+    return this.deliver(me.match, m, other, data);
   }
 
-  /* The partner is told first: the closing socket may refuse any further call. */
-  leave(ws) {
+  /* A player leaves on purpose (or for good): the other one is told at once. */
+  async end(match, m, seat) {
+    const partner = m.away[1 - seat] ? null : this.find(m.ids[1 - seat]), mine = this.find(m.ids[seat]);
+    await this.ctx.storage.delete([`m:${match}`, `b:${match}:0`, `b:${match}:1`]);
+    for (const ws of [partner, mine]) if (ws) { try { ws.serializeAttachment({ ...this.info(ws), partner: "gone", match: null }); } catch (e) { /* closing */ } }
+    if (partner) { this.send(partner, { sys: "left" }); try { partner.close(1000, "partner left"); } catch (e) { /* closed */ } }
+  }
+
+  async away(ws) {
     const me = this.info(ws);
-    const partner = me.partner === "gone" ? null : this.find(me.partner);
-    if (partner && partner !== ws) {
-      this.send(partner, { sys: "left" });
-      try { partner.serializeAttachment({ ...this.info(partner), partner: "gone" }); } catch (e) { /* closing */ }
-      try { partner.close(1000, "partner left"); } catch (e) { /* already closed */ }
-    }
-    try { ws.serializeAttachment({ ...me, partner: "gone" }); } catch (e) { /* closing */ }
-    try { ws.close(1000, "bye"); } catch (e) { /* already closed */ }
+    if (!me.match) return;
+    const m = await this.match(me.match);
+    if (!m || m.ids[me.seat] !== me.id) return;
+    if (m.away[1 - me.seat]) return this.end(me.match, m, me.seat);
+    m.away[me.seat] = Date.now();
+    await this.ctx.storage.put(`m:${me.match}`, m);
+    const partner = this.find(m.ids[1 - me.seat]);
+    if (partner) this.send(partner, { sys: "away" });
+    if (!(await this.ctx.storage.getAlarm())) await this.ctx.storage.setAlarm(Date.now() + AWAY_MS + 1000);
   }
 
-  webSocketClose(ws) { this.leave(ws); }
-  webSocketError(ws) { this.leave(ws); }
+  /* Seats left empty too long: forfeit for the absent player. */
+  async alarm() {
+    const now = Date.now();
+    let next = 0;
+    for (const [key, m] of await this.ctx.storage.list({ prefix: "m:" })) {
+      for (const seat of [0, 1]) {
+        if (!m.away[seat]) continue;
+        if (now - m.away[seat] >= AWAY_MS) { await this.end(key.slice(2), m, seat); break; }
+        next = Math.min(next || Infinity, m.away[seat] + AWAY_MS);
+      }
+    }
+    if (next) await this.ctx.storage.setAlarm(next + 1000);
+  }
+
+  async webSocketClose(ws) { await this.away(ws); try { ws.close(1000, "bye"); } catch (e) { /* closed */ } }
+  async webSocketError(ws) { await this.away(ws); }
 }

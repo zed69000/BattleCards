@@ -731,5 +731,9 @@ BDAi18n.add("zh", {
   "Voir tout le classement": "查看完整排行榜",
   "Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).": "音乐：Frank Wen 的 FluidR3_GM 乐器（CC BY 3.0）。",
   "Musique": "音乐",
-  "Volume de la musique": "音乐音量"
+  "Volume de la musique": "音乐音量",
+  "Connexion perdue… on se reconnecte": "连接中断……正在重连",
+  "Reconnecté !": "已重新连接！",
+  "{name} a mis son téléphone en veille… on l'attend": "{name} 的手机进入休眠……等待中",
+  "{name} est de retour !": "{name} 回来了！"
 });

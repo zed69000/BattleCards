@@ -731,5 +731,9 @@ BDAi18n.add("de", {
   "Voir tout le classement": "Ganze Rangliste ansehen",
   "Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).": "Musik: FluidR3_GM-Instrumente von Frank Wen (CC BY 3.0).",
   "Musique": "Musik",
-  "Volume de la musique": "Musiklautstärke"
+  "Volume de la musique": "Musiklautstärke",
+  "Connexion perdue… on se reconnecte": "Verbindung verloren… verbinde neu",
+  "Reconnecté !": "Wieder verbunden!",
+  "{name} a mis son téléphone en veille… on l'attend": "{name} hat das Handy in den Ruhemodus gesetzt… wir warten",
+  "{name} est de retour !": "{name} ist zurück!"
 });

@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.78";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.79";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -2874,55 +2874,80 @@
     /* Connexion au serveur du jeu, présentée comme une connexion PeerJS (open, data, close, error)
        pour que wire() et tout le duel servent tels quels. */
     const GAME_SERVER = /\.workers\.dev$/.test(location.hostname) ? `wss://${location.host}/ws` : "wss://battlecards.sebastienalzamora.workers.dev/ws";
+    /* Connexion au serveur, survivante à la mise en veille : si elle tombe en pleine partie, le jeu se
+       reconnecte tout seul pendant une minute avec le jeton de sa place, et les coups envoyés entre-temps
+       partent dès le retour. Le serveur garde la place et les coups de l'absent pendant 60 s. */
     function serverConn() {
-      const ws = new WebSocket(GAME_SERVER), on = {};
-      let ping = null, quit = false;
+      const on = {}, outbox = [];
+      let ws = null, ping = null, quit = false, seat = null, match = null, seatToken = null;
+      let heard = Date.now(), warned = false, partnerAway = false, lostAt = 0, retry = null;
       const fire = (ev, x) => { if (on[ev]) on[ev](x); };
+      const raw = d => { if (ws && ws.readyState === 1 && !lostAt) ws.send(d); else outbox.push(d); };
       const conn = {
         open: false,
         on: (ev, fn) => { on[ev] = fn; },
-        send: msg => { if (ws.readyState === 1) ws.send(JSON.stringify(msg)); },
-        close: () => { quit = true; try { ws.close(); } catch (e) { /* déjà fermée */ } }
+        send: msg => { if (conn.open) raw(JSON.stringify(msg)); },
+        close: () => { quit = true; finish(); try { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ t: "bye" })); ws.close(1000); } catch (e) { /* déjà fermée */ } }
       };
-      // Pendant la partie, chacun envoie un signe de vie toutes les 5 s. Sans nouvelles de l'adversaire
-      // (téléphone éteint, réseau perdu sans fermeture propre), on prévient au bout de 10 s et il est
-      // considéré comme parti au bout de 30 s. Fermer la page ou l'app ferme la connexion proprement.
-      let heard = Date.now(), warned = false;
-      const bye = () => { try { ws.close(1000); } catch (e) { /* déjà fermée */ } };
+      const left = () => { if (!conn.open) return; conn.open = false; quit = true; finish(); try { ws.close(); } catch (e) { /* déjà fermée */ } fire("close", "left"); };
+      // Fermer la page ou l'app : départ volontaire, l'adversaire gagne tout de suite
+      const bye = () => { if (conn.open) { try { ws.send(JSON.stringify({ t: "bye" })); } catch (e) { /* fermée */ } } };
+      // Retour au premier plan : le temps passé en veille ne compte pas, et on se reconnecte si besoin
+      const wake = () => { if (document.hidden) return; heard = Date.now(); if (conn.open && (!ws || ws.readyState > 1)) reconnect(); };
+      function finish() { clearInterval(ping); clearTimeout(retry); window.removeEventListener("pagehide", bye); document.removeEventListener("visibilitychange", wake); }
       window.addEventListener("pagehide", bye);
-      const left = () => { if (!conn.open) return; conn.open = false; quit = true; try { ws.close(); } catch (e) { /* déjà fermée */ } fire("close", "left"); };
-      ws.onopen = () => {
-        ping = setInterval(() => {
-          if (ws.readyState !== 1) return;
-          if (!conn.open) { ws.send("ping"); return; }
-          ws.send(JSON.stringify({ t: "hb" }));
-          const quiet = Date.now() - heard;
-          if (quiet > 30000) left();
-          else if (quiet > 10000 && !warned && duel() && S.phase !== "over") { warned = true; banner(tr("{name} ne répond plus…", { name: foe() }), "bad"); }
-        }, 5000);
-      };
-      ws.onmessage = e => {
-        if (e.data === "pong") return;
-        let msg;
-        try { msg = JSON.parse(e.data); } catch (err) { return; }
-        heard = Date.now();
-        warned = false;
-        if (msg.t === "hb") return;
-        if (msg.sys === "wait") { seekUI(true); return lobbyMsg(tr("Recherche d'un adversaire…")); }
-        if (msg.sys === "start") { seekUI(false); net.host = Boolean(msg.host); conn.open = true; return fire("open"); }
-        if (msg.sys === "left") return left();
-        fire("data", msg);
-      };
-      ws.onclose = () => {
-        clearInterval(ping);
-        window.removeEventListener("pagehide", bye);
-        if (quit) return;
-        if (conn.open) { conn.open = false; fire("close", "lost"); return; }
-        seekUI(false);
-        $("#seekBtn").disabled = false;
-        lobbyMsg(tr("Impossible de joindre le serveur de jeu. Vérifie ta connexion internet."));
-        closeNet();
-      };
+      document.addEventListener("visibilitychange", wake);
+      const inGame = () => duel() && S.phase !== "over";
+      function reconnect() {
+        if (quit || retry) return;
+        if (!lostAt) { lostAt = Date.now(); if (inGame()) banner(tr("Connexion perdue… on se reconnecte"), "bad"); }
+        if (Date.now() - lostAt > 60000) { conn.open = false; finish(); fire("close", "lost"); return; }
+        retry = setTimeout(() => { retry = null; open(true); }, 1500);
+      }
+      function open(resume) {
+        ws = new WebSocket(resume ? `${GAME_SERVER}?resume=${match}&seat=${seat}&token=${seatToken}` : GAME_SERVER);
+        ws.onopen = () => {
+          clearInterval(ping);
+          // Signe de vie toutes les 5 s pendant la partie : sans nouvelles (et sans annonce du serveur),
+          // on prévient au bout de 10 s ; l'adversaire est considéré comme parti au bout de 90 s.
+          ping = setInterval(() => {
+            if (!ws || ws.readyState !== 1) return;
+            if (!conn.open) { ws.send("ping"); return; }
+            ws.send(JSON.stringify({ t: "hb" }));
+            if (partnerAway || lostAt || document.hidden) return;
+            const quiet = Date.now() - heard;
+            if (quiet > 90000) left();
+            else if (quiet > 10000 && !warned && inGame()) { warned = true; banner(tr("{name} ne répond plus…", { name: foe() }), "bad"); }
+          }, 5000);
+        };
+        ws.onmessage = e => {
+          if (e.data === "pong") return;
+          let msg;
+          try { msg = JSON.parse(e.data); } catch (err) { return; }
+          heard = Date.now();
+          warned = false;
+          if (msg.t === "hb") return;
+          if (msg.sys === "wait") { seekUI(true); return lobbyMsg(tr("Recherche d'un adversaire…")); }
+          if (msg.sys === "start") { seekUI(false); ({ match, seat, token: seatToken } = msg); net.host = Boolean(msg.host); conn.open = true; return fire("open"); }
+          if (msg.sys === "resumed") { const was = lostAt; lostAt = 0; while (outbox.length) ws.send(outbox.shift()); if (was && inGame()) banner(tr("Reconnecté !")); return; }
+          if (msg.sys === "away") { partnerAway = true; if (inGame()) banner(tr("{name} a mis son téléphone en veille… on l'attend", { name: foe() }), "bad"); return; }
+          if (msg.sys === "back") { partnerAway = false; if (inGame()) banner(tr("{name} est de retour !", { name: foe() })); return; }
+          if (msg.sys === "left") return left();
+          if (msg.sys === "gone") { if (conn.open) { conn.open = false; finish(); fire("close", "lost"); } return; }
+          fire("data", msg);
+        };
+        ws.onclose = () => {
+          clearInterval(ping);
+          if (quit) return;
+          if (conn.open) return reconnect();
+          finish();
+          seekUI(false);
+          $("#seekBtn").disabled = false;
+          lobbyMsg(tr("Impossible de joindre le serveur de jeu. Vérifie ta connexion internet."));
+          closeNet();
+        };
+      }
+      open(false);
       return conn;
     }
     /* Recherche en cours : radar et chronomètre. Si personne n'arrive en 15 à 25 s, un joueur du classement
