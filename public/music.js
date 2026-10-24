@@ -468,7 +468,7 @@
   }
   function start(name, o = {}) {
     setup();
-    if (ctx.state === "suspended") ctx.resume();
+    if (ctx.state !== "running") ctx.resume();   // « suspended », ou « interrupted » sur iPhone
     const track = BDAMusic.tracks[name], T = makeTrackBus(), t = ctx.currentTime + 0.08;
     if (track.uses && track.uses.some(i => !BANK[i])) {
       // Les instruments arrivent d'abord ; la piste démarre dès qu'ils sont prêts
@@ -509,7 +509,7 @@
   I.sample = sample;
   BDAMusic.load = names => { setup(); return Promise.all(names.map(loadInst)); };
   // Petit jingle par-dessus la musique en cours (victoire, défaite)
-  BDAMusic.jingle = name => { setup(); if (ctx.state === "suspended") ctx.resume(); return start(name, { fade: 0.02 }); };
+  BDAMusic.jingle = name => { setup(); if (ctx.state !== "running") ctx.resume(); return start(name, { fade: 0.02 }); };
   BDAMusic.I = I;
   BDAMusic.sweep = (p, t, from, to, sec, q) => {
     const f = p.T.filt.frequency;

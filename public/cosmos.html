@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.77";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.78";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -1355,7 +1355,7 @@
   </div>
 
   <script src="casts.js"></script>
-  <script src="music.js?v=5"></script>
+  <script src="music.js?v=6"></script>
   <script src="music-tracks.js?v=6"></script>
   <script>
     const $ = sel => document.querySelector(sel);
@@ -4883,7 +4883,7 @@
     // Appel, autre appli, écran verrouillé : la partie se met en pause toute seule.
     document.addEventListener("visibilitychange", () => {
       if (document.hidden && $("#game").classList.contains("on") && !["over"].includes(S.phase)) $("#pause").classList.add("on");
-      if (window.BDAMusic && BDAMusic.ctx()) { if (document.hidden) BDAMusic.ctx().suspend(); else if (musicNow) BDAMusic.ctx().resume(); }
+      if (window.BDAMusic && BDAMusic.ctx()) { if (document.hidden) BDAMusic.ctx().suspend(); else BDAMusic.ctx().resume(); }
     });
     $("#helpAtouts").innerHTML = ATOUT_IDS.map(id => `<li><b>${tr(ATOUTS[id].name)}</b> (${tr(RARITY[ATOUTS[id].rarity].name).toLowerCase()}) : ${tr(ATOUTS[id].desc)}</li>`).join("");
     for (const btn of document.querySelectorAll("#tabs button")) btn.addEventListener("click", () => { sfx.tap(); showTab(btn.dataset.tab); });
