@@ -697,6 +697,7 @@
  "{name} garde l'avantage cette fois.",
  "{name} l'emporte cette fois. Change d'atouts et retente ta chance !",
  "{name} ne peut plus te rattraper : <b>{gap} pts</b> d'écart, il n'en reste que <b>{rest}</b> en jeu. Encaisse, ou finis pour gonfler ton butin (étoiles et primes).",
+ "{name} ne répond plus…",
  "{name} remporte ce duel.",
  "{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.",
  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.",

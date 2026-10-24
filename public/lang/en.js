@@ -743,5 +743,6 @@ BDAi18n.add("en", {
   "Victoire par forfait": "Victory by forfeit",
   "{name} a quitté la partie.": "{name} left the game.",
   "{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.": "{name} disconnected: the win is yours, and your loot is cashed in.",
-  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name} disconnected. The win is yours, and you keep your loot."
+  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name} disconnected. The win is yours, and you keep your loot.",
+  "{name} ne répond plus…": "{name} isn't responding…"
 });

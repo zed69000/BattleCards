@@ -743,5 +743,6 @@ BDAi18n.add("zh", {
   "Victoire par forfait": "对手弃权获胜",
   "{name} a quitté la partie.": "{name} 已离开对局。",
   "{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.": "{name} 已断开连接：你获得胜利，战利品已入账。",
-  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name} 已断开连接。你获得胜利，战利品保留。"
+  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name} 已断开连接。你获得胜利，战利品保留。",
+  "{name} ne répond plus…": "{name} 没有回应…"
 });

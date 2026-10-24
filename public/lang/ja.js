@@ -743,5 +743,6 @@ BDAi18n.add("ja", {
   "Victoire par forfait": "不戦勝",
   "{name} a quitté la partie.": "{name}が対戦から抜けました。",
   "{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.": "{name}の接続が切れました。あなたの勝利です。戦利品は獲得されます。",
-  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name}の接続が切れました。あなたの勝利です。戦利品はそのままです。"
+  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name}の接続が切れました。あなたの勝利です。戦利品はそのままです。",
+  "{name} ne répond plus…": "{name}の応答がありません…"
 });

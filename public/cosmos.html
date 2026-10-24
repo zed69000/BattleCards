@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.73";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.74";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -2842,16 +2842,21 @@
         send: msg => { if (ws.readyState === 1) ws.send(JSON.stringify(msg)); },
         close: () => { quit = true; try { ws.close(); } catch (e) { /* déjà fermée */ } }
       };
-      // Pendant la partie, chacun envoie un signe de vie toutes les 5 s : sans nouvelles de l'adversaire
-      // depuis 40 s (téléphone éteint, réseau perdu sans fermeture propre), il est considéré comme parti.
-      let heard = Date.now();
+      // Pendant la partie, chacun envoie un signe de vie toutes les 5 s. Sans nouvelles de l'adversaire
+      // (téléphone éteint, réseau perdu sans fermeture propre), on prévient au bout de 10 s et il est
+      // considéré comme parti au bout de 30 s. Fermer la page ou l'app ferme la connexion proprement.
+      let heard = Date.now(), warned = false;
+      const bye = () => { try { ws.close(1000); } catch (e) { /* déjà fermée */ } };
+      window.addEventListener("pagehide", bye);
       const left = () => { if (!conn.open) return; conn.open = false; quit = true; try { ws.close(); } catch (e) { /* déjà fermée */ } fire("close", "left"); };
       ws.onopen = () => {
         ping = setInterval(() => {
           if (ws.readyState !== 1) return;
           if (!conn.open) { ws.send("ping"); return; }
           ws.send(JSON.stringify({ t: "hb" }));
-          if (Date.now() - heard > 40000) left();
+          const quiet = Date.now() - heard;
+          if (quiet > 30000) left();
+          else if (quiet > 10000 && !warned && duel() && S.phase !== "over") { warned = true; banner(tr("{name} ne répond plus…", { name: foe() }), "bad"); }
         }, 5000);
       };
       ws.onmessage = e => {
@@ -2859,6 +2864,7 @@
         let msg;
         try { msg = JSON.parse(e.data); } catch (err) { return; }
         heard = Date.now();
+        warned = false;
         if (msg.t === "hb") return;
         if (msg.sys === "wait") { seekUI(true); return lobbyMsg(tr("Recherche d'un adversaire…")); }
         if (msg.sys === "start") { seekUI(false); net.host = Boolean(msg.host); conn.open = true; return fire("open"); }
@@ -2867,6 +2873,7 @@
       };
       ws.onclose = () => {
         clearInterval(ping);
+        window.removeEventListener("pagehide", bye);
         if (quit) return;
         if (conn.open) { conn.open = false; fire("close", "lost"); return; }
         seekUI(false);

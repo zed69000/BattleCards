@@ -743,5 +743,6 @@ BDAi18n.add("es", {
   "Victoire par forfait": "Victoria por abandono",
   "{name} a quitté la partie.": "{name} ha abandonado la partida.",
   "{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.": "{name} se ha desconectado: la victoria es tuya y cobras tu botín.",
-  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name} se ha desconectado. La victoria es tuya y conservas tu botín."
+  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name} se ha desconectado. La victoria es tuya y conservas tu botín.",
+  "{name} ne répond plus…": "{name} no responde…"
 });

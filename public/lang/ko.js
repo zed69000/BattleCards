@@ -743,5 +743,6 @@ BDAi18n.add("ko", {
   "Victoire par forfait": "기권승",
   "{name} a quitté la partie.": "{name}님이 게임을 떠났습니다.",
   "{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.": "{name}님의 연결이 끊겼습니다. 승리는 당신의 것이며 전리품을 받습니다.",
-  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name}님의 연결이 끊겼습니다. 승리는 당신의 것이며 전리품은 그대로 유지됩니다."
+  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name}님의 연결이 끊겼습니다. 승리는 당신의 것이며 전리품은 그대로 유지됩니다.",
+  "{name} ne répond plus…": "{name}님이 응답하지 않습니다…"
 });

@@ -743,5 +743,6 @@ BDAi18n.add("de", {
   "Victoire par forfait": "Sieg durch Aufgabe",
   "{name} a quitté la partie.": "{name} hat die Partie verlassen.",
   "{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.": "{name} ist getrennt: Der Sieg gehört dir, und deine Beute wird ausgezahlt.",
-  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name} ist getrennt. Der Sieg gehört dir, und du behältst deine Beute."
+  "{name} s'est déconnecté. La victoire est pour toi, et ton butin est gardé.": "{name} ist getrennt. Der Sieg gehört dir, und du behältst deine Beute.",
+  "{name} ne répond plus…": "{name} antwortet nicht mehr…"
 });
