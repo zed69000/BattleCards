@@ -724,5 +724,13 @@ BDAi18n.add("es", {
   "Niveau": "Nivel",
   "toutes les {n} manches": "cada {n} rondas",
   "Confidentialité": "Privacidad",
-  "Touche pour jouer": "Toca para jugar"
+  "Touche pour jouer": "Toca para jugar",
+  "Affronte un vrai joueur au hasard : le serveur trouve ton adversaire et lance les dés.": "Enfréntate a un jugador real al azar: el servidor encuentra a tu rival y lanza los dados.",
+  "Chercher un adversaire": "Buscar un rival",
+  "Connexion au serveur…": "Conectando con el servidor…",
+  "Impossible de joindre le serveur de jeu. Vérifie ta connexion internet.": "No se puede contactar con el servidor del juego. Revisa tu conexión a internet.",
+  "Jouer en ligne": "Jugar en línea",
+  "Partie en ligne": "Partida en línea",
+  "Recherche d'un adversaire…": "Buscando un rival…",
+  "en ligne": "en línea"
 });

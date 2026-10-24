@@ -724,5 +724,13 @@ BDAi18n.add("ja", {
   "Niveau": "レベル",
   "toutes les {n} manches": "{n}ラウンドごと",
   "Confidentialité": "プライバシー",
-  "Touche pour jouer": "タップしてスタート"
+  "Touche pour jouer": "タップしてスタート",
+  "Affronte un vrai joueur au hasard : le serveur trouve ton adversaire et lance les dés.": "ランダムな本物のプレイヤーと対戦：サーバーが相手を見つけ、サイコロを振ります。",
+  "Chercher un adversaire": "対戦相手を探す",
+  "Connexion au serveur…": "サーバーに接続中…",
+  "Impossible de joindre le serveur de jeu. Vérifie ta connexion internet.": "ゲームサーバーに接続できません。インターネット接続を確認してください。",
+  "Jouer en ligne": "オンライン対戦",
+  "Partie en ligne": "オンライン対戦",
+  "Recherche d'un adversaire…": "対戦相手を探しています…",
+  "en ligne": "オンライン"
 });

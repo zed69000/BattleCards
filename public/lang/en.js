@@ -724,5 +724,13 @@ BDAi18n.add("en", {
   "Niveau": "Level",
   "toutes les {n} manches": "every {n} rounds",
   "Confidentialité": "Privacy",
-  "Touche pour jouer": "Tap to play"
+  "Touche pour jouer": "Tap to play",
+  "Affronte un vrai joueur au hasard : le serveur trouve ton adversaire et lance les dés.": "Face a real player at random: the server finds your opponent and rolls the dice.",
+  "Chercher un adversaire": "Find an opponent",
+  "Connexion au serveur…": "Connecting to the server…",
+  "Impossible de joindre le serveur de jeu. Vérifie ta connexion internet.": "Can't reach the game server. Check your internet connection.",
+  "Jouer en ligne": "Play online",
+  "Partie en ligne": "Online game",
+  "Recherche d'un adversaire…": "Looking for an opponent…",
+  "en ligne": "online"
 });

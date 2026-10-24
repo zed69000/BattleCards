@@ -1,6 +1,10 @@
 {
-  // Site statique : Cloudflare publie le contenu de public/ tel quel, sans build.
+  // Cloudflare publie public/ tel quel ; seul /ws passe par worker/index.js (serveur des parties en ligne).
   "name": "battlecards",
+  "main": "worker/index.js",
   "compatibility_date": "2025-01-01",
-  "assets": { "directory": "./public" }
+  "assets": { "directory": "./public", "binding": "ASSETS" },
+  "durable_objects": { "bindings": [{ "name": "LOBBY", "class_name": "Lobby" }] },
+  // Stockage SQLite : la seule forme de Durable Object incluse dans l'offre gratuite.
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Lobby"] }]
 }

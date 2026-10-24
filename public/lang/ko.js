@@ -724,5 +724,13 @@ BDAi18n.add("ko", {
   "Niveau": "레벨",
   "toutes les {n} manches": "{n}라운드마다",
   "Confidentialité": "개인정보",
-  "Touche pour jouer": "터치해서 시작"
+  "Touche pour jouer": "터치해서 시작",
+  "Affronte un vrai joueur au hasard : le serveur trouve ton adversaire et lance les dés.": "무작위 실제 플레이어와 대결: 서버가 상대를 찾고 주사위를 굴립니다.",
+  "Chercher un adversaire": "상대 찾기",
+  "Connexion au serveur…": "서버에 연결 중…",
+  "Impossible de joindre le serveur de jeu. Vérifie ta connexion internet.": "게임 서버에 연결할 수 없습니다. 인터넷 연결을 확인하세요.",
+  "Jouer en ligne": "온라인 플레이",
+  "Partie en ligne": "온라인 게임",
+  "Recherche d'un adversaire…": "상대를 찾는 중…",
+  "en ligne": "온라인"
 });

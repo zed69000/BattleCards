@@ -724,5 +724,13 @@ BDAi18n.add("zh", {
   "Niveau": "等级",
   "toutes les {n} manches": "每 {n} 局一次",
   "Confidentialité": "隐私",
-  "Touche pour jouer": "点击开始"
+  "Touche pour jouer": "点击开始",
+  "Affronte un vrai joueur au hasard : le serveur trouve ton adversaire et lance les dés.": "随机对战真人玩家：服务器为你匹配对手并掷骰子。",
+  "Chercher un adversaire": "寻找对手",
+  "Connexion au serveur…": "正在连接服务器…",
+  "Impossible de joindre le serveur de jeu. Vérifie ta connexion internet.": "无法连接游戏服务器。请检查网络连接。",
+  "Jouer en ligne": "在线对战",
+  "Partie en ligne": "在线对局",
+  "Recherche d'un adversaire…": "正在寻找对手…",
+  "en ligne": "在线"
 });

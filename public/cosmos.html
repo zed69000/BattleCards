@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.71";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.72";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -1017,7 +1017,9 @@
             <h1 data-i18n>L'<span>Arène</span></h1>
           </div>
           <div class="friend">
-            <button class="btn big hot" id="friendBtn">Défier un ami</button>
+            <button class="btn big hot" id="onlineBtn">Jouer en ligne</button>
+            <small>Affronte un vrai joueur au hasard : le serveur trouve ton adversaire et lance les dés.</small>
+            <button class="btn big" id="friendBtn">Défier un ami</button>
             <small>Un vrai duel en direct, d'un téléphone à l'autre. L'un crée la partie, l'autre entre le code.</small>
           </div>
           <div class="section-title">Arène d'entraînement</div>
@@ -1170,11 +1172,14 @@
 
   <div class="overlay" id="lobby">
     <div class="sheet">
-      <h2>Duel entre amis</h2>
+      <h2 id="lobbyTitle">Duel entre amis</h2>
       <label class="lobby-field">Ton pseudo<input id="pseudo" maxlength="14" autocomplete="off" placeholder="Ton nom de martien"></label>
       <div class="stack" id="lobbyHome">
         <button class="btn hot" id="hostBtn">Créer une partie</button>
         <div class="join"><input id="joinCode" maxlength="5" autocomplete="off" autocapitalize="characters" placeholder="CODE" aria-label="Code de la partie"><button class="btn" id="joinBtn">Rejoindre</button></div>
+      </div>
+      <div class="stack" id="lobbyOnline" hidden>
+        <button class="btn hot" id="seekBtn">Chercher un adversaire</button>
       </div>
       <div id="lobbyWait" hidden>
         <div class="room-code" id="roomCode"></div>
@@ -2512,8 +2517,11 @@
       }).join("");
     }
     async function rollDie(roller = 0) {
-      const n = duel() && roller === 1 ? await netNext("roll") : 1 + rand(6);
-      if (roller === 0) netSend("roll", n);
+      // En ligne, le serveur tire le dé et l'envoie aux deux joueurs.
+      const online = duel() && net.online;
+      if (online && roller === 0) rawSend("rollreq");
+      const n = online || (duel() && roller === 1) ? await netNext("roll") : 1 + rand(6);
+      if (roller === 0 && !online) netSend("roll", n);
       // chacun lance son propre dé, avec sa forme et ses points
       const dieId = skinOf(roller).dice, cube = $("#cube"), token = $("#token");
       const shape = DICE[dieId].shape || "cube", flat = !["cube", "galet"].includes(shape);
@@ -2639,8 +2647,10 @@
        Les deux téléphones se parlent directement (WebRTC, via la bibliothèque PeerJS et son service public
        de mise en relation). Chacun fait tourner les mêmes règles et se voit en bas de l'écran ; on s'échange
        seulement les décisions : cartes posées, lancers de dé, ripostes. Rien n'empêche un tricheur de lire
-       les messages : c'est prévu pour jouer entre amis, pas pour un classement. */
-    const net = { peer: null, conn: null, host: false, them: null, queue: {}, waiters: {} };
+       les messages : c'est prévu pour jouer entre amis, pas pour un classement.
+       En ligne, les messages passent par le serveur du jeu (Cloudflare, worker/index.js), qui associe deux
+       joueurs, relaie les mêmes messages et tire lui-même les dés. */
+    const net = { peer: null, conn: null, host: false, online: false, them: null, queue: {}, waiters: {} };
     const duel = () => S.mode === "p2p";
     const rawSend = (t, v = null) => { if (net.conn && net.conn.open) net.conn.send({ t, v }); };
     function netSend(t, v = null) { if (duel()) rawSend(t, v); }
@@ -2662,15 +2672,18 @@
     }
     function closeNet() {
       const { conn, peer } = net;
-      Object.assign(net, { conn: null, peer: null, them: null, queue: {}, waiters: {} });
+      Object.assign(net, { conn: null, peer: null, online: false, them: null, queue: {}, waiters: {} });
       try { if (conn) conn.close(); } catch (e) { /* déjà fermée */ }
       try { if (peer) peer.destroy(); } catch (e) { /* déjà détruit */ }
     }
     function netLost() {
       if (!net.conn) return;
-      const playing = duel() && S.phase !== "over";
+      const playing = duel() && S.phase !== "over", online = net.online;
       closeNet();
-      if (!playing) return;
+      if (!playing) {
+        if (online && $("#lobby").classList.contains("on")) { $("#seekBtn").disabled = false; lobbyMsg(tr("La connexion avec ton adversaire a été perdue.")); }
+        return;
+      }
       gameId += 1;
       closeCoach();
       holdWarp(0);
@@ -2678,7 +2691,7 @@
       renderMenu();
       showTab("arena");
       show("menu");
-      openLobby(tr("La connexion avec ton adversaire a été perdue."));
+      openLobby(tr("La connexion avec ton adversaire a été perdue."), online);
     }
     function loadPeerJS() {
       if (window.Peer) return Promise.resolve();
@@ -2741,9 +2754,12 @@
       conn.on("close", netLost);
       conn.on("error", netLost);
     }
-    function openLobby(message = "") {
+    function openLobby(message = "", online = false) {
       $("#pseudo").value = save.name || "";
-      $("#lobbyHome").hidden = false;
+      $("#lobbyTitle").textContent = online ? tr("Partie en ligne") : tr("Duel entre amis");
+      $("#lobbyHome").hidden = online;
+      $("#lobbyOnline").hidden = !online;
+      $("#seekBtn").disabled = false;
       $("#lobbyWait").hidden = true;
       lobbyMsg(message);
       $("#lobby").classList.add("on");
@@ -2776,6 +2792,47 @@
       net.peer = new Peer();
       net.peer.on("open", () => wire(net.peer.connect(roomId(code), { reliable: true })));
       net.peer.on("error", e => lobbyMsg(e.type === "peer-unavailable" ? tr("Aucune partie avec ce code. Vérifie-le avec ton ami.") : tr("Erreur réseau : connexion impossible.")));
+    }
+    /* Connexion au serveur du jeu, présentée comme une connexion PeerJS (open, data, close, error)
+       pour que wire() et tout le duel servent tels quels. */
+    const GAME_SERVER = /\.workers\.dev$/.test(location.hostname) ? `wss://${location.host}/ws` : "wss://battlecards.sebastienalzamora.workers.dev/ws";
+    function serverConn() {
+      const ws = new WebSocket(GAME_SERVER), on = {};
+      let ping = null, quit = false;
+      const fire = (ev, x) => { if (on[ev]) on[ev](x); };
+      const conn = {
+        open: false,
+        on: (ev, fn) => { on[ev] = fn; },
+        send: msg => { if (ws.readyState === 1) ws.send(JSON.stringify(msg)); },
+        close: () => { quit = true; try { ws.close(); } catch (e) { /* déjà fermée */ } }
+      };
+      ws.onopen = () => { ping = setInterval(() => { if (ws.readyState === 1) ws.send("ping"); }, 25000); };
+      ws.onmessage = e => {
+        if (e.data === "pong") return;
+        let msg;
+        try { msg = JSON.parse(e.data); } catch (err) { return; }
+        if (msg.sys === "wait") return lobbyMsg(tr("Recherche d'un adversaire…"));
+        if (msg.sys === "start") { net.host = Boolean(msg.host); conn.open = true; return fire("open"); }
+        if (msg.sys === "left") return fire("close");
+        fire("data", msg);
+      };
+      ws.onclose = () => {
+        clearInterval(ping);
+        if (quit) return;
+        if (conn.open) { conn.open = false; fire("close"); return; }
+        $("#seekBtn").disabled = false;
+        lobbyMsg(tr("Impossible de joindre le serveur de jeu. Vérifie ta connexion internet."));
+        closeNet();
+      };
+      return conn;
+    }
+    function seekOnline() {
+      saveName();
+      closeNet();
+      net.online = true;
+      $("#seekBtn").disabled = true;
+      lobbyMsg(tr("Connexion au serveur…"));
+      wire(serverConn());
     }
     /* L'hôte distribue : mêmes cartes pour les deux, et autant d'atouts de chaque côté (le plus petit des deux choix). */
     function dealDuel() {
@@ -2981,7 +3038,7 @@
       $("#me0").textContent = myName();
       $("#ava1").innerHTML = charArt(S.foeChar, 9);
       $("#ava1").style.background = S.boss ? "radial-gradient(circle, var(--pink), #4a1030)" : "var(--violet)";
-      $("#name1").textContent = mode === "p2p" ? `${foe()} · ${tr("ami")}` : mode === "arena" ? `${foe()} · ${S.rival.t} ♛` : `${foe()} · ${tr(CHAPTERS[STAGES[S.stage].c].planet)}`;
+      $("#name1").textContent = mode === "p2p" ? `${foe()} · ${net.online ? tr("en ligne") : tr("ami")}` : mode === "arena" ? `${foe()} · ${S.rival.t} ♛` : `${foe()} · ${tr(CHAPTERS[STAGES[S.stage].c].planet)}`;
       $("#field").classList.remove("charged");
       for (const q of [0, 1]) { $(`#perk${q}`).textContent = tr(PERKS[S.cast[q]].name); $(`#perk${q}`).title = tr("{tribe} : {desc}", { tribe: tr(CASTS[S.cast[q]].label), desc: tr(PERKS[S.cast[q]].desc) }); }
       labelSlots();
@@ -4737,6 +4794,8 @@
       if (net.host && net.conn) dealDuel();
     });
     $("#friendBtn").addEventListener("click", () => openLobby());
+    $("#onlineBtn").addEventListener("click", () => openLobby("", true));
+    $("#seekBtn").addEventListener("click", seekOnline);
     $("#hostBtn").addEventListener("click", hostDuel);
     $("#joinBtn").addEventListener("click", () => joinDuel($("#joinCode").value));
     $("#lobbyClose").addEventListener("click", () => { if (!duel()) closeNet(); $("#lobby").classList.remove("on"); });

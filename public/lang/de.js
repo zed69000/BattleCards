@@ -724,5 +724,13 @@ BDAi18n.add("de", {
   "Niveau": "Stufe",
   "toutes les {n} manches": "alle {n} Runden",
   "Confidentialité": "Datenschutz",
-  "Touche pour jouer": "Tippen zum Spielen"
+  "Touche pour jouer": "Tippen zum Spielen",
+  "Affronte un vrai joueur au hasard : le serveur trouve ton adversaire et lance les dés.": "Tritt gegen einen echten Spieler an: Der Server findet deinen Gegner und würfelt.",
+  "Chercher un adversaire": "Gegner suchen",
+  "Connexion au serveur…": "Verbindung zum Server…",
+  "Impossible de joindre le serveur de jeu. Vérifie ta connexion internet.": "Der Spielserver ist nicht erreichbar. Prüfe deine Internetverbindung.",
+  "Jouer en ligne": "Online spielen",
+  "Partie en ligne": "Online-Partie",
+  "Recherche d'un adversaire…": "Suche einen Gegner…",
+  "en ligne": "online"
 });
