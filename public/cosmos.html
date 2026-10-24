@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.74";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.75";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -248,6 +248,8 @@
     .rank .ln b { font-weight: 400; color: var(--yellow); }
     .rank .ln.me { background: var(--yellow); color: var(--navy); }
     .rank .ln.me b, .rank .ln.me small { color: var(--navy); }
+    .rank .gap { text-align: center; letter-spacing: 0.3em; color: rgba(245, 233, 207, 0.5); line-height: 0.6; }
+    .rank-full { max-height: 62vh; max-height: calc(62 * var(--dvh)); overflow-y: auto; margin-top: 10px; }
     .version { align-self: flex-end; margin: -4px 2px -4px 0; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.62rem; color: rgba(245, 233, 207, 0.4); user-select: text; }
     .tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; margin: 0 -10px; padding-bottom: env(safe-area-inset-bottom, 0px); background: #0a0f1e; border-top: 2px solid rgba(245, 233, 207, 0.25); }
     .tabs button { display: grid; justify-items: center; min-width: 0; gap: 1px; padding: 8px 0 9px; border: 0; background: none; font-size: 0.62rem; color: rgba(245, 233, 207, 0.6); }
@@ -1024,18 +1026,15 @@
           </div>
           <div class="friend">
             <button class="btn big hot" id="onlineBtn">Jouer en ligne</button>
-            <small>Affronte un vrai joueur au hasard : le serveur trouve ton adversaire et lance les dés.</small>
+            <small>Affronte des joueurs du monde entier et grimpe au classement.</small>
+            <div class="stake" id="arenaStake"></div>
             <button class="btn big" id="friendBtn">Défier un ami</button>
             <small>Un vrai duel en direct, d'un téléphone à l'autre. L'un crée la partie, l'autre entre le code.</small>
           </div>
-          <div class="section-title">Arène d'entraînement</div>
-          <div class="versus" id="versus"></div>
-          <button class="btn" id="arenaBtn">Duel classé contre un robot</button>
-          <div class="stake" id="arenaStake"></div>
           <div class="league" id="leagueBig"></div>
           <div class="section-title">Classement</div>
           <div class="rank" id="rankList"></div>
-          <p class="perk">En attendant le jeu en ligne, tes rivaux d'arène sont des robots à score fixe. Les duels contre de vrais joueurs les remplaceront.</p>
+          <button class="linkish" id="rankAll">Voir tout le classement</button>
         </section>
         <section class="pane" data-pane="cards">
           <div class="subtabs" id="subtabs">
@@ -1176,10 +1175,18 @@
     </div>
   </div>
 
+  <div class="overlay" id="rankSheet">
+    <div class="sheet">
+      <button class="xclose" id="rankClose" aria-label="Fermer">✕</button>
+      <h2>Classement</h2>
+      <div class="rank rank-full" id="rankFull"></div>
+    </div>
+  </div>
+
   <div class="overlay" id="lobby">
     <div class="sheet">
       <h2 id="lobbyTitle">Duel entre amis</h2>
-      <label class="lobby-field">Ton pseudo<input id="pseudo" maxlength="14" autocomplete="off" placeholder="Ton nom de martien"></label>
+      <label class="lobby-field" id="pseudoField">Ton pseudo<input id="pseudo" maxlength="14" autocomplete="off" placeholder="Ton nom de martien"></label>
       <div class="stack" id="lobbyHome">
         <button class="btn hot" id="hostBtn">Créer une partie</button>
         <div class="join"><input id="joinCode" maxlength="5" autocomplete="off" autocapitalize="characters" placeholder="CODE" aria-label="Code de la partie"><button class="btn" id="joinBtn">Rejoindre</button></div>
@@ -1190,10 +1197,6 @@
       <div class="seek" id="seekBox" hidden>
         <div class="seek-radar" aria-hidden="true"><i></i><i></i></div>
         <b id="seekTime">0:00</b>
-      </div>
-      <div class="stack" id="seekChoice" hidden>
-        <button class="btn hot" id="seekBot">Jouer contre un robot</button>
-        <button class="btn" id="seekMore">Continuer à chercher</button>
       </div>
       <div id="lobbyWait" hidden>
         <div class="room-code" id="roomCode"></div>
@@ -1834,12 +1837,17 @@
       { name: "Bronze", min: 0, cls: "bronze" }, { name: "Argent", min: 100, cls: "" }, { name: "Or", min: 250, cls: "gold" },
       { name: "Platine", min: 450, cls: "plat" }, { name: "Légende", min: 700, cls: "legend" }
     ];
-    /* Rivaux d'entraînement : des robots à score fixe, en attendant le classement en ligne. */
+    /* Classement : la liste commune vient du serveur du jeu (worker/index.js) ; en attendant sa réponse,
+       ou sans réseau, on montre ces joueurs avec leurs scores de départ. */
     const RIVALS = [
-      ["Empereur Zorglax", "cranes", 760], ["Mimi Laser", "cranes", 610], ["Capitaine Flan", "poulpes", 470], ["M. Dupont", "incognito", 380],
-      ["Tonton Zap", "mars", 300], ["La Baronne Gloups", "poulpes", 230], ["Kiki 92", "mars", 170], ["Zorglub du 13", "cranes", 120],
-      ["Pieuvre Qui Rit", "poulpes", 80], ["Gérard Mars", "mars", 50], ["Agent Trèfle", "incognito", 25], ["Bébé Soucoupe", "mars", 10]
+      ["zorglax", "cranes", 760], ["mimi.laser", "cranes", 610], ["albert215", "mars", 540], ["capitaine_flan", "poulpes", 470], ["vince", "cranes", 445],
+      ["jeanne21", "poulpes", 395], ["mr_dupont", "incognito", 380], ["lulu_spatiale", "poulpes", 330], ["tontonzap", "mars", 300], ["max13", "mars", 285],
+      ["kevin.zip", "incognito", 260], ["baronne_gloups", "poulpes", 230], ["nina", "cranes", 205], ["toto_mars", "mars", 190], ["kiki92", "mars", 170],
+      ["lea_lune", "poulpes", 160], ["yanis07", "incognito", 140], ["zorglub13", "cranes", 120], ["chloe", "cranes", 110], ["bob42", "mars", 95],
+      ["pieuvre_qui_rit", "poulpes", 80], ["pti_martien", "mars", 70], ["sam", "incognito", 60], ["gerard.mars", "mars", 50], ["ines.b", "poulpes", 45],
+      ["karim77", "cranes", 35], ["lola", "poulpes", 30], ["agent_trefle", "incognito", 25], ["theo.v", "mars", 20], ["bebe_soucoupe", "mars", 10]
     ];
+    const RANK_API = `https://${/\.workers\.dev$/.test(location.hostname) ? location.host : "battlecards.sebastienalzamora.workers.dev"}/api`;
     function leagueOf(trophies) { let i = 0; LEAGUES.forEach((L, k) => { if (trophies >= L.min) i = k; }); return i; }
     const atoutSlots = () => SLOT_LEVELS.reduce((n, [lvl, slots]) => (levelInfo(save.xp).lvl >= lvl ? slots : n), 3);
     function levelAtouts() { const lvl = levelInfo(save.xp).lvl; return grantAtouts(Object.entries(LEVEL_ATOUTS).filter(([at]) => lvl >= Number(at)).map(([, id]) => id)); }
@@ -1851,12 +1859,39 @@
     /* Le prénom donné à la première ouverture remplace « Toi » partout où le joueur est nommé. */
     const myName = () => (save.name && save.name !== tr("Ami") ? save.name : tr("Toi"));
     const escHtml = text => String(text).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+    const playerId = () => save.pid || (save.pid = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, "0")).join(""));
+    /* Lignes connues du classement (le haut et les voisins du joueur), avec le rang de chacun. Le score du
+       joueur est toujours le sien, même si le serveur n'a pas encore reçu la dernière partie. */
     function ranking() {
-      const list = RIVALS.map(([name, cast, t]) => ({ name, cast, t }));
-      list.push({ name: myName(), cast: CHARS[save.char].tribe, t: save.trophies, me: true });
-      return list.sort((a, b) => b.t - a.t || (a.me ? -1 : 1));
+      const c = save.rank, me = { name: myName(), cast: CHARS[save.char].tribe, t: save.trophies, me: true };
+      if (!c || !c.top || !c.me) {
+        const list = RIVALS.map(([name, cast, t]) => ({ name, cast, t, g: true }));
+        list.push(me);
+        list.sort((a, b) => b.t - a.t || (a.me ? -1 : 1));
+        list.forEach((r, i) => { r.r = i + 1; });
+        return list;
+      }
+      const seen = new Map();
+      for (const x of [...c.top, ...c.around]) if (!x.me) seen.set(x.r, { name: x.n, cast: CASTS[x.c] ? x.c : "mars", t: x.t, r: x.r, g: Boolean(x.g) });
+      const old = (c.around.find(x => x.me) || { t: save.trophies }).t;
+      me.r = c.me;
+      for (const x of c.around) if (!x.me) { if (x.t > old && x.t <= save.trophies) me.r -= 1; else if (x.t <= old && x.t > save.trophies) me.r += 1; }
+      return [...seen.values(), me].sort((a, b) => a.r - b.r || (a.me ? -1 : 1));
     }
-    const myRank = () => ranking().findIndex(r => r.me) + 1;
+    const myRank = () => ranking().find(r => r.me).r;
+    let rankBusy = false;
+    async function syncRank(force = false) {
+      if (rankBusy || (!force && save.rank && Date.now() - (save.rank.at || 0) < 60000)) return;
+      rankBusy = true;
+      try {
+        const res = await fetch(`${RANK_API}/score`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: playerId(), name: myName(), cast: CHARS[save.char].tribe, t: save.trophies }) });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.top) { save.rank = { ...data, at: Date.now() }; persist(); renderRank(); if ($("#rankSheet").classList.contains("on")) renderRankFull(); }
+        }
+      } catch (e) { /* hors ligne : on garde la dernière liste */ }
+      rankBusy = false;
+    }
     const foe = () => tr(S.foeName || STAGES[S.stage].name);
     const skinOf = owner => (owner === 0 ? save.equip : S.foeSkin || { dice: "violet", back: "cible" });
     const charOf = owner => (owner === 0 ? save.char : S.foeChar || `${S.cast[1]}0`);
@@ -1950,7 +1985,7 @@
     function threshold(v) { return v <= 4 ? 3 : v <= 7 ? 4 : v <= 10 ? 5 : 6; }
     const thrOf = card => card.thr || threshold(card.value);
     /* Bonus de l'IA (main, boosts) : jamais en duel entre amis. */
-    const aiBonus = (q, key) => (q === 1 && S.mode !== "p2p" ? S.aiL[key] || 0 : 0);
+    const aiBonus = (q, key) => (q === 1 && S.mode !== "p2p" && !S.resident ? S.aiL[key] || 0 : 0);
     /* Super coup du boss pendant une manche chargée (null sinon). */
     const superOn = () => (S.charged && S.boss ? BOSSES[S.boss].super : null);
     /* Seuil du dé d'une 3ᵉ carte : Cryo adverse et Ouragan du boss le durcissent d'un cran. */
@@ -2739,7 +2774,7 @@
     }
     const roomId = code => `bataille-des-allies-${code}`;
     const lobbyMsg = text => { $("#lobbyMsg").textContent = text; };
-    const myHello = () => ({ name: save.name || tr("Ami"), cast: CHARS[save.char].tribe, char: save.char, loadout: save.loadout.slice(0, atoutSlots()), dice: save.equip.dice, back: save.equip.back, decor: save.equip.decor });
+    const myHello = () => ({ name: save.name || tr("Ami"), t: save.trophies, cast: CHARS[save.char].tribe, char: save.char, loadout: save.loadout.slice(0, atoutSlots()), dice: save.equip.dice, back: save.equip.back, decor: save.equip.decor });
     function saveName() { save.name = $("#pseudo").value.trim().slice(0, 14) || tr("Ami"); persist(); renderMenu(); loveRain(); }
     /* Surprise : un joueur qui s'appelle Jeanne est accueilli par une pluie de cœurs et un « Je t'aime ». */
     const isJeanne = () => (save.name || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() === "jeanne";
@@ -2795,7 +2830,7 @@
       $("#lobbyOnline").hidden = !online;
       $("#seekBtn").disabled = false;
       $("#seekBox").hidden = true;
-      $("#seekChoice").hidden = true;
+      $("#pseudoField").hidden = online;
       $("#lobbyWait").hidden = true;
       lobbyMsg(message);
       $("#lobby").classList.add("on");
@@ -2883,41 +2918,43 @@
       };
       return conn;
     }
-    /* Recherche en cours : radar et chronomètre. Après 30 s sans personne, on le dit et on propose un robot
-       (annoncé comme tel) ou de continuer à chercher. */
+    /* Recherche en cours : radar et chronomètre. Si personne n'arrive en 15 à 25 s, un joueur du classement
+       proche du tien prend la partie. */
     function seekUI(on) {
       clearInterval(seekUI.timer);
       $("#seekBox").hidden = !on;
-      $("#seekChoice").hidden = true;
       $("#lobbyOnline").hidden = on || $("#lobbyTitle").textContent !== tr("Partie en ligne");
       if (!on) return;
-      const t0 = Date.now();
-      let offered = false;
+      const t0 = Date.now(), fill = 15 + rand(11);
       const tick = () => {
         const sec = Math.floor((Date.now() - t0) / 1000);
         $("#seekTime").textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
-        if (sec >= 30 && !offered) {
-          offered = true;
-          $("#seekChoice").hidden = false;
-          lobbyMsg(tr("Personne n'est disponible pour l'instant. Tu peux attendre encore, ou jouer tout de suite contre un robot."));
-        }
+        if (sec >= fill && net.online && net.conn && !net.conn.open) matchResident();
       };
       tick();
       seekUI.timer = setInterval(tick, 1000);
     }
+    function matchResident() {
+      seekUI(false);
+      $("#seekBox").hidden = false;
+      closeNet();
+      lobbyMsg(tr("Connecté ! La partie se prépare…"));
+      const rival = pickRival();
+      setTimeout(() => {
+        if (!$("#lobby").classList.contains("on")) return;
+        $("#lobby").classList.remove("on");
+        $("#seekBox").hidden = true;
+        S.rival = rival;
+        newGame("arena", null, { resident: true });
+      }, 1100 + rand(900));
+    }
     function seekOnline() {
-      saveName();
+      if ($("#pseudoField").hidden) { if (!save.name) save.name = tr("Ami"); } else saveName();
       closeNet();
       net.online = true;
       $("#seekBtn").disabled = true;
       lobbyMsg(tr("Connexion au serveur…"));
       wire(serverConn());
-    }
-    function seekBot() {
-      seekUI(false);
-      closeNet();
-      $("#lobby").classList.remove("on");
-      newGame("arena");
     }
     /* L'hôte distribue : mêmes cartes pour les deux, et autant d'atouts de chaque côté (le plus petit des deux choix). */
     function dealDuel() {
@@ -2938,7 +2975,10 @@
     }
     /* Carte choisie par l'adversaire : l'IA en solo, le message de l'ami en duel. */
     async function foeCard(kind, known = null) {
-      if (!duel()) return kind === "van" ? aiPlan(null).van : aiPlan(S.board.van[1], known).amb;
+      if (!duel()) {
+        if (S.resident) await sleep(700 + rand(2600));
+        return kind === "van" ? aiPlan(null).van : aiPlan(S.board.van[1], known).amb;
+      }
       if (kind === "van") { const sw = await netNext("swap"); const c = sw && S.hands[1].find(x => x.id === sw); if (c) await applySwap(1, c); }
       const id = await netNext(kind);
       return S.hands[1].find(c => c.id === id);
@@ -3032,9 +3072,10 @@
       for (const id of ["pause", "help", "endScreen", "bossIntro", "capsule", "install", "lobby"]) $(`#${id}`).classList.remove("on");
     }
     function pickRival() {
-      const list = ranking(), me = list.findIndex(r => r.me);
-      const near = [me - 1, me - 2, me + 1].map(i => list[i]).filter(Boolean);
-      return near[rand(near.length)];
+      const list = ranking().filter(r => r.g || r.me), me = list.findIndex(r => r.me);
+      const near = [me - 1, me - 2, me + 1, me + 2].map(i => list[i]).filter(r => r && !r.me);
+      const pool = near.length ? near : list.filter(r => !r.me);
+      return pool[rand(pool.length)];
     }
     /* mode « adv » : la planète choisie en aventure. mode « arena » : un duel classé contre un rival proche au classement. */
     /* Arena: like a stadium that takes the colours of the side that scores, it belongs to whoever won the last round.
@@ -3076,16 +3117,18 @@
       setArena(winner, true);
       if (winner === 0) boom(tr("Arène conquise !"), true, $("#field"));
     }
-    function newGame(mode = "adv", pre = null) {
+    function newGame(mode = "adv", pre = null, opt = {}) {
       gameId += 1;
       closeCoach();
       S.mode = mode;
+      S.resident = mode === "arena" && Boolean(opt.resident);
       S.cast[0] = CHARS[save.char].tribe;
       S.boss = null;
       S.charged = false;
       if (mode === "p2p") {
         const them = net.them || {};
         S.foeName = String(them.name || tr("Ami")).slice(0, 14);
+        S.foeT = Math.max(0, Math.round(Number(them.t) || 0));
         S.foeSkin = { dice: DICE[them.dice] ? them.dice : "violet", back: BACKS[them.back] ? them.back : "cible" };
         S.cast[1] = CASTS[them.cast] ? them.cast : "mars";
         S.foeChar = CHARS[them.char] && CHARS[them.char].tribe === S.cast[1] ? them.char : `${S.cast[1]}0`;
@@ -3123,7 +3166,7 @@
       $("#me0").textContent = myName();
       $("#ava1").innerHTML = charArt(S.foeChar, 9);
       $("#ava1").style.background = S.boss ? "radial-gradient(circle, var(--pink), #4a1030)" : "var(--violet)";
-      $("#name1").textContent = mode === "p2p" ? `${foe()} · ${net.online ? tr("en ligne") : tr("ami")}` : mode === "arena" ? `${foe()} · ${S.rival.t} ♛` : `${foe()} · ${tr(CHAPTERS[STAGES[S.stage].c].planet)}`;
+      $("#name1").textContent = mode === "p2p" ? `${foe()} · ${net.online ? tr("en ligne") : tr("ami")}` : mode === "arena" ? (S.resident ? `${foe()} · ${tr("en ligne")}` : `${foe()} · ${S.rival.t} ♛`) : `${foe()} · ${tr(CHAPTERS[STAGES[S.stage].c].planet)}`;
       $("#field").classList.remove("charged");
       for (const q of [0, 1]) { $(`#perk${q}`).textContent = tr(PERKS[S.cast[q]].name); $(`#perk${q}`).title = tr("{tribe} : {desc}", { tribe: tr(CASTS[S.cast[q]].label), desc: tr(PERKS[S.cast[q]].desc) }); }
       labelSlots();
@@ -3228,7 +3271,7 @@
 
     /* L'écart ne peut plus être comblé : on propose de fuir (ou d'encaisser la victoire) plutôt que de jouer pour rien. */
     async function decided(game) {
-      if (duel() || S.lockAsked) return false;
+      if (duel() || S.resident || S.lockAsked) return false;
       const rest = lootSum([...S.decks[0], ...S.decks[1], ...S.hands[0], ...S.hands[1], ...S.pot]);
       const gap = S.loot[1] - S.loot[0];
       if (Math.abs(gap) <= rest + LOCK_MARGIN) return false;
@@ -3387,6 +3430,7 @@
       await applyMulligan(0, mine);
       if (game !== gameId) return;
       if (duel()) setPrompt(tr("Gaspard choisit les cartes à échanger…"));
+      if (S.resident) { setPrompt(tr("Gaspard choisit les cartes à échanger…")); await sleep(900 + rand(2200)); }
       const theirs = duel() ? await netNext("mull") : aiMulligan();
       if (game !== gameId) return;
       const n = await applyMulligan(1, theirs || []);
@@ -3949,13 +3993,14 @@
       save.xp += dXp;
       let gain, head, trip = null;
       const unlocked = [], gemParts = [];
-      if (S.mode === "p2p") {
+      const live = S.online || S.resident;
+      if (S.mode === "p2p" && !S.online) {
         gain = won ? 20 : 10;
         $("#endText").textContent = forfeit ? tr("{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.", { name: foe() }) : won ? tr("Tu as battu {name} !", { name: foe() }) : lost ? tr("{name} remporte ce duel.", { name: foe() }) : tr("Égalité parfaite entre amis.");
         head = tr("Duel amical · +{xp} XP", { xp: dXp });
         if (forfeit) $("#endAgain").textContent = S.online ? tr("Chercher un autre joueur") : tr("Nouveau duel");
-      } else if (arena) {
-        const above = S.rival.t >= save.trophies;
+      } else if (arena || S.online) {
+        const above = (arena ? S.rival.t : S.foeT || 0) >= save.trophies;
         const before = { league: leagueOf(save.trophies), rank: myRank() };
         const dT = won ? (above ? 32 : 24) : lost ? -Math.min(above ? 8 : 12, save.trophies) : 0;
         save.trophies += dT;
@@ -3966,7 +4011,10 @@
         if (after.league < before.league) notes.push({ v: "♛", t: tr("Relégation en ligue {league}", { league: tr(LEAGUES[after.league].name) }) });
         if (after.rank < before.rank) notes.push({ v: "▲", t: tr("Tu passes {n}ᵉ au classement", { n: after.rank }), hot: true });
         if (after.rank > before.rank) notes.push({ v: "▼", t: tr("Tu redescends {n}ᵉ au classement", { n: after.rank }) });
-        $("#endText").textContent = won ? tr("Tu as battu {name} dans l'arène.", { name: foe() }) : lost ? tr("{name} garde l'avantage cette fois.", { name: foe() }) : tr("Personne ne prend l'avantage.");
+        $("#endText").textContent = forfeit ? tr("{name} s'est déconnecté : la victoire est pour toi, et ton butin est encaissé.", { name: foe() })
+          : live ? (won ? tr("Tu as battu {name} !", { name: foe() }) : lost ? tr("{name} remporte ce duel.", { name: foe() }) : tr("Personne ne prend l'avantage."))
+          : won ? tr("Tu as battu {name} dans l'arène.", { name: foe() }) : lost ? tr("{name} garde l'avantage cette fois.", { name: foe() }) : tr("Personne ne prend l'avantage.");
+        if (live) $("#endAgain").textContent = forfeit ? tr("Chercher un autre joueur") : tr("Rejouer");
         head = `${dT < 0 ? "−" : "+"}${Math.abs(dT)} ♛ · +${dXp} XP`;
         S.rival = null;
       } else {
@@ -4005,6 +4053,7 @@
       save.crystals += gain;
       save.games = (save.games || 0) + 1;
       persist();
+      if (trophyDelta !== null) syncRank(true);
       offerAd(gain);
       // Les tuiles de récompense : étoiles, cristaux, XP (ou trophées), puis chaque nouveauté
       const lv = levelInfo(save.xp), tiles = [];
@@ -4363,6 +4412,24 @@
     }
 
     /* ═════ Menu, atouts, capsules ═════ */
+    const TRIBE_COLORS = { mars: "var(--orange)", cranes: "var(--violet)", poulpes: "#e0a91f", incognito: "var(--teal)" };
+    const rankRow = r => `<div class="ln${r.me ? " me" : ""}"><b>${r.r}</b>
+        <div class="ava" style="background:${TRIBE_COLORS[r.cast]};color:${TRIBE_COLORS[r.cast]}">${r.me ? charArt(save.char) : art(r.cast, "H", "R", 5)}</div>
+        <div>${escHtml(r.name)}<small>${tr(CASTS[r.cast].label)} · ${tr("ligue {league}", { league: tr(LEAGUES[leagueOf(r.t)].name) })}</small></div><span>${r.t} ♛</span></div>`;
+    /* Dans l'onglet : le podium, puis toujours le joueur et ses voisins. */
+    function renderRank() {
+      const list = ranking(), me = list.find(r => r.me);
+      const rows = me.r <= 6 ? list.filter(r => r.r <= 6) : [...list.filter(r => r.r <= 3), "gap", ...list.filter(r => Math.abs(r.r - me.r) <= 2)];
+      $("#rankList").innerHTML = rows.map(r => (r === "gap" ? `<div class="gap">• • •</div>` : rankRow(r))).join("");
+    }
+    /* Tout le classement connu, centré sur le joueur. */
+    function renderRankFull() {
+      const list = ranking(), out = [];
+      list.forEach((r, i) => { if (i && r.r - list[i - 1].r > 1) out.push(`<div class="gap">• • •</div>`); out.push(rankRow(r)); });
+      $("#rankFull").innerHTML = out.join("");
+      const mine = $("#rankFull .ln.me");
+      if (mine) setTimeout(() => mine.scrollIntoView({ block: "center" }), 60);
+    }
     function leagueHTML() {
       const t = save.trophies, i = leagueOf(t), L = LEAGUES[i], next = LEAGUES[i + 1];
       const pct = next ? Math.round(((t - L.min) / (next.min - L.min)) * 100) : 100;
@@ -4398,22 +4465,11 @@
 
       renderCampaign();
 
-      // Multijoueur : le prochain rival, la ligue, le classement
-      S.rival = S.rival || pickRival();
-      const above = S.rival.t >= save.trophies;
-      const vs = $("#versus");
-      vs.innerHTML = "";
-      const burstEl = document.createElement("div");
-      burstEl.className = "vsBurst";
-      burstEl.textContent = "VS";
-      vs.append(cardEl({ id: "menu-me", label: "R", value: 13, title: "Roi", house: "H", seed: 5 }, 0), burstEl,
-        cardEl({ id: "menu-foe", label: "R", value: 13, title: "Roi", house: "S", seed: 9 }, 0, true));
-      $("#arenaStake").innerHTML = tr("Prochain rival : <b>{name}</b> ({t} ♛). Victoire <b>+{win} ♛</b>, défaite <b>−{lose} ♛</b>", { name: tr(S.rival.name), t: S.rival.t, win: above ? 32 : 24, lose: above ? 8 : 12 });
+      // Multijoueur : la mise, la ligue, le classement
+      $("#arenaStake").innerHTML = tr("Partie classée : victoire <b>+24 à +32 ♛</b>, défaite <b>−8 à −12 ♛</b>");
       $("#leagueBig").innerHTML = leagueHTML();
-      const colors = { mars: "var(--orange)", cranes: "var(--violet)", poulpes: "#e0a91f", incognito: "var(--teal)" };
-      $("#rankList").innerHTML = ranking().map((r, i) => `<div class="ln${r.me ? " me" : ""}"><b>${i + 1}</b>
-        <div class="ava" style="background:${colors[r.cast]};color:${colors[r.cast]}">${r.me ? charArt(save.char) : art(r.cast, "H", "R", 5)}</div>
-        <div>${r.me ? escHtml(r.name) : tr(r.name)}<small>${tr(CASTS[r.cast].label)} · ${tr("ligue {league}", { league: tr(LEAGUES[leagueOf(r.t)].name) })}</small></div><span>${r.t} ♛</span></div>`).join("");
+      renderRank();
+      syncRank();
 
       renderCollection();
       renderHero();
@@ -4786,7 +4842,6 @@
     for (const btn of document.querySelectorAll("#subtabs button")) btn.addEventListener("click", () => { colSub = btn.dataset.sub; colPick = null; sfx.tap(); renderCollection(); });
     // Appel, autre appli, écran verrouillé : la partie se met en pause toute seule.
     document.addEventListener("visibilitychange", () => { if (document.hidden && $("#game").classList.contains("on") && !["over"].includes(S.phase)) $("#pause").classList.add("on"); });
-    $("#arenaBtn").addEventListener("click", () => newGame("arena"));
     $("#helpAtouts").innerHTML = ATOUT_IDS.map(id => `<li><b>${tr(ATOUTS[id].name)}</b> (${tr(RARITY[ATOUTS[id].rarity].name).toLowerCase()}) : ${tr(ATOUTS[id].desc)}</li>`).join("");
     for (const btn of document.querySelectorAll("#tabs button")) btn.addEventListener("click", () => { sfx.tap(); showTab(btn.dataset.tab); });
     $("#tutoBtn").addEventListener("click", () => { save.seen = {}; save.mute = false; S.stage = save.stage = 0; chapterView = 0; persist(); newGame("adv"); });
@@ -4871,6 +4926,7 @@
     $("#resumeBtn").addEventListener("click", () => $("#pause").classList.remove("on"));
     $("#quitBtn").addEventListener("click", goMenu);
     $("#endAgain").addEventListener("click", async () => {
+      if (S.resident) { goMenu(); openLobby("", true); seekOnline(); return; }
       if (S.mode !== "p2p") { if (S.mode === "arena") S.rival = null; return newGame(S.mode); }
       if (!net.conn) {
         const online = S.online;
@@ -4890,8 +4946,8 @@
     $("#friendBtn").addEventListener("click", () => openLobby());
     $("#onlineBtn").addEventListener("click", () => openLobby("", true));
     $("#seekBtn").addEventListener("click", seekOnline);
-    $("#seekBot").addEventListener("click", seekBot);
-    $("#seekMore").addEventListener("click", () => { $("#seekChoice").hidden = true; lobbyMsg(tr("Recherche d'un adversaire…")); });
+    $("#rankAll").addEventListener("click", () => { renderRankFull(); $("#rankSheet").classList.add("on"); syncRank(true); });
+    $("#rankClose").addEventListener("click", () => $("#rankSheet").classList.remove("on"));
     $("#hostBtn").addEventListener("click", hostDuel);
     $("#joinBtn").addEventListener("click", () => joinDuel($("#joinCode").value));
     $("#lobbyClose").addEventListener("click", () => { if (!duel()) closeNet(); $("#lobby").classList.remove("on"); });

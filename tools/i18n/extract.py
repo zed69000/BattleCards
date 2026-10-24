@@ -12,7 +12,7 @@ La clé d'un texte, c'est le texte français lui-même (voir public/i18n.js). So
   c) les textes et les attributs aria-label / title du HTML statique (hors <script>, <style>, <head>, #splash,
      éléments data-i18n ou data-no-i18n), plus le <title> de la page ;
   d) les tables de données affichées au joueur (maisons, atouts, talents, boss, chapitres, niveaux d'IA, raretés,
-     ligues, dés, dos, personnages, soldats, rivaux, tribus de casts.js, titres des cartes, formations).
+     ligues, dés, dos, personnages, soldats, tribus de casts.js, titres des cartes, formations).
 Python 3, bibliothèque standard uniquement.
 """
 import html
@@ -184,8 +184,6 @@ def data_keys(game, casts, keys):
     for m in re.finditer(r"soldiers:\s*\[([^\]]*)\]", script):
         for s in re.finditer(STR_DQ, m.group(1)):
             keep(keys, js_unescape(s.group(1)))
-    for m in re.finditer(r"\[" + STR_DQ + r",\s*\"\w+\",\s*\d+\]", block(script, r"const RIVALS\s*=")):
-        keep(keys, js_unescape(m.group(1)))
     # titres des cartes : 3e élément de RANKS
     for m in re.finditer(r"\[\"[^\"]*\",\s*\d+,\s*" + STR_DQ + r"\]", block(script, r"const RANKS\s*=")):
         keep(keys, js_unescape(m.group(1)))
