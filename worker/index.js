@@ -59,10 +59,14 @@ function residents(now) {
 export class Board extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env);
-    ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS players (id TEXT PRIMARY KEY, name TEXT NOT NULL, tribe TEXT NOT NULL, t INTEGER NOT NULL, seen INTEGER NOT NULL)");
+    ctx.storage.sql.exec("CREATE TABLE IF NOT EXISTS ranking (id TEXT PRIMARY KEY, name TEXT NOT NULL, tribe TEXT NOT NULL, t INTEGER NOT NULL, seen INTEGER NOT NULL)");
   }
 
   async fetch(request) {
+    try { return await this.route(request); } catch (e) { return json({ error: String(e && e.message || e) }, 500); }
+  }
+
+  async route(request) {
     const url = new URL(request.url);
     if (request.method === "POST" && url.pathname === "/api/score") {
       let body;
@@ -72,11 +76,11 @@ export class Board extends DurableObject {
       const name = String(body.name || "").replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 14) || "Joueur";
       const cast = CASTS.includes(body.cast) ? body.cast : "mars";
       let t = Math.max(0, Math.min(3000, Math.round(Number(body.t) || 0)));
-      const old = this.ctx.storage.sql.exec("SELECT t FROM players WHERE id = ?", id).toArray()[0];
+      const old = this.ctx.storage.sql.exec("SELECT t FROM ranking WHERE id = ?", id).toArray()[0];
       // A single game moves trophies by a few dozen at most: bigger jumps are trimmed.
       if (old && t > old.t + 40) t = old.t + 40;
       if (!old && t > 1500) t = 1500;
-      this.ctx.storage.sql.exec("INSERT INTO players (id, name, tribe, t, seen) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET name = excluded.name, tribe = excluded.tribe, t = excluded.t, seen = excluded.seen", id, name, cast, t, Date.now());
+      this.ctx.storage.sql.exec("INSERT INTO ranking (id, name, tribe, t, seen) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET name = excluded.name, tribe = excluded.tribe, t = excluded.t, seen = excluded.seen", id, name, cast, t, Date.now());
       return json(this.rank(id));
     }
     if (url.pathname === "/api/rank") return json(this.rank(url.searchParams.get("id") || ""));
@@ -86,7 +90,7 @@ export class Board extends DurableObject {
   /* The top of the ranking, and the player with their neighbours. */
   rank(id) {
     const now = Date.now();
-    const rows = this.ctx.storage.sql.exec("SELECT id, name, tribe, t FROM players WHERE seen > ?", now - 30 * 86400000).toArray();
+    const rows = this.ctx.storage.sql.exec("SELECT id, name, tribe, t FROM ranking WHERE seen > ?", now - 30 * 86400000).toArray();
     const list = residents(now).concat(rows.map(r => ({ n: r.name, c: r.tribe, t: r.t, me: r.id === id ? 1 : 0 })));
     list.sort((x, y) => y.t - x.t || (x.me ? -1 : y.me ? 1 : 0));
     list.forEach((r, i) => { r.r = i + 1; });
