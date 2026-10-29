@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.84";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.85";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -864,7 +864,8 @@
     @keyframes crownFloat { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-7px) rotate(4deg); } }
     .duelists.even .top, .duelists.even .low { width: 84px; height: 84px; top: 20px; rotate: 0deg; filter: none; }
     .duelists.even .top { translate: -110% 0; } .duelists.even .low { translate: 10% 0; } .duelists.even .low::after { display: none; }
-    .rewards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 12px; }
+    /* dense: the half-width cards (stars, XP) share a row, so the level-up card stays above the sticky buttons on small phones. */
+    .rewards { display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: dense; gap: 8px; margin: 0 0 12px; }
     .rw { display: grid; grid-template-columns: 40px 1fr; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 12px; text-align: left; background: rgba(16, 22, 43, 0.7); border: 2px solid rgba(245, 196, 69, 0.45); animation: rwIn 480ms cubic-bezier(.2, 1.5, .4, 1) backwards; }
     .rw.wide { grid-column: 1 / -1; }
     .rw.hot { border-color: var(--yellow); background: linear-gradient(120deg, rgba(245, 196, 69, 0.32), rgba(16, 22, 43, 0.8)); box-shadow: 0 0 14px rgba(245, 196, 69, 0.35); }
@@ -1061,7 +1062,7 @@
             <button class="btn ghost" id="menuHelp">Règles</button>
             <button class="btn ghost" id="menuSound">Son : oui</button>
             <label class="vol-row">Musique<input type="range" id="menuMusicVol" min="0" max="100" step="5" aria-label="Volume de la musique"></label>
-            <button class="btn ghost" id="langBtn" data-no-i18n>🌐 Français</button>
+            <button class="btn ghost" id="langBtn" data-no-i18n>Français</button>
             <button class="btn ghost" id="fsBtn">Plein écran</button>
             <button class="btn ghost danger" id="resetBtn">Recommencer à zéro</button>
           </div>
@@ -4962,7 +4963,8 @@
       if (window.BDAMusic) setTimeout(() => BDAMusic.load([...new Set(Object.values(MUSIC).concat(["victoire", "defaite"]).flatMap(n => BDAMusic.tracks[n].uses || []))]).catch(() => {}), 4000);
     }, { once: true, capture: true });
     /* Langue : même système que Cube Gravity (i18n.js). Changer de langue recharge la page. */
-    $("#langBtn").textContent = `🌐 ${BDAi18n.LANGS[BDAi18n.lang]}`;
+    const GLOBE = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="vertical-align:-3px;margin-right:6px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg>`;
+    $("#langBtn").innerHTML = `${GLOBE}${BDAi18n.LANGS[BDAi18n.lang]}`;
     $("#langGrid").innerHTML = Object.entries(BDAi18n.LANGS).map(([code, name]) => `<button class="btn ${code === BDAi18n.lang ? "on" : "ghost"}" data-lang="${code}">${name}</button>`).join("");
     for (const b of document.querySelectorAll("#langGrid .btn")) b.addEventListener("click", () => { sfx.tap(); BDAi18n.setLang(b.dataset.lang); $("#langs").classList.remove("on"); });
     $("#langBtn").addEventListener("click", () => { sfx.tap(); $("#langs").classList.add("on"); });
