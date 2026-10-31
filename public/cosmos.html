@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.87";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.88";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -819,7 +819,7 @@
     .a2hs img { width: 54px; height: 54px; border-radius: 13px; border: 2px solid var(--navy); }
     .a2hs b { font-family: "Righteous", sans-serif; font-weight: 400; font-size: 0.98rem; }
     .a2hs svg { width: 17px; height: 17px; vertical-align: -3px; }
-    .a2hs .x { align-self: start; border: 0; background: none; color: var(--navy); font-size: 1.1rem; padding: 0 2px; opacity: 0.6; }
+    .a2hs .x { align-self: center; width: 44px; height: 44px; margin: -6px -8px -6px 0; border: 0; background: none; color: var(--navy); font-size: 1.2rem; padding: 0; opacity: 0.75; }
     .a2hs .btn { padding: 0.4rem 0.9rem; font-size: 0.86rem; }
     .a2hs.ios::after { content: ""; position: absolute; left: 50%; bottom: -17px; translate: -50% 0; border: 9px solid transparent; border-top-color: var(--navy); animation: nudge 1.1s ease-in-out infinite; }
     @keyframes nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
@@ -4906,16 +4906,19 @@
     const musicGain = () => (save.musicVol / 100) * 0.8;
     const musicOn = () => Boolean(window.BDAMusic) && soundOn && save.musicVol > 0;
     const musicKind = () => ($("#game").classList.contains("on") ? (S.battle && S.phase !== "over" ? "battle" : "calm") : "menu");
+    // Music is never allowed to break a button: any audio failure is swallowed here
     function music(kind, level = 1) {
       if (!window.BDAMusic) return;
-      if (!musicOn()) { if (musicNow) { BDAMusic.stop(0.8); musicNow = null; } return; }
-      const name = MUSIC[kind];
-      if (musicNow === name) { if (kind === "battle") BDAMusic.setLevel(level); return; }
-      musicNow = name;
-      BDAMusic.volume(musicGain());
-      BDAMusic.cross(name, { level, fade: musicNow === MUSIC.battle ? 1.2 : 2.4 });
+      try {
+        if (!musicOn()) { if (musicNow) { BDAMusic.stop(0.8); musicNow = null; } return; }
+        const name = MUSIC[kind];
+        if (musicNow === name) { if (kind === "battle") BDAMusic.setLevel(level); return; }
+        musicNow = name;
+        BDAMusic.volume(musicGain());
+        BDAMusic.cross(name, { level, fade: musicNow === MUSIC.battle ? 1.2 : 2.4 });
+      } catch (e) { /* audio indisponible */ }
     }
-    function jingle(won) { if (musicOn()) BDAMusic.jingle(won ? "victoire" : "defaite"); }
+    function jingle(won) { try { if (musicOn()) BDAMusic.jingle(won ? "victoire" : "defaite"); } catch (e) { /* audio indisponible */ } }
     function setMusicVol(v) {
       save.musicVol = Math.max(0, Math.min(100, Math.round(v)));
       for (const id of ["menuMusicVol", "pauseMusicVol"]) $(`#${id}`).value = save.musicVol;
@@ -4957,6 +4960,8 @@
     $("#przGo").addEventListener("click", () => { $("#prize").classList.remove("on"); $("#playBtn").click(); });
     $("#journeyBtn").addEventListener("click", openJourney);
     $("#jClose").addEventListener("click", () => { sfx.tap(); closeJourney(); });
+    // Information sheets also close on a tap beside them, so a missed close button never traps the player
+    for (const id of ["journey", "prize", "rankSheet"]) $(`#${id}`).addEventListener("click", e => { if (e.target === e.currentTarget) { sfx.tap(); e.currentTarget.classList.remove("on"); } });
     $("#premiumBtn").addEventListener("click", () => { sfx.tap(); $("#shopTabBtn").hidden = false; showTab("shop"); });
     $("#menuHelp").addEventListener("click", () => openHelp(null));
     $("#pauseHelp").addEventListener("click", () => openHelp("pause"));
@@ -4998,6 +5003,7 @@
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     let installEvent = null;
     function hideInstall(forever) {
+      clearTimeout(hideInstall.timer);
       $("#a2hs").classList.remove("on");
       document.body.classList.remove("has-a2hs");
       if (forever) { try { localStorage.setItem("bda_a2hs", "1"); } catch (e) { /* stockage indisponible */ } }
@@ -5024,7 +5030,11 @@
       });
       box.classList.add("on");
       document.body.classList.add("has-a2hs");
+      // It sits over the fight button on small phones: it leaves by itself, and any tap on it sends it away
+      clearTimeout(hideInstall.timer);
+      hideInstall.timer = setTimeout(() => hideInstall(false), 15000);
     }
+    $("#a2hs").addEventListener("click", e => { if (!e.target.closest(".btn")) hideInstall(false); });
     window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvent = e; offerInstall(); });
     window.addEventListener("appinstalled", () => hideInstall(true));
     $("#pauseSound").addEventListener("click", toggleSound);
