@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.86";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.87";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -2356,8 +2356,17 @@
       }
     }
     function setPrompt(html, buttons = []) {
-      $("#promptText").innerHTML = named(html);
+      const p = $("#promptText");
+      p.innerHTML = named(html);
       fillButtons($("#actions"), buttons);
+      // A long message on a narrow screen shrinks a step at a time instead of losing its last line.
+      p.style.fontSize = p.style.lineHeight = p.style.webkitLineClamp = "";
+      for (const size of [0.74, 0.68, 0.62]) {
+        if (p.scrollHeight <= p.clientHeight + 1) break;
+        p.style.fontSize = `${size}rem`;
+        p.style.lineHeight = "1.05";
+        p.style.webkitLineClamp = "6";
+      }
     }
     function ask(html, options) {
       return new Promise(resolve => setPrompt(html, options.map(o => ({ label: o.label, cls: o.cls, fn: () => { setPrompt(html); resolve(o.k); } }))));
