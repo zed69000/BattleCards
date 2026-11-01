@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.88";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.89";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -4800,7 +4800,7 @@
       const stage = $("#capStage"), pack = $("#pack"), top = pack.querySelector(".pack-top");
       if (freePack) save.freePacks = Math.max(0, (save.freePacks || 0) - 1); else save.crystals -= boosterCost();
       freePack = false;
-      $("#capGems").textContent = save.crystals;
+      $("#capGems").textContent = $("#crystals").textContent = save.crystals;
       const pulls = rollPack();
       const results = pulls.map(item => {
         const dup = owns(item.kind, item.id);
@@ -4847,7 +4847,7 @@
           slots[i].querySelector("small").textContent = `+${n} ◆`;
           await coinTo(slots[i].querySelector(".card"), $("#capGems").parentElement);
           shown += n;
-          $("#capGems").textContent = shown;
+          $("#capGems").textContent = $("#crystals").textContent = shown;
           bump($("#capGems").parentElement);
           sfx.coin();
         } else slots[i].querySelector("small").textContent = tr(def.name);
