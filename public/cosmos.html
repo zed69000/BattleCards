@@ -1902,7 +1902,7 @@
     const myRank = () => ranking().find(r => r.me).r;
     let rankBusy = false;
     async function syncRank(force = false) {
-      if (rankBusy || (!force && save.rank && Date.now() - (save.rank.at || 0) < 60000)) return;
+      if (Tuning.preview || rankBusy || (!force && save.rank && Date.now() - (save.rank.at || 0) < 60000)) return;
       rankBusy = true;
       try {
         const res = await fetch(`${RANK_API}/score`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: playerId(), name: save.name && save.name !== tr("Ami") ? save.name : "", cast: CHARS[save.char].tribe, t: save.trophies }) });
