@@ -109,7 +109,7 @@
     <div class="chart"><svg id="chart" viewBox="0 0 900 300"></svg></div>
   </section>
 
-  <script src="casts.js"></script>
+  <script src="../public/casts.js"></script>
   <script>
     const $ = s => document.querySelector(s);
     const pic = (cast, rank, hue = 0, cls = "", house = "H") => { let s = art(cast, house, rank, 5); if (hue) s = s.replace("<svg ", `<svg style="filter:hue-rotate(${hue}deg)" `); return `<div class="pic ${cls}">${s}</div>`; };

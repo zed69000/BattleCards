@@ -1,4 +1,4 @@
-/* Illustrations des cartes : quatre tribus de martiens. Partagé par cosmos.html (le jeu) et da4.html (planche de DA). */
+/* Illustrations des cartes : quatre tribus de martiens. Partagé par cosmos.html (le jeu) et planches/da4.html (planche de DA). */
 const N = "#1f2a44", K = "#f5e9cf", D2 = "#9fb0b3", GL = "#cdeef0", OR = "#f26a3d", YE = "#f5c445", SK = "#f3c9a0";
 const ST = `stroke="${N}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
 const LN = `fill="none" ${ST}`;

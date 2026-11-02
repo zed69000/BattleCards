@@ -14,6 +14,7 @@ window.BalanceSim = (function () {
   const thrOf = c => c.thr || threshold(c.value);
   /* CLONE_CAP, SIPHON et LOCK_MARGIN viennent de la page ; OPT.clone permet d'essayer un autre plafond. */
   const cloneCap = () => OPT.clone ?? CLONE_CAP;
+  const satBonus = () => OPT.satellite ?? SATELLITE_BONUS;
   const ev = (c, o) => (c.special === "clone" ? (o && o.special !== "clone" ? Math.min(o.value, cloneCap()) : 0) : c.value);
   function formation(a, b) {
     const out = [], va = ev(a, b), vb = ev(b, a);
@@ -73,7 +74,7 @@ window.BalanceSim = (function () {
       const vv = van ? ev(van, amb) : 0, va = amb ? ev(amb, van) : 0;
       let t = vv + va;
       if (van && amb) for (const x of formation(van, amb)) t += x;
-      if (van && van.special === "satellite") t += 3;
+      if (van && van.special === "satellite") t += satBonus();
       const shield = onBoard(p, "shield"), impact = B.amb[o] && B.amb[o].house === "S" && !onBoard(p, "eclipse"), hole = onBoard(o, "hole"), met = onBoard(o, "meteor");
       if (!shield) { if (impact) t -= OPT.impact; if (hole && van && amb) t -= Math.min(vv, va); if (met) t -= 3; }
       if (B.allyOk[p]) {
@@ -99,7 +100,7 @@ window.BalanceSim = (function () {
         const vv = ev(v, a), va = ev(a, v);
         let t = vv + va;
         for (const x of formation(v, a)) t += x;
-        if (v.special === "satellite") t += 3;
+        if (v.special === "satellite") t += satBonus();
         const shield = [v, a].some(c => c.special === "shield"), hole = [ov, oa].some(c => c.special === "hole"), met = [ov, oa].some(c => c.special === "meteor"), impact = oa.house === "S" && ![v, a].some(c => c.special === "eclipse");
         if (!shield) { if (impact) t -= OPT.impact; if (hole) t -= Math.min(vv, va); if (met) t -= 3; }
         return t;
@@ -139,7 +140,7 @@ window.BalanceSim = (function () {
           if (amb.house === "S") power += 2;
           if (van.special === "hole" || amb.special === "hole") power += Math.min(oppBest, 6);
           if (van.special === "meteor" || amb.special === "meteor") power += 3;
-          if (van.special === "satellite") power += 3;
+          if (van.special === "satellite") power += satBonus();
           const edge = bossEdge(p, van);
           let pWin = 1 / (1 + Math.exp(-(power + edge - expected) / slope));
           if (L.exact) { const [w2, t2] = exactOdds(p, van, amb, seen, knownAmb, edge); pWin = w2 + t2 * 0.5; }
