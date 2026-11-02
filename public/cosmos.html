@@ -32,6 +32,7 @@
     fitScreen();
     window.addEventListener("resize", fitScreen);
   </script>
+  <script src="tuning.js"></script>
   <script src="i18n.js?v=0.43"></script>
   <link href="fonts/fonts.css" rel="stylesheet">
   <style>
@@ -1367,8 +1368,8 @@
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     /* Rythme : toutes les pauses entre les phases sont raccourcies (PACE) pour ne jamais faire attendre le joueur.
        hold() garde la durée exacte, pour les attentes calées sur une animation (dé, dissolution). */
-    const PACE = 0.6;
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, reduced ? Math.min(ms, 80) : ms * PACE));
+    const PACE = () => Tuning.num("rythme.pauses", 0.6);
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, reduced ? Math.min(ms, 80) : ms * PACE()));
     /* Après une mise en veille, une animation commencée peut ne jamais se terminer : le jeu attendrait pour
        toujours. Chaque animation annonce donc sa fin au plus tard à sa durée prévue, plus une petite marge. */
     const nativeAnimate = Element.prototype.animate;
@@ -1617,7 +1618,7 @@
       krakmar: { name: "Général Krakmar", cast: "cranes", rank: "R", hue: 0, super: "bomb", every: 3, move: "Bombardement", desc: "−3 à ton total", hint: "Garde une grosse carte ou une paire pour ce tour, ou cède-le avec des cartes qui rapportent peu." },
       tempete: { name: "Baronne Tempête", cast: "poulpes", rank: "D", hue: 200, super: "siphon", every: 3, move: "Siphon", desc: "si elle gagne la manche, elle te vole 3 points de butin", hint: "Ce tour-là, ne risque pas tes petites cartes trésor : joue fort, ou joue pauvre." },
       zygo: { name: "Zygomax l'Ancien", cast: "incognito", rank: "R", hue: 120, super: "tide", every: 4, move: "Anneaux de gravité", desc: "+4 à son total", hint: "Vise des Jumeaux ou garde un boost pour un allié ce tour-là." },
-      zorglax: { name: "Empereur Zorglax", cast: "cranes", rank: "R", hue: 250, super: "crush", every: 4, move: "Écrasement impérial", desc: "sa carte visible compte double", hint: "Regarde sa carte visible : si elle est grosse, cède la manche avec des cartes qui rapportent peu." }
+      zorglax: { name: "Empereur Zorglax", cast: "cranes", rank: "R", hue: 250, super: "crush", get every() { return Tuning.num("boss.zorglaxFrequence", 4); }, move: "Écrasement impérial", desc: "sa carte visible compte double", hint: "Regarde sa carte visible : si elle est grosse, cède la manche avec des cartes qui rapportent peu." }
     };
     /* Campagne : 5 chapitres de 3 soldats et un boss. tiers = niveau d'IA de chaque étape. */
     const CHAPTERS = [
@@ -2230,7 +2231,7 @@
         { transform: `translate(${dx * 0.6}px, ${dy * 0.4 - 50}px) scale(${big * 0.9}) rotateY(540deg)`, offset: 0.65 },
         { transform: `translate(${dx}px, ${dy}px) scale(0.6) rotateY(900deg)`, opacity: 1, offset: 0.97 },
         { transform: `translate(${dx}px, ${dy}px) scale(0)`, opacity: 0 }
-      ], { duration: reduced ? 1 : 820, delay: reduced ? 0 : delay, easing: "cubic-bezier(.4, 0, .6, 1)", fill: "forwards" }).finished.catch(() => {}).then(() => {
+      ], { duration: reduced ? 1 : Tuning.num("anim.piece", 820), delay: reduced ? 0 : delay, easing: "cubic-bezier(.4, 0, .6, 1)", fill: "forwards" }).finished.catch(() => {}).then(() => {
         c.remove();
         const pop = document.createElement("span");
         pop.className = "cpop";
@@ -2981,7 +2982,7 @@
       $("#seekBox").hidden = !on;
       $("#lobbyOnline").hidden = on || $("#lobbyTitle").textContent !== tr("Partie en ligne");
       if (!on) return;
-      const t0 = Date.now(), fill = 15 + rand(11);
+      const t0 = Date.now(), fill = Tuning.num("ligne.attenteAdversaire", 15) + rand(11);
       const tick = () => {
         const sec = Math.floor((Date.now() - t0) / 1000);
         $("#seekTime").textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
@@ -3032,7 +3033,7 @@
     /* Carte choisie par l'adversaire : l'IA en solo, le message de l'ami en duel. */
     async function foeCard(kind, known = null) {
       if (!duel()) {
-        if (S.resident) await sleep(700 + rand(2600));
+        if (S.resident) await sleep(Tuning.num("ligne.reflexionAdversaire", 700) + rand(2600));
         return kind === "van" ? aiPlan(null).van : aiPlan(S.board.van[1], known).amb;
       }
       if (kind === "van") { const sw = await netNext("swap"); const c = sw && S.hands[1].find(x => x.id === sw); if (c) await applySwap(1, c); }
@@ -3096,7 +3097,7 @@
           let pWin = 1 / (1 + Math.exp(-(power + edge - expected) / slope));
           if (L.exact) { const [w, t] = exactOdds(van, amb, seen, knownAmb, edge); pWin = w + t * 0.5; }
           const stake = lootCard(van) + lootCard(amb) + theirLoot + lootSum(S.pot) + (sup === "siphon" ? SIPHON : 0);
-          let u = (2 * pWin - 1) * stake * L.greed - (van.value + amb.value) * L.cost + Math.random() * L.noise;
+          let u = (2 * pWin - 1) * stake * L.greed - (van.value + amb.value) * L.cost + Math.random() * L.noise * Tuning.num("ia.hasard", 1);
           if (amb.house === "D") u += 0.3 * pWin;
           if (van.special === "comete" || amb.special === "comete") u += 0.15 * stake * pWin;
           if (van.special === "aimant" || amb.special === "aimant") u += 0.3 * (1 - pWin);
@@ -3112,13 +3113,13 @@
     /* 3ᵉ carte de l'IA : un allié quand elle est menée, une riposte quand on la dépasse. Il lui faut 1 boost. */
     function aiThird(role) {
       const L = S.aiL;
-      if (Math.random() < (L.skip || 0) || S.fuel[1] < 1) return null;
+      if (Math.random() < (L.skip || 0) * Tuning.num("ia.renoncement", 1) || S.fuel[1] < 1) return null;
       const amb = S.board.amb[1], bonus = dieBonus(1, role), reroll = radarOn(1);
       const options = S.hands[1].map(c => ({ c, t: afterAlly(1, c) })).filter(o => o.t[1] >= o.t[0]).map(({ c, t }) => ({
         c, score: chance(thirdThr(1, c), bonus, reroll) * (t[1] > t[0] ? 1 : 0.45) - c.value * 0.004 - lootCard(c) * 0.03
       })).sort((a, b) => b.score - a.score);
       if (!options.length) return null;
-      return options[0].score >= 0.2 || lootSum(S.pot) >= 6 ? options[0].c : null;
+      return options[0].score >= Tuning.num("ia.seuilAllie", 0.2) || lootSum(S.pot) >= 6 ? options[0].c : null;
     }
 
     /* ═════ Déroulé ═════ */
@@ -3154,7 +3155,7 @@
       const old = [...box.querySelectorAll(".decor-l")].slice(0, -1);
       if (!animate || reduced) { old.forEach(e => e.remove()); return; }
       // The new scene sweeps in from the winner's side, led by a bright front line in their colour.
-      const fromBottom = owner === 0, dur = 1100;
+      const fromBottom = owner === 0, dur = Tuning.num("anim.arene", 1100);
       layer.animate([{ clipPath: fromBottom ? "inset(100% 0 0 0)" : "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0 0)" }], { duration: dur, easing: "cubic-bezier(.6, 0, .3, 1)" }).onfinish = () => old.forEach(e => e.remove());
       const front = document.createElement("span");
       front.className = "decor-front";
@@ -3272,7 +3273,7 @@
         if (game !== gameId) return;
         await tip("super", tr("La jauge de {boss} est pleine : <b>{move}</b> ! Cette manche, {desc}. {hint}", { boss: tr(b.name), move: tr(b.move), desc: tr(b.desc), hint: tr(b.hint) }), $("#hud1"));
       } else if (!battle) banner(tr("Manche {n}", { n: S.round }));
-      await sleep(battle ? 200 : 600);
+      await sleep(battle ? 200 : Tuning.num("rythme.annonceManche", 600));
       if (game !== gameId) return;
       if (!battle && await decided(game)) return;
       await aiSwap();
@@ -3331,7 +3332,7 @@
       if (duel() || S.resident || S.lockAsked) return false;
       const rest = lootSum([...S.decks[0], ...S.decks[1], ...S.hands[0], ...S.hands[1], ...S.pot]);
       const gap = S.loot[1] - S.loot[0];
-      if (Math.abs(gap) <= rest + LOCK_MARGIN) return false;
+      if (Math.abs(gap) <= rest + Tuning.num("partie.margeDecision", LOCK_MARGIN)) return false;
       S.lockAsked = true;
       let k;
       if (gap > 0) {
@@ -3581,7 +3582,7 @@
         await playCard(0, "van", card, S.vanHidden[0], opts);
         if (S.first === 0) {
           setPrompt(S.vanHidden[0] ? tr("<b>Gaspard</b> doit répondre sans voir ta carte…") : tr("<b>Gaspard</b> jauge ta carte…"));
-          await sleep(750);
+          await sleep(Tuning.num("ia.reflexion", 750));
           if (game !== gameId) return;
           const foeVan = await foeCard("van");
           if (game !== gameId) return;
@@ -3657,7 +3658,7 @@
       shake();
       const twins = [0, 1].find(q => breakdown(q).parts.some(([n]) => n === "Jumeaux"));
       if (twins !== undefined) { boom(twins === 0 ? tr("Jumeaux !") : tr("Jumeaux adverses"), twins === 0, $(`#tally${twins}`)); await sleep(700); }
-      await sleep(650);
+      await sleep(Tuning.num("rythme.lectureTotaux", 650));
       if (game !== gameId) return;
       await tip("reveal", totals[0] > totals[1]
         ? tr("Révélation ! Ton total est le plus gros : tu es en tête. Gaspard, en retard, a droit à une dernière chance avec un allié.")
@@ -3692,7 +3693,7 @@
       }
       if (loser === 1) {
         setPrompt(tr("<b>Gaspard</b> est en retard et cherche un allié…"));
-        await sleep(900);
+        await sleep(Tuning.num("ia.rechercheAllie", 900));
         if (game !== gameId) return;
         let pick;
         if (duel()) {
@@ -4002,7 +4003,7 @@
 
       if (![0, 1].every(p => S.hands[p].length + S.decks[p].length >= 2)) { await sleep(700); if (game === gameId) endGame(); return; }
       // La manche suivante part toute seule, sauf si le joueur a ouvert la pause ou les règles.
-      await sleep(800);
+      await sleep(Tuning.num("rythme.finManche", 800));
       while (game === gameId && !duel() && ["pause", "help"].some(id => $(`#${id}`).classList.contains("on"))) await sleep(300);
       if (game === gameId && S.phase === "next") startRound();
     }
@@ -4063,7 +4064,7 @@
         const before = { league: leagueOf(save.trophies), rank: myRank() };
         const dT = won ? (above ? 32 : 24) : lost ? -Math.min(above ? 8 : 12, save.trophies) : 0;
         save.trophies += dT;
-        gain = won ? ARENA_GEMS[0] : ARENA_GEMS[1];
+        gain = won ? Tuning.num("eco.areneVictoire", ARENA_GEMS[0]) : Tuning.num("eco.areneDefaite", ARENA_GEMS[1]);
         const after = { league: leagueOf(save.trophies), rank: myRank() };
         trophyDelta = dT;
         if (after.league > before.league) notes.push({ v: "♛", t: tr("Promotion en ligue {league} !", { league: tr(LEAGUES[after.league].name) }), hot: true });
@@ -4078,7 +4079,7 @@
         S.rival = null;
       } else {
         const sg = STAGES[S.stage], ch = CHAPTERS[sg.c], first = S.stage === save.camp.cleared;
-        gain = won ? (first ? sg.reward : Math.round(sg.reward / 2)) + Math.min(20, a - b) : lost ? 8 : 12;
+        gain = won ? (first ? sg.reward : Math.round(sg.reward / 2)) + Math.min(20, a - b) : lost ? Tuning.num("eco.defaiteCampagne", 8) : 12;
         if (won) gemParts.push([tr("victoire"), gain - Math.min(20, a - b)], [tr("écart"), Math.min(20, a - b)]);
         $("#endText").textContent = won ? (sg.boss ? tr("Victoire contre {name} : {planet} est libérée !", { name: tr(sg.name), planet: tr(ch.planet) }) : tr("{name} bat en retraite.", { name: tr(sg.name) }))
           : lost ? (S.ended === "flee" ? tr("Repli stratégique : {name} garde le terrain, mais ton butin compte. Change d'atouts et reviens !", { name: foe() }) : tr("{name} l'emporte cette fois. Change d'atouts et retente ta chance !", { name: foe() })) : tr("Aucun camp ne l'emporte.");
@@ -4152,7 +4153,7 @@
        remplacent AdMob et les stores tant que les comptes ne sont pas branchés. Tout reste au choix du joueur,
        et rien de ce qui se vend ne donne d'avantage en partie. */
     /* Économie : tout se gagne en jouant. Les vidéos et les achats ne font qu'aller plus vite, et tout se paie en cristaux. */
-    const MONET = { adFrom: 2, adSeconds: 5, ladder: [10, 15, 25, 40], starterPrice: "1,99 €", starterGems: 300, starterPacks: 3 };
+    const MONET = { get adFrom() { return Tuning.num("pub.aPartirDe", 2); }, adSeconds: 5, ladder: [10, 15, 25, 40], starterPrice: "1,99 €", starterGems: 300, starterPacks: 3 };
     const GEM_PACKS = [{ gems: 300, price: "1,99 €" }, { gems: 800, price: "4,99 €" }, { gems: 2000, price: "9,99 €" }];
     /* Vitrine du jour : quatre objets de collection au choix, payés en cristaux selon leur rareté (jamais d'atout). */
     const PICK_PRICE = [100, 200, 400];
@@ -4358,7 +4359,7 @@
       if (sg.gift) rows.push([done || save.owned[sg.gift] ? "done" : "", cardEl(makeAtout(sg.gift, "pz"), 0).outerHTML, `${tr("Atout")} ${tr(ATOUTS[sg.gift].name)} ${done || save.owned[sg.gift] ? `<span class="prz-tag got">${tr("déjà obtenu")}</span>` : `<span class="prz-tag once">${tr("1re victoire")}</span>`}`, tr(ATOUTS[sg.gift].desc)]);
       for (const id of sg.unlocks) rows.push([save.chars[id] ? "done" : "", portrait(id), `${tr(CHARS[id].name)} ${save.chars[id] ? `<span class="prz-tag got">${tr("déjà obtenu")}</span>` : `<span class="prz-tag once">${tr("1re victoire")}</span>`}`, tr("Nouveau personnage, à choisir dans Cartes.")]);
       rows.push(["", coin, `${tr("Prime de butin")} : ${tr("jusqu'à +50 ◆")}`, tr("Victoire ou défaite : +5 ◆ dès 25 points de butin, +10 dès 32, +15 dès 40, +20 dès 48. Elles s'additionnent.")]);
-      rows.push(["", coin, `${tr("Défaite")} : 8 ◆`, tr("Et l'XP : 50 en cas de victoire, 20 en cas de défaite. Chaque niveau gagné donne +30 ◆.")]);
+      rows.push(["", coin, `${tr("Défaite")} : ${Tuning.num("eco.defaiteCampagne", 8)} ◆`, tr("Et l'XP : 50 en cas de victoire, 20 en cas de défaite. Chaque niveau gagné donne +30 ◆.")]);
       $("#przList").innerHTML = rows.map(([cls, ic, t, sub]) => `<div class="prz-row ${cls}"><div class="ic">${ic}</div><div><b>${t}</b><small>${sub}</small></div></div>`).join("");
       $("#przGo").textContent = $("#playBtn").textContent;
       sfx.tap();
@@ -4840,7 +4841,7 @@
         glitter(slots[i].querySelector(".card"), def.rarity);
         if (def.rarity > 0) sfx.rare(); else sfx.flip();
         if (def.rarity === 2) setTimeout(() => stage.classList.remove("gold"), 2200);
-        await sleep(450);
+        await sleep(Tuning.num("anim.boosterObjet", 450));
         if (dup) {
           const n = RARITY[def.rarity].dup;
           slots[i].classList.add("dup");
