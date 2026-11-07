@@ -60,7 +60,8 @@ Les builds se lancent à la main (**Start new build**, choisir le workflow et la
 ## Avant de publier pour de vrai
 
 - Fiches des stores : captures d'écran (téléphone), courte vidéo, description, mots-clés, catégorie Jeux › Cartes.
-- Classement d'âge : viser 9+ ou 12+, sans cibler explicitement les enfants (règles plus strictes sur pubs et données).
+- Classement d'âge : tout public, classement visé 9+ (pas de 12+ : règles, illustrations et pubs sont tout public).
+  Seul le pseudo libre du classement en ligne demande une précaution (voir le GDD, Multijoueur).
 - Confidentialité : fiche *Data safety* (Google Play) et étiquettes de confidentialité (App Store). Aujourd'hui le jeu ne
   collecte rien : sauvegarde locale, duels en pair à pair.
 - Boosters : s'ils deviennent achetables avec de l'argent réel (même via des cristaux achetés), afficher les

@@ -24,13 +24,13 @@ La Bataille Galactique est un jeu de cartes rétro-spatial, simple à apprendre 
 
 • Des manches rapides : une carte visible, une carte cachée, et le butin pour le plus gros total.
 • Des combinaisons à trouver : Jumeaux, Escadron, Sillage… et même la Flotte quand ton allié complète trois cartes de la même famille.
-• Une campagne à travers le système solaire : de la Lune à Neptune, 20 adversaires et 5 boss, chacun avec son super coup.
+• Une campagne à travers le système solaire : de la Lune à Neptune, 20 adversaires, dont 5 boss, chacun avec son super coup.
 • Quatre tribus de martiens, chacune avec son talent, et des atouts spéciaux à glisser dans ta pioche.
 • Une arène qui change de camp à chaque manche gagnée, avec ton décor préféré.
 • Des boosters à découper au doigt : personnages, dés, dos de cartes et décors à collectionner.
 • Le duel entre amis, d'un téléphone à l'autre.
 
-Tout se gagne en jouant. Les atouts ne se vendent pas : le jeu reste équitable.
+Tout ce qui compte en partie se gagne en jouant. Les atouts ne se vendent pas : le jeu reste équitable.
 
 ## English (en-US)
 
@@ -47,13 +47,13 @@ Galactic Battle is a retro space card game, easy to learn and full of comebacks:
 
 • Quick rounds: one card face up, one hidden, and the loot goes to the biggest total.
 • Combos to find: Twins, Squadron, Slipstream… and even the Fleet when your ally completes three cards of the same family.
-• A campaign across the solar system: from the Moon to Neptune, 20 opponents and 5 bosses, each with a super move.
+• A campaign across the solar system: from the Moon to Neptune, 20 opponents, including 5 bosses, each with a super move.
 • Four Martian tribes, each with its talent, and special power cards to shuffle into your deck.
 • An arena that changes sides with every round you win, dressed in your favourite scenery.
 • Booster packs you cut open with your finger: characters, dice, card backs and scenery to collect.
 • Duels with friends, from one phone to another.
 
-Everything can be won by playing. Power cards are never sold: the game stays fair.
+Everything that matters in a match can be won by playing. Power cards are never sold: the game stays fair.
 
 ## Test interne : message aux testeurs
 
