@@ -1374,6 +1374,7 @@
   <script src="casts.js"></script>
   <script src="music.js?v=6"></script>
   <script src="music-tracks.js?v=6"></script>
+  <script src="update.js"></script>
   <script>
     const $ = sel => document.querySelector(sel);
     const tr = BDAi18n.t; // traduction : tr("texte français", {variables})
@@ -5243,6 +5244,16 @@
       $("#joinCode").value = invite.toUpperCase().slice(0, 5);
       if (save.name) joinDuel(invite);
     }
+    // Testers on an older Google Play build: the menu offers the update once per version, never during a duel.
+    GameUpdate.init({
+      id: "bataille-galactique",
+      version: window.BDA_V,
+      android: "com.musclorduck.battlecards",
+      lang: window.BDAi18n && BDAi18n.lang,
+      isIdle: () => $("#menu").classList.contains("on") && !document.querySelector(".overlay.on, #voyage.on") && !document.documentElement.classList.contains("splash"),
+      save: () => persist(),
+      theme: { bg: "#1f2a44", fg: "#f5e9cf", muted: "rgba(245, 233, 207, 0.7)", accent: "#f5c445", accentFg: "#10162b", font: "\"Righteous\", ui-rounded, system-ui, sans-serif", radius: "16px" },
+    });
   </script>
 </body>
 </html>
