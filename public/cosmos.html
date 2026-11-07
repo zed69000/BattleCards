@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.90";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.91";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -1639,7 +1639,7 @@
       { planet: "Mars", color: "#f26a3d", cast: "cranes", soldiers: ["Cadet Neurone", "Major Méninge", "Colonel Lobe"], boss: "krakmar", tiers: [2, 3, 4, 4] },
       { planet: "Jupiter", color: "#e0a07a", cast: "poulpes", soldiers: ["Mousse Ventouse", "Bosco Calmar", "Capitaine Encre"], boss: "tempete", tiers: [4, 5, 6, 5] },
       { planet: "Saturne", color: "#f5c445", ring: true, cast: "incognito", soldiers: ["Agent 004", "Agent Trench", "Agent Fantôme"], boss: "zygo", tiers: [6, 7, 8, 7] },
-      { planet: "Neptune", color: "#5b8fd8", cast: "cranes", soldiers: ["Garde Zorg", "Champion Zorg", "Prince Zorgy"], boss: "zorglax", tiers: [8, 9, 9, 7] }
+      { planet: "Neptune", color: "#5b8fd8", cast: "cranes", soldiers: ["Garde Zorg", "Champion Zorg", "Prince Zorgo"], boss: "zorglax", tiers: [8, 9, 9, 7] }
     ];
     const START_ATOUTS = ["tank", "shield"];
     /* Par chapitre : le cadeau du 2ᵉ combat, celui du boss, puis celui du 3ᵉ combat s'il y en a un. */
@@ -1840,7 +1840,7 @@
     /* 32 personnages (8 par tribu) + les 5 boss, jouables une fois vaincus. Un personnage fixe ta tribu (et son talent)
        et teinte tes figures. Le premier de chaque tribu se gagne en campagne, les autres dans les boosters. */
     const CHAR_NAMES = {
-      mars: ["Zib", "Glorp", "Bloubi", "Kiki Zap", "Capitaine Pois", "Tonton Glu", "Mamie Ventouse", "Roi Glouglou"],
+      mars: ["Pouic", "Glorp", "Bloubi", "Kiki Zap", "Capitaine Pois", "Tonton Glu", "Mamie Ventouse", "Roi Glouglou"],
       cranes: ["Pr Cerveau", "Dr Neurone", "Mimi Méninge", "Baron Synapse", "Gus Gyrus", "Lobe Fifi", "Mme Matière-Grise", "Empereur Cortex"],
       poulpes: ["Octavia", "Ventouse Jr", "Tata Encre", "Pirate Calmar", "Gigi Tentacule", "Sœur Abysse", "Dr Poulpe", "Kraken Doré"],
       incognito: ["Agent Z", "Mister X", "La Taupe", "Inspecteur Gloop", "Madame Mystère", "Double Zéro", "Le Faux Nez", "Chef Camouflage"]
@@ -3394,7 +3394,7 @@
       let start = null, dragging = false, last = null, vel = { x: 0, y: 0 }, peak = 0, dy = 0;
       const target = () => $(`#slot-0-${S.phase === "riposte" ? "ally" : S.phase}`);
       const need = () => Math.max(30, el.offsetHeight * 0.3);
-      const willPlay = () => dy < -need() || (peak < -0.4 && dy < -10);
+      const willPlay = () => dy < -need() || (peak < -0.4 && dy < -20);
       const release = () => { start = null; dragging = false; const t = target(); if (t) t.classList.remove("hot"); };
       el.addEventListener("pointerdown", e => {
         if (S.busy) return;
@@ -4392,7 +4392,7 @@
       $("#uDesc").textContent = tr("Deux atouts sont déjà dans ta pioche : la Citerne et le Bouclier. Tu les croiseras pendant tes parties.");
       $("#uHelp").textContent = tr("Et {n} cristaux pour ouvrir ton premier booster. Tout le reste se gagne en jouant.", { n: CAPSULE_COST });
       fillButtons($("#uActions"), [
-        { label: tr("Ouvrir mon booster"), cls: "hot", fn: () => { $("#unlock").classList.remove("on"); openBoosters(); } },
+        { label: tr("Ouvrir mon booster"), cls: "hot", fn: () => { $("#unlock").classList.remove("on"); if (save.crystals >= boosterCost() && collected() < 1) openCapsuleShop(); else openBoosters(); } },
         { label: tr("Plus tard"), cls: "ghost", fn: () => $("#unlock").classList.remove("on") }
       ]);
       $("#unlock").classList.add("on");
