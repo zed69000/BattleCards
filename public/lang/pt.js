@@ -355,6 +355,7 @@ BDAi18n.add("pt", {
   "Retour au menu": "Voltar ao menu",
   "Revanche demandée. En attente de {name}…": "Revanche pedida. Esperando {name}…",
   "Revoir toutes les explications": "Rever todas as explicações",
+  "Signaler un bug ou une idée": "Relatar um bug ou uma ideia",
   "Riposte": "Contra-ataque",
   "Riposte !": "Contra-ataque!",
   "Riposte adverse": "Contra-ataque rival",

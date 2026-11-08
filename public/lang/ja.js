@@ -355,6 +355,7 @@ BDAi18n.add("ja", {
   "Retour au menu": "メニューに戻る",
   "Revanche demandée. En attente de {name}…": "リベンジ申請中。{name}を待っています…",
   "Revoir toutes les explications": "説明をすべて見直す",
+  "Signaler un bug ou une idée": "バグやアイデアを報告",
   "Riposte": "反撃",
   "Riposte !": "反撃！",
   "Riposte adverse": "相手の反撃",

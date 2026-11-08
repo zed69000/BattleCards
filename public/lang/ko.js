@@ -354,6 +354,7 @@ BDAi18n.add("ko", {
   "Retour au menu": "메뉴로",
   "Revanche demandée. En attente de {name}…": "재대결 신청! {name} 기다리는 중…",
   "Revoir toutes les explications": "설명 전부 다시 보기",
+  "Signaler un bug ou une idée": "버그 또는 아이디어 보내기",
   "Riposte": "반격",
   "Riposte !": "반격!",
   "Riposte adverse": "상대 반격",

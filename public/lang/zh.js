@@ -354,6 +354,7 @@ BDAi18n.add("zh", {
   "Retour au menu": "返回菜单",
   "Revanche demandée. En attente de {name}…": "已请求再战。等待 {name}……",
   "Revoir toutes les explications": "重看所有讲解",
+  "Signaler un bug ou une idée": "报告错误或提出想法",
   "Riposte": "反击",
   "Riposte !": "反击！",
   "Riposte adverse": "对手反击",

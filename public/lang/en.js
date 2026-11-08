@@ -355,6 +355,7 @@ BDAi18n.add("en", {
   "Retour au menu": "Back to menu",
   "Revanche demandée. En attente de {name}…": "Rematch requested. Waiting for {name}…",
   "Revoir toutes les explications": "Replay all tutorials",
+  "Signaler un bug ou une idée": "Report a bug or an idea",
   "Riposte": "Riposte",
   "Riposte !": "Riposte!",
   "Riposte adverse": "Enemy riposte",

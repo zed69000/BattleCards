@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.91";</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.92";</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -1070,6 +1070,7 @@
           <div class="stack">
             <button class="btn" id="premiumBtn">Boutique</button>
             <button class="btn ghost" id="tutoBtn">Revoir toutes les explications</button>
+            <button class="btn ghost" id="bugBtn">Signaler un bug ou une idée</button>
             <button class="btn ghost" id="menuHelp">Règles</button>
             <button class="btn ghost" id="menuSound">Son : oui</button>
             <button class="btn ghost" id="menuVibe">Vibration : oui</button>
@@ -4999,6 +5000,8 @@
     });
     $("#helpAtouts").innerHTML = ATOUT_IDS.map(id => `<li><b>${tr(ATOUTS[id].name)}</b> (${tr(RARITY[ATOUTS[id].rarity].name).toLowerCase()}) : ${tr(ATOUTS[id].desc)}</li>`).join("");
     for (const btn of document.querySelectorAll("#tabs button")) btn.addEventListener("click", () => { sfx.tap(); showTab(btn.dataset.tab); });
+    /* back to the Adventure tab first, so the screenshot shows the game rather than the options */
+    $("#bugBtn").addEventListener("click", () => { $('#tabs [data-tab="adv"]').click(); setTimeout(() => window.BugReport && BugReport.open(), 300); });
     $("#tutoBtn").addEventListener("click", () => { save.seen = {}; save.mute = false; S.stage = save.stage = 0; chapterView = 0; persist(); newGame("adv"); });
     for (const id of ["capsuleBtn", "quickBooster", "crystalsBtn"]) $(`#${id}`).addEventListener("click", openBoosters);
     $("#bpOpen").addEventListener("click", () => {
@@ -5256,7 +5259,7 @@
       save: () => persist(),
       theme: { bg: "#1f2a44", fg: "#f5e9cf", muted: "rgba(245, 233, 207, 0.7)", accent: "#f5c445", accentFg: "#10162b", font: "\"Righteous\", ui-rounded, system-ui, sans-serif", radius: "16px" },
     });
-    // Every tester can report a bug or an idea: the 🐞 button, F8; it lands in the catalog's Bugs tab.
+    // Every tester can report a bug or an idea: three-finger tap, F8 or Options; it lands in the catalog's Bugs tab.
     BugReport.init({
       id: "bataille-galactique",
       version: window.BDA_V,
