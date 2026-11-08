@@ -1,0 +1,8 @@
+{
+  "id": "bataille-galactique",
+  "android": "com.musclorduck.battlecards",
+  "tools": [
+    "bugreport",
+    "update"
+  ]
+}
