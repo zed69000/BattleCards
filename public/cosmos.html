@@ -2,6 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
+  <!-- bug and idea reports of the testers (copy of games-catalog/client/bugreport.js): loaded first to keep the console -->
+  <script src="bugreport.js"></script>
   <script>/* premier affichage de la session : l'écran du studio passe avant le menu */
   try { if (!sessionStorage.getItem("bda_splash")) { sessionStorage.setItem("bda_splash", "1"); document.documentElement.classList.add("splash", "cover"); } } catch (e) {}</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -5252,6 +5254,13 @@
       lang: window.BDAi18n && BDAi18n.lang,
       isIdle: () => $("#menu").classList.contains("on") && !document.querySelector(".overlay.on, #voyage.on") && !document.documentElement.classList.contains("splash"),
       save: () => persist(),
+      theme: { bg: "#1f2a44", fg: "#f5e9cf", muted: "rgba(245, 233, 207, 0.7)", accent: "#f5c445", accentFg: "#10162b", font: "\"Righteous\", ui-rounded, system-ui, sans-serif", radius: "16px" },
+    });
+    // Every tester can report a bug or an idea: the 🐞 button, F8; it lands in the catalog's Bugs tab.
+    BugReport.init({
+      id: "bataille-galactique",
+      version: window.BDA_V,
+      lang: window.BDAi18n && BDAi18n.lang,
       theme: { bg: "#1f2a44", fg: "#f5e9cf", muted: "rgba(245, 233, 207, 0.7)", accent: "#f5c445", accentFg: "#10162b", font: "\"Righteous\", ui-rounded, system-ui, sans-serif", radius: "16px" },
     });
   </script>
