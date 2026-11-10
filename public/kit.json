@@ -1,8 +1,14 @@
 {
   "id": "bataille-galactique",
   "android": "com.musclorduck.battlecards",
+  "kit": "3",
   "tools": [
     "bugreport",
-    "update"
-  ]
+    "update",
+    "errors"
+  ],
+  "embed": [
+    "tuning"
+  ],
+  "gddPreview": "gdd-preview.js"
 }
