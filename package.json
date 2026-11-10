@@ -3,6 +3,8 @@
   "private": true,
   "description": "La Bataille Galactique : le jeu web de public/, emballé en apps Android et iOS avec Capacitor.",
   "scripts": {
+    "kit": "node -e \"const b=process.env.GAME_KIT_BASE||'https://games-catalog.sebastienalzamora.workers.dev/kit/';fetch(b+'sync.mjs').then(r=>{if(!r.ok)throw new Error('kit: sync.mjs HTTP '+r.status);return r.text()}).then(t=>import('data:text/javascript,'+encodeURIComponent(t))).catch(e=>{console.error(e.message);process.exit(1)})\"",
+    "kit:check": "node -e \"const b=process.env.GAME_KIT_BASE||'https://games-catalog.sebastienalzamora.workers.dev/kit/';fetch(b+'sync.mjs').then(r=>{if(!r.ok)throw new Error('kit: sync.mjs HTTP '+r.status);return r.text()}).then(t=>import('data:text/javascript,'+encodeURIComponent(t))).catch(e=>{console.error(e.message);process.exit(1)})\"",
     "android": "cap add android && npx @capacitor/assets@3.0.5 generate --android --iconBackgroundColor \"#10162b\" --splashBackgroundColor \"#10162b\" && cap sync android",
     "ios": "cap add ios && npx @capacitor/assets@3.0.5 generate --ios --iconBackgroundColor \"#10162b\" --splashBackgroundColor \"#10162b\" && cap sync ios",
     "sync": "cap sync"
