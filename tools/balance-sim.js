@@ -170,14 +170,18 @@ window.BalanceSim = (function () {
       })).sort((a, b) => b.score - a.score);
       return opts.length && (opts[0].score >= 0.2 || lootSum(st.pot) >= 6) ? opts[0].c : null;
     }
-    const dieBonus = (p, role) => (B.amb[p].house === "H" && !onBoard(1 - p, "eclipse") ? 1 : 0) + (cast[p] === "cranes" && (OPT.talent.cranes === "both" || role === OPT.talent.cranes) ? 1 : 0);
+    // Coup de pouce : +1 au dé après 2 dés ratés de suite dans la partie (OPT.luck)
+    const miss = [0, 0];
+    const dieBonus = (p, role) => (B.amb[p].house === "H" && !onBoard(1 - p, "eclipse") ? 1 : 0) + (cast[p] === "cranes" && (OPT.talent.cranes === "both" || role === OPT.talent.cranes) ? 1 : 0) + (OPT.luck && miss[p] >= 2 ? 1 : 0);
     const radarOn = p => B.amb[p].house === "C" && !used[p] && !onBoard(1 - p, "eclipse");
     function roll(p, card, role) {
       const thr = thirdThr(p, card), bonus = dieBonus(p, role);
       let r = 1 + R(6) + (surge[p] ? 1 : 0);
       surge[p] = false;
       if (r + bonus < thr && radarOn(p)) { used[p] = true; r = 1 + R(6); }
-      return r + bonus >= thr;
+      const ok = r + bonus >= thr;
+      miss[p] = ok ? 0 : miss[p] + 1;
+      return ok;
     }
     const take = (p, c) => { st.hands[p].splice(st.hands[p].indexOf(c), 1); return c; };
     /* Gain de boosts : au-delà du plafond, le surplus devient du butin (« loot »), un dé surchargé (« surge ») ou rien. */
@@ -367,7 +371,7 @@ window.BalanceSim = (function () {
      war = "round" (règle du jeu : manche rejouée par-dessus) | "pick" (duel choisi) | "blind" (cartes du dessus),
      mulligan = échange de départ, clone = plafond du Clone à essayer (null = valeur du jeu),
      slots = nombre d'atouts du joueur type en campagne (3, 4 ou 5 selon son niveau). */
-  const OPT = { swap: ["any", "any"], overflow: ["loot", "loot"], war: "round", mulligan: true, clone: null, slots: 3, deck: 20, impact: 2, allyCombo: "trio", trio: [5, 5, 4], pirate: "sink",
+  const OPT = { luck: true, swap: ["any", "any"], overflow: ["loot", "loot"], war: "round", mulligan: true, clone: null, slots: 3, deck: 20, impact: 2, allyCombo: "trio", trio: [5, 5, 4], pirate: "sink",
     talent: { marsFuel: 3, poulpesHand: 6, cranes: "riposte", incognitoFuel: true } };
   const set = o => Object.assign(OPT, o);
   return { game, run, campaign, set, OPT };

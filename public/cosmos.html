@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.93"; window.GAME_VERSION = window.BDA_V;</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.94"; window.GAME_VERSION = window.BDA_V;</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -292,6 +292,12 @@
     .sheet.cap-sheet h2 { margin-top: 38px; }
     .cap-slot.dup .card { opacity: 0.45; transition: opacity 400ms; }
     .fly-coin { position: absolute; left: 0; top: 0; z-index: 60; width: 28px; height: 28px; pointer-events: none; }
+    .pause-rolls { margin: 0 0 14px; }
+    .pause-rolls .rl { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 6px 0; }
+    .pause-rolls .r { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 4px; border-radius: 999px; border: 2px solid var(--teal); font-size: 0.8rem; }
+    .pause-rolls .r.ko { border-color: var(--orange); }
+    .pause-rolls .r b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--cream); color: var(--navy); }
+    .pause-rolls small, .pause-rolls .none { display: block; font-size: 0.78rem; opacity: 0.8; }
     .vol-row { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-radius: 999px; border: 2px solid rgba(245, 233, 207, 0.4); font-size: 0.95rem; color: var(--cream); }
     .vol-row input { flex: 1; accent-color: var(--teal); }
     .linkish { margin: 10px auto 0; display: block; padding: 4px 8px; border: 0; background: none; color: rgba(245, 233, 207, 0.7); font-size: 0.8rem; text-decoration: underline; }
@@ -1164,7 +1170,7 @@
   <div class="coach" id="coach"><div class="spot" id="coachSpot"></div><div class="bubble" id="coachBubble"></div></div>
 
   <div class="overlay" id="pause">
-    <div class="sheet"><h2>Pause</h2><div class="stack">
+    <div class="sheet"><h2>Pause</h2><div class="pause-rolls" id="pauseRolls" hidden></div><div class="stack">
       <button class="btn" id="resumeBtn">Reprendre</button>
       <button class="btn ghost" id="pauseHelp">Règles</button>
       <button class="btn ghost" id="pauseSound">Son : oui</button>
@@ -2029,8 +2035,10 @@
     /* Seuil du dé d'une 3ᵉ carte : Cryo adverse et Ouragan du boss le durcissent d'un cran. */
     const thirdThr = (p, card) => thrOf(card) + (onBoard(1 - p, "cryo") ? 1 : 0) + (p === 0 && superOn() === "storm" ? 1 : 0);
     const handSize = q => (S.cast[q] === "poulpes" ? 6 : HAND_SIZE) + aiBonus(q, "bonusHand");
-    /* Bonus au dé d'une 3ᵉ carte : Propulsion, et Désintégrateur pour une riposte. */
-    const dieBonus = (p, role) => (S.board.amb[p].house === "H" && !onBoard(1 - p, "eclipse") ? 1 : 0) + (role === "riposte" && S.cast[p] === "cranes" ? 1 : 0);
+    /* Bonus au dé d'une 3ᵉ carte : Propulsion, Désintégrateur pour une riposte, et le coup de pouce
+       après 2 dés ratés de suite dans la partie (même règle pour les deux camps). */
+    const luckOn = p => Boolean(S.miss) && S.miss[p] >= 2;
+    const dieBonus = (p, role) => (S.board.amb[p].house === "H" && !onBoard(1 - p, "eclipse") ? 1 : 0) + (role === "riposte" && S.cast[p] === "cranes" ? 1 : 0) + (luckOn(p) ? 1 : 0);
     /* Radar : un dé raté relancé une fois par manche, sauf face à une Éclipse. */
     const radarOn = p => S.board.amb[p].house === "C" && !S.radar[p] && !onBoard(1 - p, "eclipse");
     function chance(thr, bonus, reroll) {
@@ -2306,7 +2314,16 @@
     const third = () => S.phase === "ally" || S.phase === "riposte";
     function allyInfo(card) {
       const thr = thirdThr(0, card), bonus = dieBonus(0, S.phase), reroll = radarOn(0);
-      return { thr, pct: Math.round(chance(thr, bonus, reroll) * 100) };
+      return { thr, pct: Math.round(chance(thr, bonus, reroll) * 100), words: dieWords(thr, bonus, reroll) };
+    }
+    function dieWords(thr, bonus, reroll) {
+      const need = thr - bonus, faces = Math.max(0, Math.min(6, 7 - need));
+      const text = faces <= 0 ? tr("même un 6 ne suffit pas")
+        : faces >= 6 ? tr("le dé réussit toujours")
+          : faces === 1 ? tr("il faut un 6 : 1 chance sur 6")
+            : faces === 2 ? tr("il faut 5 ou 6 : 2 chances sur 6")
+              : tr("il faut {n} ou plus : {k} chances sur 6", { n: need, k: faces });
+      return reroll && faces > 0 && faces < 6 ? `${text} ${tr("(radar : relance si raté)")}` : text;
     }
     function selectable(card) {
       if (S.busy) return false;
@@ -2652,6 +2669,19 @@
       await hold(600);
       tray.classList.remove("rolling");
       return n;
+    }
+    /* The last five dice of the game, shown in the pause so anyone can see the die is fair. */
+    function keepRoll(p, roll, ok) {
+      S.rolls.push({ p, roll, ok });
+      if (S.rolls.length > 5) S.rolls.shift();
+    }
+    function renderRolls() {
+      const box = $("#pauseRolls");
+      if (!$("#game").classList.contains("on") || !S.rolls) { box.hidden = true; return; }
+      box.hidden = false;
+      const list = S.rolls.length ? S.rolls.slice().reverse().map(r => `<span class="r ${r.ok ? "ok" : "ko"}"><b>${r.roll}</b>${r.p === 0 ? tr("Toi") : foe()} · ${r.ok ? tr("réussi") : tr("raté")}</span>`).join("")
+        : `<span class="none">${tr("Aucun dé lancé pour l'instant.")}</span>`;
+      box.innerHTML = `<h3 class="j-title">${tr("Derniers lancers")}</h3><div class="rl">${list}</div><small>${tr("Le dé tire un nombre de 1 à 6 au hasard. Après 2 dés ratés de suite, le suivant reçoit +1.")}</small>`;
     }
     function showRoll(roll, bonus, thr) {
       const total = roll + bonus;
@@ -3234,7 +3264,7 @@
       const theirs = shuffle(ATOUT_IDS).slice(0, mode === "adv" ? Math.min(mine.length, STAGES[S.stage].foeAtouts) : mine.length);
       Object.assign(S, {
         decks: pre ? pre.decks : [inject(deck.slice(0, DECK_SIZE), mine, "a"), inject(deck.slice(26, 26 + DECK_SIZE), theirs, "b")],
-        hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 3 : 1) + aiBonus(q, "bonusFuel")), radar: [false, false], battle: 0, lockAsked: false, ended: null, online: mode === "p2p" && net.online, vanHidden: [false, false], pot: [], round: 0, first: pre ? pre.first : rand(2), phase: "idle", busy: true,
+        hands: [[], []], loot: [0, 0], fuel: [0, 1].map(q => (S.cast[q] === "mars" ? 3 : 1) + aiBonus(q, "bonusFuel")), radar: [false, false], miss: [0, 0], rolls: [], battle: 0, lockAsked: false, ended: null, online: mode === "p2p" && net.online, vanHidden: [false, false], pot: [], round: 0, first: pre ? pre.first : rand(2), phase: "idle", busy: true,
         revealed: false, sel: null, board: emptyBoard(), war: null, spy: null, fx: new Set()
       });
       $("#ava0").innerHTML = charArt(save.char);
@@ -3580,9 +3610,9 @@
         const combo = formation(S.board.van[0], card).map(partText).join(", ");
         setPrompt(`${card.special ? tr("<b>{card}</b> ({label}).", { card: cardName(card), label: card.label }) + atout : tr("<b>{card}</b> ({label}) — {power} : {desc}.", { card: cardName(card), label: card.label, power: tr(h.power), desc: tr(h.desc) })}${combo ? ` <b>${combo}</b>.` : ""}`, [{ label: tr("Poser cachée"), ...go }]);
       } else if (third()) {
-        const { thr, pct } = allyInfo(card);
+        const { words } = allyInfo(card);
         const t = afterAlly(0, card);
-        setPrompt((t[0] === t[1] ? tr("<b>{title}</b> : dé <b>{thr}+</b> ({pct} %). Total {me} contre {foe} — égalité.", { title: tr(card.title), thr, pct, me: t[0], foe: t[1] }) : tr("<b>{title}</b> : dé <b>{thr}+</b> ({pct} %). Total {me} contre {foe}.", { title: tr(card.title), thr, pct, me: t[0], foe: t[1] })) + comboLine(card) + atout,
+        setPrompt((t[0] === t[1] ? tr("<b>{title}</b> : {words}. Total {me} contre {foe} — égalité.", { title: tr(card.title), words, me: t[0], foe: t[1] }) : tr("<b>{title}</b> : {words}. Total {me} contre {foe}.", { title: tr(card.title), words, me: t[0], foe: t[1] })) + comboLine(card) + atout,
           [{ label: tr("Lancer le dé · 1 ⚡"), cls: "hot", ...go }, S.phase === "ally" ? { label: tr("Se replier"), cls: "ghost", fn: fold } : { label: tr("Se replier"), cls: "ghost", fn: () => pickRiposte(null) }]);
       }
     }
@@ -3745,14 +3775,16 @@
         : (role === "riposte" ? tr("<b>Gaspard riposte avec</b> {card} — il faut <b>{thr}+</b> au dé.", v) : tr("<b>Gaspard engage</b> {card} — il faut <b>{thr}+</b> au dé.", v)));
       const el = await playCard(p, "ally", card, false, opts);
       el.classList.add("pending");
-      const radar = radarOn(p);
+      const radar = radarOn(p), luck = luckOn(p);
       $("#trayNeed").textContent = `${role === "riposte" ? tr("Riposte") : tr("Allié")} · ${thr}+${bonus ? ` · +${bonus}` : ""}${radar ? ` · ${tr("radar")}` : ""}`;
       $("#trayRes").textContent = "";
       $("#tray").classList.add("on");
+      if (luck) floatText($("#tray"), tr("Coup de pouce : +1 au dé"));
       await sleep(350);
       let roll = await rollDie(p);
       if (game !== gameId) return false;
       showRoll(roll, bonus, thr);
+      keepRoll(p, roll, roll + bonus >= thr);
       if (roll + bonus < thr && radar) {
         S.radar[p] = true;
         await sleep(500);
@@ -3760,8 +3792,10 @@
         roll = await rollDie(p);
         if (game !== gameId) return false;
         showRoll(roll, bonus, thr);
+        keepRoll(p, roll, roll + bonus >= thr);
       }
       const ok = roll + bonus >= thr;
+      S.miss[p] = ok ? 0 : S.miss[p] + 1;
       el.classList.remove("pending");
       await sleep(350);
       if (ok) {
@@ -4994,7 +5028,7 @@
     // Appel, autre appli, écran verrouillé : la partie se met en pause toute seule.
     document.addEventListener("visibilitychange", () => {
       // En duel, pas de pause automatique : l'adversaire attendrait qu'on touche « Reprendre »
-      if (document.hidden && $("#game").classList.contains("on") && !["over"].includes(S.phase) && !duel()) $("#pause").classList.add("on");
+      if (document.hidden && $("#game").classList.contains("on") && !["over"].includes(S.phase) && !duel()) { renderRolls(); $("#pause").classList.add("on"); }
       if (window.BDAMusic && BDAMusic.ctx()) { if (document.hidden) BDAMusic.ctx().suspend(); else BDAMusic.ctx().resume(); }
     });
     $("#helpAtouts").innerHTML = ATOUT_IDS.map(id => `<li><b>${tr(ATOUTS[id].name)}</b> (${tr(RARITY[ATOUTS[id].rarity].name).toLowerCase()}) : ${tr(ATOUTS[id].desc)}</li>`).join("");
@@ -5099,7 +5133,7 @@
     window.addEventListener("appinstalled", () => hideInstall(true));
     $("#pauseSound").addEventListener("click", toggleSound);
     $("#pauseVibe").addEventListener("click", toggleVibe);
-    $("#pauseBtn").addEventListener("click", () => $("#pause").classList.add("on"));
+    $("#pauseBtn").addEventListener("click", () => { renderRolls(); $("#pause").classList.add("on"); });
     $("#resumeBtn").addEventListener("click", () => $("#pause").classList.remove("on"));
     $("#quitBtn").addEventListener("click", goMenu);
     $("#endAgain").addEventListener("click", async () => {
