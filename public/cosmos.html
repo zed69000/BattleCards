@@ -1087,7 +1087,7 @@
           <p class="about" id="aboutVer" data-no-i18n></p>
           <a class="linkish" href="confidentialite.html" target="_blank" rel="noopener">Confidentialité</a>
           <p class="about">Musique : instruments FluidR3_GM de Frank Wen (CC BY 3.0).</p>
-          <div class="section-title">Code secret</div>
+          <div class="section-title">Outils du développeur</div>
           <div class="join"><input id="devCode" maxlength="8" inputmode="numeric" autocomplete="off" placeholder="••••" aria-label="Code secret"><button class="btn" id="devGo">OK</button></div>
           <div class="devbox" id="devBox" hidden>
             <div class="section-title">Mode test</div>
@@ -1097,7 +1097,6 @@
               <button class="btn teal" id="devAll">Tout débloquer (persos, atouts, dés, dos)</button>
               <button class="btn" id="devGems">+500 ◆</button>
               <button class="btn" id="devOffers">Voir les offres (pubs et achats de test)</button>
-              <button class="btn" id="bugBtn">Signaler un bug ou une idée</button>
               <button class="btn ghost" id="devOff">Quitter le mode test</button>
             </div>
           </div>
@@ -5033,8 +5032,6 @@
     });
     $("#helpAtouts").innerHTML = ATOUT_IDS.map(id => `<li><b>${tr(ATOUTS[id].name)}</b> (${tr(RARITY[ATOUTS[id].rarity].name).toLowerCase()}) : ${tr(ATOUTS[id].desc)}</li>`).join("");
     for (const btn of document.querySelectorAll("#tabs button")) btn.addEventListener("click", () => { sfx.tap(); showTab(btn.dataset.tab); });
-    /* back to the Adventure tab first, so the screenshot shows the game rather than the options */
-    $("#bugBtn").addEventListener("click", () => { $('#tabs [data-tab="adv"]').click(); setTimeout(() => window.BugReport && BugReport.open(), 300); });
     $("#tutoBtn").addEventListener("click", () => { save.seen = {}; save.mute = false; S.stage = save.stage = 0; chapterView = 0; persist(); newGame("adv"); });
     for (const id of ["capsuleBtn", "quickBooster", "crystalsBtn"]) $(`#${id}`).addEventListener("click", openBoosters);
     $("#bpOpen").addEventListener("click", () => {
