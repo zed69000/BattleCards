@@ -1,0 +1,30 @@
+# Envoie La Bataille Galactique sur Google Play (tests internes) par la chaîne commune zed69000/game-pipeline.
+# Se lance à la main : Actions > « Android · Google Play » > Run workflow (ou gh workflow run play-release.yml).
+# Secrets du dépôt : voir game-pipeline/README.md (clé d'envoi + compte de service).
+# Le numéro de version Play (versionCode) vient de window.BDA_V dans public/cosmos.html : 0.95 -> 95, 1.2 -> 102.
+name: Android · Google Play
+
+on:
+  workflow_dispatch:
+
+jobs:
+  play:
+    uses: zed69000/game-pipeline/.github/workflows/android-play.yml@main
+    with:
+      package-name: com.musclorduck.battlecards
+      aab-path: android/app/build/outputs/bundle/release/app-release.aab
+      release-status: completed
+      # note de version des testeurs : un fichier par langue (whatsnew-fr-FR...)
+      whatsnew-directory: store/whatsnew
+      build-command: |
+        npm install --no-audit --no-fund
+        npm run android
+        VERSION=$(grep -o 'BDA_V = "[^"]*"' public/cosmos.html | cut -d'"' -f2)
+        CODE=$(echo "$VERSION" | awk -F. '{ print $1 * 100 + $2 }')
+        echo "Version $VERSION, versionCode $CODE"
+        # Jeu en portrait uniquement
+        sed -i 's/<activity/<activity android:screenOrientation="portrait"/' android/app/src/main/AndroidManifest.xml
+        sed -i -E "s/versionCode [0-9]+/versionCode $CODE/; s/versionName \"[^\"]*\"/versionName \"$VERSION\"/" android/app/build.gradle
+        grep -E "versionCode|versionName" android/app/build.gradle
+        cd android && ./gradlew bundleRelease
+    secrets: inherit

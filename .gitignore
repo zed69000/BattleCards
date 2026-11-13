@@ -3,3 +3,6 @@
 node_modules/
 android/
 ios/
+# Clé d'envoi Android : jamais dans le dépôt
+keystore.properties
+*.jks
