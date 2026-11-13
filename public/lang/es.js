@@ -1,5 +1,9 @@
 /* Bataille des Alliés – Español. Clé = texte français (voir ../i18n.js). */
 BDAi18n.add("es", {
+  "BONNE ANNÉE !": "¡FELIZ AÑO!",
+  "Bonne année, commandant !": "¡Feliz año nuevo, comandante!",
+  "HO HO HO !": "¡JO JO JO!",
+  "Joyeux Noël, commandant !": "¡Feliz Navidad, comandante!",
   "Coup de pouce : +1 au dé": "Empujoncito: +1 al dado",
   "Derniers lancers": "Últimas tiradas",
   "Le dé tire un nombre de 1 à 6 au hasard. Après 2 dés ratés de suite, le suivant reçoit +1.": "El dado saca un número del 1 al 6 al azar. Tras 2 tiradas falladas seguidas, la siguiente recibe +1.",

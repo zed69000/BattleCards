@@ -1,5 +1,9 @@
 /* Bataille des Alliés – 中文. Clé = texte français (voir ../i18n.js). */
 BDAi18n.add("zh", {
+  "BONNE ANNÉE !": "新年快乐！",
+  "Bonne année, commandant !": "新年快乐，指挥官！",
+  "HO HO HO !": "嚯嚯嚯！",
+  "Joyeux Noël, commandant !": "圣诞快乐，指挥官！",
   "Coup de pouce : +1 au dé": "助你一把：骰子 +1",
   "Derniers lancers": "最近的投掷",
   "Le dé tire un nombre de 1 à 6 au hasard. Après 2 dés ratés de suite, le suivant reçoit +1.": "骰子随机掷出 1 到 6。连续 2 次失败后，下一次 +1。",

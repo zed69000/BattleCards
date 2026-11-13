@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="icon" type="image/png" href="favicon.png">
   <title>La Bataille Galactique</title>
-  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.94"; window.GAME_VERSION = window.BDA_V;</script>
+  <script>/* Numéro de version, affiché en bas du menu : à augmenter à chaque mise en ligne (il force aussi le rechargement des fichiers de langue). */ window.BDA_V = "0.95"; window.GAME_VERSION = window.BDA_V;</script>
   <script>
     /* Tablettes : l'interface est pensée pour une colonne de téléphone. Sur grand écran, tout le jeu est agrandi
        pour remplir la hauteur (au moins 840 px de haut une fois agrandi, sans les règles « écran court ») ; les unités d'écran passent par --vw/--vh/--dvh, recalculées à l'échelle. */
@@ -980,6 +980,20 @@
     @keyframes rise { from { opacity: 0; transform: translateY(110px) scale(0.5) rotate(-8deg); } }
     @keyframes hit { 0%, 100% { transform: none; } 25% { transform: translateX(-6px) rotate(-5deg); } 60% { transform: translateX(5px) rotate(4deg); } }
     @keyframes banner { 0% { opacity: 0; scale: 0.5; } 18% { opacity: 1; scale: 1.12; } 75% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1.25; } }
+    /* Fêtes de décembre : neige sur le menu et la page de titre, guirlande sur le titre, bonnet sur les portraits. */
+    #snow { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; display: none; }
+    html[data-fete~="noel"] body:has(#menu.on) #snow, html.cover[data-fete~="noel"] #snow { display: block; }
+    html.cover #snow { z-index: 100; }
+    #snow i { position: absolute; top: -12px; width: var(--s); height: var(--s); border-radius: 50%; background: #f5e9cf; opacity: var(--o); animation: snowFall var(--d) linear var(--dl) infinite; }
+    @keyframes snowFall { to { transform: translate(var(--x), calc(100vh + 24px)); } }
+    .garland { position: absolute; left: 0; right: 0; top: -2px; z-index: 4; height: 34px; pointer-events: none; display: none; }
+    html[data-fete~="noel"] .garland { display: block; }
+    .garland .b { animation: bulb 1.6s ease-in-out infinite; }
+    .garland .b:nth-child(3n) { animation-delay: -0.5s; } .garland .b:nth-child(3n+1) { animation-delay: -1.1s; }
+    @keyframes bulb { 50% { opacity: 0.35; } }
+    html[data-fete~="noel"] .portrait, html[data-fete~="noel"] .ava { position: relative; }
+    html[data-fete~="noel"] .portrait::after, html[data-fete~="noel"] .ava::after { content: ""; position: absolute; left: 30%; top: -4%; width: 64%; aspect-ratio: 64 / 56; rotate: 14deg; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 56'%3E%3Cpath d='M8 44 C14 22 30 6 50 10 C58 12 60 20 56 28 C50 22 42 22 38 30 C34 38 34 42 34 44 Z' fill='%23e8423f' stroke='%2310162b' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M44 18 C48 16 52 18 52 22' fill='none' stroke='%23b8282a' stroke-width='3' stroke-linecap='round'/%3E%3Crect x='4' y='40' width='36' height='12' rx='6' fill='%23f5e9cf' stroke='%2310162b' stroke-width='3'/%3E%3Ccircle cx='56' cy='30' r='7' fill='%23f5e9cf' stroke='%2310162b' stroke-width='3'/%3E%3C/svg%3E") center / contain no-repeat; pointer-events: none; }
+    .firework { position: absolute; width: 4px; height: 14px; border-radius: 99px; animation: spark 1100ms ease-out forwards; }
     @keyframes spark { from { opacity: 1; transform: rotate(var(--a)) translateY(0) scaleY(0.6); } to { opacity: 0; transform: rotate(var(--a)) translateY(calc(var(--d) * -1)) scaleY(1.3); } }
     @keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, 6px) scale(0.7); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1.1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -36px); } }
     @keyframes draw { from { opacity: 0; transform: translate(160px, 30px) rotate(25deg) scale(0.6); } }
@@ -999,6 +1013,7 @@
   <div id="splash" aria-hidden="true" data-no-i18n><div class="spStage"><div class="spBlock"></div><svg viewBox="-74 -44 468 400" aria-hidden="true"><defs><filter id="spWob1" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9"/></filter><filter id="spWob2" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="11" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9"/></filter><filter id="spWob3" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="23" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9"/></filter></defs><g id="spArt" filter="url(#spWob1)" stroke="#f0e6cf" stroke-linecap="round" stroke-linejoin="round"><path class="spFloor" d="M-40 246H360" fill="none" stroke-width="4"/><g transform="translate(192 246) scale(.95) translate(-150 -286)"><g class="spBig" fill="#d8232f" stroke-width="6"><path d="M128 232V274M128 274L110 284M128 274L128 288M128 274L144 284M176 232V274M176 274L158 284M176 274L176 288M176 274L192 284" fill="none"/><path d="M214 120Q250 126 268 104Q250 88 256 64Q262 40 286 46Q306 54 300 82Q312 120 282 146Q250 168 212 150Z"/><path d="M266 100Q276 92 288 98" fill="none"/><g transform="translate(300 0) scale(-1 1)"><path d="M214 120Q250 126 268 104Q250 88 256 64Q262 40 286 46Q306 54 300 82Q312 120 282 146Q250 168 212 150Z"/><path d="M266 100Q276 92 288 98" fill="none"/></g><path d="M150 34Q184 34 190 66Q232 70 232 122Q232 200 196 228Q150 246 104 228Q68 200 68 122Q68 70 110 66Q116 34 150 34Z"/><path d="M100 150Q124 168 147 150M153 150Q176 168 200 150M150 170V214M134 184H166M136 202H164" fill="none"/><circle cx="134" cy="70" r="4.5" fill="#f0e6cf"/><circle cx="166" cy="70" r="4.5" fill="#f0e6cf"/><path d="M126 60L140 63M174 60L160 63" fill="none"/><path d="M141 74Q150 68 159 74Q150 86 141 74Z"/></g></g><path class="spTrail" d="M58 290L150 246L246 246L112 296Z" fill="#17130f" stroke="none"/><g transform="translate(79 290) scale(.3) translate(-150 -286)"><g class="spSmall" fill="#17130f" stroke-width="15"><path d="M128 232V274M128 274L110 284M128 274L128 288M128 274L144 284M176 232V274M176 274L158 284M176 274L176 288M176 274L192 284" fill="none"/><path d="M220 128Q252 116 254 86Q246 74 236 84Q238 102 212 110Z"/><g transform="translate(300 0) scale(-1 1)"><path d="M220 128Q252 116 254 86Q246 74 236 84Q238 102 212 110Z"/></g><path d="M150 34Q184 34 190 66Q232 70 232 122Q232 200 196 228Q150 246 104 228Q68 200 68 122Q68 70 110 66Q116 34 150 34Z"/><circle cx="134" cy="70" r="4.5" fill="#f0e6cf"/><circle cx="166" cy="70" r="4.5" fill="#f0e6cf"/><path d="M126 60L140 63M174 60L160 63" fill="none"/><path d="M141 74Q150 68 159 74Q150 86 141 74Z"/></g></g></g></svg><div class="spName">Musclor<br>Duck</div><div class="spTag">games</div></div></div>
   <div id="cover" aria-hidden="true" data-no-i18n><img src="cover.webp" alt=""><span class="cover-tap">Touche pour jouer</span></div>
   <canvas id="space" aria-hidden="true"></canvas>
+  <div id="snow" aria-hidden="true"></div>
   <div id="flash" aria-hidden="true"></div>
   <div class="fx" id="fx" aria-hidden="true"></div>
   <div id="battleFx" aria-hidden="true"></div>
@@ -1015,10 +1030,11 @@
         <section class="pane on" data-pane="adv">
           <div class="hero">
             <div class="hero-rays"></div>
-            <span class="pow">POW !</span><span class="pow l">⚡ BOOST</span>
+            <svg class="garland" viewBox="0 0 380 34" preserveAspectRatio="none" aria-hidden="true"></svg>
+            <span class="pow" id="heroPow">POW !</span><span class="pow l">⚡ BOOST</span>
             <div class="hero-fan" id="heroFan"></div>
             <h1 data-i18n>La Bataille <span>Galactique</span></h1>
-            <div class="hero-tag">Pose · Bluffe · Renverse !</div>
+            <div class="hero-tag" id="heroTag">Pose · Bluffe · Renverse !</div>
           </div>
           <div class="chapter">
             <button class="ch-nav" id="chPrev" aria-label="Chapitre précédent">‹</button>
@@ -5168,6 +5184,60 @@
     });
     $("#endMenu").addEventListener("click", goMenu);
     $("#endBooster").addEventListener("click", () => { goMenu(); openCapsuleShop(); });
+
+    /* Fêtes de décembre : Noël du 1er décembre au 6 janvier, feux d'artifice du 31 décembre au soir jusqu'au 1er janvier.
+       ?fete=noel, ?fete=nouvelan ou ?fete=non dans l'adresse pour les voir à une autre date. */
+    function feteNow(d = new Date()) {
+      const forced = new URLSearchParams(location.search).get("fete");
+      if (forced) return forced === "nouvelan" ? ["noel", "nouvelan"] : forced === "noel" ? ["noel"] : [];
+      const m = d.getMonth() + 1, day = d.getDate(), list = [];
+      if (m === 12 || (m === 1 && day <= 6)) list.push("noel");
+      if ((m === 12 && day === 31 && d.getHours() >= 18) || (m === 1 && day === 1)) list.push("nouvelan");
+      return list;
+    }
+    function setupFete() {
+      const fete = feteNow(), root = document.documentElement;
+      root.dataset.fete = fete.join(" ");
+      if (!fete.includes("noel")) return;
+      // Neige : quelques flocons de tailles et vitesses différentes, moins si l'animation est réduite
+      $("#snow").innerHTML = Array.from({ length: reduced ? 0 : 38 }, () => `<i style="left:${rand(100)}%;--s:${3 + rand(5)}px;--o:${(0.35 + Math.random() * 0.5).toFixed(2)};--d:${(7 + Math.random() * 7).toFixed(1)}s;--dl:${(-Math.random() * 14).toFixed(1)}s;--x:${rand(80) - 40}px"></i>`).join("");
+      // Guirlande : un fil qui pend en festons, des ampoules qui clignotent
+      const bulbs = [], colors = ["#e8423f", "#f5c445", "#2fa394", "#8f93f0", "#f26a3d"];
+      let wire = "M0 4";
+      for (let i = 0; i < 5; i += 1) wire += ` Q${i * 76 + 38} 30 ${(i + 1) * 76} 4`;
+      for (let i = 0; i < 16; i += 1) {
+        const x = 12 + i * 23.5, k = (x % 76) / 76, y = 4 + 52 * k * (1 - k);
+        bulbs.push(`<g class="b"><rect x="${(x - 2.5).toFixed(1)}" y="${(y - 1).toFixed(1)}" width="5" height="4" rx="1" fill="#10162b"/><ellipse cx="${x.toFixed(1)}" cy="${(y + 7).toFixed(1)}" rx="4" ry="6" fill="${colors[i % colors.length]}" stroke="#10162b" stroke-width="1.6"/></g>`);
+      }
+      $(".garland").innerHTML = `<path d="${wire}" fill="none" stroke="#10162b" stroke-width="2"/>${bulbs.join("")}`;
+      const newYear = fete.includes("nouvelan");
+      $("#heroPow").textContent = newYear ? tr("BONNE ANNÉE !") : tr("HO HO HO !");
+      $("#heroTag").textContent = newYear ? tr("Bonne année, commandant !") : tr("Joyeux Noël, commandant !");
+      if (newYear && !reduced) fireworks();
+    }
+    /* Feux d'artifice au-dessus du menu, une gerbe toutes les deux secondes environ. */
+    function fireworks() {
+      const shoot = () => {
+        if ($("#menu").classList.contains("on") && !document.hidden) {
+          const w = window.innerWidth / window.UIZ, h = window.innerHeight / window.UIZ;
+          const x = w * (0.15 + Math.random() * 0.7), y = h * (0.08 + Math.random() * 0.3);
+          const palette = [["#f5c445", "#fff"], ["#e8423f", "#f5e9cf"], ["#2fa394", "#8fd8cc"], ["#8f93f0", "#fff"]][rand(4)];
+          for (let i = 0; i < 22; i += 1) {
+            const s = document.createElement("span");
+            s.className = "firework";
+            s.style.left = `${x}px`; s.style.top = `${y}px`;
+            s.style.background = palette[i % 2];
+            s.style.setProperty("--a", `${(360 / 22) * i + rand(10)}deg`);
+            s.style.setProperty("--d", `${60 + rand(50)}px`);
+            $("#fx").appendChild(s);
+            setTimeout(() => s.remove(), 1150);
+          }
+        }
+        setTimeout(shoot, 1400 + rand(1600));
+      };
+      setTimeout(shoot, 1200);
+    }
+    setupFete();
 
     /* Title page, already in place under the studio logo so the menu never shows in between; it stays until the player taps. */
     function showCover() {

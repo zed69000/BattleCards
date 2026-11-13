@@ -1,5 +1,9 @@
 /* Bataille des Alliés – 日本語. Clé = texte français (voir ../i18n.js). */
 BDAi18n.add("ja", {
+  "BONNE ANNÉE !": "あけおめ！",
+  "Bonne année, commandant !": "あけましておめでとう、司令官！",
+  "HO HO HO !": "ホッホッホー！",
+  "Joyeux Noël, commandant !": "メリークリスマス、司令官！",
   "Coup de pouce : +1 au dé": "ひと押し：ダイス +1",
   "Derniers lancers": "最近の出目",
   "Le dé tire un nombre de 1 à 6 au hasard. Après 2 dés ratés de suite, le suivant reçoit +1.": "ダイスは 1〜6 をランダムに出します。2 回続けて失敗すると、次は +1 されます。",

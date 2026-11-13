@@ -1,5 +1,9 @@
 /* Bataille des Alliés – English. Clé = texte français (voir ../i18n.js). */
 BDAi18n.add("en", {
+  "BONNE ANNÉE !": "HAPPY NEW YEAR!",
+  "Bonne année, commandant !": "Happy New Year, commander!",
+  "HO HO HO !": "HO HO HO!",
+  "Joyeux Noël, commandant !": "Merry Christmas, commander!",
   "Coup de pouce : +1 au dé": "Helping hand: +1 to the die",
   "Derniers lancers": "Last rolls",
   "Le dé tire un nombre de 1 à 6 au hasard. Après 2 dés ratés de suite, le suivant reçoit +1.": "The die picks a number from 1 to 6 at random. After 2 failed rolls in a row, the next one gets +1.",

@@ -1,5 +1,9 @@
 /* Bataille des Alliés – 한국어. Clé = texte français (voir ../i18n.js). */
 BDAi18n.add("ko", {
+  "BONNE ANNÉE !": "새해 복 많이!",
+  "Bonne année, commandant !": "새해 복 많이 받으세요, 사령관님!",
+  "HO HO HO !": "호호호!",
+  "Joyeux Noël, commandant !": "메리 크리스마스, 사령관님!",
   "Coup de pouce : +1 au dé": "행운의 손길: 주사위 +1",
   "Derniers lancers": "최근 굴림",
   "Le dé tire un nombre de 1 à 6 au hasard. Après 2 dés ratés de suite, le suivant reçoit +1.": "주사위는 1부터 6까지 무작위로 나옵니다. 2번 연속 실패하면 다음 굴림에 +1이 붙습니다.",

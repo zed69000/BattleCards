@@ -1,5 +1,9 @@
 /* Bataille des Alliés – Deutsch. Clé = texte français (voir ../i18n.js). */
 BDAi18n.add("de", {
+  "BONNE ANNÉE !": "FROHES NEUES!",
+  "Bonne année, commandant !": "Frohes neues Jahr, Kommandant!",
+  "HO HO HO !": "HO HO HO!",
+  "Joyeux Noël, commandant !": "Frohe Weihnachten, Kommandant!",
   "Coup de pouce : +1 au dé": "Schubs: +1 auf den Würfel",
   "Derniers lancers": "Letzte Würfe",
   "Le dé tire un nombre de 1 à 6 au hasard. Après 2 dés ratés de suite, le suivant reçoit +1.": "Der Würfel zieht zufällig eine Zahl von 1 bis 6. Nach 2 Fehlwürfen in Folge bekommt der nächste +1.",
